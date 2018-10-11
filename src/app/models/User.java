@@ -1,0 +1,42 @@
+package models;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class User {
+
+    public int id;
+    public String userName;
+    public String email;
+    public String password;
+    public boolean passwordResetRequired;
+    public int quotaLimit;
+
+    public User(
+            int id,
+            String userName,
+            String email,
+            String password,
+            boolean passwordResetRequired,
+            int quotaLimit) {
+        this.id = id;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.passwordResetRequired = passwordResetRequired;
+        this.quotaLimit = quotaLimit;
+    }
+
+    // note: only testcode for the first day, switch later to in memory
+    // database h2
+    private static List<User> users;
+
+    static {
+        users = new ArrayList<User>();
+        users.add(new User(0, "admin", "admin@admin.de", "myhashedpassword", true, 0));
+    }
+
+    public static List<User> findAll() {
+        return new ArrayList<User>(users);
+    }
+}
