@@ -30,6 +30,7 @@ public class Group {
         groups = new ArrayList<Group>();
         groups.add(new Group(0, "Administrator", 0, true));
         groups.add(new Group(1, "Alle", 0, false));
+        groups.add(new Group(2, "Peter ihm seine Gruppe", 1, false));
     }
 
     public static List<Group> findAll() {

@@ -28,7 +28,15 @@ public class GroupMembership {
         groupMemberships = new ArrayList<GroupMembership>();
         groupMemberships.add(new GroupMembership(0, 0));
         groupMemberships.add(new GroupMembership(1, 0));
-        groupMemberships.add(new GroupMembership(0, 1));
+        groupMemberships.add(new GroupMembership(1, 1));
+        groupMemberships.add(new GroupMembership(1, 2));
+        groupMemberships.add(new GroupMembership(1, 3));
+        groupMemberships.add(new GroupMembership(1, 4));
+        groupMemberships.add(new GroupMembership(1, 5));
+        groupMemberships.add(new GroupMembership(2, 0));
+        groupMemberships.add(new GroupMembership(2, 1));
+        groupMemberships.add(new GroupMembership(2, 2));
+        groupMemberships.add(new GroupMembership(2, 3));
     }
 
     public static List<GroupMembership> findAll() {

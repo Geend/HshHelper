@@ -39,6 +39,10 @@ public class User {
         users = new ArrayList<User>();
         users.add(new User(0, "admin", "admin@admin.de", "admin", true, 0));
         users.add(new User(1, "peter", "peter@web.de", "peter", true, 0));
+        users.add(new User(2, "klaus", "klaus@web.de", "klaus", true, 0));
+        users.add(new User(3, "hans", "hans@web.de", "hans", true, 0));
+        users.add(new User(4, "werner", "werner@web.de", "werner", true, 0));
+        users.add(new User(5, "joachim", "joachim@web.de", "joachim", true, 0));
     }
 
     public static List<User> findAll() {
