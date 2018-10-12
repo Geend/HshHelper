@@ -52,7 +52,7 @@ public class GroupController extends AuthenticatedController {
     }
 
     public Result getOwnGroups() {
-        Set<Integer> gms = GroupMembership.findAll().stream().filter(x -> x.userId == getCurrentUser().id).map(x -> x.groupId).collect(Collectors.toUnmodifiableSet());
+        Set<Integer> gms = GroupMembership.findAll().stream().filter(x -> x.userId == getCurrentUser().id).map(x -> x.groupId).collect(Collectors.toSet());
         List<Group> groups = Group.findAll().stream().filter(x -> gms.contains(x.id)).collect(Collectors.toList());
 
         return ok(views.html.OwnGroupsList.render(asScala(groups)));
