@@ -27,14 +27,14 @@ public class GroupController extends AuthenticatedController {
     }
 
     public Result getCreateGroup() {
-        return ok(views.html.createGroup.render(groupForm));
+        return ok(views.html.CreateGroup.render(groupForm));
     }
 
     public Result postCreateGroup() {
         Form<CreateGroupDTO> bf = groupForm.bindFromRequest();
 
         if(bf.hasErrors()) {
-            return badRequest(views.html.createGroup.render(bf));
+            return badRequest(views.html.CreateGroup.render(bf));
         } else {
             CreateGroupDTO gDto = bf.get();
             Group group = new Group();
@@ -55,6 +55,6 @@ public class GroupController extends AuthenticatedController {
         Set<Integer> gms = GroupMembership.findAll().stream().filter(x -> x.userId == getCurrentUser().id).map(x -> x.groupId).collect(Collectors.toUnmodifiableSet());
         List<Group> groups = Group.findAll().stream().filter(x -> gms.contains(x.id)).collect(Collectors.toList());
 
-        return ok(views.html.ownGroupsList.render(asScala(groups)));
+        return ok(views.html.OwnGroupsList.render(asScala(groups)));
     }
 }
