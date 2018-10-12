@@ -1,5 +1,6 @@
 package controllers;
 
+import models.User;
 import models.dtos.UserLoginDto;
 import play.data.Form;
 import play.data.FormFactory;
@@ -21,8 +22,22 @@ public class LoginController extends Controller {
         return ok(views.html.Login.render(loginForm));
     }
 
+    public Result loginUnauthorized()
+    {
+        return unauthorized("ungültiges passwort du lümmel");
+    }
+
     public Result loginCommit()
     {
-        return ok();
+        Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("userName", "password");
+        if(boundForm.hasErrors()) {
+            return redirect(routes.LoginController.loginUnauthorized());
+        }
+        UserLoginDto loginData = boundForm.get();
+
+        if(User.authenticate(loginData.getUserName(), loginData.getPassword())) {
+            return redirect(routes.HelloWorldController.index());
+        }
+        return redirect(routes.LoginController.loginUnauthorized());
     }
 }

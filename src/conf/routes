@@ -1,5 +1,6 @@
-GET         /                    controllers.HelloWorldController.index
-POST        /users/save          controllers.UserController.save
-GET         /users/create        controllers.UserController.create
-GET         /login               controllers.LoginController.login
-POST        /login               controllers.LoginController.loginCommit
+GET         /                         controllers.HelloWorldController.index
+POST        /users/save               controllers.UserController.save
+GET         /users/create             controllers.UserController.create
+GET         /login                    controllers.LoginController.login
+POST        /login                    controllers.LoginController.loginCommit
+GET        /login/unauthorized        controllers.LoginController.loginUnauthorized
