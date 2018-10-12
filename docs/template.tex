@@ -1,0 +1,125 @@
+\documentclass[12pt,DIV14,BCOR10mm,a4paper,twoside,parskip=half-,headsepline,headinclude,english,ngerman,bibliography=totocnumbered]{scrreprt}
+% Grundgröße 12pt, zweiseitig
+\usepackage[headsepline,automark]{scrpage2}
+\KOMAoptions{headinclude}
+% Seitenköpfe automatisch
+% Sprachpaket für Deutsch (Umlaute, Trennung,deutsche Überschriften)
+\usepackage{babel}
+\usepackage{blindtext}
+%Graphikeinbindung, Hyperref (alles klickbar, Bookmarks),
+%Math. Symbole aus AmsTeX
+\usepackage{graphicx,hyperref,amssymb,url,atbegshi,etoolbox}
+\usepackage[backend=biber,natbib=true, style=numeric, citestyle=numeric, maxnames=7, minnames=1, maxcitenames=2, url=true]{biblatex}
+% Umlaute und über Tastatur einzugeben
+\usepackage[utf8]{inputenc}
+% add table of contents and other tables automatically
+\usepackage[nottoc]{tocbibind}
+%\usepackage[toc,page]{appendix}
+
+\usepackage[autostyle=true,german=quotes]{csquotes}
+%% json related packages
+% dont use bera, can't get it at the work PC
+%\usepackage{bera} % optional: just to have a nice mono-spaced font
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{textcomp}
+
+%%% Change settings for epigraphs
+%%% Change chapter format, if needed.
+% customize chapter format:
+% \KOMAoption{headings}{twolinechapter}
+% \renewcommand*\chapterformat{\thechapter\autodot}
+
+% customize dictum format:
+\setkomafont{dictumtext}{\itshape\small}
+\setkomafont{dictumauthor}{\normalfont}
+\renewcommand*\dictumwidth{\linewidth}
+\renewcommand*\dictumauthorformat[1]{--- #1}
+\renewcommand*\dictumrule{}
+
+\renewcommand{\lstlistingname}{Quellcode}
+
+\makeatletter
+\makeatother
+
+% create glossaries
+\usepackage[toc,section=chapter,nopostdot,acronym,style=list]{glossaries}
+% style & idea copied from: https://tex.stackexchange.com/questions/8946/how-to-combine-acronym-and-glossary
+\usepackage{xparse}
+\DeclareDocumentCommand{\newdualentry}{ O{} O{} m m m m } {
+
+  %%% The glossary entry the acronym links to
+  \newglossaryentry{g-#3}{name={#5},
+      description={#6},#1}
+
+  %%% define the acronym and use the see= option
+  \newglossaryentry{#3}{type=\acronymtype, name={#4}, description={#5}, first={#5 (#4)\glsadd{g-#3}}, see=[Glossareintrag:]{g-#3}}
+}
+
+\makeglossaries
+
+%\loadglsentries[main]{acronyms.tex}
+
+% Festlegung Kopf- und Fußzeile
+\defpagestyle{meinstil}{%
+{\headmark \hfill}
+{\hfill \headmark}
+{\hfill \headmark\hfill }
+(\textwidth,.4pt)
+}{%
+(\textwidth,.4pt)
+{\pagemark\hfill Dennis Grabowski, Julius Zint, Philip Matesanz, Torben Voltmer}
+{Version 1.0 vom \today \hfill \pagemark}
+{Version 1.0 vom \today\hfill\pagemark}
+}
+\pagestyle{meinstil}
+
+\raggedbottom
+\renewcommand{\topfraction}{1}
+\renewcommand{\bottomfraction}{1}
+
+\bibliography{literature.bib}
+\graphicspath{{./images/}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}    % hier gehts los
+  \thispagestyle{empty} % Titelseite
+\includegraphics[width=0.2\textwidth]{Wortmarke_WI_schwarz}
+
+   {  ~ \sffamily
+  \vfill
+  {\Huge\bfseries Dokumenttitel}
+  \bigskip
+
+  {\Large
+  Dennis Grabowski, Julius Zint, Philip Matesanz, Torben Voltmer \\[2ex]
+  Masterprojekt \enquote{Entwicklung und Analyse einer sicheren Web-Anwendung} \\
+  Wintersemester 18/19
+ \\[5ex]
+   \today }
+}
+ \vfill
+
+  ~ \hfill
+  \includegraphics[height=0.3\paperheight]{H_WI_Pantone1665}
+
+\vspace*{-3cm}
+
+\tableofcontents  % Inhaltsverzeichnis
+
+\printbibliography
+
+% Can be used to add a list of acronyms with their description
+%\glsaddall
+%\deftranslation{to=German}{Acronyms}{Abkürzungsverzeichnis}
+%\deftranslation{to=German}{Glossary}{Glossar}
+\printacronyms[title=Abkürzungsverzeichnis,toctitle=Abkürzungsverzeichnis]
+\printglossary[type=main]
+
+%\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures      % Abbildungsverzeichnis
+
+%s\addcontentsline{toc}{chapter}{\listtablename}
+% \listoftables       % Tabellenverzeichnis
+
+\end{document}
