@@ -1,0 +1,15 @@
+@import models.dtos.UserLoginDto
+@(form: Form[UserLoginDto])
+
+
+@main("User Login"){
+
+    @helper.form(action = routes.LoginController.loginCommit()){
+        @helper.CSRF.formField
+
+        @helper.inputText(form("userName"))
+        @helper.inputPassword(form("password"))
+
+        <input type="submit" value="Submit" />
+    }
+}
