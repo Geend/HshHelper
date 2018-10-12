@@ -1,1 +1,3 @@
-GET     /                           controllers.HelloWorldController.index
+GET         /                    controllers.HelloWorldController.index
+POST        /users/save          controllers.UserController.save
+GET         /users/create        controllers.UserController.create

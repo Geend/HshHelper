@@ -27,6 +27,9 @@ public class User {
         this.quotaLimit = quotaLimit;
     }
 
+    public User() {
+    }
+
     // note: only testcode for the first day, switch later to in memory
     // database h2
     private static List<User> users;
@@ -38,5 +41,9 @@ public class User {
 
     public static List<User> findAll() {
         return new ArrayList<User>(users);
+    }
+
+    public static void add(User newUser) {
+        users.add(newUser);
     }
 }
