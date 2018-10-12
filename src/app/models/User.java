@@ -1,9 +1,8 @@
 package models;
 
-import models.dtos.UserLoginDto;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class User {
 
@@ -49,6 +48,10 @@ public class User {
         users.add(newUser);
     }
 
+
+    public static Optional<User> findByName(String username){
+        return users.stream().filter(x -> x.userName.equals(username)).findFirst();
+    }
     public static boolean authenticate(String username, String password)
     {
         return users.stream().filter(x -> x.userName.equals(username) && x.password.equals(password)).findAny().isPresent();

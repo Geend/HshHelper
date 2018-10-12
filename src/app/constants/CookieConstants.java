@@ -1,3 +1,5 @@
+package constants;
+
 public class CookieConstants {
-    public static String USER_SESSION__COOKIE_NAME = "sessioncookie";
+    public static String USER_SESSION_ID_NAME = "sessionId";
 }
