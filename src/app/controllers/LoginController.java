@@ -1,6 +1,7 @@
 package controllers;
 
 import constants.CookieConstants;
+import extension.AuthenticatedController;
 import models.User;
 import models.UserSession;
 import models.dtos.UserLoginDto;
@@ -12,8 +13,9 @@ import play.mvc.Result;
 
 
 import javax.inject.Inject;
+import java.util.Optional;
 
-public class LoginController extends Controller {
+public class LoginController extends AuthenticatedController {
 
     private Form<UserLoginDto> loginForm;
 
@@ -26,21 +28,19 @@ public class LoginController extends Controller {
         return ok(views.html.Login.render(loginForm));
     }
 
-    public Result loginUnauthorized()
-    {
+    public Result loginUnauthorized() {
         return unauthorized("ungültiges passwort du lümmel");
     }
 
-    public Result loginCommit()
-    {
+    public Result loginCommit() {
         Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("userName", "password");
-        if(boundForm.hasErrors()) {
+        if (boundForm.hasErrors()) {
             return redirect(routes.LoginController.loginUnauthorized());
         }
         UserLoginDto loginData = boundForm.get();
 
 
-        if(User.authenticate(loginData.getUserName(), loginData.getPassword())) {
+        if (User.authenticate(loginData.getUserName(), loginData.getPassword())) {
 
 
             User user = User.findByName(loginData.getUserName()).get();
@@ -59,4 +59,21 @@ public class LoginController extends Controller {
         }
         return redirect(routes.LoginController.loginUnauthorized());
     }
+
+    public Result logoutCommit() {
+
+        if (session().containsKey(CookieConstants.USER_SESSION_ID_NAME)) {
+
+            String sessionIdString = session().getOrDefault(CookieConstants.USER_SESSION_ID_NAME, null);
+            session().remove(CookieConstants.USER_SESSION_ID_NAME);
+
+            Integer sessionId = Integer.parseInt(sessionIdString);
+            Optional<UserSession> session = UserSession.findById(sessionId);
+            session.ifPresent(UserSession::remove);
+
+        }
+        return redirect(routes.HelloWorldController.index());
+
+    }
+
 }
