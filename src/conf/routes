@@ -4,6 +4,7 @@ GET         /users/create              controllers.UserController.create
 GET         /login                     controllers.LoginController.login
 POST        /login                     controllers.LoginController.loginCommit
 GET         /login/unauthorized        controllers.LoginController.loginUnauthorized
+GET         /logout                    controllers.LoginController.logoutCommit
 
 GET         /groups                    controllers.GroupController.getOwnGroups
 GET         /groups/create             controllers.GroupController.getCreateGroup

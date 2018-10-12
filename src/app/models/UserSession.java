@@ -4,12 +4,14 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UserSession {
 
     private Integer sessionId;
     private Integer userId;
     private DateTime issuedAt;
+
 
 
 
@@ -53,8 +55,17 @@ public class UserSession {
         return new ArrayList<UserSession>(userSessions);
     }
 
+
+    public static Optional<UserSession> findById(Integer id){
+        return userSessions.stream().filter(x -> x.getSessionId().equals(id)).findFirst();
+
+    }
     public static void add(UserSession newUserSession) {
         userSessions.add(newUserSession);
+    }
+
+    public static void remove(UserSession session) {
+       userSessions.remove(session);
     }
 
 }
