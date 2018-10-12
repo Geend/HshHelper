@@ -1,4 +1,4 @@
-@(groups: Seq[Group])
+@(groups: Seq[Group], currentUser: User, isAdmin: Boolean)
 
 
 @Main("Eigene Gruppen") {
@@ -6,10 +6,16 @@
         @for(g <- groups) {
             <tr>
                 <td>@g.name</td>
+                <td>
+                    @if(isAdmin || currentUser.id == g.ownerId) {
+                        <a href="@routes.GroupController.getGroup(g.id)">Mitglieder bearbeiten</a>
+                    } else {
+                        <font color="#808080">Mitglieder bearbeiten</font>
+                    }
+                </td>
             </tr>
         }
     </table>
     <hr>
-
     <a href="@routes.GroupController.getCreateGroup()">Eine neue Gruppe anlegen!</a>
 }

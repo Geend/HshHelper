@@ -2,6 +2,7 @@ package models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Group {
 
@@ -38,5 +39,10 @@ public class Group {
     public static void addGroup(Group g) {
         g.id = groups.size();
         groups.add(g);
+    }
+
+    public static Group getById(int id) {
+        Optional<Group> g = groups.stream().filter(x -> x.id == id).findFirst();
+        return g.orElse(null);
     }
 }

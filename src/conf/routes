@@ -1,10 +1,11 @@
-GET         /                         controllers.HelloWorldController.index
-POST        /users/save               controllers.UserController.save
-GET         /users/create             controllers.UserController.create
-GET         /login                    controllers.LoginController.login
-POST        /login                    controllers.LoginController.loginCommit
-GET        /login/unauthorized        controllers.LoginController.loginUnauthorized
+GET         /                          controllers.HelloWorldController.index
+POST        /users/save                controllers.UserController.save
+GET         /users/create              controllers.UserController.create
+GET         /login                     controllers.LoginController.login
+POST        /login                     controllers.LoginController.loginCommit
+GET         /login/unauthorized        controllers.LoginController.loginUnauthorized
 
-GET     /groups                     controllers.GroupController.getOwnGroups
-GET     /groups/create              controllers.GroupController.getCreateGroup
-POST    /groups/create              controllers.GroupController.postCreateGroup
+GET         /groups                    controllers.GroupController.getOwnGroups
+GET         /groups/create             controllers.GroupController.getCreateGroup
+POST        /groups/create             controllers.GroupController.postCreateGroup
+GET         /groups/:id                controllers.GroupController.getGroup(id : Integer)
