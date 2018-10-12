@@ -1,5 +1,6 @@
 package controllers;
 
+import extension.AuthenticatedController;
 import models.Group;
 import models.dtos.CreateGroupDTO;
 import play.data.Form;
@@ -11,7 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class GroupController extends Controller {
+public class GroupController extends AuthenticatedController {
     private final Form<CreateGroupDTO> groupForm;
 
     @Inject
@@ -32,6 +33,7 @@ public class GroupController extends Controller {
             CreateGroupDTO gDto = bf.get();
             Group group = new Group();
             group.name = gDto.getName();
+            group.ownerId = getCurrentUser().id;
             Group.addGroup(group);
             return redirect("/");
         }
