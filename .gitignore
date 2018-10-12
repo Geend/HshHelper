@@ -89,6 +89,3 @@ fabric.properties
 ## custom ignores
 #
 .DS_Store
-
-# Legt Intellij im src Folder an.
-*.iml
