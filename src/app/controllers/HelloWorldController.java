@@ -1,5 +1,6 @@
 package controllers;
 
+import extension.AuthenticationRequired;
 import extension.ContextArguments;
 import extension.UserProvider;
 import extension.UserSessionProvider;
@@ -33,5 +34,9 @@ public class HelloWorldController extends Controller {
         else {
             return ok("not authenticated");
         }
+    }
+    @With({UserSessionProvider.class, UserProvider.class, AuthenticationRequired.class})
+    public Result authrequired() {
+        return ok("top secret");
     }
 }

@@ -1,5 +1,6 @@
 GET         /                          controllers.HelloWorldController.index
 GET         /julius                    controllers.HelloWorldController.julius
+GET         /authrequired              controllers.HelloWorldController.authrequired
 POST        /users/save                controllers.UserController.save
 GET         /users/create              controllers.UserController.create
 GET         /login                     controllers.LoginController.login
