@@ -1,0 +1,18 @@
+@(form: Form[dtos.CreateGroupDTO])
+
+@main("Create Group") {
+    @if(form.hasGlobalErrors) {
+        <p class="error">
+        @for(error <- form.globalErrors) {
+            <p>@error</p>
+        }
+        </p>
+    }
+
+    @helper.form(action = routes.GroupController.postCreateUser()){
+        @helper.CSRF.formField
+        @helper.inputText(form("name"))
+
+        <button type="submit">Create Group</button>
+    }
+}
