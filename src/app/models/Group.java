@@ -10,6 +10,10 @@ public class Group {
     public int ownerId;
     public boolean isAdminGroup;
 
+    public Group() {
+
+    }
+
     public Group(int id, String name, int ownerId, boolean isAdminGroup) {
         this.id = id;
         this.name = name;
@@ -29,5 +33,10 @@ public class Group {
 
     public static List<Group> findAll() {
         return new ArrayList<Group>(groups);
+    }
+
+    public static void addGroup(Group g) {
+        g.id = groups.size();
+        groups.add(g);
     }
 }
