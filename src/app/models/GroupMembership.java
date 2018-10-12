@@ -28,6 +28,7 @@ public class GroupMembership {
         groupMemberships = new ArrayList<GroupMembership>();
         groupMemberships.add(new GroupMembership(0, 0));
         groupMemberships.add(new GroupMembership(1, 0));
+        groupMemberships.add(new GroupMembership(0, 1));
     }
 
     public static List<GroupMembership> findAll() {
@@ -42,5 +43,9 @@ public class GroupMembership {
         Set<Integer> groupMembers = groupMemberships.stream().filter(x -> x.groupId == g.id).map(x->x.userId).collect(Collectors.toSet());
         List<User> users = User.findAll().stream().filter(x -> groupMembers.contains(x.id)).collect(Collectors.toList());
         return users;
+    }
+
+    public static void remove(Group g, User toBeDeleted) {
+        groupMemberships.removeIf(x -> x.groupId == g.id && x.userId == toBeDeleted.id);
     }
 }

@@ -6,13 +6,27 @@
         <thead>
             <tr>
                 <td>Benutzername</td>
+                <td></td>
             </tr>
         </thead>
 
     @for(m <- members) {
         <tr>
             <td>@m.userName</td>
+            <td>
+                @if(policy.Specification.CanRemoveGroupMemeber(currentUser, group, m)) {
+                    @helper.form(action = routes.GroupController.postRemoveMember(group.id)){
+                        @helper.CSRF.formField
+                        <input type="hidden" name="userId" value="@m.id" />
+                        <button type="submit">Entfernen</button>
+                    }
+                } else {
+                    <button type="submit" disabled>Entfernen</button>
+                }
+            </td>
         </tr>
     }
     </table>
+    <hr>
+    <a href="">Benutzer hinzufügen</a>
 }

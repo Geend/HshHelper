@@ -5,9 +5,9 @@ import models.Group;
 import models.GroupMembership;
 import models.User;
 import models.dtos.CreateGroupDTO;
+import models.dtos.RemoveGroupUserDTO;
 import play.data.Form;
 import play.data.FormFactory;
-import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
@@ -21,10 +21,12 @@ import static play.libs.Scala.asScala;
 @Singleton
 public class GroupController extends AuthenticatedController {
     private final Form<CreateGroupDTO> groupForm;
+    private final Form<RemoveGroupUserDTO> removeGroupUserForm;
 
     @Inject
     public GroupController(FormFactory formFactory) {
         this.groupForm = formFactory.form(CreateGroupDTO.class);
+        this.removeGroupUserForm = formFactory.form(RemoveGroupUserDTO.class);
     }
 
     public Result getCreateGroup() {
@@ -65,5 +67,28 @@ public class GroupController extends AuthenticatedController {
             return notFound("404");
         List<User> users = GroupMembership.getGroupUsers(g);
         return ok(views.html.GroupMembersList.render(g, asScala(users), getCurrentUser(), isCurrentUserAdmin()));
+    }
+
+    public Result postRemoveMember(int groupId) {
+        Form<RemoveGroupUserDTO> form = removeGroupUserForm.bindFromRequest();
+        if(form.hasErrors()) {
+            return badRequest("error");
+        }
+
+        RemoveGroupUserDTO ru = form.get();
+
+        User toBeDeleted = User.getById(ru.getUserId());
+        Group g = Group.getById(groupId);
+        if(!policy.Specification.CanRemoveGroupMemeber(getCurrentUser(), g, toBeDeleted)) {
+            return badRequest("error");
+        }
+
+        GroupMembership.remove(g, toBeDeleted);
+
+        return redirect(routes.GroupController.getGroup(groupId));
+    }
+
+    public Result getAddMember(int groupId) {
+        return ok("..");
     }
 }

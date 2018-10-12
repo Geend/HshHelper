@@ -38,6 +38,7 @@ public class User {
     static {
         users = new ArrayList<User>();
         users.add(new User(0, "admin", "admin@admin.de", "admin", true, 0));
+        users.add(new User(1, "peter", "peter@web.de", "peter", true, 0));
     }
 
     public static List<User> findAll() {
@@ -58,5 +59,9 @@ public class User {
     public static boolean authenticate(String username, String password)
     {
         return users.stream().filter(x -> x.userName.equals(username) && x.password.equals(password)).findAny().isPresent();
+    }
+
+    public static User getById(int id) {
+        return users.get(id);
     }
 }
