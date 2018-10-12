@@ -1,9 +1,10 @@
 package extension;
 
+import constants.ContextConstants;
+import constants.CookieConstants;
 import models.UserSession;
 import play.mvc.Http;
 import play.mvc.Result;
-import constants.CookieConstants;
 
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -15,7 +16,7 @@ public class UserSessionProvider extends play.mvc.Action.Simple {
         if(sessionId.isPresent()) {
             Optional<UserSession> userSession = UserSession.findById(sessionId.get());
             if(userSession.isPresent()) {
-                ctx.args.put("SessionObject", new UserSession());
+                ctx.args.put(ContextConstants.USER_SESSION_OBJECT, new UserSession());
             }
         }
         return delegate.call(ctx);
