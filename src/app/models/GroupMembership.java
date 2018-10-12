@@ -8,6 +8,10 @@ public class GroupMembership {
     public int groupId;
     public int userId;
 
+    public GroupMembership() {
+
+    }
+
     public GroupMembership(int groupId, int userId) {
         this.userId = userId;
         this.groupId = groupId;
@@ -25,5 +29,9 @@ public class GroupMembership {
 
     public static List<GroupMembership> findAll() {
         return new ArrayList<GroupMembership>(groupMemberships);
+    }
+
+    public static void add(GroupMembership gm) {
+        groupMemberships.add(gm);
     }
 }

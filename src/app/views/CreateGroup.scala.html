@@ -9,7 +9,7 @@
         </p>
     }
 
-    @helper.form(action = routes.GroupController.postCreateUser()){
+    @helper.form(action = routes.GroupController.postCreateGroup()){
         @helper.CSRF.formField
         @helper.inputText(form("name"))
 

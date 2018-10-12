@@ -1,0 +1,14 @@
+@(groups: Seq[Group])
+
+
+@main("Eigene Gruppen") {
+    <table>
+        @for(g <- groups) {
+            <tr>
+                <td>@g.name</td>
+            </tr>
+        }
+    </table>
+    <hr>
+    <a href="@routes.GroupController.getCreateGroup()">Eine neue Gruppe anlegen!</a>
+}
