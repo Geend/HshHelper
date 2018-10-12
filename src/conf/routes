@@ -10,3 +10,4 @@ GET         /logout                    controllers.LoginController.logoutCommit
 GET         /groups                    controllers.GroupController.getOwnGroups
 GET         /groups/create             controllers.GroupController.getCreateGroup
 POST        /groups/create             controllers.GroupController.postCreateGroup
+GET         /groups/:id                controllers.GroupController.getGroup(id : Integer)

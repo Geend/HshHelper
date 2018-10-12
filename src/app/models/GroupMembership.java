@@ -1,7 +1,10 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GroupMembership {
 
@@ -33,5 +36,11 @@ public class GroupMembership {
 
     public static void add(GroupMembership gm) {
         groupMemberships.add(gm);
+    }
+
+    public static List<User> getGroupUsers(Group g) {
+        Set<Integer> groupMembers = groupMemberships.stream().filter(x -> x.groupId == g.id).map(x->x.userId).collect(Collectors.toSet());
+        List<User> users = User.findAll().stream().filter(x -> groupMembers.contains(x.id)).collect(Collectors.toList());
+        return users;
     }
 }

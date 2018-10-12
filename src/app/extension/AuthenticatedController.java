@@ -7,9 +7,9 @@ import javax.sound.sampled.Control;
 
 public class AuthenticatedController extends Controller {
     public boolean isCurrentUserAdmin() {
-        return true;
+        return false;
     }
-    
+
     public User getCurrentUser() {
         return User.findAll().get(0);
     }

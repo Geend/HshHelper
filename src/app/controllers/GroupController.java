@@ -3,6 +3,7 @@ package controllers;
 import extension.AuthenticatedController;
 import models.Group;
 import models.GroupMembership;
+import models.User;
 import models.dtos.CreateGroupDTO;
 import play.data.Form;
 import play.data.FormFactory;
@@ -55,6 +56,14 @@ public class GroupController extends AuthenticatedController {
         Set<Integer> gms = GroupMembership.findAll().stream().filter(x -> x.userId == getCurrentUser().id).map(x -> x.groupId).collect(Collectors.toSet());
         List<Group> groups = Group.findAll().stream().filter(x -> gms.contains(x.id)).collect(Collectors.toList());
 
-        return ok(views.html.OwnGroupsList.render(asScala(groups)));
+        return ok(views.html.OwnGroupsList.render(asScala(groups), getCurrentUser(), isCurrentUserAdmin()));
+    }
+
+    public Result getGroup(int id) {
+        Group g = Group.getById(id);
+        if(g == null)
+            return notFound("404");
+        List<User> users = GroupMembership.getGroupUsers(g);
+        return ok(views.html.GroupMembersList.render(g, asScala(users), getCurrentUser(), isCurrentUserAdmin()));
     }
 }

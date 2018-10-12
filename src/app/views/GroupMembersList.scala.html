@@ -1,0 +1,18 @@
+@(group: Group, members: Seq[User], currentUser: User, isAdmin: Boolean)
+
+
+@Main("Mitglieder von: " + group.name) {
+    <table>
+        <thead>
+            <tr>
+                <td>Benutzername</td>
+            </tr>
+        </thead>
+
+    @for(m <- members) {
+        <tr>
+            <td>@m.userName</td>
+        </tr>
+    }
+    </table>
+}
