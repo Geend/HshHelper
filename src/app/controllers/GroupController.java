@@ -1,6 +1,6 @@
 package controllers;
 
-import extension.AuthenticatedController;
+import extension.Session;
 import models.Group;
 import models.GroupMembership;
 import models.User;
@@ -8,6 +8,7 @@ import models.dtos.CreateGroupDTO;
 import models.dtos.RemoveGroupUserDTO;
 import play.data.Form;
 import play.data.FormFactory;
+import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 import static play.libs.Scala.asScala;
 
 @Singleton
-public class GroupController extends AuthenticatedController {
+public class GroupController extends Controller {
     private final Form<CreateGroupDTO> groupForm;
     private final Form<RemoveGroupUserDTO> removeGroupUserForm;
 
@@ -42,12 +43,12 @@ public class GroupController extends AuthenticatedController {
             CreateGroupDTO gDto = bf.get();
             Group group = new Group();
             group.name = gDto.getName();
-            group.ownerId = getCurrentUser().id;
+            group.ownerId = Session.GetUser().id;
             Group.addGroup(group);
 
             GroupMembership gm = new GroupMembership();
             gm.groupId = group.id;
-            gm.userId = getCurrentUser().id;
+            gm.userId = Session.GetUser().id;
             GroupMembership.add(gm);
 
             return redirect(routes.GroupController.getOwnGroups());
@@ -55,10 +56,10 @@ public class GroupController extends AuthenticatedController {
     }
 
     public Result getOwnGroups() {
-        Set<Integer> gms = GroupMembership.findAll().stream().filter(x -> x.userId == getCurrentUser().id).map(x -> x.groupId).collect(Collectors.toSet());
+        Set<Integer> gms = GroupMembership.findAll().stream().filter(x -> x.userId == Session.GetUser().id).map(x -> x.groupId).collect(Collectors.toSet());
         List<Group> groups = Group.findAll().stream().filter(x -> gms.contains(x.id)).collect(Collectors.toList());
 
-        return ok(views.html.OwnGroupsList.render(asScala(groups), getCurrentUser(), isCurrentUserAdmin()));
+        return ok(views.html.OwnGroupsList.render(asScala(groups)));
     }
 
     public Result getGroup(int id) {
@@ -66,7 +67,7 @@ public class GroupController extends AuthenticatedController {
         if(g == null)
             return notFound("404");
         List<User> users = GroupMembership.getGroupUsers(g);
-        return ok(views.html.GroupMembersList.render(g, asScala(users), getCurrentUser(), isCurrentUserAdmin()));
+        return ok(views.html.GroupMembersList.render(g, asScala(users)));
     }
 
     public Result postRemoveMember(int groupId) {
@@ -79,7 +80,7 @@ public class GroupController extends AuthenticatedController {
 
         User toBeDeleted = User.getById(ru.getUserId());
         Group g = Group.getById(groupId);
-        if(!policy.Specification.CanRemoveGroupMemeber(getCurrentUser(), g, toBeDeleted)) {
+        if(!policy.Specification.CanRemoveGroupMemeber(Session.GetUser(), g, toBeDeleted)) {
             return badRequest("error");
         }
 

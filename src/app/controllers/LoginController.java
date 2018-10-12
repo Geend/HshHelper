@@ -1,7 +1,6 @@
 package controllers;
 
 import constants.CookieConstants;
-import extension.AuthenticatedController;
 import models.User;
 import models.UserSession;
 import models.dtos.UserLoginDto;
@@ -15,7 +14,7 @@ import play.mvc.Result;
 import javax.inject.Inject;
 import java.util.Optional;
 
-public class LoginController extends AuthenticatedController {
+public class LoginController extends Controller {
 
     private Form<UserLoginDto> loginForm;
 

@@ -1,4 +1,4 @@
-@(group: Group, members: Seq[User], currentUser: User, isAdmin: Boolean)
+@(group: Group, members: Seq[User])
 
 
 @Main("Mitglieder von: " + group.name) {
@@ -14,7 +14,7 @@
         <tr>
             <td>@m.userName</td>
             <td>
-                @if(policy.Specification.CanRemoveGroupMemeber(currentUser, group, m)) {
+                @if(policy.Specification.CanRemoveGroupMemeber(extension.Session.GetUser(), group, m)) {
                     @helper.form(action = routes.GroupController.postRemoveMember(group.id)){
                         @helper.CSRF.formField
                         <input type="hidden" name="userId" value="@m.id" />
