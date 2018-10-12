@@ -10,6 +10,8 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.libs.*;
+import scala.Tuple3;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -67,7 +69,10 @@ public class GroupController extends Controller {
         if(g == null)
             return notFound("404");
         List<User> users = GroupMembership.getGroupUsers(g);
-        return ok(views.html.GroupMembersList.render(g, asScala(users)));
+        List<F.Tuple3<String, Integer, Boolean>> groupMemberDTO = users.stream()
+                .map(u -> F.Tuple3(u.userName, u.id, g.ownerId == u.id))
+                .collect(Collectors.toList());
+        return ok(views.html.GroupMembersList.render(g, groupMemberDTO));
     }
 
     public Result postRemoveMember(int groupId) {

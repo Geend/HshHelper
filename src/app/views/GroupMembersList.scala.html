@@ -1,4 +1,4 @@
-@(group: Group, members: Seq[User])
+@(group: Group, members: List[play.libs.F.Tuple3[String, Integer, Boolean]])
 
 
 @Main("Mitglieder von: " + group.name) {
@@ -12,12 +12,12 @@
 
     @for(m <- members) {
         <tr>
-            <td>@m.userName</td>
+            <td>@m._1</td>
             <td>
-                @if(policy.Specification.CanRemoveGroupMemeber(extension.Session.GetUser(), group, m)) {
+                @if(!m._3) {
                     @helper.form(action = routes.GroupController.postRemoveMember(group.id)){
                         @helper.CSRF.formField
-                        <input type="hidden" name="userId" value="@m.id" />
+                        <input type="hidden" name="userId" value="@m._2" />
                         <button type="submit">Entfernen</button>
                     }
                 } else {
