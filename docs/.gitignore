@@ -1,0 +1,15 @@
+# ignore files LaTeX creates during compilation
+*.acn
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.glo
+*.ist
+*.lof
+*.out
+*.run.xml
+*.toc
+
+# ignore all pdfs but these two because they contain images needed for the HsH LaTeX template
+*.pdf
