@@ -1,6 +1,5 @@
 package extension;
 
-import constants.ContextConstants;
 import constants.CookieConstants;
 import models.UserSession;
 import play.mvc.Http;
@@ -16,7 +15,7 @@ public class UserSessionProvider extends play.mvc.Action.Simple {
         if(sessionId.isPresent()) {
             Optional<UserSession> userSession = UserSession.findById(sessionId.get());
             if(userSession.isPresent()) {
-                ctx.args.put(ContextConstants.USER_SESSION_OBJECT, new UserSession());
+                ContextArguments.setUserSession(ctx, userSession.get());
             }
         }
         return delegate.call(ctx);

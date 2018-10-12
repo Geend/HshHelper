@@ -48,6 +48,9 @@ public class User {
         users.add(newUser);
     }
 
+    public static Optional<User> findById(Integer id) {
+        return users.stream().filter(x -> x.id == id).findFirst();
+    }
 
     public static Optional<User> findByName(String username){
         return users.stream().filter(x -> x.userName.equals(username)).findFirst();
