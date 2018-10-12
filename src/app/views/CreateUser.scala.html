@@ -1,7 +1,7 @@
 @(form: Form[User])
 
 
-@main("Create User"){
+@Main("Create User"){
 
     @helper.form(action = routes.UserController.save()){
         @helper.CSRF.formField

@@ -1,7 +1,7 @@
 @(groups: Seq[Group])
 
 
-@main("Eigene Gruppen") {
+@Main("Eigene Gruppen") {
     <table>
         @for(g <- groups) {
             <tr>
@@ -10,5 +10,6 @@
         }
     </table>
     <hr>
+
     <a href="@routes.GroupController.getCreateGroup()">Eine neue Gruppe anlegen!</a>
 }

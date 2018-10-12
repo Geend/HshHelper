@@ -1,6 +1,6 @@
 @(form: Form[dtos.CreateGroupDTO])
 
-@main("Create Group") {
+@Main("Create Group") {
     @if(form.hasGlobalErrors) {
         <p class="error">
         @for(error <- form.globalErrors) {

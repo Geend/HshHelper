@@ -2,7 +2,7 @@
 @(form: Form[UserLoginDto])
 
 
-@main("User Login"){
+@Main("User Login"){
 
     @helper.form(action = routes.LoginController.loginCommit()){
         @helper.CSRF.formField
