@@ -1,3 +1,5 @@
+import play.sbt.PlayImport
+
 name := """HshHelper"""
 
 version := "1.0-SNAPSHOT"
@@ -12,6 +14,9 @@ libraryDependencies += guice
 
 // Test Database
 libraryDependencies += "com.h2database" % "h2" % "1.4.197"
+
+// needed to run the evolutions during startup
+libraryDependencies += PlayImport.evolutions
 
 // Testing libraries for dealing with CompletionStage...
 //libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
