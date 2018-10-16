@@ -18,6 +18,7 @@ libraryDependencies += "com.h2database" % "h2" % "1.4.197"
 // needed to run the evolutions during startup
 libraryDependencies += PlayImport.evolutions
 
+libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
 // Testing libraries for dealing with CompletionStage...
 //libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
 //libraryDependencies += "org.awaitility" % "awaitility" % "2.0.0" % Test
