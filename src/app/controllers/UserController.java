@@ -32,7 +32,7 @@ public class UserController extends Controller {
 
         User newUser = boundForm.get();
 
-        User.add(newUser);
+        newUser.save();
 
         return redirect(routes.UserController.create());
 

@@ -13,7 +13,7 @@ public class UserProvider extends play.mvc.Action.Simple {
     public CompletionStage<Result> call(Http.Context ctx) {
         Optional<UserSession> userSession = ContextArguments.getUserSession(ctx);
         if(userSession.isPresent()) {
-            Integer userId = userSession.get().getUserId();
+            Long userId = userSession.get().getUserId();
             Optional<User> user = User.findById(userId);
             if(user.isPresent()) {
                 ContextArguments.setUser(ctx, user.get());

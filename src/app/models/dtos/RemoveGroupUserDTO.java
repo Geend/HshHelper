@@ -1,13 +1,13 @@
 package models.dtos;
 
 public class RemoveGroupUserDTO {
-    private int userId;
+    private Long userId;
 
-    public int getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
