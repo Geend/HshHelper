@@ -10,7 +10,8 @@ public class ContextArguments {
     private static final String userSessionKey = "userSessionObject";
     private static final String userKey = "userObject";
 
-    public static Optional<UserSession> getUserSession(Http.Context context)  {
+    public static Optional<UserSession> getUserSession()  {
+        Http.Context context = Http.Context.current();
         if(context.args.containsKey(userSessionKey)) {
             return Optional.of((UserSession) context.args.get(userSessionKey));
         }
@@ -19,11 +20,13 @@ public class ContextArguments {
         }
     }
 
-    public static void setUserSession(Http.Context ctx, UserSession value) {
-        ctx.args.put(userSessionKey, value);
+    public static void setUserSession(UserSession value) {
+        Http.Context context = Http.Context.current();
+        context.args.put(userSessionKey, value);
     }
 
-    public static Optional<User> getUser(Http.Context context)  {
+    public static Optional<User> getUser()  {
+        Http.Context context = Http.Context.current();
         if(context.args.containsKey(userKey)) {
             return Optional.of((User) context.args.get(userKey));
         }
@@ -32,7 +35,8 @@ public class ContextArguments {
         }
     }
 
-    public static void setUser(Http.Context ctx, User value) {
-        ctx.args.put(userKey, value);
+    public static void setUser(User value) {
+        Http.Context context = Http.Context.current();
+        context.args.put(userKey, value);
     }
 }

@@ -15,7 +15,7 @@ public class UserSessionProvider extends play.mvc.Action.Simple {
         if(sessionId.isPresent()) {
             Optional<UserSession> userSession = UserSession.findById(sessionId.get());
             if(userSession.isPresent()) {
-                ContextArguments.setUserSession(ctx, userSession.get());
+                ContextArguments.setUserSession(userSession.get());
             }
         }
         return delegate.call(ctx);

@@ -1,21 +1,15 @@
 package extension;
 
-import models.UserSession;
-import play.mvc.Http;
-import play.mvc.Result;
+import play.mvc.With;
 
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class AuthenticationRequired extends play.mvc.Action.Simple {
-    public CompletionStage<Result> call(Http.Context ctx) {
-        Optional<UserSession> userSession = ContextArguments.getUserSession(ctx);
-        if(userSession.isPresent()) {
-            return delegate.call(ctx);
-        }
-
-        return CompletableFuture.supplyAsync(() -> redirect(controllers.routes.LoginController.login()));
-    }
+@With({UserSessionProvider.class, UserProvider.class, AuthenticationRequiredAnnotation.class})
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AuthenticationRequired {
 }
 
