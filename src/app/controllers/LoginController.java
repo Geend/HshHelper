@@ -5,6 +5,7 @@ import models.User;
 import models.UserSession;
 import models.dtos.UserLoginDto;
 import org.joda.time.DateTime;
+import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -40,7 +41,7 @@ public class LoginController extends Controller {
 
 
         if (User.authenticate(loginData.getUsername(), loginData.getPassword())) {
-
+            Logger.info("User authenticated");
 
             User user = User.findByName(loginData.getUsername()).get();
 
@@ -56,6 +57,7 @@ public class LoginController extends Controller {
 
             return redirect(routes.HelloWorldController.index());
         }
+        Logger.info("User could not be authenticated");
         return redirect(routes.LoginController.loginUnauthorized());
     }
 

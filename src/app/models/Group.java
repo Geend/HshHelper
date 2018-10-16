@@ -14,7 +14,7 @@ public class Group extends Model {
     public Long id;
     @Column(unique = true)
     public String name;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "owner", referencedColumnName = "id")
     public User owner;
     public boolean isAdminGroup;

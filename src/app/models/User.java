@@ -47,6 +47,7 @@ public class User extends Model {
         this.quotaLimit = quotaLimit;
     }
 
+
     public static List<User> findAll() {
         return find.all();
     }
@@ -56,14 +57,14 @@ public class User extends Model {
     }
 
     public static Optional<User> findByName(String username){
-        return find.query().where().eq("user_name", username).findOneOrEmpty();
+        return find.query().where().eq("username", username).findOneOrEmpty();
     }
 
     public static boolean authenticate(String username, String password) {
         return find.query().where()
-                .eq("user_name", username)
+                .eq("username", username)
                 .and()
-                .eq("passwordHash", password)
+                .eq("password_hash", password)
                 .findOneOrEmpty().isPresent();
     }
 
