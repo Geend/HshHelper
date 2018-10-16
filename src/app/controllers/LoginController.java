@@ -32,7 +32,7 @@ public class LoginController extends Controller {
     }
 
     public Result loginCommit() {
-        Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password");
+        Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("userName", "password");
         if (boundForm.hasErrors()) {
             return redirect(routes.LoginController.loginUnauthorized());
         }

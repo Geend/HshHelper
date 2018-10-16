@@ -30,7 +30,7 @@ public class UserController extends Controller {
     public Result createUser() {
 
         //TODO: Check if the logged in user is allowd to create users
-        Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
+        Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("userName", "email", "quotaLimit");
 
         if (boundForm.hasErrors()) {
             return ok(views.html.CreateUser.render(boundForm));
@@ -58,7 +58,7 @@ public class UserController extends Controller {
         newUser.save();
 
         //TODO: Show the create the password
-        return ok("created user "+ newUser.username + " with inital password " + plaintextPassword);
+        return ok("created user "+ newUser.userName + " with inital password " + plaintextPassword);
 
     }
 

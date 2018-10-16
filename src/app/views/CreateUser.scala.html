@@ -6,7 +6,7 @@
     @helper.form(action = routes.UserController.createUser()){
         @helper.CSRF.formField
 
-        @helper.inputText(form("username"))
+        @helper.inputText(form("userName"))
         @helper.inputText(form("email"))
         @helper.inputText(form("quotaLimit"))
 

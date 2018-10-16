@@ -15,10 +15,10 @@ public class User extends Model {
     @Id
     public Long id;
     @Column(unique = true)
-    public String username;
+    public String userName;
     @Constraints.Email
     public String email;
-    public String passwordHash;
+    public String password;
     public boolean passwordResetRequired;
     public int quotaLimit;
 
@@ -35,17 +35,18 @@ public class User extends Model {
     public static final UserFinder find = new UserFinder();
 
     public User(
-            String username,
+            String userName,
             String email,
-            String passwordHash,
+            String password,
             boolean passwordResetRequired,
             int quotaLimit) {
-        this.username = username;
+        this.userName = userName;
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.passwordResetRequired = passwordResetRequired;
         this.quotaLimit = quotaLimit;
     }
+
 
     public static List<User> findAll() {
         return find.all();
@@ -63,7 +64,7 @@ public class User extends Model {
         return find.query().where()
                 .eq("user_name", username)
                 .and()
-                .eq("passwordHash", password)
+                .eq("password", password)
                 .findOneOrEmpty().isPresent();
     }
 
@@ -79,14 +80,14 @@ public class User extends Model {
         return passwordResetRequired == user.passwordResetRequired &&
                 quotaLimit == user.quotaLimit &&
                 Objects.equals(id, user.id) &&
-                Objects.equals(username, user.username) &&
+                Objects.equals(userName, user.userName) &&
                 Objects.equals(email, user.email) &&
-                Objects.equals(passwordHash, user.passwordHash) &&
+                Objects.equals(password, user.password) &&
                 Objects.equals(groups, user.groups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, email, passwordHash, passwordResetRequired, quotaLimit, groups);
+        return Objects.hash(id, userName, email, password, passwordResetRequired, quotaLimit, groups);
     }
 }
