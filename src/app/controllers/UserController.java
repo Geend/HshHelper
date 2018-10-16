@@ -26,7 +26,7 @@ public class UserController extends Controller {
         return ok(views.html.CreateUser.render(createUserForm));
     }
     public Result save() {
-        Form<User> boundForm = createUserForm.bindFromRequest("userName", "email", "quotaLimit");
+        Form<User> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
 
         if (boundForm.hasErrors()) {
             return ok(views.html.CreateUser.render(boundForm));
