@@ -1,6 +1,6 @@
 package controllers;
 
-import extension.Session;
+import extension.ContextArguments;
 import models.Group;
 import models.GroupMembership;
 import models.User;
@@ -43,12 +43,12 @@ public class GroupController extends Controller {
             CreateGroupDTO gDto = bf.get();
             Group group = new Group();
             group.name = gDto.getName();
-            group.ownerId = Session.GetUser().id;
+            group.ownerId = ContextArguments.getUser().get().id;
             Group.addGroup(group);
 
             GroupMembership gm = new GroupMembership();
             gm.groupId = group.id;
-            gm.userId = Session.GetUser().id;
+            gm.userId = ContextArguments.getUser().get().id;
             GroupMembership.add(gm);
 
             return redirect(routes.GroupController.getOwnGroups());
@@ -56,7 +56,7 @@ public class GroupController extends Controller {
     }
 
     public Result getOwnGroups() {
-        Set<Integer> gms = GroupMembership.findAll().stream().filter(x -> x.userId == Session.GetUser().id).map(x -> x.groupId).collect(Collectors.toSet());
+        Set<Integer> gms = GroupMembership.findAll().stream().filter(x -> x.userId == ContextArguments.getUser().get().id).map(x -> x.groupId).collect(Collectors.toSet());
         List<Group> groups = Group.findAll().stream().filter(x -> gms.contains(x.id)).collect(Collectors.toList());
 
         return ok(views.html.OwnGroupsList.render(asScala(groups)));
@@ -80,7 +80,7 @@ public class GroupController extends Controller {
 
         User toBeDeleted = User.getById(ru.getUserId());
         Group g = Group.getById(groupId);
-        if(!policy.Specification.CanRemoveGroupMemeber(Session.GetUser(), g, toBeDeleted)) {
+        if(!policy.Specification.CanRemoveGroupMemeber(ContextArguments.getUser().get(), g, toBeDeleted)) {
             return badRequest("error");
         }
 
