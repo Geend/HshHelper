@@ -42,7 +42,7 @@ public class User extends Model {
             int quotaLimit) {
         this.username = username;
         this.email = email;
-        this.passwordHash = this.passwordHash;
+        this.passwordHash = passwordHash;
         this.passwordResetRequired = passwordResetRequired;
         this.quotaLimit = quotaLimit;
     }
