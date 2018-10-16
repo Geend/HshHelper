@@ -1,8 +1,8 @@
 GET         /                                    controllers.HelloWorldController.index
 GET         /julius                              controllers.HelloWorldController.julius
 GET         /authrequired                        controllers.HelloWorldController.authrequired
-POST        /users/save                          controllers.UserController.save
-GET         /users/create                        controllers.UserController.create
+POST        /users/create                        controllers.UserController.createUser
+GET         /users/create                        controllers.UserController.showCreateUserForm
 GET         /login                               controllers.LoginController.login
 POST        /login                               controllers.LoginController.loginCommit
 GET         /login/unauthorized                  controllers.LoginController.loginUnauthorized

@@ -1,9 +1,9 @@
-@(form: Form[User])
+@(form: Form[dtos.CreateUserDto])
 
 
 @Main("Create User"){
 
-    @helper.form(action = routes.UserController.save()){
+    @helper.form(action = routes.UserController.createUser()){
         @helper.CSRF.formField
 
         @helper.inputText(form("username"))
