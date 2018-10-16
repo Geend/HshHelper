@@ -1,7 +1,9 @@
 package controllers;
 
+import extension.ContextArguments;
 import extension.PasswordGenerator;
 import models.User;
+import models.dtos.ChangeOwnPasswordDto;
 import models.dtos.CreateUserDto;
 import org.mindrot.jbcrypt.BCrypt;
 import play.data.Form;
@@ -10,16 +12,21 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 public class UserController extends Controller {
 
 
     private Form<CreateUserDto> createUserForm;
+    private Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
 
     @Inject
     public UserController(FormFactory formFactory) {
         createUserForm = formFactory.form(CreateUserDto.class);
+        changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
     }
+
+
 
 
     public Result showCreateUserForm() {
@@ -59,6 +66,47 @@ public class UserController extends Controller {
 
         //TODO: Show the create the password
         return ok("created user "+ newUser.username + " with inital password " + plaintextPassword);
+
+    }
+
+    public Result showChangeOwnPasswordForm() {
+        return ok(views.html.ChangePassword.render(changeOwnPasswordForm));
+    }
+
+
+    public Result changeOwnPassword(){
+        //TODO: Enforce policy
+
+        Form<ChangeOwnPasswordDto> boundForm = changeOwnPasswordForm.bindFromRequest("password", "passwordRepeat");
+
+
+        if (boundForm.hasErrors()) {
+            return ok(views.html.ChangePassword.render(boundForm));
+        }
+
+
+        ChangeOwnPasswordDto changeOwnPasswordDto = boundForm.get();
+
+        //TODO: Check if password and passwordRepeat match here again? There already are constraints in the DTO
+
+
+
+        Optional<User> userOptional = ContextArguments.getUser();
+
+        if(userOptional.isPresent()){
+            User user = userOptional.get();
+
+            user.passwordHash = BCrypt.hashpw(changeOwnPasswordDto.getPassword(), BCrypt.gensalt());
+            user.passwordResetRequired = false;
+            user.save();
+            return ok("changedPassword");
+
+        }
+        else{
+            return badRequest("no user present");
+        }
+
+
 
     }
 

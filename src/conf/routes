@@ -3,6 +3,9 @@ GET         /julius                              controllers.HelloWorldControlle
 GET         /authrequired                        controllers.HelloWorldController.authrequired
 POST        /users/create                        controllers.UserController.createUser
 GET         /users/create                        controllers.UserController.showCreateUserForm
+GET         /changepassword                      controllers.UserController.showChangeOwnPasswordForm
+POST        /changepassword                      controllers.UserController.changeOwnPassword
+
 GET         /login                               controllers.LoginController.login
 POST        /login                               controllers.LoginController.loginCommit
 GET         /login/unauthorized                  controllers.LoginController.loginUnauthorized
