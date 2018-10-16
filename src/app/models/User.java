@@ -67,6 +67,10 @@ public class User extends Model {
                 .findOneOrEmpty().isPresent();
     }
 
+    public boolean isAdmin() {
+        return this.groups.stream().anyMatch(x -> x.isAdminGroup);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

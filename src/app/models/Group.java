@@ -15,8 +15,8 @@ public class Group extends Model {
     @Column(unique = true)
     public String name;
     @OneToOne
-    @JoinColumn(name = "ownerId", referencedColumnName = "id")
-    public User ownerId;
+    @JoinColumn(name = "owner", referencedColumnName = "id")
+    public User owner;
     public boolean isAdminGroup;
 
     @ManyToMany(mappedBy = "groups")
@@ -24,16 +24,16 @@ public class Group extends Model {
 
     public static final GroupFinder find = new GroupFinder();
 
-    public Group(Long id, String name, User ownerId, boolean isAdminGroup) {
+    public Group(Long id, String name, User owner, boolean isAdminGroup) {
         this.id = id;
         this.name = name;
-        this.ownerId = ownerId;
+        this.owner = owner;
         this.isAdminGroup = isAdminGroup;
     }
 
-    public Group(String name, User ownerId) {
+    public Group(String name, User owner) {
         this.name = name;
-        this.ownerId = ownerId;
+        this.owner = owner;
         this.isAdminGroup = false;
     }
 

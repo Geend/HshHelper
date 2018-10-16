@@ -7,7 +7,7 @@
             <tr>
                 <td>@g.name</td>
                 <td>
-                    @if(extension.Session.IsAdmin() || extension.Session.GetUser().id == g.ownerId) {
+                    @if(extension.Session.IsAdmin() || extension.Session.GetUser().id == g.owner) {
                         <a href="@routes.GroupController.getGroup(g.id)">Mitglieder bearbeiten</a>
                     } else {
                         <font color="#808080">Mitglieder bearbeiten</font>
