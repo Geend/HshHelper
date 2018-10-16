@@ -18,7 +18,7 @@ public class User extends Model {
     public String userName;
     @Constraints.Email
     public String email;
-    public String password;
+    public String passwordHash;
     public boolean passwordResetRequired;
     public int quotaLimit;
 
@@ -37,12 +37,12 @@ public class User extends Model {
     public User(
             String userName,
             String email,
-            String password,
+            String passwordHash,
             boolean passwordResetRequired,
             int quotaLimit) {
         this.userName = userName;
         this.email = email;
-        this.password = password;
+        this.passwordHash = this.passwordHash;
         this.passwordResetRequired = passwordResetRequired;
         this.quotaLimit = quotaLimit;
     }
@@ -63,7 +63,7 @@ public class User extends Model {
         return find.query().where()
                 .eq("user_name", username)
                 .and()
-                .eq("password", password)
+                .eq("passwordHash", password)
                 .findOneOrEmpty().isPresent();
     }
 
@@ -81,12 +81,12 @@ public class User extends Model {
                 Objects.equals(id, user.id) &&
                 Objects.equals(userName, user.userName) &&
                 Objects.equals(email, user.email) &&
-                Objects.equals(password, user.password) &&
+                Objects.equals(passwordHash, user.passwordHash) &&
                 Objects.equals(groups, user.groups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userName, email, password, passwordResetRequired, quotaLimit, groups);
+        return Objects.hash(id, userName, email, passwordHash, passwordResetRequired, quotaLimit, groups);
     }
 }

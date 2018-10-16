@@ -39,9 +39,7 @@ public class UserController extends Controller {
         String plaintextPassword = passwordGenerator.generatePassword();
 
         //TODO: Check if BCrypt.gensalt() returns good salts
-        String hashedPassword = BCrypt.hashpw(plaintextPassword, BCrypt.gensalt());
-
-        newUser.password = hashedPassword;
+        newUser.passwordHash = BCrypt.hashpw(plaintextPassword, BCrypt.gensalt());
         newUser.passwordResetRequired = true;
 
 
