@@ -24,11 +24,15 @@ public class ApplicationStart {
         // before the application starts.
         Logger.info("ApplicationStart - Prepare DB; Truncate all tables.");
         db.withConnection(connection -> {
+            String refIntegrityFalse = "SET REFERENTIAL_INTEGRITY FALSE";
+            String refIntegrityTrue = "SET REFERENTIAL_INTEGRITY TRUE";
             String truncateUsers = "TRUNCATE TABLE users";
             String truncateGroups = "TRUNCATE TABLE groups";
             Statement stmt = connection.createStatement();
+            stmt.execute(refIntegrityFalse);
             stmt.execute(truncateUsers);
             stmt.execute(truncateGroups);
+            stmt.execute(refIntegrityTrue);
         });
         Logger.info("ApplicationStart - Prepare DB; Truncated");
 
