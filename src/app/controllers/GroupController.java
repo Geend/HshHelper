@@ -1,6 +1,6 @@
 package controllers;
 
-import extension.Session;
+import extension.ContextArguments;
 import models.Group;
 import models.User;
 import models.dtos.CreateGroupDTO;
@@ -39,9 +39,9 @@ public class GroupController extends Controller {
             return badRequest(views.html.CreateGroup.render(bf));
         } else {
             CreateGroupDTO gDto = bf.get();
-            Group group = new Group(gDto.getName(), Session.GetUser());
-            group.members.add(Session.GetUser());
 
+            Group group = new Group(gDto.getName(), ContextArguments.getUser().get());
+            group.members.add( ContextArguments.getUser().get());
             group.save();
 
             return redirect(routes.GroupController.getOwnGroups());
@@ -49,7 +49,7 @@ public class GroupController extends Controller {
     }
 
     public Result getOwnGroups() {
-        Set<Group> gms = Session.GetUser().groups;
+        Set<Group> gms = ContextArguments.getUser().get().groups;
         return ok(views.html.OwnGroupsList.render(asScala(gms)));
     }
 
@@ -73,7 +73,7 @@ public class GroupController extends Controller {
 
         User toBeDeleted = User.findById(ru.getUserId()).get();
         Group g = Group.getById(groupId).get();
-        if(!policy.Specification.CanRemoveGroupMemeber(Session.GetUser(), g, toBeDeleted)) {
+        if(!policy.Specification.CanRemoveGroupMemeber(ContextArguments.getUser().get(), g, toBeDeleted)) {
             return badRequest("error");
         }
 
