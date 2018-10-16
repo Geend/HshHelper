@@ -66,7 +66,7 @@ public class LoginController extends Controller {
             String sessionIdString = session().getOrDefault(CookieConstants.USER_SESSION_ID_NAME, null);
             session().remove(CookieConstants.USER_SESSION_ID_NAME);
 
-            Integer sessionId = Integer.parseInt(sessionIdString);
+            Long sessionId = Long.parseLong(sessionIdString);
             Optional<UserSession> session = UserSession.findById(sessionId);
             session.ifPresent(UserSession::remove);
 

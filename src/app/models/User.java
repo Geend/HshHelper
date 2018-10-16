@@ -1,26 +1,45 @@
 package models;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.persistence.*;
 
-public class User {
+import io.ebean.Model;
+import models.finders.UserFinder;
+import play.data.validation.Constraints;
 
-    public int id;
+import java.util.*;
+
+@Entity
+@Table(name = "users")
+public class User extends Model {
+
+    @Id
+    public Long id;
+    @Column(unique = true)
     public String userName;
+    @Constraints.Email
     public String email;
     public String password;
     public boolean passwordResetRequired;
     public int quotaLimit;
 
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "groupmembers",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
+    public Set<Group> groups = new HashSet<>();
+
+    public static final UserFinder find = new UserFinder();
+
     public User(
-            int id,
             String userName,
             String email,
             String password,
             boolean passwordResetRequired,
             int quotaLimit) {
-        this.id = id;
         this.userName = userName;
         this.email = email;
         this.password = password;
@@ -28,40 +47,46 @@ public class User {
         this.quotaLimit = quotaLimit;
     }
 
-    public User() {
-    }
-
-    // note: only testcode for the first day, switch later to in memory
-    // database h2
-    private static List<User> users;
-
-    static {
-        users = new ArrayList<User>();
-        users.add(new User(0, "admin", "admin@admin.de", "admin", true, 0));
-        users.add(new User(1, "peter", "peter@web.de", "peter", true, 0));
-    }
-
     public static List<User> findAll() {
-        return new ArrayList<User>(users);
+        return find.all();
     }
 
-    public static void add(User newUser) {
-        users.add(newUser);
-    }
-
-    public static Optional<User> findById(Integer id) {
-        return users.stream().filter(x -> x.id == id).findFirst();
+    public static Optional<User> findById(Long id) {
+        return Optional.of(find.byId(id));
     }
 
     public static Optional<User> findByName(String username){
-        return users.stream().filter(x -> x.userName.equals(username)).findFirst();
-    }
-    public static boolean authenticate(String username, String password)
-    {
-        return users.stream().filter(x -> x.userName.equals(username) && x.password.equals(password)).findAny().isPresent();
+        return find.query().where().eq("user_name", username).findOneOrEmpty();
     }
 
-    public static User getById(int id) {
-        return users.get(id);
+    public static boolean authenticate(String username, String password) {
+        return find.query().where()
+                .eq("user_name", username)
+                .and()
+                .eq("password", password)
+                .findOneOrEmpty().isPresent();
+    }
+
+    public boolean isAdmin() {
+        return this.groups.stream().anyMatch(x -> x.isAdminGroup);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return passwordResetRequired == user.passwordResetRequired &&
+                quotaLimit == user.quotaLimit &&
+                Objects.equals(id, user.id) &&
+                Objects.equals(userName, user.userName) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(groups, user.groups);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userName, email, password, passwordResetRequired, quotaLimit, groups);
     }
 }

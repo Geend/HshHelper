@@ -8,26 +8,26 @@ import java.util.Optional;
 
 public class UserSession {
 
-    private Integer sessionId;
-    private Integer userId;
+    private Long sessionId;
+    private Long userId;
     private DateTime issuedAt;
 
 
 
 
-    public Integer getSessionId() {
+    public Long getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId(Integer sessionId) {
+    public void setSessionId(Long sessionId) {
         this.sessionId = sessionId;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -47,8 +47,8 @@ public class UserSession {
     static {
         userSessions = new ArrayList<UserSession>();
     }
-    public static Integer sessionsCount() {
-        return userSessions.size();
+    public static Long sessionsCount() {
+        return Long.valueOf(userSessions.size());
     }
 
     public static List<UserSession> findAll() {
@@ -56,7 +56,7 @@ public class UserSession {
     }
 
 
-    public static Optional<UserSession> findById(Integer id){
+    public static Optional<UserSession> findById(Long id){
         return userSessions.stream().filter(x -> x.getSessionId().equals(id)).findFirst();
 
     }

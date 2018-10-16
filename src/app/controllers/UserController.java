@@ -45,7 +45,7 @@ public class UserController extends Controller {
         newUser.passwordResetRequired = true;
 
 
-        User.add(newUser);
+        newUser.save();
 
         return redirect(routes.UserController.create());
 

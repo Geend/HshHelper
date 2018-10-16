@@ -1,8 +1,7 @@
 package controllers;
 
-import extension.Session;
+import extension.ContextArguments;
 import models.Group;
-import models.GroupMembership;
 import models.User;
 import models.dtos.CreateGroupDTO;
 import models.dtos.RemoveGroupUserDTO;
@@ -13,9 +12,8 @@ import play.mvc.Result;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
 
@@ -41,36 +39,31 @@ public class GroupController extends Controller {
             return badRequest(views.html.CreateGroup.render(bf));
         } else {
             CreateGroupDTO gDto = bf.get();
-            Group group = new Group();
-            group.name = gDto.getName();
-            group.ownerId = Session.GetUser().id;
-            Group.addGroup(group);
 
-            GroupMembership gm = new GroupMembership();
-            gm.groupId = group.id;
-            gm.userId = Session.GetUser().id;
-            GroupMembership.add(gm);
+            Group group = new Group(gDto.getName(), ContextArguments.getUser().get());
+            group.members.add( ContextArguments.getUser().get());
+            group.save();
 
             return redirect(routes.GroupController.getOwnGroups());
         }
     }
 
     public Result getOwnGroups() {
-        Set<Integer> gms = GroupMembership.findAll().stream().filter(x -> x.userId == Session.GetUser().id).map(x -> x.groupId).collect(Collectors.toSet());
-        List<Group> groups = Group.findAll().stream().filter(x -> gms.contains(x.id)).collect(Collectors.toList());
-
-        return ok(views.html.OwnGroupsList.render(asScala(groups)));
+        Set<Group> gms = ContextArguments.getUser().get().groups;
+        return ok(views.html.OwnGroupsList.render(asScala(gms)));
     }
 
-    public Result getGroup(int id) {
-        Group g = Group.getById(id);
-        if(g == null)
+    public Result getGroup(Long id) {
+        Optional<Group> g = Group.getById(id);
+        if(!g.isPresent())
             return notFound("404");
-        List<User> users = GroupMembership.getGroupUsers(g);
-        return ok(views.html.GroupMembersList.render(g, asScala(users)));
+        return g.map(grp ->
+                ok(views.html.GroupMembersList.render(grp,
+                        asScala(grp.members))))
+                .get();
     }
 
-    public Result postRemoveMember(int groupId) {
+    public Result postRemoveMember(Long groupId) {
         Form<RemoveGroupUserDTO> form = removeGroupUserForm.bindFromRequest();
         if(form.hasErrors()) {
             return badRequest("error");
@@ -78,13 +71,16 @@ public class GroupController extends Controller {
 
         RemoveGroupUserDTO ru = form.get();
 
-        User toBeDeleted = User.getById(ru.getUserId());
-        Group g = Group.getById(groupId);
-        if(!policy.Specification.CanRemoveGroupMemeber(Session.GetUser(), g, toBeDeleted)) {
+        User toBeDeleted = User.findById(ru.getUserId()).get();
+        Group g = Group.getById(groupId).get();
+        if(!policy.Specification.CanRemoveGroupMemeber(ContextArguments.getUser().get(), g, toBeDeleted)) {
             return badRequest("error");
         }
 
-        GroupMembership.remove(g, toBeDeleted);
+        // This is most likely bugged due to me not knowing better how to
+        // propagate change on a ManyToMany association in EBean.
+        g.members.remove(toBeDeleted);
+        g.save();
 
         return redirect(routes.GroupController.getGroup(groupId));
     }

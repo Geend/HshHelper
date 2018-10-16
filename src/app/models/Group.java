@@ -1,48 +1,47 @@
 package models;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import io.ebean.Model;
+import models.finders.GroupFinder;
 
-public class Group {
+import javax.persistence.*;
+import java.util.*;
 
-    public int id;
+@Entity
+@Table(name = "groups")
+public class Group extends Model {
+
+    @Id
+    public Long id;
+    @Column(unique = true)
     public String name;
-    public int ownerId;
+    @OneToOne
+    @JoinColumn(name = "owner", referencedColumnName = "id")
+    public User owner;
     public boolean isAdminGroup;
 
-    public Group() {
+    @ManyToMany(mappedBy = "groups")
+    public Set<User> members = new HashSet<>();
 
-    }
+    public static final GroupFinder find = new GroupFinder();
 
-    public Group(int id, String name, int ownerId, boolean isAdminGroup) {
+    public Group(Long id, String name, User owner, boolean isAdminGroup) {
         this.id = id;
         this.name = name;
-        this.ownerId = ownerId;
+        this.owner = owner;
         this.isAdminGroup = isAdminGroup;
     }
 
-    // note: only testcode for the first day, switch later to in memory
-    // database h2
-    private static List<Group> groups;
-
-    static {
-        groups = new ArrayList<Group>();
-        groups.add(new Group(0, "Administrator", 0, true));
-        groups.add(new Group(1, "Alle", 0, false));
+    public Group(String name, User owner) {
+        this.name = name;
+        this.owner = owner;
+        this.isAdminGroup = false;
     }
 
     public static List<Group> findAll() {
-        return new ArrayList<Group>(groups);
+        return find.all();
     }
 
-    public static void addGroup(Group g) {
-        g.id = groups.size();
-        groups.add(g);
-    }
-
-    public static Group getById(int id) {
-        Optional<Group> g = groups.stream().filter(x -> x.id == id).findFirst();
-        return g.orElse(null);
+    public static Optional<Group> getById(Long id) {
+        return Optional.of(find.byId(id));
     }
 }

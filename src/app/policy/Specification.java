@@ -4,14 +4,27 @@ import models.Group;
 import models.User;
 
 public class Specification {
+    public static boolean CanRemoveGroup(User currentUser, Group group) {
+        if(currentUser.id.equals(group.owner.id)) {
+            return true;
+        }
+
+        if(currentUser.isAdmin()) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean CanRemoveGroupMemeber(User currentUser, Group group, User toBeDeleted) {
-        if(group.ownerId == toBeDeleted.id) {
+        if(group.owner.equals(toBeDeleted)) {
             return false;
         }
 
-        // TODO: Wenn user admin auch erlaubt. Ist jetzt zu komplex. Ebean user inkludiert groups, admin check wäre einfach.
-        // TODO: Prüfen ob user in der gruppe ist. Auch zu komplex. Ebean inkludiert members.
-        if(currentUser.id == group.ownerId) {
+        if(!group.members.contains(toBeDeleted)) {
+            return false;
+        }
+
+        if(currentUser.equals(group.owner)) {
             return true;
         }
 
