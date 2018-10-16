@@ -3,9 +3,17 @@ package models.dtos;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 
+import static policy.ConstraintValues.MAX_USERNAME_LENGTH;
+
 @Constraints.Validate
 public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationError>{
+
+    @Constraints.Required
+    @Constraints.MaxLength(MAX_USERNAME_LENGTH)
     private String password;
+
+    @Constraints.Required
+    @Constraints.MaxLength(MAX_USERNAME_LENGTH)
     private String passwordRepeat;
 
     public String getPassword() {
@@ -28,7 +36,7 @@ public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationE
     public ValidationError validate() {
 
         if(!password.equals(passwordRepeat)){
-            return new ValidationError("password", "Passwords do not match");
+            return new ValidationError("passwordRepeat", "Passwords do not match");
         }
         return null;
     }

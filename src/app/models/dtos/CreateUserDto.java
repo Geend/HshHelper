@@ -2,9 +2,13 @@ package models.dtos;
 
 import play.data.validation.Constraints;
 
+import static policy.ConstraintValues.MAX_USERNAME_LENGTH;
+
 public class CreateUserDto {
 
+
     @Constraints.Required
+    @Constraints.MaxLength(MAX_USERNAME_LENGTH)
     private String username;
 
     @Constraints.Required

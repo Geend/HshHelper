@@ -13,6 +13,7 @@ import java.util.*;
 public class User extends Model {
 
     @Id
+    //@GeneratedValue(strategy=GenerationType.AUTO)
     public Long id;
     @Column(unique = true)
     public String username;
