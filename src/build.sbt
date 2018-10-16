@@ -9,6 +9,8 @@ scalaVersion := "2.12.6"
 crossScalaVersions := Seq("2.11.12", "2.12.4")
 
 libraryDependencies += guice
+libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
+
 
 // Test Database
 //libraryDependencies += "com.h2database" % "h2" % "1.4.197"

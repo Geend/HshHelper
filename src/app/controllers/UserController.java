@@ -1,6 +1,8 @@
 package controllers;
 
+import extension.PasswordGenerator;
 import models.User;
+import org.mindrot.jbcrypt.BCrypt;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -31,6 +33,17 @@ public class UserController extends Controller {
         }
 
         User newUser = boundForm.get();
+
+        PasswordGenerator passwordGenerator = new PasswordGenerator();
+
+        String plaintextPassword = passwordGenerator.generatePassword();
+
+        //TODO: Check if BCrypt.gensalt() returns good salts
+        String hashedPassword = BCrypt.hashpw(plaintextPassword, BCrypt.gensalt());
+
+        newUser.password = hashedPassword;
+        newUser.passwordResetRequired = true;
+
 
         User.add(newUser);
 
