@@ -20,8 +20,9 @@ libraryDependencies += PlayImport.evolutions
 
 libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
 // Testing libraries for dealing with CompletionStage...
-//libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
-//libraryDependencies += "org.awaitility" % "awaitility" % "2.0.0" % Test
+libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
+libraryDependencies += "org.awaitility" % "awaitility" % "2.0.0" % Test
+libraryDependencies += "org.mockito" % "mockito-core" % "2.10.0" % "test"
 
 // Make verbose tests
 //testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v"))
