@@ -8,10 +8,8 @@ import java.util.*;
 
 @Entity
 @Table(name = "groups")
-public class Group extends Model {
+public class Group extends BaseDomain {
 
-    @Id
-    public Long id;
     @Column(unique = true)
     public String name;
     @ManyToOne
