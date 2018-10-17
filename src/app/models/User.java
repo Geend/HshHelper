@@ -10,11 +10,8 @@ import java.util.*;
 
 @Entity
 @Table(name = "users")
-public class User extends Model {
+public class User extends BaseDomain {
 
-    @Id
-    //@GeneratedValue(strategy=GenerationType.AUTO)
-    public Long id;
     @Column(unique = true)
     public String username;
     @Constraints.Email
