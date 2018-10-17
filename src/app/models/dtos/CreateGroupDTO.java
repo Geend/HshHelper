@@ -1,6 +1,7 @@
 package models.dtos;
 
 import models.Group;
+import models.finders.GroupFinder;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 
@@ -20,7 +21,7 @@ public class CreateGroupDTO implements Constraints.Validatable<ValidationError> 
 
     @Override
     public ValidationError validate() {
-        if(Group.findAll().stream().anyMatch(x -> x.name.equalsIgnoreCase(getName()))){
+        if(Group.find.all().stream().anyMatch(x -> x.name.equalsIgnoreCase(getName()))){
             return new ValidationError("name", "Gruppe existiert bereits!");
         }
 

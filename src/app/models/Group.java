@@ -37,11 +37,4 @@ public class Group extends Model {
         this.isAdminGroup = false;
     }
 
-    public static List<Group> findAll() {
-        return find.all();
-    }
-
-    public static Optional<Group> getById(Long id) {
-        return Optional.of(find.byId(id));
-    }
 }
