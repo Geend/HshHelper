@@ -25,4 +25,4 @@ libraryDependencies += "org.awaitility" % "awaitility" % "2.0.0" % Test
 libraryDependencies += "org.mockito" % "mockito-core" % "2.10.0" % "test"
 
 // Make verbose tests
-//testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v"))
+testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v"))
