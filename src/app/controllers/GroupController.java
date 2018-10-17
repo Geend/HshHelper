@@ -76,9 +76,7 @@ public class GroupController extends Controller {
         if(!policy.Specification.CanRemoveGroupMemeber(ContextArguments.getUser().get(), g, toBeDeleted)) {
             return badRequest("error");
         }
-
-        // This is most likely bugged due to me not knowing better how to
-        // propagate change on a ManyToMany association in EBean.
+        
         g.members.remove(toBeDeleted);
         g.save();
 
