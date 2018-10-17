@@ -54,7 +54,7 @@ public class GroupController extends Controller {
     }
 
     public Result getGroup(Long id) {
-        Optional<Group> g = Group.getById(id);
+        Optional<Group> g = Group.find.byIdOptional(id);
         if(!g.isPresent())
             return notFound("404");
         return g.map(grp ->
@@ -72,7 +72,7 @@ public class GroupController extends Controller {
         RemoveGroupUserDTO ru = form.get();
 
         User toBeDeleted = User.find.byIdOptional(ru.getUserId()).get();
-        Group g = Group.getById(groupId).get();
+        Group g = Group.find.byIdOptional(groupId).get();
         if(!policy.Specification.CanRemoveGroupMemeber(ContextArguments.getUser().get(), g, toBeDeleted)) {
             return badRequest("error");
         }
