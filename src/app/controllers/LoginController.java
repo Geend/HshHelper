@@ -40,10 +40,10 @@ public class LoginController extends Controller {
         UserLoginDto loginData = boundForm.get();
 
 
-        if (User.authenticate(loginData.getUsername(), loginData.getPassword())) {
+        if (User.find.authenticate(loginData.getUsername(), loginData.getPassword())) {
             Logger.info("User authenticated");
 
-            User user = User.findByName(loginData.getUsername()).get();
+            User user = User.find.byName(loginData.getUsername()).get();
 
             UserSession userSession = new UserSession();
 

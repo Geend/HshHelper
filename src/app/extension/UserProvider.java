@@ -14,7 +14,7 @@ public class UserProvider extends play.mvc.Action.Simple {
         Optional<UserSession> userSession = ContextArguments.getUserSession();
         if(userSession.isPresent()) {
             Long userId = userSession.get().getUserId();
-            Optional<User> user = User.findById(userId);
+            Optional<User> user = User.find.byIdOptional(userId);
             if(user.isPresent()) {
                 ContextArguments.setUser(user.get());
             }

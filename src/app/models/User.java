@@ -48,27 +48,6 @@ public class User extends Model {
         this.quotaLimit = quotaLimit;
     }
 
-
-    public static List<User> findAll() {
-        return find.all();
-    }
-
-    public static Optional<User> findById(Long id) {
-        return Optional.of(find.byId(id));
-    }
-
-    public static Optional<User> findByName(String username){
-        return find.query().where().eq("username", username).findOneOrEmpty();
-    }
-
-    public static boolean authenticate(String username, String password) {
-        return find.query().where()
-                .eq("username", username)
-                .and()
-                .eq("password_hash", password)
-                .findOneOrEmpty().isPresent();
-    }
-
     public boolean isAdmin() {
         return this.groups.stream().anyMatch(x -> x.isAdminGroup);
     }
