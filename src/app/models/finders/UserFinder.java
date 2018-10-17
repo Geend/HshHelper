@@ -15,10 +15,6 @@ public class UserFinder extends Finder<Long, User> {
         super(User.class);
     }
 
-    public List<User> findAll() {
-        return this.all();
-    }
-
     public Optional<User> byIdOptional(Long id) {
         return Optional.of(this.byId(id));
     }
