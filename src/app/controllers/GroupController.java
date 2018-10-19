@@ -4,6 +4,7 @@ import extension.AuthenticationRequired;
 import extension.ContextArguments;
 import models.Group;
 import models.User;
+import models.dtos.AddUserToGroupDTO;
 import models.dtos.CreateGroupDTO;
 import models.dtos.RemoveGroupUserDTO;
 import play.data.Form;
@@ -13,8 +14,10 @@ import play.mvc.Result;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
 
@@ -23,11 +26,13 @@ import static play.libs.Scala.asScala;
 public class GroupController extends Controller {
     private final Form<CreateGroupDTO> groupForm;
     private final Form<RemoveGroupUserDTO> removeGroupUserForm;
+    private final Form<AddUserToGroupDTO> addUserToGroupForm;
 
     @Inject
     public GroupController(FormFactory formFactory) {
         this.groupForm = formFactory.form(CreateGroupDTO.class);
         this.removeGroupUserForm = formFactory.form(RemoveGroupUserDTO.class);
+        this.addUserToGroupForm = formFactory.form(AddUserToGroupDTO.class);
     }
 
     public Result getCreateGroup() {
@@ -57,11 +62,15 @@ public class GroupController extends Controller {
 
     public Result getGroup(Long id) {
         Optional<Group> g = Group.find.byIdOptional(id);
+
         if(!g.isPresent())
             return notFound("404");
+        List<User> notMember = User.find.all().stream().filter(
+                user -> !g.get().members.contains(user))
+                .collect(Collectors.toList());
         return g.map(grp ->
                 ok(views.html.GroupMembersList.render(grp,
-                        asScala(grp.members))))
+                        asScala(grp.members), asScala(notMember), addUserToGroupForm)))
                 .get();
     }
 
@@ -85,7 +94,24 @@ public class GroupController extends Controller {
         return redirect(routes.GroupController.getGroup(groupId));
     }
 
-    public Result getAddMember(int groupId) {
-        return ok("..");
+    public Result addMember(Long groupId) {
+        Form<AddUserToGroupDTO> form = addUserToGroupForm.bindFromRequest();
+        if(form.hasErrors()) {
+            return badRequest("error");
+        }
+
+        AddUserToGroupDTO au = form.get();
+
+        User toBeAdded= User.find.byIdOptional(au.getUserId()).get();
+        Group g = Group.find.byIdOptional(groupId).get();
+        if(!policy.Specification.CanAddGroupMember(ContextArguments.getUser().get(), g,
+                toBeAdded)) {
+            return badRequest("error");
+        }
+
+        g.members.add(toBeAdded);
+        g.save();
+
+        return redirect(routes.GroupController.getGroup(groupId));
     }
 }
