@@ -311,4 +311,25 @@ public class GroupMemberPolicyTests {
         boolean actual = Specification.CanViewGroupDetails(null, petersGroup);
         assertThat(actual).isFalse();
     }
+
+    /*
+        View a list of *all* Groups
+     */
+    @Test
+    public void adminCanViewAllGroups() {
+        boolean actual = Specification.CanViewAllGroupsList(admin);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void memberCannotViewAllGroups() {
+        boolean actual = Specification.CanViewAllGroupsList(peter);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void notAuthorizedUserCannotViewAllGroups() {
+        boolean actual = Specification.CanViewAllGroupsList(null);
+        assertThat(actual).isFalse();
+    }
 }
