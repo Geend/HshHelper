@@ -154,4 +154,16 @@ public class Specification {
 
         return true;
     }
+
+    public static boolean CanUpdatePassword(User currentUser, User toBeUpdated) {
+        if(currentUser == null) {
+            return false;
+        }
+
+        if(currentUser.equals(toBeUpdated)) {
+            return true;
+        }
+
+        return false;
+    }
 }

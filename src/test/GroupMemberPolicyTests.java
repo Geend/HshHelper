@@ -453,4 +453,38 @@ public class GroupMemberPolicyTests {
         boolean actual = Specification.CanResetPassword(null);
         assertThat(actual).isTrue();
     }
+
+    /*
+        Password Update
+     */
+    @Test
+    public void adminCannotUpdateOthersPassword() {
+        boolean actual = Specification.CanUpdatePassword(admin, peter);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void userCannotUpdateOthersPassword() {
+        boolean actual = Specification.CanUpdatePassword(peter, klaus);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void adminCanUpdateOwnPassword() {
+        boolean actual = Specification.CanUpdatePassword(admin, admin);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void userCanUpdateOwnPassword() {
+        boolean actual = Specification.CanUpdatePassword(peter, peter);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void notAuthorizedCannotUpdateOthersPassword() {
+        boolean actual = Specification.CanUpdatePassword(null, peter);
+        assertThat(actual).isFalse();
+    }
+
 }
