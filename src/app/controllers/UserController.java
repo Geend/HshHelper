@@ -28,7 +28,7 @@ public class UserController extends Controller {
         changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
     }
 
-
+    @AuthenticationRequired
     public Result showCreateUserForm() {
         return ok(views.html.CreateUser.render(createUserForm));
     }
@@ -76,17 +76,18 @@ public class UserController extends Controller {
 
     }
 
+    @AuthenticationRequired
     public Result showChangeOwnPasswordForm() {
         return ok(views.html.ChangePassword.render(changeOwnPasswordForm));
     }
 
-
+    @AuthenticationRequired
     public Result changeOwnPassword() {
         Optional<User> currentUser = ContextArguments.getUser();
         if (!currentUser.isPresent())
             return badRequest("error");
 
-        if (Specification.CanChangePassword(currentUser.get(), currentUser.get()))
+        if (!Specification.CanChangePassword(currentUser.get(), currentUser.get()))
             return badRequest("error");
 
 
