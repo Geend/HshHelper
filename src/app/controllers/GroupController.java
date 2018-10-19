@@ -73,7 +73,7 @@ public class GroupController extends Controller {
 
         User toBeDeleted = User.find.byIdOptional(ru.getUserId()).get();
         Group g = Group.find.byIdOptional(groupId).get();
-        if(!policy.Specification.CanRemoveGroupMemeber(ContextArguments.getUser().get(), g, toBeDeleted)) {
+        if(!policy.Specification.CanRemoveGroupMember(ContextArguments.getUser().get(), g, toBeDeleted)) {
             return badRequest("error");
         }
         

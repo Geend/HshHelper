@@ -2,6 +2,7 @@ package controllers;
 
 import extension.AuthenticationRequired;
 import extension.ContextArguments;
+import extension.HashHelper;
 import extension.PasswordGenerator;
 import models.User;
 import models.dtos.ChangeOwnPasswordDto;
@@ -28,7 +29,7 @@ public class UserController extends Controller {
         changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
     }
 
-
+    @AuthenticationRequired
     public Result showCreateUserForm() {
         return ok(views.html.CreateUser.render(createUserForm));
     }
@@ -44,8 +45,6 @@ public class UserController extends Controller {
             return badRequest("error");
 
 
-
-
         Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
 
         if (boundForm.hasErrors()) {
@@ -59,9 +58,8 @@ public class UserController extends Controller {
         PasswordGenerator passwordGenerator = new PasswordGenerator();
 
         String plaintextPassword = passwordGenerator.generatePassword();
+        String passwordHash = HashHelper.hashPassword(plaintextPassword);
 
-        //TODO: Check if BCrypt.gensalt() returns good salts
-        String passwordHash = BCrypt.hashpw(plaintextPassword, BCrypt.gensalt());
         boolean passwordResetRequired = true;
 
         User newUser = new User(createUserDto.getUsername(),
@@ -78,43 +76,37 @@ public class UserController extends Controller {
 
     }
 
+    @AuthenticationRequired
     public Result showChangeOwnPasswordForm() {
         return ok(views.html.ChangePassword.render(changeOwnPasswordForm));
     }
 
-
+    @AuthenticationRequired
     public Result changeOwnPassword() {
-        //TODO: Enforce policy
+        Optional<User> userOptional = ContextArguments.getUser();
+        if (!userOptional.isPresent())
+            return badRequest("error");
+
+        User currentUser = userOptional.get();
+
+
+        if (!Specification.CanChangePassword(currentUser, currentUser))
+            return badRequest("error");
+
 
         Form<ChangeOwnPasswordDto> boundForm = changeOwnPasswordForm.bindFromRequest("password", "passwordRepeat");
-
 
         if (boundForm.hasErrors()) {
             return ok(views.html.ChangePassword.render(boundForm));
         }
 
-
         ChangeOwnPasswordDto changeOwnPasswordDto = boundForm.get();
 
-        //TODO: Check if password and passwordRepeat match here again? There already are constraints in the DTO
+        currentUser.passwordHash = HashHelper.hashPassword(changeOwnPasswordDto.getPassword());
 
+        currentUser.passwordResetRequired = false;
+        currentUser.save();
 
-        Optional<User> userOptional = ContextArguments.getUser();
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
-            user.passwordHash = BCrypt.hashpw(changeOwnPasswordDto.getPassword(), BCrypt.gensalt());
-            user.passwordResetRequired = false;
-            user.save();
-            return ok("changedPassword");
-
-        } else {
-            return badRequest("no user present");
-        }
-
-
+        return ok("changedPassword");
     }
-
-
 }

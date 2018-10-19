@@ -35,4 +35,19 @@ public class Group extends BaseDomain {
         this.isAdminGroup = false;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Group group = (Group) o;
+        return isAdminGroup == group.isAdminGroup &&
+                Objects.equals(name, group.name) &&
+                Objects.equals(owner, group.owner) &&
+                Objects.equals(members, group.members);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, owner, isAdminGroup, members);
+    }
 }

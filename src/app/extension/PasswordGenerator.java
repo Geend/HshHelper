@@ -1,5 +1,7 @@
 package extension;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 public class PasswordGenerator {
 
 
@@ -7,5 +9,6 @@ public class PasswordGenerator {
         //TODO: Implement a password generation algorithm
         return "supersecurepassword";
     }
+
 
 }

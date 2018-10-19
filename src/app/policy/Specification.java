@@ -66,7 +66,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanRemoveGroupMemeber(User currentUser, Group group, User toBeDeleted) {
+    public static boolean CanRemoveGroupMember(User currentUser, Group group, User toBeDeleted) {
         if(group.owner.equals(toBeDeleted)) {
             return false;
         }

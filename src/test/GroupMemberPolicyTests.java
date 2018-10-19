@@ -52,7 +52,7 @@ public class GroupMemberPolicyTests {
 
     @Test
     public void ownerCannotBeRemovedFromGroup() {
-        boolean actual = Specification.CanRemoveGroupMemeber(peter, adminGroup, admin);
+        boolean actual = Specification.CanRemoveGroupMember(peter, adminGroup, admin);
         assertThat(actual).isFalse();
     }
 

@@ -8,7 +8,6 @@ POST        /changepassword                      controllers.UserController.chan
 
 GET         /login                               controllers.LoginController.login
 POST        /login                               controllers.LoginController.loginCommit
-GET         /login/unauthorized                  controllers.LoginController.loginUnauthorized
 GET         /logout                              controllers.LoginController.logoutCommit
 
 GET         /groups                              controllers.GroupController.getOwnGroups
