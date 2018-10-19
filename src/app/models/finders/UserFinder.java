@@ -13,7 +13,11 @@ public class UserFinder extends Finder<Long, User> {
     }
 
     public Optional<User> byIdOptional(Long id) {
-        return Optional.of(this.byId(id));
+        User u = this.byId(id);
+        if (u == null) {
+            return Optional.empty();
+        }
+        return Optional.of(u);
     }
 
     public Optional<User> byName(String username) {
