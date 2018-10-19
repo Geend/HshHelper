@@ -59,7 +59,7 @@ public class UserController extends Controller {
 
         String plaintextPassword = passwordGenerator.generatePassword();
         String passwordHash = HashHelper.hashPassword(plaintextPassword);
-        
+
         boolean passwordResetRequired = true;
 
         User newUser = new User(createUserDto.getUsername(),
