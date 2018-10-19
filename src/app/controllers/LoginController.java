@@ -1,6 +1,7 @@
 package controllers;
 
 import constants.CookieConstants;
+import extension.AuthenticateUser;
 import extension.HashHelper;
 import models.User;
 import models.UserSession;
@@ -23,12 +24,18 @@ public class LoginController extends Controller {
     private Form<UserLoginDto> loginForm;
     private UserSessionFinder userSessionFinder;
     private UserFinder userFinder;
+    private AuthenticateUser authenticateUser;
 
     @Inject
-    public LoginController(FormFactory formFactory, UserSessionFinder userSessionFinder, UserFinder userFinder) {
+    public LoginController(
+            FormFactory formFactory,
+            UserSessionFinder userSessionFinder,
+            UserFinder userFinder,
+            AuthenticateUser authenticateUser) {
         this.loginForm = formFactory.form(UserLoginDto.class);
         this.userSessionFinder = userSessionFinder;
         this.userFinder = userFinder;
+        this.authenticateUser = authenticateUser;
     }
 
     public Result login() {
@@ -42,18 +49,22 @@ public class LoginController extends Controller {
         }
         UserLoginDto loginData = boundForm.get();
 
-        Optional<User> authenticatedUser = userFinder.authenticate(loginData.getUsername(), loginData.getPassword());
-        if (authenticatedUser.isPresent()) {
-            if(authenticatedUser.get().passwordResetRequired) {
+        Optional<User> user = userFinder.byName(loginData.getUsername());
+        if(!user.isPresent()) {
+            return redirect(routes.LoginController.login());
+        }
+
+        if(this.authenticateUser.SecureAuthenticate(user.get(), loginData.getPassword())) {
+            if(user.get().passwordResetRequired) {
                 return TODO;
             }
+
             Logger.info("User authenticated");
 
             String remoteIp = request().remoteAddress();
-            User user = userFinder.byName(loginData.getUsername()).get();
             UserSession userSession = new UserSession();
             userSession.setConnectedFrom(remoteIp);
-            userSession.setUserId(user.getId());
+            userSession.setUserId(user.get().getId());
             userSession.setIssuedAt(DateTime.now());
             userSession.save();
 
@@ -61,6 +72,7 @@ public class LoginController extends Controller {
 
             return redirect(routes.HelloWorldController.index());
         }
+
         Logger.info("User could not be authenticated");
         return redirect(routes.LoginController.login());
     }
@@ -79,7 +91,6 @@ public class LoginController extends Controller {
             }
         }
         return redirect(routes.HelloWorldController.index());
-
     }
 
 }

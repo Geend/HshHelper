@@ -2,8 +2,7 @@ package models;
 
 import javax.persistence.*;
 
-import io.ebean.Model;
-import models.finders.UserFinder;
+import org.joda.time.DateTime;
 import play.data.validation.Constraints;
 
 import java.util.*;
@@ -19,6 +18,9 @@ public class User extends BaseDomain {
     public String passwordHash;
     public boolean passwordResetRequired;
     public int quotaLimit;
+
+    public DateTime mostRecentLoginAttempt;
+    public int invalidLoginCounter;
 
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
