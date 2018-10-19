@@ -16,9 +16,20 @@ public class GroupMemberPolicyTests {
     private static User peter;
     private static User klaus;
     private static User horst;
+    private static User rudi;
     private static Group adminGroup;
     private static Group petersGroup;
 
+    /*
+        adminGroup:
+            admin, adminTwo
+
+        petersGroup:
+            peter, klaus, adminTwo
+
+        no groups:
+            horst, rudi
+     */
     @BeforeClass
     public static void setup() {
         admin = new User("admin", "admin@admin.com", "admin", true, 10);
@@ -26,6 +37,7 @@ public class GroupMemberPolicyTests {
         peter = new User("peter", "peter@gmx.com", "peter", true, 10);
         klaus = new User("klaus", "klaus@gmx.com", "klaus", true, 10);
         horst = new User("horst", "horst@gmx.com", "horst", true, 10);
+        rudi = new User("rudi", "rudi@gmx.com", "rudi", true, 10);
 
         adminGroup = new Group("Administrators", admin);
         adminGroup.isAdminGroup = true;
@@ -179,6 +191,63 @@ public class GroupMemberPolicyTests {
     @Test
     public void nonAuthorizedCannotRemoveGroupMember() {
         boolean actual = Specification.CanRemoveGroupMember(null, petersGroup, peter);
+        assertThat(actual).isFalse();
+    }
+
+    /*
+        Add User to Group
+     */
+    @Test
+    public void ownerCanAddGroupMember() {
+        boolean actual = Specification.CanAddGroupMember(peter, petersGroup, admin);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void foreignAdminCanAddGroupMember() {
+        boolean actual = Specification.CanAddGroupMember(admin, petersGroup, horst);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void adminGroupMemberCanAddGroupMember() {
+        boolean actual = Specification.CanAddGroupMember(adminTwo, petersGroup, horst);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void ownerCannotAddMemberTwice() {
+        boolean actual = Specification.CanAddGroupMember(peter, petersGroup, klaus);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void foreignAdminCannotAddGroupMemberTwice() {
+        boolean actual = Specification.CanAddGroupMember(admin, petersGroup, klaus);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void adminGroupMemberCannotAddGroupMemberTwice() {
+        boolean actual = Specification.CanAddGroupMember(adminTwo, petersGroup, klaus);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void groupMemberCannotAddOtherGroupMember() {
+        boolean actual = Specification.CanAddGroupMember(klaus, petersGroup, horst);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonGroupMemberCannotAddOtherGroupMember() {
+        boolean actual = Specification.CanAddGroupMember(horst, petersGroup, rudi);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonAuthorizedUserCannotAddOtherGroupMember() {
+        boolean actual = Specification.CanAddGroupMember(null, petersGroup, rudi);
         assertThat(actual).isFalse();
     }
 }
