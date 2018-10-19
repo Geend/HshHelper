@@ -78,8 +78,12 @@ public class Specification {
         return true;
     }
 
-    public static boolean CanRemoveGroup(User currentUser, Group group) {
+    public static boolean CanDeleteGroup(User currentUser, Group group) {
         if(currentUser == null) {
+            return false;
+        }
+
+        if(group.isAdminGroup || group.isAllGroup) {
             return false;
         }
 

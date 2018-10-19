@@ -17,6 +17,7 @@ public class GroupMemberPolicyTests {
     private static User klaus;
     private static User horst;
     private static User rudi;
+    private static Group allGroup;
     private static Group adminGroup;
     private static Group petersGroup;
 
@@ -27,7 +28,7 @@ public class GroupMemberPolicyTests {
         petersGroup:
             peter, klaus, adminTwo
 
-        no groups:
+        no *explicit* groups:
             horst, rudi
      */
     @BeforeClass
@@ -39,6 +40,10 @@ public class GroupMemberPolicyTests {
         horst = new User("horst", "horst@gmx.com", "horst", true, 10);
         rudi = new User("rudi", "rudi@gmx.com", "rudi", true, 10);
 
+        allGroup = new Group("Alle", admin);
+        allGroup.isAllGroup = true;
+        allGroup.members = Stream.of(admin, adminTwo, peter, klaus, horst, rudi).collect(Collectors.toSet());
+
         adminGroup = new Group("Administrators", admin);
         adminGroup.isAdminGroup = true;
         adminGroup.members = Stream.of(admin, adminTwo).collect(Collectors.toSet());
@@ -46,10 +51,12 @@ public class GroupMemberPolicyTests {
         petersGroup = new Group("Peters Group", peter);
         petersGroup.members = Stream.of(peter, klaus, adminTwo).collect(Collectors.toSet());
 
-        admin.groups = Stream.of(adminGroup).collect(Collectors.toSet());
-        adminTwo.groups = Stream.of(adminGroup, petersGroup).collect(Collectors.toSet());
-        peter.groups = Stream.of(petersGroup).collect(Collectors.toSet());
-        klaus.groups = Stream.of(petersGroup).collect(Collectors.toSet());
+        admin.groups = Stream.of(adminGroup, allGroup).collect(Collectors.toSet());
+        adminTwo.groups = Stream.of(adminGroup, petersGroup, allGroup).collect(Collectors.toSet());
+        peter.groups = Stream.of(petersGroup, allGroup).collect(Collectors.toSet());
+        klaus.groups = Stream.of(petersGroup, allGroup).collect(Collectors.toSet());
+        horst.groups = Stream.of(allGroup).collect(Collectors.toSet());
+        rudi.groups = Stream.of(allGroup).collect(Collectors.toSet());
     }
 
     @Test
@@ -330,6 +337,99 @@ public class GroupMemberPolicyTests {
     @Test
     public void notAuthorizedUserCannotViewAllGroups() {
         boolean actual = Specification.CanViewAllGroupsList(null);
+        assertThat(actual).isFalse();
+    }
+
+    /*
+        Deleting a Group
+     */
+    @Test
+    public void ownerCanDeleteGroup() {
+        boolean actual = Specification.CanDeleteGroup(peter, petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void foreignAdminCanDeleteGroup() {
+        boolean actual = Specification.CanDeleteGroup(admin, petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void adminGroupMemberCanDeleteGroup() {
+        boolean actual = Specification.CanDeleteGroup(adminTwo, petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void groupMemberCannotDeleteGroup() {
+        boolean actual = Specification.CanDeleteGroup(klaus, petersGroup);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonGroupMemberCannotDeleteGroup() {
+        boolean actual = Specification.CanDeleteGroup(horst, petersGroup);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonAuthorizedUserCannotDeleteGroup() {
+        boolean actual = Specification.CanDeleteGroup(null, petersGroup);
+        assertThat(actual).isFalse();
+    }
+
+    /*
+        Delete Admin Group
+     */
+    @Test
+    public void adminGroupOwnerCannotDeleteAdminGroup() {
+        boolean actual = Specification.CanDeleteGroup(admin, adminGroup);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonGroupOwningAdminCannotDeleteAdminGroup() {
+        boolean actual = Specification.CanDeleteGroup(adminTwo, adminGroup);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonAdminCannotDeleteAdminGroup() {
+        boolean actual = Specification.CanDeleteGroup(horst, adminGroup);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void notAuthorizedUserCannotDeleteAdminGroup() {
+        boolean actual = Specification.CanDeleteGroup(null, adminGroup);
+        assertThat(actual).isFalse();
+    }
+
+    /*
+        Delete All Group
+     */
+    @Test
+    public void allGroupOwnerCannotDeleteAllGroup() {
+        boolean actual = Specification.CanDeleteGroup(admin, allGroup);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonGroupOwningAdminCannotDeleteAllGroup() {
+        boolean actual = Specification.CanDeleteGroup(adminTwo, allGroup);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonAdminCannotDeleteAllGroup() {
+        boolean actual = Specification.CanDeleteGroup(horst, allGroup);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void notAuthorizedUserCannotDeleteAllGroup() {
+        boolean actual = Specification.CanDeleteGroup(null, allGroup);
         assertThat(actual).isFalse();
     }
 }

@@ -16,6 +16,7 @@ public class Group extends BaseDomain {
     @JoinColumn(name = "owner", referencedColumnName = "id")
     public User owner;
     public boolean isAdminGroup;
+    public boolean isAllGroup;
 
     @ManyToMany(mappedBy = "groups")
     public Set<User> members = new HashSet<>();
