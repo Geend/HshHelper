@@ -2,6 +2,7 @@ package controllers;
 
 import extension.AuthenticationRequired;
 import extension.ContextArguments;
+import extension.HashHelper;
 import extension.PasswordGenerator;
 import models.User;
 import models.dtos.ChangeOwnPasswordDto;
@@ -57,9 +58,8 @@ public class UserController extends Controller {
         PasswordGenerator passwordGenerator = new PasswordGenerator();
 
         String plaintextPassword = passwordGenerator.generatePassword();
-
-        //TODO: Check if BCrypt.gensalt() returns good salts
-        String passwordHash = BCrypt.hashpw(plaintextPassword, BCrypt.gensalt());
+        String passwordHash = HashHelper.hashPassword(plaintextPassword);
+        
         boolean passwordResetRequired = true;
 
         User newUser = new User(createUserDto.getUsername(),
@@ -102,8 +102,8 @@ public class UserController extends Controller {
 
         ChangeOwnPasswordDto changeOwnPasswordDto = boundForm.get();
 
-        //TODO: Check if BCrypt.gensalt() returns good salts
-        currentUser.passwordHash = BCrypt.hashpw(changeOwnPasswordDto.getPassword(), BCrypt.gensalt());
+        currentUser.passwordHash = HashHelper.hashPassword(changeOwnPasswordDto.getPassword());
+
         currentUser.passwordResetRequired = false;
         currentUser.save();
 
