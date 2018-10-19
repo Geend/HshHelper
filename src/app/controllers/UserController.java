@@ -7,7 +7,6 @@ import extension.PasswordGenerator;
 import models.User;
 import models.dtos.ChangeOwnPasswordDto;
 import models.dtos.CreateUserDto;
-import org.mindrot.jbcrypt.BCrypt;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -18,7 +17,6 @@ import javax.inject.Inject;
 import java.util.Optional;
 
 public class UserController extends Controller {
-
 
     private Form<CreateUserDto> createUserForm;
     private Form<ChangeOwnPasswordDto> changeOwnPasswordForm;

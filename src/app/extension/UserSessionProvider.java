@@ -6,12 +6,19 @@ import models.finders.UserSessionFinder;
 import play.mvc.Http;
 import play.mvc.Result;
 
+import javax.inject.Inject;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class UserSessionProvider extends play.mvc.Action.Simple {
+    private UserSessionFinder sessionFinder;
+
+    @Inject
+    public UserSessionProvider(UserSessionFinder sessionFinder) {
+        this.sessionFinder = sessionFinder;
+    }
+
     public CompletionStage<Result> call(Http.Context ctx) {
-        UserSessionFinder sessionFinder = new UserSessionFinder();
         String sessionIdString = ctx.session().get(CookieConstants.USER_SESSION_ID_NAME);
         Optional<Long> sessionId = tryParseInt(sessionIdString);
         if(sessionId.isPresent()) {

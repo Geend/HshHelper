@@ -5,6 +5,7 @@ import extension.HashHelper;
 import models.User;
 import models.UserSession;
 import models.dtos.UserLoginDto;
+import models.finders.UserFinder;
 import models.finders.UserSessionFinder;
 import org.joda.time.DateTime;
 import play.Logger;
@@ -20,13 +21,14 @@ import java.util.Optional;
 public class LoginController extends Controller {
 
     private Form<UserLoginDto> loginForm;
-    // todo: noch via dependency incjection reingeben
     private UserSessionFinder userSessionFinder;
+    private UserFinder userFinder;
 
     @Inject
-    public LoginController(FormFactory formFactory) {
+    public LoginController(FormFactory formFactory, UserSessionFinder userSessionFinder, UserFinder userFinder) {
         this.loginForm = formFactory.form(UserLoginDto.class);
-        this.userSessionFinder = new UserSessionFinder();
+        this.userSessionFinder = userSessionFinder;
+        this.userFinder = userFinder;
     }
 
     public Result login() {
@@ -40,11 +42,11 @@ public class LoginController extends Controller {
         }
         UserLoginDto loginData = boundForm.get();
 
-        if (User.find.authenticate(loginData.getUsername(), loginData.getPassword())) {
+        if (userFinder.authenticate(loginData.getUsername(), loginData.getPassword())) {
             Logger.info("User authenticated");
 
             String remoteIp = request().remoteAddress();
-            User user = User.find.byName(loginData.getUsername()).get();
+            User user = userFinder.byName(loginData.getUsername()).get();
             UserSession userSession = new UserSession();
             userSession.setConnectedFrom(remoteIp);
             userSession.setUserId(user.getId());
