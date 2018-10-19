@@ -1,6 +1,7 @@
 package controllers;
 
 import constants.CookieConstants;
+import extension.HashHelper;
 import models.User;
 import models.UserSession;
 import models.dtos.UserLoginDto;

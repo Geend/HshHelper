@@ -1,5 +1,6 @@
 package models.finders;
 
+import extension.HashHelper;
 import io.ebean.Finder;
 import models.User;
 
@@ -19,15 +20,18 @@ public class UserFinder extends Finder<Long, User> {
         return Optional.of(this.byId(id));
     }
 
-    public Optional<User> byName(String username){
+    public Optional<User> byName(String username) {
         return this.query().where().eq("username", username).findOneOrEmpty();
     }
 
     public boolean authenticate(String username, String password) {
-        return this.query().where()
+        Optional<User> user = this.query().where()
                 .eq("username", username)
-                .and()
-                .eq("password_hash", password)
-                .findOneOrEmpty().isPresent();
+                .findOneOrEmpty();
+
+        if(!user.isPresent())
+            return false;
+
+        return HashHelper.checkHash(password, user.get().passwordHash);
     }
 }

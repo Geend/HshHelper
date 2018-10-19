@@ -1,5 +1,6 @@
 import javax.inject.*;
 
+import extension.HashHelper;
 import models.Group;
 import models.User;
 import play.Logger;
@@ -34,11 +35,11 @@ public class DatabaseInitialization {
         });
         Logger.info("DatabaseInitialization - Prepare DB; Truncated");
 
-        Logger.info("DatabaseInitialization - Prepare DB; Add new users and groups");
-        User u1 = new User("admin", "admin@admin.com", "admin", true, 10);
-        User u2 = new User("peter", "peter@gmx.com", "peter", true, 10);
-        User u3 = new User("klaus", "klaus@gmx.com", "klaus", true, 10);
-        User u4 = new User("hans", "hans@gmx.com", "hans", true, 10);
+        Logger.info("ApplicationStart - Prepare DB; Add new users and groups");
+        User u1 = new User("admin", "admin@admin.com", HashHelper.hashPassword("admin"), true, 10);
+        User u2 = new User("peter", "peter@gmx.com",  HashHelper.hashPassword("peter"), true, 10);
+        User u3 = new User("klaus", "klaus@gmx.com",  HashHelper.hashPassword("klaus"), true, 10);
+        User u4 = new User("hans", "hans@gmx.com",  HashHelper.hashPassword("hans"), true, 10);
 
         Group g1 = new Group("All", u1);
         Group g2 = new Group("Administrators", u1);
