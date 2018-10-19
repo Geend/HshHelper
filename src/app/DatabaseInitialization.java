@@ -44,7 +44,10 @@ public class DatabaseInitialization {
 
         Group g1 = new Group("All", u1);
         Group g2 = new Group("Administrators", u1);
-        Group g3 = new Group("Peter's Group", u1);
+        Group g3 = new Group("Peter's Group", u2);
+
+        g1.isAllGroup = true;
+        g2.isAdminGroup = true;
 
         g1.members = Stream.of(u1, u2, u3, u4).collect(Collectors.toSet());
         g2.members = Stream.of(u1).collect(Collectors.toSet());
