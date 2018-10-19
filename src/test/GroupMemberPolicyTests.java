@@ -250,4 +250,27 @@ public class GroupMemberPolicyTests {
         boolean actual = Specification.CanAddGroupMember(null, petersGroup, rudi);
         assertThat(actual).isFalse();
     }
+
+    /*
+        Create Group
+     */
+    @Test
+    public void adminCanCreateGroup() {
+        boolean actual = Specification.CanCreateGroup(admin);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void userCanCreateGroup() {
+        boolean actual = Specification.CanCreateGroup(peter);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void nonAuthorizedUserCannotCreateGroup() {
+        boolean actual = Specification.CanCreateGroup(null);
+        assertThat(actual).isFalse();
+    }
+
+    
 }
