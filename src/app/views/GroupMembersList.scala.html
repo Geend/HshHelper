@@ -1,5 +1,4 @@
-@(group: Group, members: Seq[User])
-
+@(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[dtos.AddUserToGroupDTO])
 
 @Main("Mitglieder von: " + group.name) {
     <table>
@@ -27,6 +26,17 @@
         </tr>
     }
     </table>
-    <hr>
-    <a href="">Benutzer hinzufügen</a>
+    @if(policy.Specification.isAllowedToAddGroupMember(extension.ContextArguments.getUser().get(),
+group)) {
+        <h2>Benutzer hinzufuegen</h2>
+        @helper.form(action = routes.GroupController.addMember(group.getId())) {
+            @helper.CSRF.formField
+            @helper.select(
+                field = addUserForm("userId"),
+                options = notMembers.map(user => user.id.toString -> user.username),
+                '_label -> "Nutzer waehlen"
+            )
+            <button type="submit">Nutzer hinzufuegen</button>
+        }
+    }
 }

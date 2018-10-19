@@ -126,6 +126,18 @@ public class Specification {
         return false;
     }
 
+    public static boolean isAllowedToAddGroupMember(User currentUser, Group group) {
+        if(currentUser.isAdmin()) {
+            return true;
+        }
+
+        if(group.owner.equals(currentUser)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static boolean CanAddGroupMember(User currentUser, Group group, User toBeAdded) {
         if(currentUser == null) {
             return false;

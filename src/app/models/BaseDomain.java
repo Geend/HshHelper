@@ -9,7 +9,7 @@ import javax.persistence.MappedSuperclass;
 public abstract class BaseDomain extends Model {
 
     @Id
-    protected Long id;
+    public Long id;
 
     public Long getId() {
         return id;

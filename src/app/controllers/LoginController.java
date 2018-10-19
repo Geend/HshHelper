@@ -64,7 +64,7 @@ public class LoginController extends Controller {
             String remoteIp = request().remoteAddress();
             UserSession userSession = new UserSession();
             userSession.setConnectedFrom(remoteIp);
-            userSession.setUserId(user.get().getId());
+            userSession.setUser(user.get());
             userSession.setIssuedAt(DateTime.now());
             userSession.save();
 
