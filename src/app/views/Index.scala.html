@@ -1,11 +1,12 @@
 @(user: User)
 
-@Main("Willkommen zum HsH-Helper, " + user.username + "!") {
-    <a href="@routes.GroupController.getOwnGroups">
-        Gruppenuebersicht
-    </a>
-    <br/>
-    <a href="@routes.UserController.showActiveUserSessions">
-        Sessions
-    </a>
+@Main("Willkommen zum HsH-Helfer, " + user.username + "!") {
+    <p>
+        Bisher ist die einzige Funktionalitaet des HsH-Helfers, Gruppen anzulegen und in diesen Nutzer zu verwalten.<br/>
+        In einer spaeteren Entwicklungsiteration werden wir fuer Sie eine Plattform zum Dateienaustausch bereitstellen,
+        sowie ihnen ermoeglichen, dass sie sich mit einem Login auf dieser Page via eines Single-Sign-On ebenfalls bei
+        ihren Lieblingsnetzdiensten anmelden.<br/>
+        <br/>
+        Euer HsH-Helfer-Team.
+    </p>
 }
