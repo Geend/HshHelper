@@ -10,7 +10,7 @@ public class UserSession extends BaseDomain {
 
     private DateTime issuedAt;
     private String connectedFrom;
-    @ManyToOne(cascade = { CascadeType.REMOVE })
+    @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "id")
     private User user;
 
