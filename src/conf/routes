@@ -1,6 +1,4 @@
-GET         /                                    controllers.HelloWorldController.index
-GET         /julius                              controllers.HelloWorldController.julius
-GET         /authrequired                        controllers.HelloWorldController.authrequired
+GET         /                                    controllers.HomeController.index
 POST        /users/create                        controllers.UserController.createUser
 GET         /users/create                        controllers.UserController.showCreateUserForm
 GET         /changepassword                      controllers.UserController.showChangeOwnPasswordForm
