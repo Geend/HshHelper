@@ -39,6 +39,9 @@ public class LoginController extends Controller {
     }
 
     public Result login() {
+        if (session().containsKey(CookieConstants.USER_SESSION_ID_NAME)) {
+            return redirect(routes.HomeController.index());
+        }
         return ok(views.html.Login.render(loginForm));
     }
 
