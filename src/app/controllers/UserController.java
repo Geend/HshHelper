@@ -83,41 +83,30 @@ public class UserController extends Controller {
 
     @AuthenticationRequired
     public Result changeOwnPassword() {
-        Optional<User> currentUser = ContextArguments.getUser();
-        if (!currentUser.isPresent())
+        Optional<User> userOptional = ContextArguments.getUser();
+        if (!userOptional.isPresent())
             return badRequest("error");
 
-        if (!Specification.CanChangePassword(currentUser.get(), currentUser.get()))
+        User currentUser = userOptional.get();
+
+
+        if (!Specification.CanChangePassword(currentUser, currentUser))
             return badRequest("error");
 
 
         Form<ChangeOwnPasswordDto> boundForm = changeOwnPasswordForm.bindFromRequest("password", "passwordRepeat");
 
-
         if (boundForm.hasErrors()) {
             return ok(views.html.ChangePassword.render(boundForm));
         }
 
-
         ChangeOwnPasswordDto changeOwnPasswordDto = boundForm.get();
 
+        //TODO: Check if BCrypt.gensalt() returns good salts
+        currentUser.passwordHash = BCrypt.hashpw(changeOwnPasswordDto.getPassword(), BCrypt.gensalt());
+        currentUser.passwordResetRequired = false;
+        currentUser.save();
 
-        Optional<User> userOptional = ContextArguments.getUser();
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
-            user.passwordHash = BCrypt.hashpw(changeOwnPasswordDto.getPassword(), BCrypt.gensalt());
-            user.passwordResetRequired = false;
-            user.save();
-            return ok("changedPassword");
-
-        } else {
-            return badRequest("no user present");
-        }
-
-
+        return ok("changedPassword");
     }
-
-
 }
