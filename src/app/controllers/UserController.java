@@ -44,8 +44,6 @@ public class UserController extends Controller {
             return badRequest("error");
 
 
-
-
         Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
 
         if (boundForm.hasErrors()) {
@@ -84,7 +82,13 @@ public class UserController extends Controller {
 
 
     public Result changeOwnPassword() {
-        //TODO: Enforce policy
+        Optional<User> currentUser = ContextArguments.getUser();
+        if (!currentUser.isPresent())
+            return badRequest("error");
+
+        if (Specification.CanChangePassword(currentUser.get(), currentUser.get()))
+            return badRequest("error");
+
 
         Form<ChangeOwnPasswordDto> boundForm = changeOwnPasswordForm.bindFromRequest("password", "passwordRepeat");
 
@@ -95,8 +99,6 @@ public class UserController extends Controller {
 
 
         ChangeOwnPasswordDto changeOwnPasswordDto = boundForm.get();
-
-        //TODO: Check if password and passwordRepeat match here again? There already are constraints in the DTO
 
 
         Optional<User> userOptional = ContextArguments.getUser();
