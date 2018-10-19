@@ -1,0 +1,7 @@
+@(user: User)
+
+@Main("Willkommen zum HsH-Helper, " + user.username + "!") {
+    <a href="@routes.GroupController.getOwnGroups">
+        Gruppenuebersicht
+    </a>
+}

@@ -16,7 +16,11 @@ import java.util.Optional;
 public class HomeController extends Controller {
 
     public Result index() {
-        return ok("Hello World");
+        Optional<User> user = extension.ContextArguments.getUser();
+        if (user.isPresent()) {
+            return ok(views.html.Index.render(user.get()));
+        }
+        return badRequest("error");
     }
 
 }
