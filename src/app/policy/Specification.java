@@ -14,6 +14,10 @@ public class Specification {
             return true;
         }
 
+        if(currentUser.isAdmin()) {
+            return true;
+        }
+
         return false;
     }
 

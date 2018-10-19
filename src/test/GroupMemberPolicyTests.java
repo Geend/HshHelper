@@ -272,5 +272,43 @@ public class GroupMemberPolicyTests {
         assertThat(actual).isFalse();
     }
 
-    
+
+    /*
+        See Group Details (members)/group page
+     */
+    @Test
+    public void foreignAdminCanViewGroupDetails() {
+        boolean actual = Specification.CanViewGroupDetails(admin, petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void adminGroupMemberCanViewGroupDetails() {
+        boolean actual = Specification.CanViewGroupDetails(adminTwo, petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void groupOwnerCanViewGroupDetails() {
+        boolean actual = Specification.CanViewGroupDetails(peter, petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void groupMemberCanViewGroupDetails() {
+        boolean actual = Specification.CanViewGroupDetails(klaus, petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void nonGroupMemberCannotViewGroupDetails() {
+        boolean actual = Specification.CanViewGroupDetails(horst, petersGroup);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void notAuthorizedUserCannotViewGroupDetails() {
+        boolean actual = Specification.CanViewGroupDetails(null, petersGroup);
+        assertThat(actual).isFalse();
+    }
 }
