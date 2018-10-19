@@ -6,6 +6,10 @@ import play.Logger;
 
 public class Specification {
     public static boolean CanViewGroupDetails(User currentUser, Group toBeWatched) {
+        if(currentUser == null) {
+            return false;
+        }
+
         if(toBeWatched.members.contains(currentUser)) {
             return true;
         }
@@ -14,6 +18,10 @@ public class Specification {
     }
 
     public static boolean CanViewAllGroupsList(User currentUser) {
+        if(currentUser == null) {
+            return false;
+        }
+
         if(currentUser.isAdmin()) {
             return true;
         }
@@ -22,6 +30,10 @@ public class Specification {
     }
 
     public static boolean CanCreateUser(User currentUser) {
+        if(currentUser == null) {
+            return false;
+        }
+
         if(currentUser.isAdmin()) {
             return true;
         }
@@ -30,8 +42,12 @@ public class Specification {
     }
 
     public static boolean CanDeleteUser(User currentUser, User userToBeDeleted) {
+        if(currentUser == null) {
+            return false;
+        }
+
         // Wenn Nutzer Owner einer Admin-Gruppe ist, darf er nicht gelöscht werden (Quasi Super-Admin)
-        if(userToBeDeleted.groups.stream().anyMatch(x -> x.owner.equals(userToBeDeleted))) {
+        if(userToBeDeleted.groups.stream().anyMatch(x -> x.owner.equals(userToBeDeleted) && x.isAdminGroup)) {
             return false;
         }
 
@@ -43,6 +59,10 @@ public class Specification {
     }
 
     public static boolean CanChangePassword(User currentUser, User toBeUpdated) {
+        if(currentUser == null) {
+            return false;
+        }
+
         if(currentUser.equals(toBeUpdated)) {
             return true;
         }
@@ -55,6 +75,10 @@ public class Specification {
     }
 
     public static boolean CanRemoveGroup(User currentUser, Group group) {
+        if(currentUser == null) {
+            return false;
+        }
+
         if(currentUser.equals(group.owner)) {
             return true;
         }
@@ -67,6 +91,10 @@ public class Specification {
     }
 
     public static boolean CanRemoveGroupMember(User currentUser, Group group, User toBeDeleted) {
+        if(currentUser == null) {
+            return false;
+        }
+
         if(group.owner.equals(toBeDeleted)) {
             return false;
         }
@@ -79,10 +107,18 @@ public class Specification {
             return true;
         }
 
+        if(currentUser.isAdmin()) {
+            return true;
+        }
+
         return false;
     }
 
     public static boolean CanAddGroupMember(User currentUser, Group group, User toBeAdded) {
+        if(currentUser == null) {
+            return false;
+        }
+
         // No duplicates!
         if(group.members.contains(toBeAdded)) {
             return false;
@@ -100,6 +136,10 @@ public class Specification {
     }
 
     public static boolean CanCreateGroup(User currentUser) {
+        if(currentUser == null) {
+            return false;
+        }
+
         return true;
     }
 }
