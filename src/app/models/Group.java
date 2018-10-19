@@ -21,8 +21,6 @@ public class Group extends BaseDomain {
     @ManyToMany(mappedBy = "groups")
     public Set<User> members = new HashSet<>();
 
-    public static final GroupFinder find = new GroupFinder();
-
     public Group(Long id, String name, User owner, boolean isAdminGroup) {
         this.id = id;
         this.name = name;
