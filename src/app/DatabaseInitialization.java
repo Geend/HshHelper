@@ -1,5 +1,3 @@
-package extension;
-
 import javax.inject.*;
 
 import models.Group;
@@ -12,17 +10,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Singleton
-public class ApplicationStart {
+public class DatabaseInitialization {
 
     @Inject
-    public ApplicationStart(Database db) {
-        Logger.info("ApplicationStart - Prepare DB");
+    public DatabaseInitialization(Database db) {
+        Logger.info("DatabaseInitialization - Prepare DB");
 
         // TODO: Add new tables for truncation
         // This whole process is super fragile
         // Each new table must be manually added if there has to be data added to the table
         // before the application starts.
-        Logger.info("ApplicationStart - Prepare DB; Truncate all tables.");
+        Logger.info("DatabaseInitialization - Prepare DB; Truncate all tables.");
         db.withConnection(connection -> {
             String refIntegrityFalse = "SET REFERENTIAL_INTEGRITY FALSE";
             String refIntegrityTrue = "SET REFERENTIAL_INTEGRITY TRUE";
@@ -34,9 +32,9 @@ public class ApplicationStart {
             stmt.execute(truncateGroups);
             stmt.execute(refIntegrityTrue);
         });
-        Logger.info("ApplicationStart - Prepare DB; Truncated");
+        Logger.info("DatabaseInitialization - Prepare DB; Truncated");
 
-        Logger.info("ApplicationStart - Prepare DB; Add new users and groups");
+        Logger.info("DatabaseInitialization - Prepare DB; Add new users and groups");
         User u1 = new User("admin", "admin@admin.com", "admin", true, 10);
         User u2 = new User("peter", "peter@gmx.com", "peter", true, 10);
         User u3 = new User("klaus", "klaus@gmx.com", "klaus", true, 10);
@@ -58,6 +56,6 @@ public class ApplicationStart {
         g1.save();
         g2.save();
         g3.save();
-        Logger.info("ApplicationStart - Prepare DB; Done adding new users and groups");
+        Logger.info("DatabaseInitialization - Prepare DB; Done adding new users and groups");
     }
 }
