@@ -68,7 +68,7 @@ public class GroupController extends Controller {
 
         if(!g.isPresent())
             return notFound("404");
-        List<User> notMember = User.find.all().stream().filter(
+        List<User> notMember = userFinder.all().stream().filter(
                 user -> !g.get().members.contains(user))
                 .collect(Collectors.toList());
         return g.map(grp ->
@@ -105,7 +105,7 @@ public class GroupController extends Controller {
 
         AddUserToGroupDTO au = form.get();
 
-        User toBeAdded= User.find.byIdOptional(au.getUserId()).get();
+        User toBeAdded= userFinder.byIdOptional(au.getUserId()).get();
         Group g = Group.find.byIdOptional(groupId).get();
         if(!policy.Specification.CanAddGroupMember(ContextArguments.getUser().get(), g,
                 toBeAdded)) {
