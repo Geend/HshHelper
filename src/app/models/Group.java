@@ -40,14 +40,12 @@ public class Group extends BaseDomain {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Group group = (Group) o;
-        return isAdminGroup == group.isAdminGroup &&
-                Objects.equals(name, group.name) &&
-                Objects.equals(owner, group.owner) &&
-                Objects.equals(members, group.members);
+        return Objects.equals(id, group.id)&&
+            Objects.equals(name, group.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, owner, isAdminGroup, members);
+        return Objects.hash(id, name);
     }
 }
