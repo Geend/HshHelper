@@ -18,6 +18,10 @@ libraryDependencies += "com.h2database" % "h2" % "1.4.197"
 // needed to run the evolutions during startup
 libraryDependencies += PlayImport.evolutions
 
+//needed for sending emails (password reset)
+libraryDependencies += "com.typesafe.play" %% "play-mailer" % "6.0.1"
+libraryDependencies += "com.typesafe.play" %% "play-mailer-guice" % "6.0.1"
+
 libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
 // Testing libraries for dealing with CompletionStage...
 libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
