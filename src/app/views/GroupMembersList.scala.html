@@ -17,10 +17,10 @@
                     @helper.form(action = routes.GroupController.postRemoveMember(group.getId())){
                         @helper.CSRF.formField
                         <input type="hidden" name="userId" value="@m.getId()" />
-                        <button type="submit">Entfernen</button>
+                        <button type="submit" class="btn btn-primary">Entfernen</button>
                     }
                 } else {
-                    <button type="submit" disabled>Entfernen</button>
+                    <button class="btn btn-secondary" type="submit" disabled>Entfernen</button>
                 }
             </td>
         </tr>
@@ -36,7 +36,7 @@ group)) {
                 options = notMembers.map(user => user.id.toString -> user.username),
                 '_label -> "Nutzer waehlen"
             )
-            <button type="submit">Nutzer hinzufuegen</button>
+            <button class="btn btn-primary" type="submit">Nutzer hinzufuegen</button>
         }
     }
 }
