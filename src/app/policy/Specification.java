@@ -2,6 +2,7 @@ package policy;
 
 import models.Group;
 import models.User;
+import models.UserSession;
 import play.Logger;
 
 public class Specification {
@@ -173,6 +174,18 @@ public class Specification {
         }
 
         if(currentUser.equals(toBeUpdated)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean CanDeleteSession(User currentUser, UserSession session) {
+        if(currentUser == null) {
+            return false;
+        }
+
+        if(session.getUser().equals(currentUser)) {
             return true;
         }
 

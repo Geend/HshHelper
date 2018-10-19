@@ -1,8 +1,10 @@
 package models.finders;
 
 import io.ebean.Finder;
+import models.User;
 import models.UserSession;
 
+import java.util.List;
 import java.util.Optional;
 
 public class UserSessionFinder extends Finder<Long, UserSession> {
@@ -17,5 +19,9 @@ public class UserSessionFinder extends Finder<Long, UserSession> {
             return Optional.empty();
         }
         return Optional.of(userSession);
+    }
+
+    public List<UserSession> byUser(User user) {
+        return this.query().where().eq("user", user).findList();
     }
 }

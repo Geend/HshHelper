@@ -1,14 +1,11 @@
 package controllers;
 
-import extension.AuthenticationRequired;
-import extension.ContextArguments;
-import extension.HashHelper;
-import extension.PasswordGenerator;
+import extension.*;
 import models.User;
-import models.dtos.ChangeOwnPasswordDto;
-import models.dtos.CreateUserDto;
-import models.dtos.ResetUserPasswordDto;
+import models.UserSession;
+import models.dtos.*;
 import models.finders.UserFinder;
+import models.finders.UserSessionFinder;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.mailer.Email;
@@ -18,7 +15,10 @@ import play.mvc.Result;
 import policy.Specification;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Optional;
+
+import static play.libs.Scala.asScala;
 
 public class UserController extends Controller {
 
@@ -26,17 +26,22 @@ public class UserController extends Controller {
     MailerClient mailerClient;
 
     private UserFinder userFinder;
+    private UserSessionFinder userSessionFinder;
+
     private Form<CreateUserDto> createUserForm;
     private Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
     private Form<ResetUserPasswordDto> resetUserPasswordForm;
+    private Form<DeleteSessionDTO> deleteSessionForm;
 
 
     @Inject
-    public UserController(FormFactory formFactory, UserFinder userFinder) {
+    public UserController(FormFactory formFactory, UserFinder userFinder, UserSessionFinder userSessionFinder) {
         this.createUserForm = formFactory.form(CreateUserDto.class);
         this.userFinder = userFinder;
+        this.userSessionFinder = userSessionFinder;
         this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
+        this.deleteSessionForm = formFactory.form(DeleteSessionDTO.class);
     }
 
 
@@ -172,5 +177,30 @@ public class UserController extends Controller {
 
         //TODO: Catch possible exception (eg if the mail server is down)
         mailerClient.send(email);
+    }
+
+    @AuthenticationRequired
+    public Result showActiveUserSessions() {
+        User u = ContextArguments.getUser().get();
+        List<UserSession> userSessions = userSessionFinder.byUser(u);
+        return ok(views.html.UserSessions.render(asScala(userSessions)));
+    }
+
+    @AuthenticationRequired
+    public Result deleteUserSession() {
+        Form<DeleteSessionDTO> bf = deleteSessionForm.bindFromRequest();
+
+        Optional<UserSession> session = userSessionFinder.byIdOptional(bf.get().getSessionId());
+        if(!session.isPresent()) {
+            return badRequest();
+        }
+
+        if(!policy.Specification.CanDeleteSession(ContextArguments.getUser().get(), session.get())) {
+            return badRequest();
+        }
+
+        session.get().delete();
+
+        return redirect(routes.UserController.showActiveUserSessions());
     }
 }

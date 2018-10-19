@@ -1,5 +1,6 @@
 import models.Group;
 import models.User;
+import models.UserSession;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import policy.Specification;
@@ -20,7 +21,7 @@ public class GroupMemberPolicyTests {
     private static Group allGroup;
     private static Group adminGroup;
     private static Group petersGroup;
-
+    private static UserSession petersSession;
     /*
         adminGroup:
             admin, adminTwo
@@ -57,6 +58,9 @@ public class GroupMemberPolicyTests {
         klaus.groups = Stream.of(petersGroup, allGroup).collect(Collectors.toSet());
         horst.groups = Stream.of(allGroup).collect(Collectors.toSet());
         rudi.groups = Stream.of(allGroup).collect(Collectors.toSet());
+
+        petersSession = new UserSession();
+        petersSession.setUser(peter);
     }
 
     @Test
@@ -487,4 +491,30 @@ public class GroupMemberPolicyTests {
         assertThat(actual).isFalse();
     }
 
+    /*
+        SessionDeletion Test
+     */
+    @Test
+    public void adminCannotDeleteOthersSession() {
+        boolean actual = Specification.CanDeleteSession(admin, petersSession);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void userCannotDeleteOthersSession() {
+        boolean actual = Specification.CanDeleteSession(klaus, petersSession);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonAuthorizedUserCannotDeleteOthersSession() {
+        boolean actual = Specification.CanDeleteSession(null, petersSession);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void userCanDeleteOwnSession() {
+        boolean actual = Specification.CanDeleteSession(peter, petersSession);
+        assertThat(actual).isTrue();
+    }
 }
