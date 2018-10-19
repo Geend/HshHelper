@@ -29,7 +29,12 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanRemoveUser(User currentUser) {
+    public static boolean CanDeleteUser(User currentUser, User userToBeDeleted) {
+        // Wenn Nutzer Owner einer Admin-Gruppe ist, darf er nicht gelöscht werden (Quasi Super-Admin)
+        if(userToBeDeleted.groups.stream().anyMatch(x -> x.owner.equals(userToBeDeleted))) {
+            return false;
+        }
+
         if(currentUser.isAdmin()) {
             return true;
         }
@@ -41,7 +46,7 @@ public class Specification {
         if(currentUser.equals(toBeUpdated)) {
             return true;
         }
-        
+
         return false;
     }
 
