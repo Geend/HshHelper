@@ -7,6 +7,7 @@ import models.User;
 import models.dtos.AddUserToGroupDTO;
 import models.dtos.CreateGroupDTO;
 import models.dtos.RemoveGroupUserDTO;
+import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import play.data.Form;
 import play.data.FormFactory;
@@ -27,14 +28,16 @@ import static play.libs.Scala.asScala;
 public class GroupController extends Controller {
     private final Form<CreateGroupDTO> groupForm;
     private final Form<RemoveGroupUserDTO> removeGroupUserForm;
-    private UserFinder userFinder;
+    private final UserFinder userFinder;
     private final Form<AddUserToGroupDTO> addUserToGroupForm;
+    private final GroupFinder groupFinder;
 
     @Inject
-    public GroupController(FormFactory formFactory, UserFinder userFinder) {
+    public GroupController(FormFactory formFactory, UserFinder userFinder, GroupFinder groupFinder) {
         this.groupForm = formFactory.form(CreateGroupDTO.class);
         this.removeGroupUserForm = formFactory.form(RemoveGroupUserDTO.class);
         this.userFinder = userFinder;
+        this.groupFinder = groupFinder;
         this.addUserToGroupForm = formFactory.form(AddUserToGroupDTO.class);
     }
 
@@ -64,7 +67,7 @@ public class GroupController extends Controller {
     }
 
     public Result getGroup(Long id) {
-        Optional<Group> g = Group.find.byIdOptional(id);
+        Optional<Group> g = groupFinder.byIdOptional(id);
 
         if(!g.isPresent())
             return notFound("404");
@@ -86,7 +89,7 @@ public class GroupController extends Controller {
         RemoveGroupUserDTO ru = form.get();
 
         User toBeDeleted = userFinder.byIdOptional(ru.getUserId()).get();
-        Group g = Group.find.byIdOptional(groupId).get();
+        Group g = groupFinder.byIdOptional(groupId).get();
         if(!policy.Specification.CanRemoveGroupMember(ContextArguments.getUser().get(), g, toBeDeleted)) {
             return badRequest("error");
         }
@@ -106,7 +109,7 @@ public class GroupController extends Controller {
         AddUserToGroupDTO au = form.get();
 
         User toBeAdded= userFinder.byIdOptional(au.getUserId()).get();
-        Group g = Group.find.byIdOptional(groupId).get();
+        Group g = groupFinder.byIdOptional(groupId).get();
         if(!policy.Specification.CanAddGroupMember(ContextArguments.getUser().get(), g,
                 toBeAdded)) {
             return badRequest("error");
