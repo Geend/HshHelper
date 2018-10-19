@@ -15,7 +15,7 @@
             <td>@m.username</td>
             <td>
                 @if(policy.Specification.CanRemoveGroupMember(extension.ContextArguments.getUser().get(), group, m)) {
-                    @helper.form(action = routes.GroupController.postRemoveMember(group.id)){
+                    @helper.form(action = routes.GroupController.postRemoveMember(group.getId())){
                         @helper.CSRF.formField
                         <input type="hidden" name="userId" value="@m.id" />
                         <button type="submit">Entfernen</button>
