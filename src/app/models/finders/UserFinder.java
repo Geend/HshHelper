@@ -4,14 +4,10 @@ import extension.HashHelper;
 import io.ebean.Finder;
 import models.User;
 
-import java.util.List;
 import java.util.Optional;
 
 public class UserFinder extends Finder<Long, User> {
 
-    /**
-     * Construct using the default EbeanServer.
-     */
     public UserFinder() {
         super(User.class);
     }
@@ -24,14 +20,16 @@ public class UserFinder extends Finder<Long, User> {
         return this.query().where().eq("username", username).findOneOrEmpty();
     }
 
-    public boolean authenticate(String username, String password) {
+    public Optional<User> authenticate(String username, String password) {
         Optional<User> user = this.query().where()
                 .eq("username", username)
                 .findOneOrEmpty();
 
         if(!user.isPresent())
-            return false;
-
-        return HashHelper.checkHash(password, user.get().passwordHash);
+            return user;
+        else if(HashHelper.checkHash(password, user.get().passwordHash))
+            return user;
+        else
+            return Optional.empty();
     }
 }

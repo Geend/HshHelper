@@ -42,7 +42,11 @@ public class LoginController extends Controller {
         }
         UserLoginDto loginData = boundForm.get();
 
-        if (userFinder.authenticate(loginData.getUsername(), loginData.getPassword())) {
+        Optional<User> authenticatedUser = userFinder.authenticate(loginData.getUsername(), loginData.getPassword());
+        if (authenticatedUser.isPresent()) {
+            if(authenticatedUser.get().passwordResetRequired) {
+                return TODO;
+            }
             Logger.info("User authenticated");
 
             String remoteIp = request().remoteAddress();
