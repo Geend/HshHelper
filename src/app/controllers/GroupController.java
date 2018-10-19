@@ -5,6 +5,7 @@ import models.Group;
 import models.User;
 import models.dtos.CreateGroupDTO;
 import models.dtos.RemoveGroupUserDTO;
+import models.finders.UserFinder;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -21,11 +22,13 @@ import static play.libs.Scala.asScala;
 public class GroupController extends Controller {
     private final Form<CreateGroupDTO> groupForm;
     private final Form<RemoveGroupUserDTO> removeGroupUserForm;
+    private UserFinder userFinder;
 
     @Inject
-    public GroupController(FormFactory formFactory) {
+    public GroupController(FormFactory formFactory, UserFinder userFinder) {
         this.groupForm = formFactory.form(CreateGroupDTO.class);
         this.removeGroupUserForm = formFactory.form(RemoveGroupUserDTO.class);
+        this.userFinder = userFinder;
     }
 
     public Result getCreateGroup() {
@@ -71,7 +74,7 @@ public class GroupController extends Controller {
 
         RemoveGroupUserDTO ru = form.get();
 
-        User toBeDeleted = User.find.byIdOptional(ru.getUserId()).get();
+        User toBeDeleted = userFinder.byIdOptional(ru.getUserId()).get();
         Group g = Group.find.byIdOptional(groupId).get();
         if(!policy.Specification.CanRemoveGroupMember(ContextArguments.getUser().get(), g, toBeDeleted)) {
             return badRequest("error");

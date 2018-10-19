@@ -12,6 +12,10 @@ public class UserSessionFinder extends Finder<Long, UserSession> {
     }
 
     public Optional<UserSession> byIdOptional(Long id) {
-        return Optional.of(this.byId(id));
+        UserSession userSession = this.byId(id);
+        if(userSession == null) {
+            return Optional.empty();
+        }
+        return Optional.of(userSession);
     }
 }

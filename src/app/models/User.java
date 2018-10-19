@@ -30,8 +30,6 @@ public class User extends BaseDomain {
     )
     public Set<Group> groups = new HashSet<>();
 
-    public static final UserFinder find = new UserFinder();
-
     public User(
             String username,
             String email,
