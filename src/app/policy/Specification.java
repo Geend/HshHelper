@@ -23,7 +23,7 @@ public class Specification {
 
     public static boolean CanCreateUser(User currentUser) {
         if(currentUser.isAdmin()) {
-            return false;
+            return true;
         }
 
         return false;
@@ -31,7 +31,7 @@ public class Specification {
 
     public static boolean CanRemoveUser(User currentUser) {
         if(currentUser.isAdmin()) {
-            return false;
+            return true;
         }
 
         return false;
