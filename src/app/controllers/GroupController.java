@@ -1,5 +1,6 @@
 package controllers;
 
+import extension.AuthenticationRequired;
 import extension.ContextArguments;
 import models.Group;
 import models.User;
@@ -18,6 +19,7 @@ import java.util.Set;
 import static play.libs.Scala.asScala;
 
 @Singleton
+@AuthenticationRequired
 public class GroupController extends Controller {
     private final Form<CreateGroupDTO> groupForm;
     private final Form<RemoveGroupUserDTO> removeGroupUserForm;
