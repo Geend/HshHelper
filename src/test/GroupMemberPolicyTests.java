@@ -432,4 +432,25 @@ public class GroupMemberPolicyTests {
         boolean actual = Specification.CanDeleteGroup(null, allGroup);
         assertThat(actual).isFalse();
     }
+
+    /*
+        Password reset
+     */
+    @Test
+    public void adminCannotResetPassword() {
+        boolean actual = Specification.CanResetPassword(admin);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void userCanResetPassword() {
+        boolean actual = Specification.CanResetPassword(peter);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonAuthorizedUserCanResetPassword() {
+        boolean actual = Specification.CanResetPassword(null);
+        assertThat(actual).isTrue();
+    }
 }

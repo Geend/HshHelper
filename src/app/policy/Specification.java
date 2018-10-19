@@ -74,8 +74,12 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanResetPassword(User currentUser, User toBeResetted) {
-        return true;
+    public static boolean CanResetPassword(User currentUser) {
+        if(currentUser == null) {
+            return true;
+        }
+
+        return false;
     }
 
     public static boolean CanDeleteGroup(User currentUser, Group group) {
