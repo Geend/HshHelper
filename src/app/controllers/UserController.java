@@ -1,5 +1,6 @@
 package controllers;
 
+import extension.AuthenticationRequired;
 import extension.ContextArguments;
 import extension.PasswordGenerator;
 import models.User;
@@ -10,6 +11,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
+import policy.Specification;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -27,16 +29,23 @@ public class UserController extends Controller {
     }
 
 
-
-
     public Result showCreateUserForm() {
         return ok(views.html.CreateUser.render(createUserForm));
     }
 
-
+    @AuthenticationRequired
     public Result createUser() {
 
-        //TODO: Check if the logged in user is allowd to create users
+        Optional<User> currentUser = ContextArguments.getUser();
+        if (!currentUser.isPresent())
+            return badRequest("error");
+
+        if (Specification.CanCreateUser(currentUser.get()))
+            return badRequest("error");
+
+
+
+
         Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
 
         if (boundForm.hasErrors()) {
@@ -65,7 +74,7 @@ public class UserController extends Controller {
         newUser.save();
 
         //TODO: Show the create the password
-        return ok("created user "+ newUser.username + " with inital password " + plaintextPassword);
+        return ok("created user " + newUser.username + " with inital password " + plaintextPassword);
 
     }
 
@@ -74,7 +83,7 @@ public class UserController extends Controller {
     }
 
 
-    public Result changeOwnPassword(){
+    public Result changeOwnPassword() {
         //TODO: Enforce policy
 
         Form<ChangeOwnPasswordDto> boundForm = changeOwnPasswordForm.bindFromRequest("password", "passwordRepeat");
@@ -90,10 +99,9 @@ public class UserController extends Controller {
         //TODO: Check if password and passwordRepeat match here again? There already are constraints in the DTO
 
 
-
         Optional<User> userOptional = ContextArguments.getUser();
 
-        if(userOptional.isPresent()){
+        if (userOptional.isPresent()) {
             User user = userOptional.get();
 
             user.passwordHash = BCrypt.hashpw(changeOwnPasswordDto.getPassword(), BCrypt.gensalt());
@@ -101,11 +109,9 @@ public class UserController extends Controller {
             user.save();
             return ok("changedPassword");
 
-        }
-        else{
+        } else {
             return badRequest("no user present");
         }
-
 
 
     }
