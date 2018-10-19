@@ -54,17 +54,17 @@ public class User extends BaseDomain {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return passwordResetRequired == user.passwordResetRequired &&
-                quotaLimit == user.quotaLimit &&
-                Objects.equals(id, user.id) &&
-                Objects.equals(username, user.username) &&
-                Objects.equals(email, user.email) &&
-                Objects.equals(passwordHash, user.passwordHash) &&
-                Objects.equals(groups, user.groups);
+        // A situation could occur where users have not been added to the DB yet but still need
+        // to be comparable. During a test, for example.
+        if (user.id == null) {
+            return Objects.equals(username, user.username);
+        }
+        return Objects.equals(id, user.id) &&
+                Objects.equals(username, user.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, email, passwordHash, passwordResetRequired, quotaLimit, groups);
+        return Objects.hash(id, username);
     }
 }
