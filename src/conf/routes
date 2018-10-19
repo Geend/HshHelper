@@ -5,6 +5,8 @@ POST        /users/create                        controllers.UserController.crea
 GET         /users/create                        controllers.UserController.showCreateUserForm
 GET         /changepassword                      controllers.UserController.showChangeOwnPasswordForm
 POST        /changepassword                      controllers.UserController.changeOwnPassword
+GET         /resetpassword                       controllers.UserController.showResetUserPasswordForm
+POST        /resetpassword                       controllers.UserController.resetUserPassword
 
 GET         /login                               controllers.LoginController.login
 POST        /login                               controllers.LoginController.loginCommit
