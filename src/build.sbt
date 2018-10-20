@@ -32,3 +32,5 @@ libraryDependencies += "org.mockito" % "mockito-core" % "2.10.0" % "test"
 testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v"))
 
 libraryDependencies += "joda-time" % "joda-time" % "2.10"
+
+javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
