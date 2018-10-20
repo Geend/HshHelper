@@ -37,7 +37,7 @@ public class SessionCleaner {
     private void run() {
         Logger.info("Session Cleanup starting");
 
-        Update<UserSession> upd = Ebean.createUpdate(UserSession.class,"DELETE FROM USERSESSION  WHERE TIMESTAMPADD(HOUR, :expiry_hours, ISSUED_AT) < CURRENT_DATE");
+        Update<UserSession> upd = Ebean.createUpdate(UserSession.class,"DELETE FROM USERSESSION  WHERE TIMESTAMPADD(HOUR, :expiry_hours, ISSUED_AT) < CURRENT_TIMESTAMP");
         upd.set("expiry_hours", ConstraintValues.SESSION_TIMEOUT_HOURS);
         int purgedSessions = upd.execute();
 
