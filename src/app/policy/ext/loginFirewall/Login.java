@@ -19,6 +19,10 @@ public class Login {
         this.remoteIp = remoteIp;
     }
 
+    public Strategy getStrategy() {
+        return getStrategy(null);
+    }
+
     public Strategy getStrategy(Long uid) {
         long accountFailedLogins = 0;
         long ipFailedLogins = getKeyCount(remoteIp);
