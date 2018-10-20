@@ -37,3 +37,5 @@ libraryDependencies += "org.webjars" % "bootstrap" % "4.1.3"
 
 TwirlKeys.templateImports += "views.bootstrapHelper.Input"
 TwirlKeys.templateImports += "views.bootstrapHelper.enums._"
+
+javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
