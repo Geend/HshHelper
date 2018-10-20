@@ -73,7 +73,8 @@ public class UserController extends Controller {
 
         PasswordGenerator passwordGenerator = new PasswordGenerator();
 
-        String plaintextPassword = passwordGenerator.generatePassword();
+        //TODO: Include generated password length in policy
+        String plaintextPassword = passwordGenerator.generatePassword(10);
         String passwordHash = HashHelper.hashPassword(plaintextPassword);
 
         boolean passwordResetRequired = true;
@@ -154,7 +155,9 @@ public class UserController extends Controller {
         User user = userOptional.get();
 
         PasswordGenerator passwordGenerator = new PasswordGenerator();
-        String tempPassword = passwordGenerator.generatePassword();
+
+        //TODO: Include generated password length in policy
+        String tempPassword = passwordGenerator.generatePassword(10);
 
         user.passwordHash = HashHelper.hashPassword(tempPassword);
         user.passwordResetRequired = true;
