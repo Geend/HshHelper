@@ -2,32 +2,25 @@
 
 @implicitFieldConstructor = @{ helper.FieldConstructor(BootstrapFieldConstructor.render)}
 
-@Main("Mitglieder von: " + group.name) {
-    <table>
-        <thead>
-            <tr>
-                <td>Benutzername</td>
-                <td></td>
-            </tr>
-        </thead>
-
-    @for(m <- members) {
-        <tr>
-            <td>@m.username</td>
-            <td>
-                @if(policy.Specification.CanRemoveGroupMember(extension.ContextArguments.getUser().get(), group, m)) {
-                    @helper.form(action = routes.GroupController.postRemoveMember(group.getId())){
-                        @helper.CSRF.formField
-                        <input type="hidden" name="userId" value="@m.getId()" />
-                        <button type="submit" class="btn btn-primary">Entfernen</button>
-                    }
-                } else {
-                    <button class="btn btn-secondary" type="submit" disabled>Entfernen</button>
-                }
-            </td>
-        </tr>
+@userButton(member: User) = {
+    @if(policy.Specification.CanRemoveGroupMember(extension.ContextArguments.getUser().get(), group, member)) {
+        @helper.form(action = routes.GroupController.postRemoveMember(group.getId())){
+            @helper.CSRF.formField
+            <input type="hidden" name="userId" value="@member.getId()" />
+            <button type="submit" class="btn btn-primary">Entfernen</button>
+        }
+    } else {
+        <button class="btn btn-secondary" type="submit" disabled>Entfernen</button>
     }
-    </table>
+}
+
+@Main("Mitglieder von: " + group.name) {
+    @functions.table(members.map(
+        member => scala.collection.Map(
+            "Benutzername" -> member.username,
+            "" -> userButton(member).toString
+    )))
+
     @if(policy.Specification.isAllowedToAddGroupMember(extension.ContextArguments.getUser().get(),
 group)) {
         <h2>Benutzer hinzufuegen</h2>
