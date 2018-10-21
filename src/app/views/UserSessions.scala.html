@@ -1,31 +1,25 @@
 @(sessions: Seq[UserSession])
 
-@Main("Aktive Sessions") {
-    <table>
-        <thead>
-            <tr>
-                <td>Verwendete IP</td>
-                <td>Erstellungsdatum</td>
-                <td></td>
-            </tr>
-        </thead>
+@import functions._
 
-        @for(s <- sessions) {
-            <tr>
-                <td>@s.getConnectedFrom</td>
-                <td>@s.getIssuedAt.toString("dd.MM.yyyy - HH:mm:ss")</td>
-                <td>
-                    @if(policy.Specification.CanDeleteSession(extension.ContextArguments.getUser().get(), s)) {
-                        @helper.form(action = routes.UserController.deleteUserSession()){
-                            @helper.CSRF.formField
-                            <input type="hidden" name="sessionId" value="@s.getId" />
-                            <button type="submit">Session Zerstören</button>
-                        }
-                    } else {
-                        <button type="submit" disabled>Session Zerstören</button>
-                    }
-                </td>
-            </tr>
+@sessionButton(s: UserSession) = {
+    @if(policy.Specification.CanDeleteSession(extension.ContextArguments.getUser().get(), s)) {
+        @helper.form(action = routes.UserController.deleteUserSession()){
+            @helper.CSRF.formField
+            <input type="hidden" name="sessionId" value="@s.getId" />
+            <button type="submit">Session Zerstören</button>
         }
-    </table>
+    } else {
+        <button type="submit" disabled>Session Zerstören</button>
+    }
+}
+
+@Main("Aktive Sessions") {
+    @functions.table(sessions.map(
+        s => scala.collection.Map(
+            "Verwendete IP" -> s.getConnectedFrom,
+            "Erstellungsdatum" -> s.getIssuedAt.toString("dd.MM.yyyy - HH:mm:ss"),
+            "" -> sessionButton(s).toString()
+        )
+    ), bordered = true)
 }
