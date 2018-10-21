@@ -1,14 +1,20 @@
-@(sessions: Seq[UserSession])
+@(sessions: Seq[UserSession], deleteSessionform: Form[dtos.DeleteSessionDTO])
 
 @import bootstrapHelper._
+@import views.bootstrapHelper.Input
+@import views.bootstrapHelper.enums.InputType
 
 @sessionButton(s: UserSession) = {
     @if(policy.Specification.CanDeleteSession(extension.ContextArguments.getUser().get(), s)) {
-        @helper.form(action = routes.UserController.deleteUserSession()){
-            @helper.CSRF.formField
-            <input type="hidden" name="sessionId" value="@s.getId" />
-            @button("Session Zerstören")
-        }
+        @form(
+            routes.UserController.deleteUserSession(),
+            deleteSessionform,
+            scala.collection.Map(
+                "sessionId" -> Input(InputType.Hidden,
+                    value = s.getId.toString)
+            ),
+            "Session Zerstören"
+        )
     } else {
         @button("Session Zerstören", disabled = true)
     }

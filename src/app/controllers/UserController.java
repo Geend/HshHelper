@@ -183,7 +183,7 @@ public class UserController extends Controller {
     public Result showActiveUserSessions() {
         User u = ContextArguments.getUser().get();
         List<UserSession> userSessions = userSessionFinder.byUser(u);
-        return ok(views.html.UserSessions.render(asScala(userSessions)));
+        return ok(views.html.UserSessions.render(asScala(userSessions), deleteSessionForm));
     }
 
     @AuthenticationRequired

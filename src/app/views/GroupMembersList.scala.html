@@ -1,17 +1,23 @@
 @import views.bootstrapHelper.enums.ButtonClass
+@import views.bootstrapHelper.Input
+@import views.bootstrapHelper.enums.InputType
 @import bootstrapHelper._
 
-@(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[dtos.AddUserToGroupDTO])
+@(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[dtos.AddUserToGroupDTO], removeGroupUserForm: Form[dtos.RemoveGroupUserDTO])
 
 @implicitFieldConstructor = @{ helper.FieldConstructor(BootstrapFieldConstructor.render)}
 
 @userButton(member: User) = {
     @if(policy.Specification.CanRemoveGroupMember(extension.ContextArguments.getUser().get(), group, member)) {
-        @helper.form(action = routes.GroupController.postRemoveMember(group.getId())){
-            @helper.CSRF.formField
-            <input type="hidden" name="userId" value="@member.getId()" />
-            @button("Entfernen")
-        }
+        @bootstrapHelper.form(
+            routes.GroupController.postRemoveMember(group.getId()),
+            removeGroupUserForm,
+            scala.collection.Map(
+                "userId" -> Input(InputType.Hidden,
+                    value = member.getId().toString)
+            ),
+            "Entfernen"
+        )
     } else {
         @button("Entfernen", clazz = ButtonClass.Secondary)
     }
