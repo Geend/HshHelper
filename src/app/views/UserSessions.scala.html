@@ -11,7 +11,7 @@
             deleteSessionform,
             scala.collection.Map(
                 "sessionId" -> Input(InputType.Hidden,
-                    value = s.getId.toString)
+                    value = Left(s.getId.toString))
             ),
             "Session Zerstören"
         )

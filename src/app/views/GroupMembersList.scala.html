@@ -12,7 +12,7 @@
             removeGroupUserForm,
             scala.collection.Map(
                 "userId" -> Input(InputType.Hidden,
-                    value = member.getId().toString)
+                    value = Left(member.getId().toString))
             ),
             "Entfernen"
         )
@@ -31,14 +31,15 @@
     @if(policy.Specification.isAllowedToAddGroupMember(extension.ContextArguments.getUser().get(),
 group)) {
         <h2>Benutzer hinzufuegen</h2>
-        @helper.form(action = routes.GroupController.addMember(group.getId())) {
-            @helper.CSRF.formField
-            @helper.select(
-                field = addUserForm("userId"),
-                options = notMembers.map(user => user.id.toString -> user.username),
-                '_label -> "Nutzer waehlen"
-            )
-            @button("Nutzer hinzufuegen")
-        }
+        @bootstrapHelper.form(
+            routes.GroupController.addMember(group.getId()),
+            addUserForm,
+            scala.collection.Map(
+                "userId" -> Input(InputType.Select,
+                    value = Right(notMembers.map(user => user.id.toString -> user.username)),
+                    label = "Nutzer waehlen")
+            ),
+            "Nutzer hinzufuegen"
+        )
     }
 }
