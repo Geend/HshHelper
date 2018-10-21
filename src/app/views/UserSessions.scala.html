@@ -1,21 +1,21 @@
 @(sessions: Seq[UserSession])
 
-@import functions._
+@import bootstrapHelper._
 
 @sessionButton(s: UserSession) = {
     @if(policy.Specification.CanDeleteSession(extension.ContextArguments.getUser().get(), s)) {
         @helper.form(action = routes.UserController.deleteUserSession()){
             @helper.CSRF.formField
             <input type="hidden" name="sessionId" value="@s.getId" />
-            @functions.button("Session Zerstören")
+            @button("Session Zerstören")
         }
     } else {
-        @functions.button("Session Zerstören", disabled = true)
+        @button("Session Zerstören", disabled = true)
     }
 }
 
 @Main("Aktive Sessions") {
-    @functions.table(sessions.map(
+    @table(sessions.map(
         s => scala.collection.Map(
             "Verwendete IP" -> s.getConnectedFrom,
             "Erstellungsdatum" -> s.getIssuedAt.toString("dd.MM.yyyy - HH:mm:ss"),

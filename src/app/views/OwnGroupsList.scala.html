@@ -1,13 +1,15 @@
 @(groups: Seq[Group])
 
+@import bootstrapHelper._
+
 @groupButton(g: Group) = {
     @if(policy.Specification.CanViewGroupDetails(extension.ContextArguments.getUser().get(), g)) {
-        @functions.link("Mitglieder bearbeiten", routes.GroupController.getGroup(g.id))
+        @link("Mitglieder bearbeiten", routes.GroupController.getGroup(g.id))
     }
 }
 
 @Main("Eigene Gruppen") {
-    @functions.table(groups.map(
+    @table(groups.map(
         g => scala.collection.Map(
             "Gruppenname" -> g.name,
             "" -> groupButton(g).toString()
@@ -15,5 +17,5 @@
     ))
 
     <hr>
-    @functions.link("Eine neue Gruppe anlegen", routes.GroupController.getCreateGroup())
+    @link("Eine neue Gruppe anlegen", routes.GroupController.getCreateGroup())
 }
