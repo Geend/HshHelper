@@ -19,7 +19,20 @@
     @for((k, v) <- fields) {
         @v.typ match {
             case InputType.Hidden => {
-                <input type="@v.typ.toString" name="@k" value="@v.value"/>
+                <input type="@v.typ.toString" name="@k" value="@v.value.left.get"/>
+            }
+            case InputType.Select => {
+                @helper.select(
+                    field = form(k),
+                    options = v.value.right.get,
+                    '_label -> v.label,
+                    'class -> "form-control"
+                )
+            }
+            case InputType.File => {
+                @helper.input(form(k), '_label -> v.label) { (id, name, value, args) =>
+                    <input class="form-control-file" type="@v.typ.toString()" name="@name" id="@id" @toHtmlArgs(args)>
+                }
             }
             case _ => {
                 @helper.input(form(k), '_label -> v.label) { (id, name, value, args) =>
