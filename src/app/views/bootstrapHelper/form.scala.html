@@ -1,0 +1,27 @@
+@(route: play.api.mvc.Call, form: Form[_], fields: scala.collection.Map[String, views.bootstrapHelper.Input], buttonName: String)
+
+@import bootstrapHelper.button
+@import views.bootstrapHelper.enums.InputType
+
+@implicitFieldConstructor = @{ helper.FieldConstructor(bootstrapHelper.BootstrapFieldConstructor.render)}
+
+@if(form.hasGlobalErrors) {
+    <p class="error">
+    @for(error <- form.globalErrors) {
+        <p>@error</p>
+    }
+    </p>
+}
+
+@helper.form(action = route) {
+    @helper.CSRF.formField
+
+    @for((k, v) <- fields) {
+        @helper.input(form(k), '_label -> v.label) { (id, name, value, args) =>
+            <input class="form-control" type="@v.typ.toString" name="@name" id="@id" placeholder="@v.placeholder" aria-describedby="@k.concat("Help")" @toHtmlArgs(args)>
+            <small id="@k.concat("Help")" class="form-text text-muted">@v.help</small>
+        }
+    }
+
+    @button(buttonName)
+}
