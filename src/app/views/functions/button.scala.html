@@ -1,0 +1,14 @@
+@import views.functions.ButtonType
+@import views.functions.ButtonClass
+
+@(text: String, disabled: Boolean = false, typ: ButtonType.Value = ButtonType.Submit, clazz: ButtonClass.Value = ButtonClass.Primary)
+
+@generateDisabled() = {
+    @scala.collection.Map(
+        "disabled" -> disabled
+    ).filter(t => t._2).keys.mkString("")
+}
+
+
+<button type="@typ.toString" class="btn @clazz.toString" @generateDisabled>@text</button>
+
