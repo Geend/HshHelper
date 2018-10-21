@@ -6,4 +6,5 @@ object InputType extends Enumeration {
   val Password = Value("password")
   val RadioGroup = Value("radioGroup")
   val Text = Value("text")
+  val Hidden = Value("hidden")
 }

@@ -17,9 +17,16 @@
     @helper.CSRF.formField
 
     @for((k, v) <- fields) {
-        @helper.input(form(k), '_label -> v.label) { (id, name, value, args) =>
-            <input class="form-control" type="@v.typ.toString" name="@name" id="@id" placeholder="@v.placeholder" aria-describedby="@k.concat("Help")" @toHtmlArgs(args)>
-            <small id="@k.concat("Help")" class="form-text text-muted">@v.help</small>
+        @v.typ match {
+            case InputType.Hidden => {
+                <input type="@v.typ.toString" name="@k" value="@v.value"/>
+            }
+            case _ => {
+                @helper.input(form(k), '_label -> v.label) { (id, name, value, args) =>
+                    <input class="form-control" type="@v.typ.toString" name="@name" id="@id" placeholder="@v.placeholder" aria-describedby="@k.concat("Help")" @toHtmlArgs(args)>
+                    <small id="@k.concat("Help")" class="form-text text-muted">@v.help</small>
+                }
+            }
         }
     }
 
