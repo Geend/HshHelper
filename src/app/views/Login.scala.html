@@ -15,13 +15,4 @@
         ),
         "Login"
     )
-
-    @helper.form(action = routes.LoginController.loginCommit()){
-        @helper.CSRF.formField
-
-        @helper.inputText(form("username"))
-        @helper.inputPassword(form("password"))
-
-        <input type="submit" class="btn btn-primary" value="Login" />
-    }
 }
