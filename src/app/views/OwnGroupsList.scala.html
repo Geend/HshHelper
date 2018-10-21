@@ -2,9 +2,7 @@
 
 @groupButton(g: Group) = {
     @if(policy.Specification.CanViewGroupDetails(extension.ContextArguments.getUser().get(), g)) {
-        <a class="btn btn-primary" href="@routes.GroupController.getGroup(g.id)">Mitglieder bearbeiten</a>
-    } else {
-        <font color="#808080">Mitglieder bearbeiten</font>
+        @functions.link("Mitglieder bearbeiten", routes.GroupController.getGroup(g.id))
     }
 }
 
@@ -17,5 +15,5 @@
     ))
 
     <hr>
-    <a class="btn btn-primary" href="@routes.GroupController.getCreateGroup()">Eine neue Gruppe anlegen!</a>
+    @functions.link("Eine neue Gruppe anlegen", routes.GroupController.getCreateGroup())
 }
