@@ -1,6 +1,7 @@
 @import models.dtos.UserLoginDto
 @(form: Form[UserLoginDto])
 
+@implicitFieldConstructor = @{ helper.FieldConstructor(BootstrapFieldConstructor.render)}
 
 @Main("User Login"){
 

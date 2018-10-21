@@ -1,5 +1,7 @@
 @(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[dtos.AddUserToGroupDTO])
 
+@implicitFieldConstructor = @{ helper.FieldConstructor(BootstrapFieldConstructor.render)}
+
 @Main("Mitglieder von: " + group.name) {
     <table>
         <thead>
