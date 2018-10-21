@@ -1,3 +1,4 @@
+@import views.functions.ButtonClass
 @(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[dtos.AddUserToGroupDTO])
 
 @implicitFieldConstructor = @{ helper.FieldConstructor(BootstrapFieldConstructor.render)}
@@ -7,10 +8,10 @@
         @helper.form(action = routes.GroupController.postRemoveMember(group.getId())){
             @helper.CSRF.formField
             <input type="hidden" name="userId" value="@member.getId()" />
-            <button type="submit" class="btn btn-primary">Entfernen</button>
+            @functions.button("Entfernen")
         }
     } else {
-        <button class="btn btn-secondary" type="submit" disabled>Entfernen</button>
+        @functions.button("Entfernen", clazz = ButtonClass.Secondary)
     }
 }
 
@@ -31,7 +32,7 @@ group)) {
                 options = notMembers.map(user => user.id.toString -> user.username),
                 '_label -> "Nutzer waehlen"
             )
-            <button class="btn btn-primary" type="submit">Nutzer hinzufuegen</button>
+            @functions.button("Nutzer hinzufuegen")
         }
     }
 }

@@ -7,10 +7,10 @@
         @helper.form(action = routes.UserController.deleteUserSession()){
             @helper.CSRF.formField
             <input type="hidden" name="sessionId" value="@s.getId" />
-            <button type="submit">Session Zerstören</button>
+            @functions.button("Session Zerstören")
         }
     } else {
-        <button type="submit" disabled>Session Zerstören</button>
+        @functions.button("Session Zerstören", disabled = true)
     }
 }
 
