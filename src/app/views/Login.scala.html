@@ -1,9 +1,20 @@
 @import models.dtos.UserLoginDto
 @(form: Form[UserLoginDto])
 
-@implicitFieldConstructor = @{ helper.FieldConstructor(bootstrapHelper.BootstrapFieldConstructor.render)}
+@import views.bootstrapHelper.Input
+@import views.bootstrapHelper.enums.InputType
 
 @Main("User Login"){
+    @bootstrapHelper.form(
+        routes.LoginController.loginCommit(),
+        form,
+        scala.collection.Map(
+            "username" -> Input(InputType.Text, "Benutzername", "Benutzernamen hier eingeben"),
+            "password" -> Input(InputType.Password, "Passwort", "Passwort hier eingeben",
+                                "Passwort durch Sonderzeichen maskiert")
+        ),
+        "Login"
+    )
 
     @helper.form(action = routes.LoginController.loginCommit()){
         @helper.CSRF.formField
