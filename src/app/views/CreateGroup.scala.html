@@ -7,7 +7,9 @@
     @bootstrapHelper.form(routes.GroupController.postCreateGroup(),
         form,
         scala.collection.Map(
-            "name" -> Input(InputType.Text, "Gruppenname", "Gruppennamen hier eintragen")
+            "name" -> Input(InputType.Text,
+                label = "Gruppenname",
+                placeholder = "Gruppennamen hier eintragen")
         ),
         "Create Group"
     )
