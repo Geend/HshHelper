@@ -1,0 +1,14 @@
+@(elements: helper.FieldElements)
+
+<div class="form-group">
+    <label for="@elements.id">@elements.label</label>
+    <br/>
+    @elements.input
+    @if(elements.hasErrors) {
+        @for(error <- elements.errors) {
+            <div class="invalid-feedback">
+                @error.toString
+            </div>
+        }
+    }
+</div>

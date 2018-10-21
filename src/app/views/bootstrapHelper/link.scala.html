@@ -1,0 +1,6 @@
+@import views.bootstrapHelper.enums.LinkClass
+@(text: String, route: Call, clazz: LinkClass.Value = LinkClass.Primary)
+
+<a class="btn @clazz.toString" href="@route">
+    @text
+</a>

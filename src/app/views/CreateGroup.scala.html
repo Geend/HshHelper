@@ -1,18 +1,16 @@
 @(form: Form[dtos.CreateGroupDTO])
 
+@import views.bootstrapHelper.Input
+@import views.bootstrapHelper.enums.InputType
+
 @Main("Create Group") {
-    @if(form.hasGlobalErrors) {
-        <p class="error">
-        @for(error <- form.globalErrors) {
-            <p>@error</p>
-        }
-        </p>
-    }
-
-    @helper.form(action = routes.GroupController.postCreateGroup()){
-        @helper.CSRF.formField
-        @helper.inputText(form("name"))
-
-        <button type="submit">Create Group</button>
-    }
+    @bootstrapHelper.form(routes.GroupController.postCreateGroup(),
+        form,
+        scala.collection.Map(
+            "name" -> Input(InputType.Text,
+                label = "Gruppenname",
+                placeholder = "Gruppennamen hier eintragen")
+        ),
+        "Create Group"
+    )
 }

@@ -1,15 +1,23 @@
 @(form: Form[dtos.CreateUserDto])
 
+@import views.bootstrapHelper.Input
+@import views.bootstrapHelper.enums.InputType
 
-@Main("Create User"){
-
-    @helper.form(action = routes.UserController.createUser()){
-        @helper.CSRF.formField
-
-        @helper.inputText(form("username"))
-        @helper.inputText(form("email"))
-        @helper.inputText(form("quotaLimit"))
-
-        <input type="submit" value="Submit" />
-    }
+@Main("Administrator-Funktion: Benutzer erstellen"){
+    @bootstrapHelper.form(
+        routes.UserController.createUser(),
+        form,
+        scala.collection.Map(
+            "username" -> Input(InputType.Text,
+                label = "Benutzernamen",
+                placeholder = "Benutzernamen hier eingeben"),
+            "email" -> Input(InputType.Text,
+                label = "E-Mail Adresse",
+                placeholder = "E-Mail hier eingeben"),
+            "quotaLimit" -> Input(InputType.Text,
+                label = "Datenkontigent",
+                placeholder = "Datenkontigent als Zahl eingeben")
+        ),
+        "Benutzer erstellen"
+    )
 }
