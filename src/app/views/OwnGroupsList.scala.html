@@ -1,22 +1,21 @@
 @(groups: Seq[Group])
 
+@groupButton(g: Group) = {
+    @if(policy.Specification.CanViewGroupDetails(extension.ContextArguments.getUser().get(), g)) {
+        <a class="btn btn-primary" href="@routes.GroupController.getGroup(g.id)">Mitglieder bearbeiten</a>
+    } else {
+        <font color="#808080">Mitglieder bearbeiten</font>
+    }
+}
 
 @Main("Eigene Gruppen") {
-    <table>
-        @for(g <- groups) {
-            <tr>
-                <td>@g.name</td>
-                <td>
-                        @if(policy.Specification.CanViewGroupDetails(extension.ContextArguments.getUser().get(), g)) {
-                            <a class="btn btn-primary" href="@routes.GroupController.getGroup(g.id)">Mitglieder bearbeiten</a>
-                        } else {
-                            <font color="#808080">Mitglieder bearbeiten</font>
-                        }
+    @functions.table(groups.map(
+        g => scala.collection.Map(
+            "Gruppenname" -> g.name,
+            "" -> groupButton(g).toString()
+        )
+    ))
 
-                </td>
-            </tr>
-        }
-    </table>
     <hr>
     <a class="btn btn-primary" href="@routes.GroupController.getCreateGroup()">Eine neue Gruppe anlegen!</a>
 }
