@@ -1,6 +1,9 @@
 package policy.ext.loginFirewall;
 
 import io.ebean.Ebean;
+import io.ebean.SqlUpdate;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 
 public class Firewall {
     public static int LaggyTsIntervalHours = 1; // 1 Std
@@ -28,8 +31,11 @@ public class Firewall {
 
     public static void GarbageCollect() {
         String cleanSql =
-            "DELETE FROM loginFirewall WHERE expiry < CURRENT_TIMESTAMP";
-        Ebean.createSqlUpdate(cleanSql).execute();
+            "DELETE FROM loginFirewall WHERE expiry <= :current";
+
+        SqlUpdate upd = Ebean.createSqlUpdate(cleanSql);
+        upd.setParameter("current", GetLaggyDT());
+        upd.execute();
     }
 
     public static void Flush() {
@@ -40,5 +46,13 @@ public class Firewall {
 
     public static Login Get(String remoteIp) {
         return new Login(remoteIp);
+    }
+
+    public static DateTime GetLaggyDT() {
+        long unixTime = DateTimeUtils.currentTimeMillis() / 1000L;
+        unixTime = unixTime / (3600L*Firewall.LaggyTsIntervalHours); // laggen. ts soll nur in intervallen ansteigen
+        unixTime = unixTime * (3600L*Firewall.LaggyTsIntervalHours); // alles was zwischen diesen intervallen liegt
+        unixTime = unixTime * 1000L;                                 // soll verworfen werden! -> ganzzahl-division!
+        return new DateTime(unixTime);
     }
 }

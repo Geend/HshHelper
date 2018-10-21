@@ -5,6 +5,7 @@ import io.ebean.SqlQuery;
 import io.ebean.SqlRow;
 import io.ebean.SqlUpdate;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 
 public class Login {
     public enum Strategy {
@@ -57,23 +58,17 @@ public class Login {
         incrKey(remoteIp);
     }
 
-    private DateTime getLaggyDT() {
-        long unixTime = System.currentTimeMillis() / 1000L;
-        unixTime = unixTime / (3600L*Firewall.LaggyTsIntervalHours); // laggen. ts soll nur in intervallen ansteigen
-        unixTime = unixTime * (3600L*Firewall.LaggyTsIntervalHours); // alles was zwischen diesen intervallen liegt
-        unixTime = unixTime * 1000L;                                 // soll verworfen werden! -> ganzzahl-division!
-        return new DateTime(unixTime);
-    }
-
     private void incrKey(String key) {
+        DateTime laggyDt = Firewall.GetLaggyDT();
+
         String incrSql =
             "INSERT INTO loginFirewall (ident, laggy_dt, count, expiry) \n"+
-            "VALUES(:ident, :laggy_dt, 1, TIMESTAMPADD(HOUR, :expiry_hours, CURRENT_TIMESTAMP)) \n"+
+            "VALUES(:ident, :laggy_dt, 1, :expiry_dt) \n"+
             "ON DUPLICATE KEY UPDATE count = count + 1";
         SqlUpdate upd = Ebean.createSqlUpdate(incrSql);
         upd.setParameter("ident", key);
-        upd.setParameter("laggy_dt", getLaggyDT());
-        upd.setParameter("expiry_hours", Firewall.RelevantHours);
+        upd.setParameter("laggy_dt", laggyDt);
+        upd.setParameter("expiry_dt", laggyDt.plusHours(Firewall.RelevantHours));
         upd.execute();
     }
 
@@ -81,7 +76,7 @@ public class Login {
         String countSql =
             "SELECT nvl(sum(count),0) as count FROM loginFirewall WHERE ident=:ident AND laggy_dt > :dt_lower_bound";
 
-        DateTime lowerBound = getLaggyDT();
+        DateTime lowerBound = Firewall.GetLaggyDT();
         lowerBound = lowerBound.minusHours(Firewall.RelevantHours);
 
         SqlQuery qry = Ebean.createSqlQuery(countSql);
