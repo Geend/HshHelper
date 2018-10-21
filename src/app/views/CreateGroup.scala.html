@@ -1,8 +1,5 @@
 @(form: Form[dtos.CreateGroupDTO])
 
-@import views.bootstrapHelper.Input
-@import views.bootstrapHelper.enums.InputType
-
 @Main("Create Group") {
     @bootstrapHelper.form(routes.GroupController.postCreateGroup(),
         form,

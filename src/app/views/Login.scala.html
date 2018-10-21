@@ -1,9 +1,6 @@
 @import models.dtos.UserLoginDto
 @(form: Form[UserLoginDto])
 
-@import views.bootstrapHelper.Input
-@import views.bootstrapHelper.enums.InputType
-
 @Main("User Login"){
     @bootstrapHelper.form(
         routes.LoginController.loginCommit(),

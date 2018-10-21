@@ -1,8 +1,5 @@
 @(form: Form[dtos.CreateUserDto])
 
-@import views.bootstrapHelper.Input
-@import views.bootstrapHelper.enums.InputType
-
 @Main("Administrator-Funktion: Benutzer erstellen"){
     @bootstrapHelper.form(
         routes.UserController.createUser(),

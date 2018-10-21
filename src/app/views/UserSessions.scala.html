@@ -1,8 +1,6 @@
 @(sessions: Seq[UserSession], deleteSessionform: Form[dtos.DeleteSessionDTO])
 
 @import bootstrapHelper._
-@import views.bootstrapHelper.Input
-@import views.bootstrapHelper.enums.InputType
 
 @sessionButton(s: UserSession) = {
     @if(policy.Specification.CanDeleteSession(extension.ContextArguments.getUser().get(), s)) {
