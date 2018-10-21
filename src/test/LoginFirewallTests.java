@@ -1,13 +1,18 @@
+import io.ebean.Ebean;
+import io.ebean.SqlQuery;
+import io.ebean.SqlRow;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 import org.junit.*;
 import play.Application;
 import play.test.Helpers;
 import policy.ext.loginFirewall.Firewall;
 import policy.ext.loginFirewall.Login;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 /*
     Fake app: https://ankushthakur.com/blog/using-separate-database-for-unit-tests-in-play-framework/
@@ -18,6 +23,7 @@ public class LoginFirewallTests {
     private static Long validUid = 1L;
     private static Login fwInstanceOne;
     private static Login fwInstanceTwo;
+    private static long currentDt = 1540117115508L;
 
     @BeforeClass
     public static void startApp() {
@@ -42,6 +48,13 @@ public class LoginFirewallTests {
     @After
     public void tearDown() {
         Firewall.Flush();
+        DateTimeUtils.setCurrentMillisSystem();
+    }
+
+    // verschiebt den laggy ts um n schritte nach hinten
+    // n = 0 keine auswirkungen
+    private static void SetLaggyTs(int nBack) {
+        DateTimeUtils.setCurrentMillisFixed(currentDt - (long) nBack *(3600L* (long) Firewall.LaggyTsIntervalHours *1000L));
     }
 
     @Test
@@ -174,6 +187,70 @@ public class LoginFirewallTests {
         assertThat(strategy, is(Login.Strategy.VERIFY));
     }
 
-    // TODO: testen von mehreren buckets
-    // TODO: garbage collector testen
+    @Test
+    public void loginInvalidUidMultipleBucketsBorderTest() {
+        assertThat(Firewall.NUidLoginsTriggerVerification, lessThan(Firewall.NIPLoginsTriggerBan));
+        assertThat(Firewall.NUidLoginsTriggerVerification, lessThan(Firewall.NIPLoginsTriggerVerification));
+
+        // Bucket now-1 erzwingen
+        SetLaggyTs(1);
+
+        Login.Strategy strategy;
+
+        // Bucket füllen
+        for(int i=1; i<Firewall.NIPLoginsTriggerVerification; i++) {
+            fwInstanceOne.fail();
+        }
+
+        // Bucket now erzwingen
+        SetLaggyTs(0);
+
+        // .. und füllen
+        fwInstanceOne.fail();
+
+        // Nur eine IP sollte verify strategy haben
+        strategy = fwInstanceOne.getStrategy();
+        assertThat(strategy, is(Login.Strategy.VERIFY));
+        strategy = fwInstanceTwo.getStrategy();
+        assertThat(strategy, is(Login.Strategy.BYPASS));
+
+        // Prüfen, ob tatsächlich 2 Buckets angelegt wurden
+        String sql = "SELECT * FROM loginFirewall ORDER BY laggy_dt";
+        SqlQuery q = Ebean.createSqlQuery(sql);
+
+        List<SqlRow> rows = q.findList();
+        assertThat(rows.size(), is(2));
+        assertThat(rows.get(0).getInteger("count"), is(Firewall.NIPLoginsTriggerVerification-1));
+        assertThat(rows.get(1).getInteger("count"), is(1));
+    }
+
+    @Test
+    public void garbageCollectorTest() {
+        int bucketsToExpiry = 5;
+
+        for(int i=0; i<Firewall.RelevantHours+bucketsToExpiry; i++) {
+            SetLaggyTs(i);
+            fwInstanceOne.fail();
+        }
+
+        String sql = "SELECT * FROM loginFirewall";
+        SqlQuery q = Ebean.createSqlQuery(sql);
+        List<SqlRow> rows = q.findList();
+        assertThat(rows.size(), is(Firewall.RelevantHours+bucketsToExpiry));
+
+        SetLaggyTs(0);
+        Firewall.GarbageCollect();
+
+        sql = "SELECT * FROM loginFirewall ORDER BY laggy_dt DESC";
+        q = Ebean.createSqlQuery(sql);
+        rows = q.findList();
+        assertThat(rows.size(), is(Firewall.RelevantHours));
+
+        for(int i=0; i<rows.size(); i++) {
+            SetLaggyTs(i);
+            DateTime rowDt = new DateTime(rows.get(i).getLong("laggy_dt"));
+            DateTime currentDt = Firewall.GetLaggyDT();
+            assertThat(rowDt, is(currentDt));
+        }
+    }
 }
