@@ -32,3 +32,5 @@ libraryDependencies += "org.mockito" % "mockito-core" % "2.10.0" % "test"
 testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v"))
 
 libraryDependencies += "joda-time" % "joda-time" % "2.10"
+
+libraryDependencies += "org.webjars" % "bootstrap" % "4.1.3"
