@@ -1,4 +1,4 @@
-package views.functions
+package views.bootstrapHelper.enums
 
 object LinkClass extends Enumeration {
   val Primary = Value("btn-primary")

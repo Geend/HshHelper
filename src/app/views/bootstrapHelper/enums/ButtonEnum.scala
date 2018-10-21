@@ -1,4 +1,4 @@
-package views.functions
+package views.bootstrapHelper.enums
 
 object ButtonType extends Enumeration {
   val Button = Value("button")
