@@ -5,9 +5,9 @@ import models.Group;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import validation.ValidatableWithFinder;
-import validation.ValidateWithFinder;
+import validation.ValidateWithGroupFinder;
 
-@ValidateWithFinder
+@ValidateWithGroupFinder
 public class CreateGroupDTO implements ValidatableWithFinder<ValidationError, Group> {
     @Constraints.Required
     @Constraints.MinLength(3)
@@ -26,7 +26,6 @@ public class CreateGroupDTO implements ValidatableWithFinder<ValidationError, Gr
         if(finder.all().stream().anyMatch(x -> x.name.equalsIgnoreCase(getName()))){
             return new ValidationError("name", "Gruppe existiert bereits!");
         }
-
         return null;
     }
 }

@@ -1,28 +1,19 @@
 package validation;
 
-import javax.inject.Inject;
-import javax.validation.ConstraintValidatorContext;
+import javax.validation.Constraint;
+import javax.validation.Payload;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import io.ebean.Finder;
-import models.Group;
-import models.finders.GroupFinder;
-import play.data.validation.Constraints.PlayConstraintValidator;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-public class ValidateWithGroupFinder implements PlayConstraintValidator<ValidateWithFinder, ValidatableWithFinder<?, Group>> {
-
-    private final GroupFinder finder;
-
-    @Inject
-    public ValidateWithGroupFinder(final GroupFinder finder) {
-        this.finder = finder;
-    }
-
-    @Override
-    public void initialize(final ValidateWithFinder constraintAnnotation) {
-    }
-
-    @Override
-    public boolean isValid(final ValidatableWithFinder<?, Group> value, final ConstraintValidatorContext constraintValidatorContext) {
-        return reportValidationStatus(value.validate(this.finder), constraintValidatorContext);
-    }
+@Target({TYPE, ANNOTATION_TYPE})
+@Retention(RUNTIME)
+@Constraint(validatedBy = ValidateWithGroupFinderValidator.class)
+public @interface ValidateWithGroupFinder {
+    String message() default "error.invalid";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
 }
