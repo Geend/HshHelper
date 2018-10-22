@@ -53,11 +53,9 @@ public class UserController extends Controller {
     @AuthenticationRequired
     public Result createUser() {
 
-        Optional<User> currentUser = ContextArguments.getUser();
-        if (!currentUser.isPresent())
-            return badRequest("error");
+        User currentUser = ContextArguments.getUser().get();
 
-        if (Specification.CanCreateUser(currentUser.get()))
+        if (!Specification.CanCreateUser(currentUser))
             return badRequest("error");
 
 
@@ -69,7 +67,6 @@ public class UserController extends Controller {
 
 
         CreateUserDto createUserDto = boundForm.get();
-
 
         PasswordGenerator passwordGenerator = new PasswordGenerator();
 
