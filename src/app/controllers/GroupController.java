@@ -76,7 +76,7 @@ public class GroupController extends Controller {
                 .collect(Collectors.toList());
         return g.map(grp ->
                 ok(views.html.GroupMembersList.render(grp,
-                        asScala(grp.members), asScala(notMember), addUserToGroupForm)))
+                        asScala(grp.members), asScala(notMember), addUserToGroupForm, removeGroupUserForm)))
                 .get();
     }
 

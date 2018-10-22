@@ -1,12 +1,56 @@
 @(title: String)(content: Html)
 
+@navbar() = {
+    <nav class="navbar navbar-expand-sm navbar-dark bg-hsh-f4-orange">
+        <a class="navbar-brand" href="@routes.HomeController.index()">HsH-Helfer</a>
+        @if(extension.ContextArguments.getUser().isPresent()) {
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="@routes.HomeController.index()">
+                            Home
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="@routes.GroupController.getOwnGroups()">
+                            Gruppenuebersicht
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="@routes.UserController.showActiveUserSessions()">
+                            Sessions
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <span class="navbar-text">
+                <a class="nav-link" href="@routes.LoginController.logoutCommit()">Ausloggen</a>
+            </span>
+        }
+    </nav>
+}
+
+@inner() = {
+    <div class="container-fluid">
+        <div class="row flex-xl-nowrap align-items-center">
+            <main class="mx-auto pl-5 pr-5 py-5 bd-content col-align-self-center">
+                <h1 class="bd-title">@title</h1>
+                <div>@content</div>
+            </main>
+        </div>
+    </div>
+}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <title>@title</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("lib/bootstrap/css/bootstrap-responsive.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("css/hsh-colors.css")">
     </head>
     <body>
-        <h1>@title</h1>
-        <div>@content</div>
+        @navbar
+        @inner
     </body>
 </html>

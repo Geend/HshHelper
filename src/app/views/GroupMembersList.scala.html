@@ -1,42 +1,43 @@
-@(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[dtos.AddUserToGroupDTO])
+@import views.bootstrapHelper.enums.ButtonClass
+@import bootstrapHelper._
+
+@(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[dtos.AddUserToGroupDTO], removeGroupUserForm: Form[dtos.RemoveGroupUserDTO])
+
+@userButton(member: User) = {
+    @if(policy.Specification.CanRemoveGroupMember(extension.ContextArguments.getUser().get(), group, member)) {
+        @bootstrapHelper.form(
+            routes.GroupController.postRemoveMember(group.getId()),
+            removeGroupUserForm,
+            scala.collection.Map(
+                "userId" -> Input(InputType.Hidden,
+                    value = Left(member.getId().toString))
+            ),
+            "Entfernen"
+        )
+    } else {
+        @button("Entfernen", clazz = ButtonClass.Secondary)
+    }
+}
 
 @Main("Mitglieder von: " + group.name) {
-    <table>
-        <thead>
-            <tr>
-                <td>Benutzername</td>
-                <td></td>
-            </tr>
-        </thead>
+    @table(members.map(
+        member => scala.collection.Map(
+            "Benutzername" -> member.username,
+            "" -> userButton(member).toString
+    )))
 
-    @for(m <- members) {
-        <tr>
-            <td>@m.username</td>
-            <td>
-                @if(policy.Specification.CanRemoveGroupMember(extension.ContextArguments.getUser().get(), group, m)) {
-                    @helper.form(action = routes.GroupController.postRemoveMember(group.getId())){
-                        @helper.CSRF.formField
-                        <input type="hidden" name="userId" value="@m.getId()" />
-                        <button type="submit">Entfernen</button>
-                    }
-                } else {
-                    <button type="submit" disabled>Entfernen</button>
-                }
-            </td>
-        </tr>
-    }
-    </table>
     @if(policy.Specification.isAllowedToAddGroupMember(extension.ContextArguments.getUser().get(),
 group)) {
         <h2>Benutzer hinzufuegen</h2>
-        @helper.form(action = routes.GroupController.addMember(group.getId())) {
-            @helper.CSRF.formField
-            @helper.select(
-                field = addUserForm("userId"),
-                options = notMembers.map(user => user.id.toString -> user.username),
-                '_label -> "Nutzer waehlen"
-            )
-            <button type="submit">Nutzer hinzufuegen</button>
-        }
+        @bootstrapHelper.form(
+            routes.GroupController.addMember(group.getId()),
+            addUserForm,
+            scala.collection.Map(
+                "userId" -> Input(InputType.Select,
+                    value = Right(notMembers.map(user => user.id.toString -> user.username)),
+                    label = "Nutzer waehlen")
+            ),
+            "Nutzer hinzufuegen"
+        )
     }
 }
