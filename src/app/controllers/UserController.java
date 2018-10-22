@@ -161,8 +161,7 @@ public class UserController extends Controller {
 
         user.save();
 
-        //TODO: Send an email with the temp password
-        //sendPasswordEmail();
+        sendPasswordEmail(user, tempPassword);
 
         return ok("An email with a temporary password was send to you");
 
