@@ -26,6 +26,9 @@ public class UserSessionProvider extends play.mvc.Action.Simple {
             if(userSession.isPresent()) {
                 ContextArguments.setUserSession(userSession.get());
             }
+            else {
+                Http.Context.current().session().remove(CookieConstants.USER_SESSION_ID_NAME);
+            }
         }
         return delegate.call(ctx);
     }
