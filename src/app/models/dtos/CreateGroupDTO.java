@@ -1,24 +1,17 @@
 package models.dtos;
 
+import io.ebean.Finder;
 import models.Group;
-import models.finders.GroupFinder;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
+import validation.ValidatableWithFinder;
+import validation.ValidateWithFinder;
 
-import javax.inject.Inject;
-
-@Constraints.Validate
-public class CreateGroupDTO implements Constraints.Validatable<ValidationError> {
+@ValidateWithFinder
+public class CreateGroupDTO implements ValidatableWithFinder<ValidationError, Group> {
     @Constraints.Required
     @Constraints.MinLength(3)
     private String name;
-
-    private GroupFinder groupFinder;
-
-    @Inject
-    public CreateGroupDTO(GroupFinder groupFinder) {
-        this.groupFinder = groupFinder;
-    }
 
     public String getName() {
         return name;
@@ -29,8 +22,8 @@ public class CreateGroupDTO implements Constraints.Validatable<ValidationError> 
     }
 
     @Override
-    public ValidationError validate() {
-        if(groupFinder.all().stream().anyMatch(x -> x.name.equalsIgnoreCase(getName()))){
+    public ValidationError validate(final Finder<Long, Group> finder) {
+        if(finder.all().stream().anyMatch(x -> x.name.equalsIgnoreCase(getName()))){
             return new ValidationError("name", "Gruppe existiert bereits!");
         }
 
