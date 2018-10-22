@@ -1,0 +1,68 @@
+package models.dtos;
+
+import play.data.validation.Constraints;
+import play.data.validation.ValidationError;
+
+import static policy.ConstraintValues.MAX_PASSWORD_LENGTH;
+import static policy.ConstraintValues.MAX_USERNAME_LENGTH;
+
+@Constraints.Validate
+public class ChangePasswordAfterResetDto implements Constraints.Validatable<ValidationError>{
+
+    @Constraints.Required
+    @Constraints.MaxLength(MAX_USERNAME_LENGTH)
+    private String username;
+
+    @Constraints.Required
+    private String currentPassword;
+
+    @Constraints.Required
+    @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
+    private String password;
+
+    @Constraints.Required
+    @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
+    private String passwordRepeat;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPasswordRepeat() {
+        return passwordRepeat;
+    }
+
+    public void setPasswordRepeat(String passwordRepeat) {
+        this.passwordRepeat = passwordRepeat;
+    }
+
+    public String getCurrentPassword() {
+        return currentPassword;
+    }
+
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
+    }
+
+    @Override
+    public ValidationError validate() {
+
+        if(!password.equals(passwordRepeat)){
+            return new ValidationError("passwordRepeat", "Passwords do not match");
+        }
+        return null;
+    }
+}
+

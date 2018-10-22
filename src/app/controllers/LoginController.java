@@ -5,6 +5,7 @@ import extension.AuthenticateUser;
 import extension.HashHelper;
 import models.User;
 import models.UserSession;
+import models.dtos.ChangePasswordAfterResetDto;
 import models.dtos.UserLoginDto;
 import models.finders.UserFinder;
 import models.finders.UserSessionFinder;
@@ -14,6 +15,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
+import views.html.ChangePasswordAfterReset;
 
 
 import javax.inject.Inject;
@@ -22,6 +24,7 @@ import java.util.Optional;
 public class LoginController extends Controller {
 
     private Form<UserLoginDto> loginForm;
+    private Form<ChangePasswordAfterResetDto> changePasswordForm;
     private UserSessionFinder userSessionFinder;
     private UserFinder userFinder;
     private AuthenticateUser authenticateUser;
@@ -33,6 +36,7 @@ public class LoginController extends Controller {
             UserFinder userFinder,
             AuthenticateUser authenticateUser) {
         this.loginForm = formFactory.form(UserLoginDto.class);
+        this.changePasswordForm = formFactory.form(ChangePasswordAfterResetDto.class);
         this.userSessionFinder = userSessionFinder;
         this.userFinder = userFinder;
         this.authenticateUser = authenticateUser;
@@ -59,7 +63,7 @@ public class LoginController extends Controller {
 
         if(this.authenticateUser.SecureAuthenticate(user.get(), loginData.getPassword())) {
             if(user.get().passwordResetRequired) {
-                return TODO;
+                return redirect(routes.LoginController.changePasswordAfterReset());
             }
 
             Logger.info("User authenticated");
@@ -77,6 +81,32 @@ public class LoginController extends Controller {
         }
 
         Logger.info("User could not be authenticated");
+        return redirect(routes.LoginController.login());
+    }
+
+    public Result changePasswordAfterReset()
+    {
+        return ok(views.html.ChangePasswordAfterReset.render(this.changePasswordForm));
+    }
+
+    public Result changePasswordAfterResetCommit()
+    {
+        Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat");
+        if (boundForm.hasErrors()) {
+            return ok(views.html.ChangePasswordAfterReset.render(boundForm));
+        }
+        ChangePasswordAfterResetDto changePasswordData = boundForm.get();
+        Optional<User> userOptional = this.userFinder.byName(changePasswordData.getUsername());
+        if(!userOptional.isPresent()) {
+            return redirect(routes.LoginController.login());
+        }
+
+        User user = userOptional.get();
+        if(this.authenticateUser.SecureAuthenticate(user, changePasswordData.getCurrentPassword())) {
+            user.passwordResetRequired = false;
+            user.passwordHash = HashHelper.hashPassword(changePasswordData.getPassword());
+            user.save();
+        }
         return redirect(routes.LoginController.login());
     }
 

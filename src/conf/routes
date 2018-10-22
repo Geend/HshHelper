@@ -9,6 +9,8 @@ POST        /resetpassword                       controllers.UserController.rese
 GET         /login                               controllers.LoginController.login
 POST        /login                               controllers.LoginController.loginCommit
 GET         /logout                              controllers.LoginController.logoutCommit
+GET         /changePasswordAfterReset            controllers.LoginController.changePasswordAfterReset
+POST        /changePasswordAfterReset            controllers.LoginController.changePasswordAfterResetCommit
 
 GET         /groups                              controllers.GroupController.getOwnGroups
 GET         /groups/create                       controllers.GroupController.getCreateGroup
