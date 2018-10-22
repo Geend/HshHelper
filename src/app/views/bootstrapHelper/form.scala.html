@@ -1,4 +1,4 @@
-@(route: play.api.mvc.Call, form: Form[_], fields: scala.collection.Map[String, views.bootstrapHelper.Input], buttonName: String)
+@(route: play.api.mvc.Call, form: Form[_], fields: scala.collection.Map[String, views.bootstrapHelper.Input], buttonName: String, extraContent: Html*)
 
 @import bootstrapHelper.button
 
@@ -43,6 +43,8 @@
             }
         }
     }
+
+    @extraContent
 
     @button(buttonName)
 }
