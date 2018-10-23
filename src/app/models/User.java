@@ -25,6 +25,12 @@ public class User extends BaseDomain {
     )
     public Set<Group> ownerOf = new HashSet<>();
 
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL
+    )
+    public Set<UserSession> sessions = new HashSet<>();
+
     public DateTime mostRecentLoginAttempt;
     public int invalidLoginCounter;
 
