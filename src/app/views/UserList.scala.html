@@ -2,5 +2,21 @@
 @(users: Seq[UserListEntryDto])
 
 @Main("HsH-Helper Benutzerliste") {
-    <h1>T</h1>
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="thead-dark">
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+            </thead>
+
+            <tbody>
+                @for(user <- users) {
+                    <tr>
+                        <td>@user.getIndex()</td>
+                        <td>@user.getUsername()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }

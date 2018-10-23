@@ -56,9 +56,12 @@ public class UserController extends Controller {
         List<UserListEntryDto> entries = this.userFinder
                 .all()
                 .stream()
-                .map(x -> new UserListEntryDto())
+                .map(x -> new UserListEntryDto(x.username))
                 .collect(Collectors.toList());
 
+        for(int i = 0; i < entries.size(); i++) {
+            entries.get(i).setIndex(i + 1);
+        }
         Seq<UserListEntryDto> scalaEntries = asScala(entries);
         return ok(views.html.UserList.render(scalaEntries));
     }
