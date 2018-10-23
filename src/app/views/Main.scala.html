@@ -6,13 +6,8 @@
         @if(extension.ContextArguments.getUser().isPresent()) {
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="@routes.HomeController.index()">
-                            Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@routes.GroupController.showOwnGroups()">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="@routes.GroupController.getOwnGroups()">
                             Gruppenuebersicht
                         </a>
                     </li>
@@ -39,17 +34,6 @@
     </nav>
 }
 
-@inner() = {
-    <div class="container-fluid">
-        <div class="row flex-xl-nowrap align-items-center">
-            <main class="mx-auto pl-5 pr-5 py-5 bd-content col-align-self-center">
-                <h1 class="bd-title">@title</h1>
-                <div>@content</div>
-            </main>
-        </div>
-    </div>
-}
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -60,6 +44,8 @@
     </head>
     <body>
         @navbar
-        @inner
+        <div class="px-3 py-3">
+            @content
+        </div>
     </body>
 </html>
