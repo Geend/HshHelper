@@ -24,15 +24,13 @@ public class DatabaseInitialization {
         // before the application starts.
         Logger.info("DatabaseInitialization - Prepare DB; Truncate all tables.");
         db.withConnection(connection -> {
-            String refIntegrityFalse = "SET REFERENTIAL_INTEGRITY FALSE";
-            String refIntegrityTrue = "SET REFERENTIAL_INTEGRITY TRUE";
-            String truncateUsers = "TRUNCATE TABLE users";
-            String truncateGroups = "TRUNCATE TABLE groups";
             Statement stmt = connection.createStatement();
-            stmt.execute(refIntegrityFalse);
-            stmt.execute(truncateUsers);
-            stmt.execute(truncateGroups);
-            stmt.execute(refIntegrityTrue);
+            stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
+            stmt.execute("TRUNCATE TABLE usersession");
+            stmt.execute("TRUNCATE TABLE groupmembers");
+            stmt.execute("TRUNCATE TABLE users");
+            stmt.execute("TRUNCATE TABLE groups");
+            stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
         });
         Logger.info("DatabaseInitialization - Prepare DB; Truncated");
 
