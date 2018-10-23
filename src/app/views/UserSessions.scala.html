@@ -11,19 +11,23 @@
                 "sessionId" -> Input(InputType.Hidden,
                     value = Left(s.getId.toString))
             ),
-            "Session Zerstören"
+            button = bootstrapHelper.button("Session Zerstören")
         )
     } else {
         @button("Session Zerstören", disabled = true)
     }
 }
 
-@Main("Aktive Sessions") {
-    @table(sessions.map(
-        s => scala.collection.Map(
-            "Verwendete IP" -> s.getConnectedFrom,
-            "Erstellungsdatum" -> s.getIssuedAt.toString("dd.MM.yyyy - HH:mm:ss"),
-            "" -> sessionButton(s).toString()
+@Main("HsH-Helfer: deine aktive Sessions") {
+    @bootstrapHelper.center("Aktive Sessions") {
+        @table(sessions.map(
+            s => scala.collection.Map(
+                "Verwendete IP" -> Left(s.getConnectedFrom),
+                "Erstellungsdatum" -> Left(s.getIssuedAt.toString("dd.MM.yyyy - HH:mm:ss")),
+                "Aktion" -> Right(sessionButton(s))
+            )
+        ),
+            bordered = true
         )
-    ), bordered = true)
+    }
 }

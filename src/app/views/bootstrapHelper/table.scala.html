@@ -21,7 +21,7 @@
     @param bordered Defines if the table should be bordered
     @param striped Defines if the rows should be striped to help distinguish them
 *@
-@(rows: Seq[scala.collection.Map[String, String]], hover: Boolean = true, bordered: Boolean = true, striped: Boolean = false)
+@(rows: Seq[scala.collection.Map[String, Either[String, Html]]], hover: Boolean = true, bordered: Boolean = true, striped: Boolean = false)
 
 @import scala.collection.Map
 
@@ -36,14 +36,17 @@
     </thead>
 }
 
-@tr(i: Int, row: Map[String, String]) = {
+@tr(i: Int, row: Map[String, Either[String, Html]]) = {
     <tr>
         <td>
         @i
         </td>
         @for((k, v) <- row) {
             <td>
-            @Html(v)
+                @v match {
+                    case Left(value) => { @value }
+                    case Right(value) => { @value }
+                }
             </td>
         }
     </tr>
