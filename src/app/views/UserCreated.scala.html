@@ -2,16 +2,14 @@
 @import bootstrapHelper._
 
 @Main("Administrator-Funktion: Benutzer erstellen"){
+    @bootstrapHelper.center("Benutzer erfolgreich angelegt!") {
+        <p>
+            <b>Username:</b> @data.getUsername
+        </p>
+        <p>
+            <b>Temporäres Passwort:</b> @data.getPlaintextPassword
+        </p>
 
-    <p>
-        Der Benutzer wurde erfolgreich angelegt.
-    </p>
-    <p>
-        Username: @data.getUsername
-    </p>
-    <p>
-        Temporäres Passwort: @data.getPlaintextPassword
-    </p>
-
-    @link("Weiteren Benutzer anlegen", routes.UserController.showCreateUserForm())
+        @link("Weiteren Benutzer anlegen", routes.UserController.showCreateUserForm())
+    }
 }
