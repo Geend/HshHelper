@@ -94,6 +94,11 @@ public class LoginController extends Controller {
             return badRequest(views.html.Login.render(boundForm, strategy.equals(Strategy.VERIFY)));
         }
 
+        // TODO: Ugly AF / muss weg. Ist Policy-Frage und sollte nicht Gegenstand von Hacky-Code sein!
+        if(auth.user().passwordResetRequired) {
+            return redirect(routes.LoginController.changePasswordAfterReset());
+        }
+
         // TODO: Kein Cookie manuell setzen!
         String remoteIp = request().remoteAddress();
         UserSession userSession = new UserSession();
