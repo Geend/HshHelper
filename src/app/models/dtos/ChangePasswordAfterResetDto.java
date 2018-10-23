@@ -7,7 +7,14 @@ import static policy.ConstraintValues.MAX_PASSWORD_LENGTH;
 import static policy.ConstraintValues.MAX_USERNAME_LENGTH;
 
 @Constraints.Validate
-public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationError>{
+public class ChangePasswordAfterResetDto implements Constraints.Validatable<ValidationError>{
+
+    @Constraints.Required
+    @Constraints.MaxLength(MAX_USERNAME_LENGTH)
+    private String username;
+
+    @Constraints.Required
+    private String currentPassword;
 
     @Constraints.Required
     @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
@@ -16,6 +23,14 @@ public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationE
     @Constraints.Required
     @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
     private String passwordRepeat;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getPassword() {
         return password;
@@ -33,6 +48,14 @@ public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationE
         this.passwordRepeat = passwordRepeat;
     }
 
+    public String getCurrentPassword() {
+        return currentPassword;
+    }
+
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
+    }
+
     @Override
     public ValidationError validate() {
 
@@ -42,3 +65,4 @@ public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationE
         return null;
     }
 }
+

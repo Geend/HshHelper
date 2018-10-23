@@ -1,6 +1,8 @@
 GET         /                                    controllers.HomeController.index
 POST        /users/create                        controllers.UserController.createUser
 GET         /users/create                        controllers.UserController.showCreateUserForm
+GET         /users/list                          controllers.UserController.userList
+POST        /users/delete                        controllers.UserController.deleteUser
 GET         /changepassword                      controllers.UserController.showChangeOwnPasswordForm
 POST        /changepassword                      controllers.UserController.changeOwnPassword
 GET         /resetpassword                       controllers.UserController.showResetUserPasswordForm
@@ -9,13 +11,17 @@ POST        /resetpassword                       controllers.UserController.rese
 GET         /login                               controllers.LoginController.login
 POST        /login                               controllers.LoginController.loginCommit
 GET         /logout                              controllers.LoginController.logoutCommit
+GET         /changePasswordAfterReset            controllers.LoginController.changePasswordAfterReset
+POST        /changePasswordAfterReset            controllers.LoginController.changePasswordAfterResetCommit
 
 GET         /groups                              controllers.GroupController.getOwnGroups
 GET         /groups/create                       controllers.GroupController.getCreateGroup
 POST        /groups/create                       controllers.GroupController.postCreateGroup
 GET         /groups/:id                          controllers.GroupController.getGroup(id : Long)
+POST        /groups/:id/delete                   controllers.GroupController.removeGroup(id : Long)
 POST        /groups/:groupId/removeMember        controllers.GroupController.postRemoveMember(groupId : Long)
 POST        /groups/:groupId/addMember           controllers.GroupController.addMember(groupId : Long)
+
 
 GET         /sessions                            controllers.UserController.showActiveUserSessions()
 POST        /sessions/delete                     controllers.UserController.deleteUserSession()

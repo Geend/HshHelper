@@ -23,17 +23,4 @@ public class UserFinder extends Finder<Long, User> {
     public Optional<User> byName(String username) {
         return this.query().where().eq("username", username).findOneOrEmpty();
     }
-
-    public Optional<User> authenticate(String username, String password) {
-        Optional<User> user = this.query().where()
-                .eq("username", username)
-                .findOneOrEmpty();
-
-        if(!user.isPresent())
-            return user;
-        else if(HashHelper.checkHash(password, user.get().passwordHash))
-            return user;
-        else
-            return Optional.empty();
-    }
 }

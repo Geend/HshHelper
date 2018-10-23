@@ -19,11 +19,24 @@ public class User extends BaseDomain {
     public boolean passwordResetRequired;
     public int quotaLimit;
 
+    @OneToMany(
+        mappedBy = "owner",
+        cascade = CascadeType.ALL
+    )
+    public Set<Group> ownerOf = new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL
+    )
+    public Set<UserSession> sessions = new HashSet<>();
+
     public DateTime mostRecentLoginAttempt;
     public int invalidLoginCounter;
 
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
+            CascadeType.REMOVE,
             CascadeType.MERGE
     })
     @JoinTable(name = "groupmembers",

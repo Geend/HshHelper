@@ -1,10 +1,17 @@
 package models.dtos;
 
+import io.ebean.Finder;
+import models.User;
+import models.finders.UserFinder;
 import play.data.validation.Constraints;
+import play.data.validation.ValidationError;
+import validation.ValidatableWithFinder;
+import validation.ValidateWithUserFinder;
 
 import static policy.ConstraintValues.MAX_USERNAME_LENGTH;
 
-public class CreateUserDto {
+@ValidateWithUserFinder
+public class CreateUserDto implements ValidatableWithFinder<ValidationError, User> {
 
 
     @Constraints.Required
@@ -41,5 +48,14 @@ public class CreateUserDto {
 
     public void setQuotaLimit(Integer quotaLimit) {
         this.quotaLimit = quotaLimit;
+    }
+
+    @Override
+    public ValidationError validate(Finder<Long, User> finder) {
+        UserFinder userFinder = (UserFinder)finder;
+        if(userFinder.byName(this.username).isPresent()) {
+            return new ValidationError("username", "Benutzername muss uniqe sein");
+        }
+        return null;
     }
 }

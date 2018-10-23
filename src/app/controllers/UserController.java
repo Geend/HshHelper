@@ -13,10 +13,12 @@ import play.libs.mailer.MailerClient;
 import play.mvc.Controller;
 import play.mvc.Result;
 import policy.Specification;
+import scala.collection.Seq;
 
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
 
@@ -32,6 +34,7 @@ public class UserController extends Controller {
     private Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
     private Form<ResetUserPasswordDto> resetUserPasswordForm;
     private Form<DeleteSessionDTO> deleteSessionForm;
+    private Form<DeleteUserDto> deleteUserForm;
 
 
     @Inject
@@ -42,6 +45,44 @@ public class UserController extends Controller {
         this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
         this.deleteSessionForm = formFactory.form(DeleteSessionDTO.class);
+        this.deleteUserForm = formFactory.form(DeleteUserDto.class);
+    }
+
+
+    @AuthenticationRequired
+    public Result userList() {
+        User currentUser = ContextArguments.getUser().get();
+        if(!Specification.CanViewAllUsers(currentUser)) {
+            return unauthorized();
+        }
+
+        List<UserListEntryDto> entries = this.userFinder
+                .all()
+                .stream()
+                .map(x -> new UserListEntryDto(x.getId(), x.username))
+                .collect(Collectors.toList());
+
+        for(int i = 0; i < entries.size(); i++) {
+            entries.get(i).setIndex(i + 1);
+        }
+        Seq<UserListEntryDto> scalaEntries = asScala(entries);
+        return ok(views.html.UserList.render(scalaEntries));
+    }
+
+    @AuthenticationRequired
+    public Result deleteUser()
+    {
+        User currentUser = ContextArguments.getUser().get();
+        Form<DeleteUserDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
+        if(boundForm.hasErrors()) {
+            return badRequest();
+        }
+        User userToDelete = this.userFinder.byId(boundForm.get().getUserId());
+        if(!Specification.CanDeleteUser(currentUser, userToDelete)) {
+            return unauthorized();
+        }
+        userToDelete.delete();
+        return redirect(routes.UserController.userList());
     }
 
 
@@ -53,11 +94,9 @@ public class UserController extends Controller {
     @AuthenticationRequired
     public Result createUser() {
 
-        Optional<User> currentUser = ContextArguments.getUser();
-        if (!currentUser.isPresent())
-            return badRequest("error");
+        User currentUser = ContextArguments.getUser().get();
 
-        if (Specification.CanCreateUser(currentUser.get()))
+        if (!Specification.CanCreateUser(currentUser))
             return badRequest("error");
 
 
@@ -70,10 +109,10 @@ public class UserController extends Controller {
 
         CreateUserDto createUserDto = boundForm.get();
 
-
         PasswordGenerator passwordGenerator = new PasswordGenerator();
 
-        String plaintextPassword = passwordGenerator.generatePassword();
+        //TODO: Include generated password length in policy
+        String plaintextPassword = passwordGenerator.generatePassword(10);
         String passwordHash = HashHelper.hashPassword(plaintextPassword);
 
         boolean passwordResetRequired = true;
@@ -87,10 +126,16 @@ public class UserController extends Controller {
 
         newUser.save();
 
-        //TODO: Show the create the password
-        return ok("created user " + newUser.username + " with inital password " + plaintextPassword);
+        UserCreatedDto userCreatedDto = new UserCreatedDto();
+        userCreatedDto.setUsername(newUser.username);
+        userCreatedDto.setPlaintextPassword(passwordGenerator.generatePassword(10));
+
+        return ok(views.html.UserCreated.render(userCreatedDto));
 
     }
+
+
+
 
     @AuthenticationRequired
     public Result showChangeOwnPasswordForm() {
@@ -154,15 +199,16 @@ public class UserController extends Controller {
         User user = userOptional.get();
 
         PasswordGenerator passwordGenerator = new PasswordGenerator();
-        String tempPassword = passwordGenerator.generatePassword();
+
+        //TODO: Include generated password length in policy
+        String tempPassword = passwordGenerator.generatePassword(10);
 
         user.passwordHash = HashHelper.hashPassword(tempPassword);
         user.passwordResetRequired = true;
 
         user.save();
 
-        //TODO: Send an email with the temp password
-        //sendPasswordEmail();
+        sendPasswordEmail(user, tempPassword);
 
         return ok("An email with a temporary password was send to you");
 

@@ -22,6 +22,18 @@ public class Specification {
         return false;
     }
 
+    public static boolean CanViewAllUsers(User currentUser) {
+        if(currentUser == null) {
+            return false;
+        }
+
+        if(currentUser.isAdmin()) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static boolean CanViewAllGroupsList(User currentUser) {
         if(currentUser == null) {
             return false;
@@ -47,7 +59,7 @@ public class Specification {
     }
 
     public static boolean CanDeleteUser(User currentUser, User userToBeDeleted) {
-        if(currentUser == null) {
+        if(currentUser == null || userToBeDeleted == null) {
             return false;
         }
 

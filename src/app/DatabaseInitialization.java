@@ -24,23 +24,21 @@ public class DatabaseInitialization {
         // before the application starts.
         Logger.info("DatabaseInitialization - Prepare DB; Truncate all tables.");
         db.withConnection(connection -> {
-            String refIntegrityFalse = "SET REFERENTIAL_INTEGRITY FALSE";
-            String refIntegrityTrue = "SET REFERENTIAL_INTEGRITY TRUE";
-            String truncateUsers = "TRUNCATE TABLE users";
-            String truncateGroups = "TRUNCATE TABLE groups";
             Statement stmt = connection.createStatement();
-            stmt.execute(refIntegrityFalse);
-            stmt.execute(truncateUsers);
-            stmt.execute(truncateGroups);
-            stmt.execute(refIntegrityTrue);
+            stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
+            stmt.execute("TRUNCATE TABLE usersession");
+            stmt.execute("TRUNCATE TABLE groupmembers");
+            stmt.execute("TRUNCATE TABLE users");
+            stmt.execute("TRUNCATE TABLE groups");
+            stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
         });
         Logger.info("DatabaseInitialization - Prepare DB; Truncated");
 
         Logger.info("ApplicationStart - Prepare DB; Add new users and groups");
-        User u1 = new User("admin", "admin@admin.com", HashHelper.hashPassword("admin"), false, 10);
-        User u2 = new User("peter", "peter@gmx.com",  HashHelper.hashPassword("peter"), true, 10);
-        User u3 = new User("klaus", "klaus@gmx.com",  HashHelper.hashPassword("klaus"), true, 10);
-        User u4 = new User("hans", "hans@gmx.com",  HashHelper.hashPassword("hans"), true, 10);
+        User u1 = new User("admin", "hsh.helper+admin@gmail.com", HashHelper.hashPassword("admin"), false, 10);
+        User u2 = new User("peter", "hsh.helper+peter@gmail.com",  HashHelper.hashPassword("peter"), false, 10);
+        User u3 = new User("klaus", "hsh.helper+klaus@gmail.com",  HashHelper.hashPassword("klaus"), false, 10);
+        User u4 = new User("hans", "hsh.helper+hans@gmail.com",  HashHelper.hashPassword("hans"), true, 10);
 
         Group g1 = new Group("All", u1);
         Group g2 = new Group("Administrators", u1);
