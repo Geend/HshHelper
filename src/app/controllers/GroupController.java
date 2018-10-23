@@ -44,11 +44,11 @@ public class GroupController extends Controller {
         this.deleteGroupForm = formFactory.form(DeleteGroupDTO.class);
     }
 
-    public Result getCreateGroup() {
+    public Result showCreateGroupForm() {
         return ok(views.html.CreateGroup.render(groupForm));
     }
 
-    public Result postCreateGroup() {
+    public Result createGroup() {
         Form<CreateGroupDTO> bf = groupForm.bindFromRequest();
 
         if(bf.hasErrors()) {
@@ -60,17 +60,17 @@ public class GroupController extends Controller {
             group.members.add( ContextArguments.getUser().get());
             group.save();
 
-            return redirect(routes.GroupController.getOwnGroups());
+            return redirect(routes.GroupController.showOwnGroups());
         }
     }
 
-    public Result getOwnGroups() {
+    public Result showOwnGroups() {
         Set<Group> gms = ContextArguments.getUser().get().groups;
         return ok(views.html.OwnGroupsList.render(asScala(gms), deleteGroupForm));
     }
 
-    public Result getGroup(Long id) {
-        Optional<Group> g = groupFinder.byIdOptional(id);
+    public Result showGroup(Long groupId) {
+        Optional<Group> g = groupFinder.byIdOptional(groupId);
 
         if(!g.isPresent())
             return notFound("404");
@@ -83,7 +83,7 @@ public class GroupController extends Controller {
                 .get();
     }
 
-    public Result postRemoveMember(Long groupId) {
+    public Result removeGroupMember(Long groupId) {
         Form<RemoveGroupUserDTO> form = removeGroupUserForm.bindFromRequest();
         if(form.hasErrors()) {
             return badRequest("error");
@@ -100,10 +100,10 @@ public class GroupController extends Controller {
         g.members.remove(toBeDeleted);
         g.save();
 
-        return redirect(routes.GroupController.getGroup(groupId));
+        return redirect(routes.GroupController.showGroup(groupId));
     }
 
-    public Result addMember(Long groupId) {
+    public Result addGroupMember(Long groupId) {
         Form<AddUserToGroupDTO> form = addUserToGroupForm.bindFromRequest();
         if(form.hasErrors()) {
             return badRequest("error");
@@ -121,17 +121,17 @@ public class GroupController extends Controller {
         g.members.add(toBeAdded);
         g.save();
 
-        return redirect(routes.GroupController.getGroup(groupId));
+        return redirect(routes.GroupController.showGroup(groupId));
     }
 
-    public Result removeGroup(Long id) {
+    public Result deleteGroup(Long groupId) {
         Form<DeleteGroupDTO> form = deleteGroupForm.bindFromRequest();
         if(form.hasErrors()) {
             return badRequest("error");
         }
 
         DeleteGroupDTO dg = form.get();
-        Group g = groupFinder.byIdOptional(id).get();
+        Group g = groupFinder.byIdOptional(groupId).get();
 
         if(!policy.Specification.CanDeleteGroup(ContextArguments.getUser().get(), g)) {
             return badRequest("error");
@@ -139,6 +139,6 @@ public class GroupController extends Controller {
 
         g.delete();
 
-        return redirect(routes.GroupController.getOwnGroups());
+        return redirect(routes.GroupController.showOwnGroups());
     }
 }

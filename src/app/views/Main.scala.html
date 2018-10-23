@@ -12,7 +12,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="@routes.GroupController.getOwnGroups()">
+                        <a class="nav-link" href="@routes.GroupController.showOwnGroups()">
                             Gruppenuebersicht
                         </a>
                     </li>
@@ -29,7 +29,11 @@
                 </ul>
             </div>
             <span class="navbar-text">
-                <a class="nav-link" href="@routes.LoginController.logoutCommit()">Ausloggen</a>
+                @helper.form(action = routes.LoginController.logout()) {
+                    @helper.CSRF.formField
+
+                    <button type="submit" class="btn btn-secondary-outline nav-link">Ausloggen</button>
+                }
             </span>
         }
     </nav>
