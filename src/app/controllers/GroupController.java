@@ -66,7 +66,7 @@ public class GroupController extends Controller {
 
     public Result getOwnGroups() {
         Set<Group> gms = ContextArguments.getUser().get().groups;
-        return ok(views.html.OwnGroupsList.render(asScala(gms)));
+        return ok(views.html.OwnGroupsList.render(asScala(gms), deleteGroupForm));
     }
 
     public Result getGroup(Long id) {
