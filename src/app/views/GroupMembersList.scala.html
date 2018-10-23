@@ -12,10 +12,10 @@
                 "userId" -> Input(InputType.Hidden,
                     value = Left(member.getId().toString))
             ),
-            "Entfernen"
+            button = listGroupButton(member.username)
         )
     } else {
-        @button("Entfernen", clazz = ButtonClass.Secondary)
+        @listGroupButton(member.username, disabled = true)
     }
 }
 
@@ -37,7 +37,7 @@ group)) {
                     value = Right(notMembers.map(user => user.id.toString -> user.username)),
                     label = "Nutzer waehlen")
             ),
-            "Nutzer hinzufuegen"
+            button = button("Nutzer hinzufuegen")
         )
     }
 }
