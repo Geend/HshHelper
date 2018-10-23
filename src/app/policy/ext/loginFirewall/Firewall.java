@@ -44,8 +44,8 @@ public class Firewall {
         Ebean.createSqlUpdate(cleanSql).execute();
     }
 
-    public static Login Get(String remoteIp) {
-        return new Login(remoteIp);
+    public static Instance Get(String remoteIp) {
+        return new Instance(remoteIp);
     }
 
     public static DateTime GetLaggyDT() {

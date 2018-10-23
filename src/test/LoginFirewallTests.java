@@ -7,7 +7,8 @@ import org.junit.*;
 import play.Application;
 import play.test.Helpers;
 import policy.ext.loginFirewall.Firewall;
-import policy.ext.loginFirewall.Login;
+import policy.ext.loginFirewall.Instance;
+import policy.ext.loginFirewall.Strategy;
 
 import java.util.List;
 
@@ -21,8 +22,8 @@ public class LoginFirewallTests {
     public static Application app;
 
     private static Long validUid = 1L;
-    private static Login fwInstanceOne;
-    private static Login fwInstanceTwo;
+    private static Instance fwInstanceOne;
+    private static Instance fwInstanceTwo;
     private static long currentDt = 1540117115508L;
 
     @BeforeClass
@@ -59,20 +60,20 @@ public class LoginFirewallTests {
 
     @Test
     public void noDataLoginBypass() {
-        Login.Strategy strategy = fwInstanceOne.getStrategy(0L);
-        assertThat(strategy, is(Login.Strategy.BYPASS));
+        Strategy strategy = fwInstanceOne.getStrategy(0L);
+        assertThat(strategy, is(Strategy.BYPASS));
     }
 
     @Test
     public void loginInvalidUidBypassBorderTest() {
         int bypassBorder = Math.min(Firewall.NIPLoginsTriggerBan, Firewall.NIPLoginsTriggerVerification);
         for(int i=0; i<=bypassBorder; i++) {
-            Login.Strategy strategy = fwInstanceOne.getStrategy();
+            Strategy strategy = fwInstanceOne.getStrategy();
 
             if(i==bypassBorder)
-                assertThat(strategy, not(Login.Strategy.BYPASS));
+                assertThat(strategy, not(Strategy.BYPASS));
             else
-                assertThat(strategy, is(Login.Strategy.BYPASS));
+                assertThat(strategy, is(Strategy.BYPASS));
 
             fwInstanceOne.fail();
         }
@@ -84,38 +85,38 @@ public class LoginFirewallTests {
             fwInstanceOne.fail();
         }
 
-        Login.Strategy strategy = fwInstanceOne.getStrategy();
-        assertThat(strategy, is(Login.Strategy.BYPASS));
+        Strategy strategy = fwInstanceOne.getStrategy();
+        assertThat(strategy, is(Strategy.BYPASS));
         fwInstanceOne.fail();
 
         strategy = fwInstanceOne.getStrategy();
-        assertThat(strategy, is(Login.Strategy.VERIFY));
+        assertThat(strategy, is(Strategy.VERIFY));
     }
 
     @Test
     public void loginInvalidUidBorderTest() {
         assertThat(Firewall.NIPLoginsTriggerVerification, lessThan(Firewall.NIPLoginsTriggerBan));
 
-        Login.Strategy strategy;
+        Strategy strategy;
 
         // Keinerlei Einschränkungen solange im Limit
         for(int i=1; i<Firewall.NIPLoginsTriggerVerification; i++) {
             fwInstanceOne.fail();
             strategy = fwInstanceOne.getStrategy();
-            assertThat(strategy, is(Login.Strategy.BYPASS));
+            assertThat(strategy, is(Strategy.BYPASS));
 
             strategy = fwInstanceTwo.getStrategy();
-            assertThat(strategy, is(Login.Strategy.BYPASS));
+            assertThat(strategy, is(Strategy.BYPASS));
         }
 
         // Nach einem weiteren Fail ist für die eine IP verification erforderlich
         fwInstanceOne.fail();
         strategy = fwInstanceOne.getStrategy();
-        assertThat(strategy, is(Login.Strategy.VERIFY));
+        assertThat(strategy, is(Strategy.VERIFY));
 
         // Die andere IP ist jedoch nicht betroffen.
         strategy = fwInstanceTwo.getStrategy();
-        assertThat(strategy, is(Login.Strategy.BYPASS));
+        assertThat(strategy, is(Strategy.BYPASS));
 
         int stepsTillBan = Firewall.NIPLoginsTriggerBan - Firewall.NIPLoginsTriggerVerification;
         for(int i=1; i<stepsTillBan; i++) {
@@ -123,19 +124,19 @@ public class LoginFirewallTests {
 
             // Die Stati für beide IPs verändern sich *nicht*
             strategy = fwInstanceOne.getStrategy();
-            assertThat(strategy, is(Login.Strategy.VERIFY));
+            assertThat(strategy, is(Strategy.VERIFY));
             strategy = fwInstanceTwo.getStrategy();
-            assertThat(strategy, is(Login.Strategy.BYPASS));
+            assertThat(strategy, is(Strategy.BYPASS));
         }
 
         // Noch ein failed login und die erste IP ist geblockt!
         fwInstanceOne.fail();
         strategy = fwInstanceOne.getStrategy();
-        assertThat(strategy, is(Login.Strategy.BLOCK));
+        assertThat(strategy, is(Strategy.BLOCK));
 
         // Der Ban betrifft allerdings *nicht* andere Ips!
         strategy = fwInstanceTwo.getStrategy();
-        assertThat(strategy, is(Login.Strategy.BYPASS));
+        assertThat(strategy, is(Strategy.BYPASS));
     }
 
     @Test
@@ -143,26 +144,26 @@ public class LoginFirewallTests {
         assertThat(Firewall.NUidLoginsTriggerVerification, lessThan(Firewall.NIPLoginsTriggerBan));
         assertThat(Firewall.NUidLoginsTriggerVerification, lessThan(Firewall.NIPLoginsTriggerVerification));
 
-        Login.Strategy strategy;
+        Strategy strategy;
 
         // Während wir im Limit sind ist der Account frei
         for(int i=1; i<Firewall.NUidLoginsTriggerVerification; i++) {
             fwInstanceOne.fail(validUid);
             strategy = fwInstanceOne.getStrategy(validUid);
-            assertThat(strategy, is(Login.Strategy.BYPASS));
+            assertThat(strategy, is(Strategy.BYPASS));
 
             // Das gilt auch für Zugriffe von anderen IPs!
             strategy = fwInstanceTwo.getStrategy(validUid);
-            assertThat(strategy, is(Login.Strategy.BYPASS));
+            assertThat(strategy, is(Strategy.BYPASS));
         }
 
-        // Noch ein Login und wir benötigen verifizierung
+        // Noch ein Instance und wir benötigen verifizierung
         fwInstanceOne.fail(validUid);
         strategy = fwInstanceOne.getStrategy(validUid);
-        assertThat(strategy, is(Login.Strategy.VERIFY));
+        assertThat(strategy, is(Strategy.VERIFY));
         // ..genau so wie jede andere Ip auch!
         strategy = fwInstanceTwo.getStrategy(validUid);
-        assertThat(strategy, is(Login.Strategy.VERIFY));
+        assertThat(strategy, is(Strategy.VERIFY));
 
         // Während der weiteren Steps ist man weiterhin nur im
         // Verify modus
@@ -170,21 +171,21 @@ public class LoginFirewallTests {
         for(int i=1; i<stepsTillBan; i++) {
             fwInstanceOne.fail(validUid);
             strategy = fwInstanceOne.getStrategy(validUid);
-            assertThat(strategy, is(Login.Strategy.VERIFY));
+            assertThat(strategy, is(Strategy.VERIFY));
 
             // Das gilt auch für Zugriffe von anderen IPs!
             strategy = fwInstanceTwo.getStrategy(validUid);
-            assertThat(strategy, is(Login.Strategy.VERIFY));
+            assertThat(strategy, is(Strategy.VERIFY));
         }
 
-        // Noch ein Login und dann sind wir gebanned!
+        // Noch ein Instance und dann sind wir gebanned!
         fwInstanceOne.fail(validUid);
         strategy = fwInstanceOne.getStrategy(validUid);
-        assertThat(strategy, is(Login.Strategy.BLOCK));
+        assertThat(strategy, is(Strategy.BLOCK));
 
         // Der Ban betrifft allerdings *nicht* andere Ips!
         strategy = fwInstanceTwo.getStrategy(validUid);
-        assertThat(strategy, is(Login.Strategy.VERIFY));
+        assertThat(strategy, is(Strategy.VERIFY));
     }
 
     @Test
@@ -195,7 +196,7 @@ public class LoginFirewallTests {
         // Bucket now-1 erzwingen
         SetLaggyTs(1);
 
-        Login.Strategy strategy;
+        Strategy strategy;
 
         // Bucket füllen
         for(int i=1; i<Firewall.NIPLoginsTriggerVerification; i++) {
@@ -210,9 +211,9 @@ public class LoginFirewallTests {
 
         // Nur eine IP sollte verify strategy haben
         strategy = fwInstanceOne.getStrategy();
-        assertThat(strategy, is(Login.Strategy.VERIFY));
+        assertThat(strategy, is(Strategy.VERIFY));
         strategy = fwInstanceTwo.getStrategy();
-        assertThat(strategy, is(Login.Strategy.BYPASS));
+        assertThat(strategy, is(Strategy.BYPASS));
 
         // Prüfen, ob tatsächlich 2 Buckets angelegt wurden
         String sql = "SELECT * FROM loginFirewall ORDER BY laggy_dt";

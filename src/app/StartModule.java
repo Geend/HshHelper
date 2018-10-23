@@ -8,10 +8,9 @@ public class StartModule extends AbstractModule {
     protected void configure() {
         Logger.info("DatabaseInitialization");
         bind(DatabaseInitialization.class).asEagerSingleton();
+        bind(LoginFwInitialization.class).asEagerSingleton();
         bind(SessionCleaner.class).asEagerSingleton();
         bind(UserSessionFinder.class);
         bind(UserFinder.class);
-
-
     }
 }

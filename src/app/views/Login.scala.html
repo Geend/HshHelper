@@ -1,5 +1,13 @@
 @import models.dtos.UserLoginDto
-@(form: Form[UserLoginDto])
+@(form: Form[UserLoginDto], captchaRequired: Boolean)
+
+
+@captcha() = {
+    @if(captchaRequired) {
+        @extension.RecaptchaHelper.CaptchaField()
+        <br>
+    }
+}
 
 @Main("User Login"){
     @bootstrapHelper.form(
@@ -14,6 +22,7 @@
                 placeholder = "Passwort hier eingeben",
                 help = "Passwort durch Sonderzeichen maskiert")
         ),
-        "Login"
+        "Login",
+        captcha
     )
 }

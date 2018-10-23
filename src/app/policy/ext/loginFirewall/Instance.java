@@ -5,18 +5,11 @@ import io.ebean.SqlQuery;
 import io.ebean.SqlRow;
 import io.ebean.SqlUpdate;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
 
-public class Login {
-    public enum Strategy {
-        BYPASS,
-        VERIFY,
-        BLOCK
-    };
-
+public class Instance {
     private String remoteIp;
 
-    protected Login(String remoteIp) {
+    protected Instance(String remoteIp) {
         this.remoteIp = remoteIp;
     }
 

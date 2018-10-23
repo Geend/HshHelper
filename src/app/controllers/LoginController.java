@@ -3,6 +3,7 @@ package controllers;
 import constants.CookieConstants;
 import extension.AuthenticateUser;
 import extension.HashHelper;
+import extension.RecaptchaHelper;
 import models.User;
 import models.UserSession;
 import models.dtos.ChangePasswordAfterResetDto;
@@ -15,6 +16,10 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
+import policy.Authentification;
+import policy.ext.loginFirewall.Firewall;
+import policy.ext.loginFirewall.Instance;
+import policy.ext.loginFirewall.Strategy;
 import views.html.ChangePasswordAfterReset;
 
 
@@ -46,42 +51,60 @@ public class LoginController extends Controller {
         if (session().containsKey(CookieConstants.USER_SESSION_ID_NAME)) {
             return redirect(routes.HomeController.index());
         }
-        return ok(views.html.Login.render(loginForm));
+        return ok(views.html.Login.render(loginForm, false));
     }
 
     public Result loginCommit() {
-        Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password");
+        Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password", "recaptcha");
         if (boundForm.hasErrors()) {
             return redirect(routes.LoginController.login());
         }
+
         UserLoginDto loginData = boundForm.get();
 
-        Optional<User> user = userFinder.byName(loginData.getUsername());
-        if(!user.isPresent()) {
-            return redirect(routes.LoginController.login());
+        Authentification.Result auth = Authentification.Perform(
+                loginData.getUsername(),
+                loginData.getPassword()
+        );
+
+        Long uid = null;
+        if(auth.userExists()) {
+            uid = auth.user().getId();
         }
 
-        if(this.authenticateUser.SecureAuthenticate(user.get(), loginData.getPassword())) {
-            if(user.get().passwordResetRequired) {
-                return redirect(routes.LoginController.changePasswordAfterReset());
+        Instance fw = Firewall.Get(request().remoteAddress());
+        Strategy strategy = fw.getStrategy(uid);
+
+        if(strategy.equals(Strategy.BLOCK)) {
+            boundForm = boundForm.withGlobalError("You're banned from logging in");
+            return badRequest(views.html.Login.render(boundForm, false));
+        }
+
+        if(strategy.equals(Strategy.VERIFY)) {
+            if(!RecaptchaHelper.IsValidResponse(loginData.getRecaptcha(), request().remoteAddress())) {
+                boundForm = boundForm.withGlobalError("Complete the Captcha!");
+                return badRequest(views.html.Login.render(boundForm, true));
             }
-
-            Logger.info("User authenticated");
-
-            String remoteIp = request().remoteAddress();
-            UserSession userSession = new UserSession();
-            userSession.setConnectedFrom(remoteIp);
-            userSession.setUser(user.get());
-            userSession.setIssuedAt(DateTime.now());
-            userSession.save();
-
-            session().put(CookieConstants.USER_SESSION_ID_NAME, userSession.getId().toString());
-
-            return redirect(routes.HomeController.index());
         }
 
-        Logger.info("User could not be authenticated");
-        return redirect(routes.LoginController.login());
+        // Wenn der Login nicht erfolgreich war Request abbrechen und Nutzer informieren!
+        if(!auth.success()) {
+            boundForm = boundForm.withGlobalError("Invalid Login Data!");
+            fw.fail(uid);
+            return badRequest(views.html.Login.render(boundForm, strategy.equals(Strategy.VERIFY)));
+        }
+
+        // TODO: Kein Cookie manuell setzen!
+        String remoteIp = request().remoteAddress();
+        UserSession userSession = new UserSession();
+        userSession.setConnectedFrom(remoteIp);
+        userSession.setUser(auth.user());
+        userSession.setIssuedAt(DateTime.now());
+        userSession.save();
+
+        session().put(CookieConstants.USER_SESSION_ID_NAME, userSession.getId().toString());
+
+        return redirect(routes.HomeController.index());
     }
 
     public Result changePasswordAfterReset()
