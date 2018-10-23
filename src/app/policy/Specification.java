@@ -59,7 +59,7 @@ public class Specification {
     }
 
     public static boolean CanDeleteUser(User currentUser, User userToBeDeleted) {
-        if(currentUser == null) {
+        if(currentUser == null || userToBeDeleted == null) {
             return false;
         }
 

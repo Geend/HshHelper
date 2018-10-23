@@ -1,10 +1,12 @@
 package models.dtos;
 
 public class UserListEntryDto {
+    private Long userId;
     private Integer index;
     private String username;
 
-    public UserListEntryDto(String username) {
+    public UserListEntryDto(Long userId, String username) {
+        this.userId = userId;
         this.username = username;
     }
 
@@ -22,5 +24,13 @@ public class UserListEntryDto {
 
     public void setIndex(Integer index) {
         this.index = index;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

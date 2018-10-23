@@ -23,7 +23,7 @@ public class User extends BaseDomain {
     public int invalidLoginCounter;
 
     @ManyToMany(cascade = {
-            CascadeType.PERSIST,
+            CascadeType.REMOVE,
             CascadeType.MERGE
     })
     @JoinTable(name = "groupmembers",

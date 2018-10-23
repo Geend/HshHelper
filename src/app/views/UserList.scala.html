@@ -1,4 +1,6 @@
 @import models.dtos.UserListEntryDto
+@import bootstrapHelper._
+
 @(users: Seq[UserListEntryDto])
 
 @Main("HsH-Helper Benutzerliste") {
@@ -7,6 +9,7 @@
             <thead class="thead-dark">
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
+                <th scope="col">Aktion</th>
             </thead>
 
             <tbody>
@@ -14,6 +17,13 @@
                     <tr>
                         <td>@user.getIndex()</td>
                         <td>@user.getUsername()</td>
+                        <td>
+                            <form action="@routes.UserController.deleteUser" method="POST">
+                                @helper.CSRF.formField
+                                <input type="hidden" name="userId" value="@user.getUserId()"/>
+                                @button("Löschen")
+                            </form>
+                        </td>
                     </tr>
                 }
             </tbody>

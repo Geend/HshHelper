@@ -34,6 +34,7 @@ public class UserController extends Controller {
     private Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
     private Form<ResetUserPasswordDto> resetUserPasswordForm;
     private Form<DeleteSessionDTO> deleteSessionForm;
+    private Form<DeleteUserDto> deleteUserForm;
 
 
     @Inject
@@ -44,6 +45,7 @@ public class UserController extends Controller {
         this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
         this.deleteSessionForm = formFactory.form(DeleteSessionDTO.class);
+        this.deleteUserForm = formFactory.form(DeleteUserDto.class);
     }
 
     @AuthenticationRequired
@@ -56,7 +58,7 @@ public class UserController extends Controller {
         List<UserListEntryDto> entries = this.userFinder
                 .all()
                 .stream()
-                .map(x -> new UserListEntryDto(x.username))
+                .map(x -> new UserListEntryDto(x.getId(), x.username))
                 .collect(Collectors.toList());
 
         for(int i = 0; i < entries.size(); i++) {
@@ -64,6 +66,22 @@ public class UserController extends Controller {
         }
         Seq<UserListEntryDto> scalaEntries = asScala(entries);
         return ok(views.html.UserList.render(scalaEntries));
+    }
+
+    @AuthenticationRequired
+    public Result deleteUser()
+    {
+        User currentUser = ContextArguments.getUser().get();
+        Form<DeleteUserDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
+        if(boundForm.hasErrors()) {
+            return badRequest();
+        }
+        User userToDelete = this.userFinder.byId(boundForm.get().getUserId());
+        if(!Specification.CanDeleteUser(currentUser, userToDelete)) {
+            return unauthorized();
+        }
+        userToDelete.delete();
+        return redirect(routes.UserController.userList());
     }
 
 
