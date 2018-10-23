@@ -5,7 +5,7 @@
         @bootstrapHelper.cardWithTitle("Gruppen") {
             @bootstrapHelper.listGroupFlush(
                 groups.map(
-                    g => bootstrapHelper.listGroupLink(g.name, routes.GroupController.getGroup(g.id))
+                    g => bootstrapHelper.listGroupLink(g.name, routes.GroupController.showGroup(g.id))
                 )
             )
         }
