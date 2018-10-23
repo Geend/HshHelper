@@ -1,6 +1,4 @@
-@(route: play.api.mvc.Call, form: Form[_], fields: scala.collection.Map[String, views.bootstrapHelper.Input], buttonName: String, extraContent: Html*)
-
-@import bootstrapHelper.button
+@(route: play.api.mvc.Call, form: Form[_], fields: scala.collection.Map[String, views.bootstrapHelper.Input], button: Html, extraContent: Html*)
 
 @implicitFieldConstructor = @{ helper.FieldConstructor(bootstrapHelper.BootstrapFieldConstructor.render)}
 
@@ -46,5 +44,5 @@
 
     @extraContent
 
-    @button(buttonName)
+    @button
 }

@@ -1,19 +1,21 @@
 @import models.dtos.UserLoginDto
 @(form: Form[UserLoginDto])
 
-@Main("User Login"){
-    @bootstrapHelper.form(
-        routes.LoginController.login(),
-        form,
-        scala.collection.Map(
-            "username" -> Input(InputType.Text,
-                label = "Benutzername",
-                placeholder = "Benutzernamen hier eingeben"),
-            "password" -> Input(InputType.Password,
-                label = "Passwort",
-                placeholder = "Passwort hier eingeben",
-                help = "Passwort durch Sonderzeichen maskiert")
-        ),
-        "Login"
-    )
+@Main("HsH-Helper: Login"){
+    @bootstrapHelper.center("User Login") {
+        @bootstrapHelper.form(
+            routes.LoginController.login(),
+            form,
+            scala.collection.Map(
+                "username" -> Input(InputType.Text,
+                    label = "Benutzername",
+                    placeholder = "Benutzernamen hier eingeben"),
+                "password" -> Input(InputType.Password,
+                    label = "Passwort",
+                    placeholder = "Passwort hier eingeben",
+                    help = "Passwort durch Sonderzeichen maskiert")
+            ),
+            button = bootstrapHelper.button("Login")
+        )
+    }
 }

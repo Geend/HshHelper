@@ -1,12 +1,33 @@
-@(user: User)
+@(user: User, groups: Seq[Group])
 
-@Main("Willkommen zum HsH-Helfer, " + user.username + "!") {
-    <p>
-        Bisher ist die einzige Funktionalitaet des HsH-Helfers, Gruppen anzulegen und in diesen Nutzer zu verwalten.<br/>
-        In einer spaeteren Entwicklungsiteration werden wir fuer Sie eine Plattform zum Dateienaustausch bereitstellen,
-        sowie ihnen ermoeglichen, dass sie sich mit einem Login auf dieser Page via eines Single-Sign-On ebenfalls bei
-        ihren Lieblingsnetzdiensten anmelden.<br/>
-        <br/>
-        Euer HsH-Helfer-Team.
-    </p>
+@Main("HsH-Helfer: Index") {
+    @bootstrapHelper.sidebarPlusContent{
+        @bootstrapHelper.cardWithTitle("Gruppen") {
+            @bootstrapHelper.listGroupFlush(
+                groups.map(
+                    g => bootstrapHelper.listGroupLink(g.name, routes.GroupController.showGroup(g.id))
+                )
+            )
+        }
+    } {
+        @bootstrapHelper.mainContent("Willkommen zum HsH-Helfer, " + user.username + "!") {
+            <p>
+                Bisher ist die einzige Funktionalitaet des HsH-Helfers, Gruppen anzulegen und in diesen Nutzer zu verwalten.<br/>
+                In einer spaeteren Entwicklungsiteration werden wir fuer Sie eine Plattform zum Dateienaustausch bereitstellen,
+                sowie ihnen ermoeglichen, dass sie sich mit einem Login auf dieser Page via eines Single-Sign-On ebenfalls bei
+                ihren Lieblingsnetzdiensten anmelden.<br/>
+                <br/>
+                Euer HsH-Helfer-Team.
+            </p>
+            <h2>Dateien</h2>
+            <p>Hier koennen sie in Zukunft die Dateien sehen, die fuer Sie von anderen Nutzern sowie in Gruppen, dessen
+                Mitglied sie sind, fuer sie freigeschalten wurden!</p>
+            @bootstrapHelper.table(Seq(scala.collection.Map(
+                "Name" -> Left("Anstandsregeln.txt"),
+                "Kommentar" -> Left("Nur zu Demonstrationszwecken!"),
+                "Hochgeladen von" -> Left("admin"),
+                "Zugriffsrechte" -> Left("R")
+            )))
+        }
+    }
 }
