@@ -6,6 +6,7 @@ import models.Group;
 import models.User;
 import models.dtos.AddUserToGroupDTO;
 import models.dtos.CreateGroupDTO;
+import models.dtos.DeleteGroupDTO;
 import models.dtos.RemoveGroupUserDTO;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
@@ -30,6 +31,7 @@ public class GroupController extends Controller {
     private final Form<RemoveGroupUserDTO> removeGroupUserForm;
     private final UserFinder userFinder;
     private final Form<AddUserToGroupDTO> addUserToGroupForm;
+    private final Form<DeleteGroupDTO> deleteGroupForm;
     private final GroupFinder groupFinder;
 
     @Inject
@@ -39,6 +41,7 @@ public class GroupController extends Controller {
         this.userFinder = userFinder;
         this.groupFinder = groupFinder;
         this.addUserToGroupForm = formFactory.form(AddUserToGroupDTO.class);
+        this.deleteGroupForm = formFactory.form(DeleteGroupDTO.class);
     }
 
     public Result getCreateGroup() {
@@ -119,5 +122,23 @@ public class GroupController extends Controller {
         g.save();
 
         return redirect(routes.GroupController.getGroup(groupId));
+    }
+
+    public Result removeGroup(Long id) {
+        Form<DeleteGroupDTO> form = deleteGroupForm.bindFromRequest();
+        if(form.hasErrors()) {
+            return badRequest("error");
+        }
+
+        DeleteGroupDTO dg = form.get();
+        Group g = groupFinder.byIdOptional(id).get();
+
+        if(!policy.Specification.CanDeleteGroup(ContextArguments.getUser().get(), g)) {
+            return badRequest("error");
+        }
+
+        g.delete();
+
+        return redirect(routes.GroupController.getOwnGroups());
     }
 }

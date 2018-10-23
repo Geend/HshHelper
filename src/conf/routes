@@ -16,8 +16,10 @@ GET         /groups                              controllers.GroupController.get
 GET         /groups/create                       controllers.GroupController.getCreateGroup
 POST        /groups/create                       controllers.GroupController.postCreateGroup
 GET         /groups/:id                          controllers.GroupController.getGroup(id : Long)
+POST        /groups/:id/delete                   controllers.GroupController.removeGroup(id : Long)
 POST        /groups/:groupId/removeMember        controllers.GroupController.postRemoveMember(groupId : Long)
 POST        /groups/:groupId/addMember           controllers.GroupController.addMember(groupId : Long)
+
 
 GET         /sessions                            controllers.UserController.showActiveUserSessions()
 POST        /sessions/delete                     controllers.UserController.deleteUserSession()
