@@ -13,10 +13,12 @@ import play.libs.mailer.MailerClient;
 import play.mvc.Controller;
 import play.mvc.Result;
 import policy.Specification;
+import scala.collection.Seq;
 
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
 
@@ -42,6 +44,23 @@ public class UserController extends Controller {
         this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
         this.deleteSessionForm = formFactory.form(DeleteSessionDTO.class);
+    }
+
+    @AuthenticationRequired
+    public Result userList() {
+        User currentUser = ContextArguments.getUser().get();
+        if(!Specification.CanViewAllUsers(currentUser)) {
+            return unauthorized();
+        }
+
+        List<UserListEntryDto> entries = this.userFinder
+                .all()
+                .stream()
+                .map(x -> new UserListEntryDto())
+                .collect(Collectors.toList());
+
+        Seq<UserListEntryDto> scalaEntries = asScala(entries);
+        return ok(views.html.UserList.render(scalaEntries));
     }
 
 

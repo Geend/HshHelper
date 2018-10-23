@@ -22,6 +22,18 @@ public class Specification {
         return false;
     }
 
+    public static boolean CanViewAllUsers(User currentUser) {
+        if(currentUser == null) {
+            return false;
+        }
+
+        if(currentUser.isAdmin()) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static boolean CanViewAllGroupsList(User currentUser) {
         if(currentUser == null) {
             return false;

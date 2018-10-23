@@ -1,6 +1,7 @@
 GET         /                                    controllers.HomeController.index
 POST        /users/create                        controllers.UserController.createUser
 GET         /users/create                        controllers.UserController.showCreateUserForm
+GET         /users/list                          controllers.UserController.userList
 GET         /changepassword                      controllers.UserController.showChangeOwnPasswordForm
 POST        /changepassword                      controllers.UserController.changeOwnPassword
 GET         /resetpassword                       controllers.UserController.showResetUserPasswordForm
