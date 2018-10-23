@@ -19,6 +19,7 @@ public class Group extends BaseDomain {
     public boolean isAllGroup;
 
     @ManyToMany(cascade = {
+            CascadeType.PERSIST,
             CascadeType.REMOVE
     }, mappedBy = "groups")
     public Set<User> members = new HashSet<>();
