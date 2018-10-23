@@ -18,7 +18,9 @@ public class Group extends BaseDomain {
     public boolean isAdminGroup;
     public boolean isAllGroup;
 
-    @ManyToMany(mappedBy = "groups")
+    @ManyToMany(cascade = {
+            CascadeType.REMOVE
+    }, mappedBy = "groups")
     public Set<User> members = new HashSet<>();
 
     public Group(Long id, String name, User owner, boolean isAdminGroup) {
