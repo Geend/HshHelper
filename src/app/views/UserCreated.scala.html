@@ -1,0 +1,17 @@
+@(data: dtos.UserCreatedDto)
+@import bootstrapHelper._
+
+@Main("Administrator-Funktion: Benutzer erstellen"){
+
+    <p>
+        Der Benutzer wurde erfolgreich angelegt.
+    </p>
+    <p>
+        Username: @data.getUsername
+    </p>
+    <p>
+        Temporäres Passwort: @data.getPlaintextPassword
+    </p>
+
+    @link("Weiteren Benutzer anlegen", routes.UserController.showCreateUserForm())
+}

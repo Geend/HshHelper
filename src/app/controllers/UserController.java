@@ -48,6 +48,7 @@ public class UserController extends Controller {
         this.deleteUserForm = formFactory.form(DeleteUserDto.class);
     }
 
+
     @AuthenticationRequired
     public Result userList() {
         User currentUser = ContextArguments.getUser().get();
@@ -125,10 +126,16 @@ public class UserController extends Controller {
 
         newUser.save();
 
-        //TODO: Show the create the password
-        return ok("created user " + newUser.username + " with inital password " + plaintextPassword);
+        UserCreatedDto userCreatedDto = new UserCreatedDto();
+        userCreatedDto.setUsername(newUser.username);
+        userCreatedDto.setPlaintextPassword(passwordGenerator.generatePassword(10));
+
+        return ok(views.html.UserCreated.render(userCreatedDto));
 
     }
+
+
+
 
     @AuthenticationRequired
     public Result showChangeOwnPasswordForm() {
