@@ -1,7 +1,7 @@
 @(form: Form[dtos.CreateGroupDTO])
 
 @Main("Create Group") {
-    @bootstrapHelper.form(routes.GroupController.postCreateGroup(),
+    @bootstrapHelper.form(routes.GroupController.createGroup(),
         form,
         scala.collection.Map(
             "name" -> Input(InputType.Text,

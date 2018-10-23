@@ -4,14 +4,14 @@
 
 @viewGroupButton(g: Group) = {
     @if(policy.Specification.CanViewGroupDetails(extension.ContextArguments.getUser().get(), g)) {
-        @link("Mitglieder bearbeiten", routes.GroupController.getGroup(g.id))
+        @link("Mitglieder bearbeiten", routes.GroupController.showGroup(g.id))
     }
 }
 
 @deleteGroupButton(g: Group) = {
     @if(policy.Specification.CanDeleteGroup(extension.ContextArguments.getUser().get(), g)) {
         @bootstrapHelper.form(
-            routes.GroupController.removeGroup(g.id),
+            routes.GroupController.deleteGroup(g.id),
             deleteGroupForm,
             scala.collection.Map(
                 "groupId" -> Input(InputType.Hidden,
@@ -32,5 +32,5 @@
     ))
 
     <hr>
-    @link("Eine neue Gruppe anlegen", routes.GroupController.getCreateGroup())
+    @link("Eine neue Gruppe anlegen", routes.GroupController.showCreateGroupForm())
 }

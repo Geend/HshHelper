@@ -50,7 +50,7 @@ public class UserController extends Controller {
 
 
     @AuthenticationRequired
-    public Result userList() {
+    public Result showUsers() {
         User currentUser = ContextArguments.getUser().get();
         if(!Specification.CanViewAllUsers(currentUser)) {
             return unauthorized();
@@ -82,7 +82,7 @@ public class UserController extends Controller {
             return unauthorized();
         }
         userToDelete.delete();
-        return redirect(routes.UserController.userList());
+        return redirect(routes.UserController.showUsers());
     }
 
 

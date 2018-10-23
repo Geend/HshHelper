@@ -6,7 +6,7 @@
 @userButton(member: User) = {
     @if(policy.Specification.CanRemoveGroupMember(extension.ContextArguments.getUser().get(), group, member)) {
         @bootstrapHelper.form(
-            routes.GroupController.postRemoveMember(group.getId()),
+            routes.GroupController.removeGroupMember(group.getId()),
             removeGroupUserForm,
             scala.collection.Map(
                 "userId" -> Input(InputType.Hidden,
@@ -30,7 +30,7 @@
 group)) {
         <h2>Benutzer hinzufuegen</h2>
         @bootstrapHelper.form(
-            routes.GroupController.addMember(group.getId()),
+            routes.GroupController.addGroupMember(group.getId()),
             addUserForm,
             scala.collection.Map(
                 "userId" -> Input(InputType.Select,
