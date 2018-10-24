@@ -23,6 +23,13 @@
                             </a>
                         </li>
                     }
+                    @if(extension.ContextArguments.getUser().get().isAdmin) {
+                        <li>
+                            <a class="nav-link" href="@routes.UserController.showUsers()">
+                                Benutzerübersicht
+                            </a>
+                        </li>
+                    }
                 </ul>
             </div>
             <span class="navbar-text">
