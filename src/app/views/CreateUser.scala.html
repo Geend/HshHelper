@@ -1,20 +1,22 @@
 @(form: Form[dtos.CreateUserDto])
 
-@Main("Administrator-Funktion: Benutzer erstellen"){
-    @bootstrapHelper.form(
-        routes.UserController.createUser(),
-        form,
-        scala.collection.Map(
-            "username" -> Input(InputType.Text,
-                label = "Benutzernamen",
-                placeholder = "Benutzernamen hier eingeben"),
-            "email" -> Input(InputType.Text,
-                label = "E-Mail Adresse",
-                placeholder = "E-Mail hier eingeben"),
-            "quotaLimit" -> Input(InputType.Text,
-                label = "Datenkontigent",
-                placeholder = "Datenkontigent als Zahl eingeben")
-        ),
-        "Benutzer erstellen"
-    )
+@Main("HsH-Helfer: Benutzer erstellen"){
+    @bootstrapHelper.center("Einen neuen Benutzer erstellen") {
+        @bootstrapHelper.form(
+            routes.UserController.createUser(),
+            form,
+            scala.collection.Map(
+                "username" -> Input(InputType.Text,
+                    label = "Benutzernamen",
+                    placeholder = "Benutzernamen hier eingeben"),
+                "email" -> Input(InputType.Text,
+                    label = "E-Mail Adresse",
+                    placeholder = "E-Mail hier eingeben"),
+                "quotaLimit" -> Input(InputType.Text,
+                    label = "Datenkontigent",
+                    placeholder = "Datenkontigent als Zahl eingeben")
+            ),
+            button = bootstrapHelper.button("Benutzer erstellen")
+        )
+    }
 }

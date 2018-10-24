@@ -1,43 +1,69 @@
 @import views.bootstrapHelper.enums.ButtonClass
 @import bootstrapHelper._
 
+@import scala.collection.JavaConverters._
+
 @(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[dtos.AddUserToGroupDTO], removeGroupUserForm: Form[dtos.RemoveGroupUserDTO])
 
-@userButton(member: User) = {
+@removeMemberButton(member: User) = {
     @if(policy.Specification.CanRemoveGroupMember(extension.ContextArguments.getUser().get(), group, member)) {
         @bootstrapHelper.form(
-            routes.GroupController.postRemoveMember(group.getId()),
+            routes.GroupController.removeGroupMember(group.getId()),
             removeGroupUserForm,
             scala.collection.Map(
                 "userId" -> Input(InputType.Hidden,
                     value = Left(member.getId().toString))
             ),
-            "Entfernen"
+            button = listGroupButton(member.username)
         )
     } else {
-        @button("Entfernen", clazz = ButtonClass.Secondary)
+        @listGroupButton(member.username, disabled = true)
     }
 }
 
-@Main("Mitglieder von: " + group.name) {
-    @table(members.map(
-        member => scala.collection.Map(
-            "Benutzername" -> member.username,
-            "" -> userButton(member).toString
-    )))
-
+@addMemberButton() = {
     @if(policy.Specification.isAllowedToAddGroupMember(extension.ContextArguments.getUser().get(),
-group)) {
-        <h2>Benutzer hinzufuegen</h2>
+        group)) {
         @bootstrapHelper.form(
-            routes.GroupController.addMember(group.getId()),
+            routes.GroupController.addGroupMember(group.getId()),
             addUserForm,
             scala.collection.Map(
                 "userId" -> Input(InputType.Select,
                     value = Right(notMembers.map(user => user.id.toString -> user.username)),
                     label = "Nutzer waehlen")
             ),
-            "Nutzer hinzufuegen"
+            button = button("Nutzer hinzufuegen")
         )
+    }
+}
+
+@Main("HsH-Helfer: Detailansicht der Gruppe " + group.name) {
+    <h1>GRUPPE "@group.name"</h1>
+    @bootstrapHelper.sidebarPlusContent {
+        @bootstrapHelper.card {
+            <div class="card-body">
+                <h5 class="card-title">Mitglied hinzufuegen</h5>
+                <p class="card-text">
+                    @addMemberButton()
+                </p>
+            </div>
+            <div class="card-footer">
+                <h5>Mitglied entfernen</h5>
+            </div>
+            @bootstrapHelper.listGroupFlush(
+                group.members.asScala.toSeq.map(
+                    u => removeMemberButton(u)
+                )
+            )
+        }
+    } {
+        <h2>Dateien</h2>
+        <p>Hier werden sie in Zukunft sehen, welche Dateien fuer diese Gruppe freigeschalten wurden!</p>
+        @table(Seq(scala.collection.Map(
+            "Name" -> Left("Anstandsregeln.txt"),
+            "Kommentar" -> Left("Nur zu Demonstrationszwecken!"),
+            "Hochgeladen von" -> Left("admin"),
+            "Zugriffsrechte" -> Left("R")
+        )))
     }
 }

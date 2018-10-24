@@ -11,6 +11,8 @@ import play.mvc.Result;
 import javax.inject.Singleton;
 import java.util.Optional;
 
+import static play.libs.Scala.asScala;
+
 @Singleton
 @AuthenticationRequired
 public class HomeController extends Controller {
@@ -18,7 +20,7 @@ public class HomeController extends Controller {
     public Result index() {
         Optional<User> user = extension.ContextArguments.getUser();
         if (user.isPresent()) {
-            return ok(views.html.Index.render(user.get()));
+            return ok(views.html.Index.render(user.get(), asScala(user.get().groups)));
         }
         return badRequest("error");
     }

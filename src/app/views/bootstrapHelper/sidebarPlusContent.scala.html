@@ -1,0 +1,12 @@
+@(sidebarContent: Html)(mainContent: Html)
+
+<div class="container-fluid" role="main">
+    <div class="row flex-xl-row">
+        <div class="col-sm-3 py-3">
+            @sidebarContent
+        </div>
+        <div class="col-sm-9 pl-5 py-3 bd-content col-align-self-center">
+            @mainContent
+        </div>
+    </div>
+</div>

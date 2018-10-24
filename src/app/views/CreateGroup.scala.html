@@ -1,13 +1,13 @@
 @(form: Form[dtos.CreateGroupDTO])
 
 @Main("Create Group") {
-    @bootstrapHelper.form(routes.GroupController.postCreateGroup(),
+    @bootstrapHelper.form(routes.GroupController.createGroup(),
         form,
         scala.collection.Map(
             "name" -> Input(InputType.Text,
                 label = "Gruppenname",
                 placeholder = "Gruppennamen hier eintragen")
         ),
-        "Create Group"
+        button = bootstrapHelper.button("Create Group")
     )
 }
