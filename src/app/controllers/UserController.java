@@ -88,6 +88,10 @@ public class UserController extends Controller {
 
     @AuthenticationRequired
     public Result showCreateUserForm() {
+        User currentUser = ContextArguments.getUser().get();
+        if(!Specification.CanCreateUser(currentUser)) {
+            return unauthorized();
+        }
         return ok(views.html.CreateUser.render(createUserForm));
     }
 
