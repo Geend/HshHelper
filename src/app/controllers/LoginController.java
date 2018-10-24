@@ -47,14 +47,14 @@ public class LoginController extends Controller {
         this.authenticateUser = authenticateUser;
     }
 
-    public Result login() {
+    public Result showLoginForm() {
         if (session().containsKey(CookieConstants.USER_SESSION_ID_NAME)) {
             return redirect(routes.HomeController.index());
         }
         return ok(views.html.Login.render(loginForm, false));
     }
 
-    public Result loginCommit() {
+    public Result login() {
         Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password", "recaptcha");
         if (boundForm.hasErrors()) {
             return redirect(routes.LoginController.login());
@@ -112,12 +112,12 @@ public class LoginController extends Controller {
         return redirect(routes.HomeController.index());
     }
 
-    public Result changePasswordAfterReset()
+    public Result showChangePasswordAfterResetForm()
     {
         return ok(views.html.ChangePasswordAfterReset.render(this.changePasswordForm));
     }
 
-    public Result changePasswordAfterResetCommit()
+    public Result changePasswordAfterReset()
     {
         Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat");
         if (boundForm.hasErrors()) {
@@ -138,7 +138,7 @@ public class LoginController extends Controller {
         return redirect(routes.LoginController.login());
     }
 
-    public Result logoutCommit() {
+    public Result logout() {
 
         if (session().containsKey(CookieConstants.USER_SESSION_ID_NAME)) {
 
