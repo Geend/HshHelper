@@ -20,7 +20,7 @@ public class HomeController extends Controller {
     public Result index() {
         Optional<User> user = extension.ContextArguments.getUser();
         if (user.isPresent()) {
-            return ok(views.html.Index.render(user.get(), asScala(user.get().groups)));
+            return ok(views.html.Index.render(user.get(), asScala(user.get().getGroups())));
         }
         return badRequest("error");
     }

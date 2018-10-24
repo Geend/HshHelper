@@ -1,31 +1,33 @@
 package models;
 
 import io.ebean.Model;
-import models.finders.GroupFinder;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity
 @Table(name = "groups")
-public class Group extends BaseDomain {
+public class Group extends Model {
+
+    @Id
+    private Long groupId;
 
     @Column(unique = true)
-    public String name;
+    private String name;
     @ManyToOne
-    @JoinColumn(name = "owner", referencedColumnName = "id")
-    public User owner;
-    public boolean isAdminGroup;
-    public boolean isAllGroup;
+    @JoinColumn(name = "owner", referencedColumnName = "user_id")
+    private User owner;
+    private boolean isAdminGroup;
+    private boolean isAllGroup;
 
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.REMOVE
     }, mappedBy = "groups")
-    public Set<User> members = new HashSet<>();
+    private Set<User> members = new HashSet<>();
 
     public Group(Long id, String name, User owner, boolean isAdminGroup) {
-        this.id = id;
+        this.groupId = id;
         this.name = name;
         this.owner = owner;
         this.isAdminGroup = isAdminGroup;
@@ -37,17 +39,65 @@ public class Group extends BaseDomain {
         this.isAdminGroup = false;
     }
 
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public boolean getIsAdminGroup() {
+        return isAdminGroup;
+    }
+
+    public void setIsAdminGroup(boolean adminGroup) {
+        isAdminGroup = adminGroup;
+    }
+
+    public boolean getIsAllGroup() {
+        return isAllGroup;
+    }
+
+    public void setIsAllGroup(boolean allGroup) {
+        isAllGroup = allGroup;
+    }
+
+    public Set<User> getMembers() {
+        return members;
+    }
+
+    public void setMembers(Set<User> members) {
+        this.members = members;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Group group = (Group) o;
-        return Objects.equals(id, group.id)&&
+        return Objects.equals(groupId, group.groupId)&&
             Objects.equals(name, group.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(groupId, name);
     }
 }

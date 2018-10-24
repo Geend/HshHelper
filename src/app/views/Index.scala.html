@@ -5,12 +5,12 @@
         @bootstrapHelper.cardWithTitle("Gruppen") {
             @bootstrapHelper.listGroupFlush(
                 groups.map(
-                    g => bootstrapHelper.listGroupLink(g.name, routes.GroupController.showGroup(g.id))
+                    g => bootstrapHelper.listGroupLink(g.getName(), routes.GroupController.showGroup(g.getGroupId()))
                 )
             )
         }
     } {
-        @bootstrapHelper.mainContent("Willkommen zum HsH-Helfer, " + user.username + "!") {
+        @bootstrapHelper.mainContent("Willkommen zum HsH-Helfer, " + user.getUsername() + "!") {
             <p>
                 Bisher ist die einzige Funktionalitaet des HsH-Helfers, Gruppen anzulegen und in diesen Nutzer zu verwalten.<br/>
                 In einer spaeteren Entwicklungsiteration werden wir fuer Sie eine Plattform zum Dateienaustausch bereitstellen,

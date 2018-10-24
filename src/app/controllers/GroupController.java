@@ -57,7 +57,7 @@ public class GroupController extends Controller {
             CreateGroupDTO gDto = bf.get();
 
             Group group = new Group(gDto.getName(), ContextArguments.getUser().get());
-            group.members.add( ContextArguments.getUser().get());
+            group.getMembers().add( ContextArguments.getUser().get());
             group.save();
 
             return redirect(routes.GroupController.showOwnGroups());
@@ -65,7 +65,7 @@ public class GroupController extends Controller {
     }
 
     public Result showOwnGroups() {
-        Set<Group> gms = ContextArguments.getUser().get().groups;
+        Set<Group> gms = ContextArguments.getUser().get().getGroups();
         return ok(views.html.OwnGroupsList.render(asScala(gms), deleteGroupForm));
     }
 
@@ -75,11 +75,11 @@ public class GroupController extends Controller {
         if(!g.isPresent())
             return notFound("404");
         List<User> notMember = userFinder.all().stream().filter(
-                user -> !g.get().members.contains(user))
+                user -> !g.get().getMembers().contains(user))
                 .collect(Collectors.toList());
         return g.map(grp ->
                 ok(views.html.GroupMembersList.render(grp,
-                        asScala(grp.members), asScala(notMember), addUserToGroupForm, removeGroupUserForm)))
+                        asScala(grp.getMembers()), asScala(notMember), addUserToGroupForm, removeGroupUserForm)))
                 .get();
     }
 
@@ -97,7 +97,7 @@ public class GroupController extends Controller {
             return badRequest("error");
         }
         
-        g.members.remove(toBeDeleted);
+        g.getMembers().remove(toBeDeleted);
         g.save();
 
         return redirect(routes.GroupController.showGroup(groupId));
@@ -118,7 +118,7 @@ public class GroupController extends Controller {
             return badRequest("error");
         }
 
-        g.members.add(toBeAdded);
+        g.getMembers().add(toBeAdded);
         g.save();
 
         return redirect(routes.GroupController.showGroup(groupId));

@@ -59,7 +59,7 @@ public class UserController extends Controller {
         List<UserListEntryDto> entries = this.userFinder
                 .all()
                 .stream()
-                .map(x -> new UserListEntryDto(x.getId(), x.username))
+                .map(x -> new UserListEntryDto(x.getUserId(), x.getUsername()))
                 .collect(Collectors.toList());
 
         for(int i = 0; i < entries.size(); i++) {
@@ -119,19 +119,17 @@ public class UserController extends Controller {
         String plaintextPassword = passwordGenerator.generatePassword(10);
         String passwordHash = HashHelper.hashPassword(plaintextPassword);
 
-        boolean passwordResetRequired = true;
-
         User newUser = new User(createUserDto.getUsername(),
                 createUserDto.getEmail(),
                 passwordHash,
-                passwordResetRequired,
+                true,
                 createUserDto.getQuotaLimit());
 
 
         newUser.save();
 
         UserCreatedDto userCreatedDto = new UserCreatedDto();
-        userCreatedDto.setUsername(newUser.username);
+        userCreatedDto.setUsername(newUser.getUsername());
         userCreatedDto.setPlaintextPassword(passwordGenerator.generatePassword(10));
 
         return ok(views.html.UserCreated.render(userCreatedDto));
@@ -167,9 +165,8 @@ public class UserController extends Controller {
 
         ChangeOwnPasswordDto changeOwnPasswordDto = boundForm.get();
 
-        currentUser.passwordHash = HashHelper.hashPassword(changeOwnPasswordDto.getPassword());
-
-        currentUser.passwordResetRequired = false;
+        currentUser.setPasswordHash(HashHelper.hashPassword(changeOwnPasswordDto.getPassword()));
+        currentUser.setIsPasswordResetRequired(false);
         currentUser.save();
 
         return ok("changedPassword");
@@ -207,9 +204,8 @@ public class UserController extends Controller {
         //TODO: Include generated password length in policy
         String tempPassword = passwordGenerator.generatePassword(10);
 
-        user.passwordHash = HashHelper.hashPassword(tempPassword);
-        user.passwordResetRequired = true;
-
+        user.setPasswordHash(HashHelper.hashPassword(tempPassword));
+        user.setIsPasswordResetRequired(true);
         user.save();
 
         sendPasswordEmail(user, tempPassword);
@@ -222,7 +218,7 @@ public class UserController extends Controller {
         Email email = new Email()
                 .setSubject("HshHelper Password Rest")
                 .setFrom("HshHelper <hshhelper@hs-hannover.de>")
-                .addTo(user.email)
+                .addTo(user.getEmail())
                 .setBodyText("Your temp password is " + tempPassword);
 
         //TODO: Catch possible exception (eg if the mail server is down)

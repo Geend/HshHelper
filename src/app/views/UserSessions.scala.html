@@ -9,7 +9,7 @@
             deleteSessionform,
             scala.collection.Map(
                 "sessionId" -> Input(InputType.Hidden,
-                    value = Left(s.getId.toString))
+                    value = Left(s.getSessionId().toString))
             ),
             button = bootstrapHelper.button("Session Zerstören")
         )

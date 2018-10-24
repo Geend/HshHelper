@@ -40,7 +40,7 @@ public class Authentification {
         }
 
         // Nutzer existiert
-        boolean success = HashHelper.checkHash(password, user.get().passwordHash);
+        boolean success = HashHelper.checkHash(password, user.get().getPasswordHash());
         return new Result(success, true, user.get());
     }
 }

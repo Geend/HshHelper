@@ -4,18 +4,18 @@
 
 @viewGroupButton(g: Group) = {
     @if(policy.Specification.CanViewGroupDetails(extension.ContextArguments.getUser().get(), g)) {
-        @link("Mitglieder bearbeiten", routes.GroupController.showGroup(g.id))
+        @link("Mitglieder bearbeiten", routes.GroupController.showGroup(g.getGroupId()))
     }
 }
 
 @deleteGroupButton(g: Group) = {
     @if(policy.Specification.CanDeleteGroup(extension.ContextArguments.getUser().get(), g)) {
         @bootstrapHelper.form(
-            routes.GroupController.deleteGroup(g.id),
+            routes.GroupController.deleteGroup(g.getGroupId()),
             deleteGroupForm,
             scala.collection.Map(
                 "groupId" -> Input(InputType.Hidden,
-                    value = Left(g.id.toString))
+                    value = Left(g.getGroupId().toString))
             ),
             button = bootstrapHelper.button("Gruppe loeschen")
         )
@@ -37,9 +37,9 @@
             <div class="row flex-xl-row">
                 <div class="col px-3 py-3 bd-content col-align-self-center">
                 @table(groups
-                        .filter(g => g.owner == extension.ContextArguments.getUser().get())
+                        .filter(g => g.getOwner() == extension.ContextArguments.getUser().get())
                         .map(g => scala.collection.Map(
-                                "Gruppenname" -> Left(g.name),
+                                "Gruppenname" -> Left(g.getName()),
                                 "Gruppenmitglieder anschauen" -> Right(viewGroupButton(g)),
                                 "Gruppe loeschen" -> Right(deleteGroupButton(g))
                 )))
@@ -56,10 +56,10 @@
             <div class="row flex-xl-row">
                 <div class="col px-3 py-3 bd-content col-align-self-center">
                 @table(groups
-                        .filter(g => g.owner != extension.ContextArguments.getUser().get())
+                        .filter(g => g.getOwner() != extension.ContextArguments.getUser().get())
                         .map(
                     g => scala.collection.Map(
-                        "Gruppenname" -> Left(g.name),
+                        "Gruppenname" -> Left(g.getName()),
                         "Gruppenmitglieder anschauen" -> Right(viewGroupButton(g)),
                         "Gruppe loeschen" -> Right(deleteGroupButton(g))
                     )

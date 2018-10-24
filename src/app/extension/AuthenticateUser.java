@@ -9,13 +9,13 @@ public class AuthenticateUser {
     public boolean SecureAuthenticate(User user, String password)
     {
         Minutes minutesSinceLastAttempt = Minutes.minutes(0);
-        if(user.mostRecentLoginAttempt != null) {
-            minutesSinceLastAttempt = Minutes.minutesBetween(user.mostRecentLoginAttempt, DateTime.now());
+        if(user.getMostRecentLoginAttempt() != null) {
+            minutesSinceLastAttempt = Minutes.minutesBetween(user.getMostRecentLoginAttempt(), DateTime.now());
         }
 
-        if(user.invalidLoginCounter == 5 ) {
+        if(user.getInvalidLoginCounter() == 5 ) {
             if(minutesSinceLastAttempt.getMinutes() >= 1) {
-                user.invalidLoginCounter = 0;
+                user.setInvalidLoginCounter(0);
                 user.save();
             }
             else {
@@ -23,14 +23,14 @@ public class AuthenticateUser {
             }
         }
 
-        boolean passwordMatch = HashHelper.checkHash(password, user.passwordHash);
+        boolean passwordMatch = HashHelper.checkHash(password, user.getPasswordHash());
         if(!passwordMatch) {
-            user.invalidLoginCounter++;
+            user.setInvalidLoginCounter(user.getInvalidLoginCounter() + 1);
         }
         else {
-            user.invalidLoginCounter = 0;
+            user.setInvalidLoginCounter(0);
         }
-        user.mostRecentLoginAttempt = DateTime.now();
+        user.setMostRecentLoginAttempt(DateTime.now());
         user.save();
         return passwordMatch;
     }

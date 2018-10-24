@@ -11,7 +11,6 @@ import models.dtos.UserLoginDto;
 import models.finders.UserFinder;
 import models.finders.UserSessionFinder;
 import org.joda.time.DateTime;
-import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -20,7 +19,6 @@ import policy.Authentification;
 import policy.ext.loginFirewall.Firewall;
 import policy.ext.loginFirewall.Instance;
 import policy.ext.loginFirewall.Strategy;
-import views.html.ChangePasswordAfterReset;
 
 
 import javax.inject.Inject;
@@ -69,7 +67,7 @@ public class LoginController extends Controller {
 
         Long uid = null;
         if(auth.userExists()) {
-            uid = auth.user().getId();
+            uid = auth.user().getUserId();
         }
 
         Instance fw = Firewall.Get(request().remoteAddress());
@@ -95,7 +93,7 @@ public class LoginController extends Controller {
         }
 
         // TODO: Ugly AF / muss weg. Ist Policy-Frage und sollte nicht Gegenstand von Hacky-Code sein!
-        if(auth.user().passwordResetRequired) {
+        if(auth.user().getIsPasswordResetRequired()) {
             return redirect(routes.LoginController.changePasswordAfterReset());
         }
 
@@ -107,7 +105,7 @@ public class LoginController extends Controller {
         userSession.setIssuedAt(DateTime.now());
         userSession.save();
 
-        session().put(CookieConstants.USER_SESSION_ID_NAME, userSession.getId().toString());
+        session().put(CookieConstants.USER_SESSION_ID_NAME, userSession.getSessionId().toString());
 
         return redirect(routes.HomeController.index());
     }
@@ -131,8 +129,8 @@ public class LoginController extends Controller {
 
         User user = userOptional.get();
         if(this.authenticateUser.SecureAuthenticate(user, changePasswordData.getCurrentPassword())) {
-            user.passwordResetRequired = false;
-            user.passwordHash = HashHelper.hashPassword(changePasswordData.getPassword());
+            user.setIsPasswordResetRequired(false);
+            user.setPasswordHash(HashHelper.hashPassword(changePasswordData.getPassword()));
             user.save();
         }
         return redirect(routes.LoginController.login());

@@ -3,7 +3,6 @@ import javax.inject.*;
 import extension.HashHelper;
 import models.Group;
 import models.User;
-import org.joda.time.DateTime;
 import play.Logger;
 import play.db.Database;
 
@@ -44,12 +43,12 @@ public class DatabaseInitialization {
         Group g2 = new Group("Administrators", u1);
         Group g3 = new Group("Peter's Group", u2);
 
-        g1.isAllGroup = true;
-        g2.isAdminGroup = true;
+        g1.setIsAllGroup(true);
+        g2.setIsAdminGroup(true);
 
-        g1.members = Stream.of(u1, u2, u3, u4).collect(Collectors.toSet());
-        g2.members = Stream.of(u1).collect(Collectors.toSet());
-        g3.members = Stream.of(u1, u2, u3).collect(Collectors.toSet());
+        g1.setMembers(Stream.of(u1, u2, u3, u4).collect(Collectors.toSet()));
+        g2.setMembers(Stream.of(u1).collect(Collectors.toSet()));
+        g3.setMembers(Stream.of(u1, u2, u3).collect(Collectors.toSet()));
 
         u1.save();
         u2.save();

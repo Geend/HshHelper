@@ -3,7 +3,6 @@ package policy;
 import models.Group;
 import models.User;
 import models.UserSession;
-import play.Logger;
 
 public class Specification {
     public static boolean CanViewGroupDetails(User currentUser, Group toBeWatched) {
@@ -11,7 +10,7 @@ public class Specification {
             return false;
         }
 
-        if(toBeWatched.members.contains(currentUser)) {
+        if(toBeWatched.getMembers().contains(currentUser)) {
             return true;
         }
 
@@ -64,7 +63,7 @@ public class Specification {
         }
 
         // Wenn Nutzer Owner einer Admin-Gruppe ist, darf er nicht gelöscht werden (Quasi Super-Admin)
-        if(userToBeDeleted.groups.stream().anyMatch(x -> x.owner.equals(userToBeDeleted) && x.isAdminGroup)) {
+        if(userToBeDeleted.getGroups().stream().anyMatch(x -> x.getOwner().equals(userToBeDeleted) && x.getIsAdminGroup())) {
             return false;
         }
 
@@ -100,11 +99,11 @@ public class Specification {
             return false;
         }
 
-        if(group.isAdminGroup || group.isAllGroup) {
+        if(group.getIsAdminGroup() || group.getIsAllGroup()) {
             return false;
         }
 
-        if(currentUser.equals(group.owner)) {
+        if(currentUser.equals(group.getOwner())) {
             return true;
         }
 
@@ -120,15 +119,15 @@ public class Specification {
             return false;
         }
 
-        if(group.owner.equals(toBeDeleted)) {
+        if(group.getOwner().equals(toBeDeleted)) {
             return false;
         }
 
-        if(!group.members.contains(toBeDeleted)) {
+        if(!group.getMembers().contains(toBeDeleted)) {
             return false;
         }
 
-        if(currentUser.equals(group.owner)) {
+        if(currentUser.equals(group.getOwner())) {
             return true;
         }
 
@@ -144,7 +143,7 @@ public class Specification {
             return true;
         }
 
-        if(group.owner.equals(currentUser)) {
+        if(group.getOwner().equals(currentUser)) {
             return true;
         }
 
@@ -157,7 +156,7 @@ public class Specification {
         }
 
         // No duplicates!
-        if(group.members.contains(toBeAdded)) {
+        if(group.getMembers().contains(toBeAdded)) {
             return false;
         }
 
@@ -165,7 +164,7 @@ public class Specification {
             return true;
         }
 
-        if(group.owner.equals(currentUser)) {
+        if(group.getOwner().equals(currentUser)) {
             return true;
         }
 

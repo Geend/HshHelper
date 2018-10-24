@@ -23,7 +23,7 @@ public class CreateGroupDTO implements ValidatableWithFinder<ValidationError, Gr
 
     @Override
     public ValidationError validate(final Finder<Long, Group> finder) {
-        if(finder.all().stream().anyMatch(x -> x.name.equalsIgnoreCase(getName()))){
+        if(finder.all().stream().anyMatch(x -> x.getName().equalsIgnoreCase(getName()))){
             return new ValidationError("name", "Gruppe existiert bereits!");
         }
         return null;

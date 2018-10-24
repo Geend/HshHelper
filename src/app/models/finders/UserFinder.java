@@ -1,6 +1,5 @@
 package models.finders;
 
-import extension.HashHelper;
 import io.ebean.Finder;
 import models.User;
 

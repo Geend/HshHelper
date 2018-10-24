@@ -8,16 +8,16 @@
 @removeMemberButton(member: User) = {
     @if(policy.Specification.CanRemoveGroupMember(extension.ContextArguments.getUser().get(), group, member)) {
         @bootstrapHelper.form(
-            routes.GroupController.removeGroupMember(group.getId()),
+            routes.GroupController.removeGroupMember(group.getGroupId()),
             removeGroupUserForm,
             scala.collection.Map(
                 "userId" -> Input(InputType.Hidden,
-                    value = Left(member.getId().toString))
+                    value = Left(member.getUserId().toString))
             ),
-            button = listGroupButton(member.username)
+            button = listGroupButton(member.getUsername())
         )
     } else {
-        @listGroupButton(member.username, disabled = true)
+        @listGroupButton(member.getUsername(), disabled = true)
     }
 }
 
@@ -25,11 +25,11 @@
     @if(policy.Specification.isAllowedToAddGroupMember(extension.ContextArguments.getUser().get(),
         group)) {
         @bootstrapHelper.form(
-            routes.GroupController.addGroupMember(group.getId()),
+            routes.GroupController.addGroupMember(group.getGroupId()),
             addUserForm,
             scala.collection.Map(
                 "userId" -> Input(InputType.Select,
-                    value = Right(notMembers.map(user => user.id.toString -> user.username)),
+                    value = Right(notMembers.map(user => user.getUserId().toString -> user.getUsername())),
                     label = "Nutzer waehlen")
             ),
             button = button("Nutzer hinzufuegen")
@@ -37,8 +37,8 @@
     }
 }
 
-@Main("HsH-Helfer: Detailansicht der Gruppe " + group.name) {
-    <h1>GRUPPE "@group.name"</h1>
+@Main("HsH-Helfer: Detailansicht der Gruppe " + group.getName()) {
+    <h1>GRUPPE "@group.getName()"</h1>
     @bootstrapHelper.sidebarPlusContent {
         @bootstrapHelper.card {
             <div class="card-body">
@@ -51,7 +51,7 @@
                 <h5>Mitglied entfernen</h5>
             </div>
             @bootstrapHelper.listGroupFlush(
-                group.members.asScala.toSeq.map(
+                group.getMembers().asScala.toSeq.map(
                     u => removeMemberButton(u)
                 )
             )
