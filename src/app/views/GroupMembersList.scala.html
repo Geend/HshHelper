@@ -3,13 +3,13 @@
 
 @import scala.collection.JavaConverters._
 
-@(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[dtos.UserIdDTO], removeGroupUserForm: Form[dtos.UserIdDTO])
+@(group: Group, members: Seq[User], notMembers: Seq[User], userIdForm: Form[dtos.UserIdDTO])
 
 @removeMemberButton(member: User) = {
     @if(policy.Specification.CanRemoveGroupMember(extension.ContextArguments.getUser().get(), group, member)) {
         @bootstrapHelper.form(
             routes.GroupController.removeGroupMember(group.getGroupId()),
-            removeGroupUserForm,
+            userIdForm,
             scala.collection.Map(
                 "userId" -> Input(InputType.Hidden,
                     value = Left(member.getUserId().toString))
@@ -26,7 +26,7 @@
         group)) {
         @bootstrapHelper.form(
             routes.GroupController.addGroupMember(group.getGroupId()),
-            addUserForm,
+            userIdForm,
             scala.collection.Map(
                 "userId" -> Input(InputType.Select,
                     value = Right(notMembers.map(user => user.getUserId().toString -> user.getUsername())),

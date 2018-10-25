@@ -27,19 +27,17 @@ import static play.libs.Scala.asScala;
 @AuthenticationRequired
 public class GroupController extends Controller {
     private final Form<CreateGroupDTO> groupForm;
-    private final Form<UserIdDTO> removeGroupUserForm;
+    private final Form<UserIdDTO> userIdDTOForm;
     private final UserFinder userFinder;
-    private final Form<UserIdDTO> addUserToGroupForm;
     private final Form<DeleteGroupDTO> deleteGroupForm;
     private final GroupFinder groupFinder;
 
     @Inject
     public GroupController(FormFactory formFactory, UserFinder userFinder, GroupFinder groupFinder) {
         this.groupForm = formFactory.form(CreateGroupDTO.class);
-        this.removeGroupUserForm = formFactory.form(UserIdDTO.class);
+        this.userIdDTOForm = formFactory.form(UserIdDTO.class);
         this.userFinder = userFinder;
         this.groupFinder = groupFinder;
-        this.addUserToGroupForm = formFactory.form(UserIdDTO.class);
         this.deleteGroupForm = formFactory.form(DeleteGroupDTO.class);
     }
 
@@ -78,12 +76,12 @@ public class GroupController extends Controller {
                 .collect(Collectors.toList());
         return g.map(grp ->
                 ok(views.html.GroupMembersList.render(grp,
-                        asScala(grp.getMembers()), asScala(notMember), addUserToGroupForm, removeGroupUserForm)))
+                        asScala(grp.getMembers()), asScala(notMember), userIdDTOForm)))
                 .get();
     }
 
     public Result removeGroupMember(Long groupId) {
-        Form<UserIdDTO> form = removeGroupUserForm.bindFromRequest();
+        Form<UserIdDTO> form = userIdDTOForm.bindFromRequest();
         if(form.hasErrors()) {
             return badRequest("error");
         }
@@ -103,7 +101,7 @@ public class GroupController extends Controller {
     }
 
     public Result addGroupMember(Long groupId) {
-        Form<UserIdDTO> form = addUserToGroupForm.bindFromRequest();
+        Form<UserIdDTO> form = userIdDTOForm.bindFromRequest();
         if(form.hasErrors()) {
             return badRequest("error");
         }
