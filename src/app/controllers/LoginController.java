@@ -6,7 +6,9 @@ import extension.HashHelper;
 import extension.RecaptchaHelper;
 import models.User;
 import models.UserSession;
-import models.dtos.ChangePasswordAfterResetDto;
+import models.checks.ChangePasswordCheck;
+import models.checks.ChangePasswortAfterResetUsernameCheck;
+import models.dtos.PartialUserForm;
 import models.dtos.UserLoginDto;
 import models.finders.UserFinder;
 import models.finders.UserSessionFinder;
@@ -27,7 +29,7 @@ import java.util.Optional;
 public class LoginController extends Controller {
 
     private Form<UserLoginDto> loginForm;
-    private Form<ChangePasswordAfterResetDto> changePasswordForm;
+    private Form<PartialUserForm> changePasswordForm;
     private UserSessionFinder userSessionFinder;
     private UserFinder userFinder;
     private AuthenticateUser authenticateUser;
@@ -39,7 +41,8 @@ public class LoginController extends Controller {
             UserFinder userFinder,
             AuthenticateUser authenticateUser) {
         this.loginForm = formFactory.form(UserLoginDto.class);
-        this.changePasswordForm = formFactory.form(ChangePasswordAfterResetDto.class);
+        this.changePasswordForm = formFactory.form(PartialUserForm.class,
+                ChangePasswordCheck.class, ChangePasswortAfterResetUsernameCheck.class);
         this.userSessionFinder = userSessionFinder;
         this.userFinder = userFinder;
         this.authenticateUser = authenticateUser;
@@ -117,11 +120,11 @@ public class LoginController extends Controller {
 
     public Result changePasswordAfterReset()
     {
-        Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat");
+        Form<PartialUserForm> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat");
         if (boundForm.hasErrors()) {
             return ok(views.html.ChangePasswordAfterReset.render(boundForm));
         }
-        ChangePasswordAfterResetDto changePasswordData = boundForm.get();
+        PartialUserForm changePasswordData = boundForm.get();
         Optional<User> userOptional = this.userFinder.byName(changePasswordData.getUsername());
         if(!userOptional.isPresent()) {
             return redirect(routes.LoginController.login());

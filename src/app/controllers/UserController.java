@@ -3,9 +3,13 @@ package controllers;
 import extension.*;
 import models.User;
 import models.UserSession;
+import models.checks.ChangePasswordCheck;
+import models.checks.CreateUserCheck;
+import models.checks.ResetUserPasswordCheck;
 import models.dtos.*;
 import models.finders.UserFinder;
 import models.finders.UserSessionFinder;
+import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.mailer.Email;
@@ -30,20 +34,20 @@ public class UserController extends Controller {
     private UserFinder userFinder;
     private UserSessionFinder userSessionFinder;
 
-    private Form<CreateUserDto> createUserForm;
-    private Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
-    private Form<ResetUserPasswordDto> resetUserPasswordForm;
+    private Form<PartialUserForm> createUserForm;
+    private Form<PartialUserForm> changeOwnPasswordForm;
+    private Form<PartialUserForm> resetUserPasswordForm;
     private Form<DeleteSessionDTO> deleteSessionForm;
     private Form<UserIdDTO> userIdDTOForm;
 
 
     @Inject
     public UserController(FormFactory formFactory, UserFinder userFinder, UserSessionFinder userSessionFinder) {
-        this.createUserForm = formFactory.form(CreateUserDto.class);
+        this.createUserForm = formFactory.form(PartialUserForm.class, CreateUserCheck.class);
         this.userFinder = userFinder;
         this.userSessionFinder = userSessionFinder;
-        this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
-        this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
+        this.changeOwnPasswordForm = formFactory.form(PartialUserForm.class, ChangePasswordCheck.class);
+        this.resetUserPasswordForm = formFactory.form(PartialUserForm.class, ResetUserPasswordCheck.class);
         this.deleteSessionForm = formFactory.form(DeleteSessionDTO.class);
         this.userIdDTOForm = formFactory.form(UserIdDTO.class);
     }
@@ -104,14 +108,18 @@ public class UserController extends Controller {
             return badRequest("error");
 
 
-        Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
+        Form<PartialUserForm> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
 
         if (boundForm.hasErrors()) {
             return ok(views.html.CreateUser.render(boundForm));
         }
 
 
-        CreateUserDto createUserDto = boundForm.get();
+        PartialUserForm createUserDto = boundForm.get();
+
+        String pwTest = createUserDto.getPassword();
+
+        Logger.info("PWTEST: " + pwTest);
 
         PasswordGenerator passwordGenerator = new PasswordGenerator();
 
@@ -157,13 +165,13 @@ public class UserController extends Controller {
             return badRequest("error");
 
 
-        Form<ChangeOwnPasswordDto> boundForm = changeOwnPasswordForm.bindFromRequest("password", "passwordRepeat");
+        Form<PartialUserForm> boundForm = changeOwnPasswordForm.bindFromRequest("currentPassword", "password", "passwordRepeat");
 
         if (boundForm.hasErrors()) {
             return ok(views.html.ChangePassword.render(boundForm));
         }
 
-        ChangeOwnPasswordDto changeOwnPasswordDto = boundForm.get();
+        PartialUserForm changeOwnPasswordDto = boundForm.get();
 
         currentUser.setPasswordHash(HashHelper.hashPassword(changeOwnPasswordDto.getPassword()));
         currentUser.setIsPasswordResetRequired(false);
@@ -180,13 +188,13 @@ public class UserController extends Controller {
     public Result resetUserPassword() {
         //TODO: Add brute force and/or dos protection
 
-        Form<ResetUserPasswordDto> boundForm = resetUserPasswordForm.bindFromRequest("username");
+        Form<PartialUserForm> boundForm = resetUserPasswordForm.bindFromRequest("username");
 
         if (boundForm.hasErrors()) {
             return ok(views.html.ResetUserPassword.render(boundForm));
         }
 
-        ResetUserPasswordDto resetUserPasswordDto = boundForm.get();
+        PartialUserForm resetUserPasswordDto = boundForm.get();
 
         String username = resetUserPasswordDto.getUsername();
 
