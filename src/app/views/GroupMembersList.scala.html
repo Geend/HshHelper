@@ -3,7 +3,7 @@
 
 @import scala.collection.JavaConverters._
 
-@(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[dtos.AddUserToGroupDTO], removeGroupUserForm: Form[dtos.RemoveGroupUserDTO])
+@(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[dtos.UserIdDTO], removeGroupUserForm: Form[dtos.UserIdDTO])
 
 @removeMemberButton(member: User) = {
     @if(policy.Specification.CanRemoveGroupMember(extension.ContextArguments.getUser().get(), group, member)) {

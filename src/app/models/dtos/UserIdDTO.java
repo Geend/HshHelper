@@ -1,6 +1,7 @@
 package models.dtos;
 
-public class DeleteUserDto {
+// AddUserToGroupDTO, UserListEntryDTO, RemoveGroupUserDTO, DeleteUserDTO
+public class UserIdDTO {
     private Long userId;
 
     public Long getUserId() {

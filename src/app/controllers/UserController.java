@@ -34,7 +34,7 @@ public class UserController extends Controller {
     private Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
     private Form<ResetUserPasswordDto> resetUserPasswordForm;
     private Form<DeleteSessionDTO> deleteSessionForm;
-    private Form<DeleteUserDto> deleteUserForm;
+    private Form<UserIdDTO> deleteUserForm;
 
 
     @Inject
@@ -45,7 +45,7 @@ public class UserController extends Controller {
         this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
         this.deleteSessionForm = formFactory.form(DeleteSessionDTO.class);
-        this.deleteUserForm = formFactory.form(DeleteUserDto.class);
+        this.deleteUserForm = formFactory.form(UserIdDTO.class);
     }
 
 
@@ -73,7 +73,7 @@ public class UserController extends Controller {
     public Result deleteUser()
     {
         User currentUser = ContextArguments.getUser().get();
-        Form<DeleteUserDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
+        Form<UserIdDTO> boundForm = this.deleteUserForm.bindFromRequest("userId");
         if(boundForm.hasErrors()) {
             return badRequest();
         }
