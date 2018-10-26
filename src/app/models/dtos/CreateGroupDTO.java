@@ -5,7 +5,8 @@ import policy.ConstraintValues;
 
 public class CreateGroupDTO {
     @Constraints.Required
-    @Constraints.MinLength(ConstraintValues.GROUPNAME_MAX_LENGTH)
+    @Constraints.MinLength(ConstraintValues.GROUPNAME_MIN_LENGTH)
+    @Constraints.MaxLength(ConstraintValues.GROUPNAME_MAX_LENGTH)
     @Constraints.Pattern(ConstraintValues.GROUPNAME_REGEX)
     private String name;
 
