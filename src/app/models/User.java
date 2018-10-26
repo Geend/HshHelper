@@ -39,10 +39,6 @@ public class User extends Model {
     )
     private Set<UserSession> sessions = new HashSet<>();
 
-    private DateTime mostRecentLoginAttempt;
-
-    private int invalidLoginCounter;
-
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.REMOVE,
@@ -133,22 +129,6 @@ public class User extends Model {
 
     public void setSessions(Set<UserSession> sessions) {
         this.sessions = sessions;
-    }
-
-    public DateTime getMostRecentLoginAttempt() {
-        return mostRecentLoginAttempt;
-    }
-
-    public void setMostRecentLoginAttempt(DateTime mostRecentLoginAttempt) {
-        this.mostRecentLoginAttempt = mostRecentLoginAttempt;
-    }
-
-    public int getInvalidLoginCounter() {
-        return invalidLoginCounter;
-    }
-
-    public void setInvalidLoginCounter(int invalidLoginCounter) {
-        this.invalidLoginCounter = invalidLoginCounter;
     }
 
     public Set<Group> getGroups() {

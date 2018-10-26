@@ -1,7 +1,6 @@
 package controllers;
 
 import constants.CookieConstants;
-import extension.AuthenticateUser;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
 import models.User;
@@ -30,19 +29,16 @@ public class LoginController extends Controller {
     private Form<ChangePasswordAfterResetDto> changePasswordForm;
     private UserSessionFinder userSessionFinder;
     private UserFinder userFinder;
-    private AuthenticateUser authenticateUser;
 
     @Inject
     public LoginController(
             FormFactory formFactory,
             UserSessionFinder userSessionFinder,
-            UserFinder userFinder,
-            AuthenticateUser authenticateUser) {
+            UserFinder userFinder) {
         this.loginForm = formFactory.form(UserLoginDto.class);
         this.changePasswordForm = formFactory.form(ChangePasswordAfterResetDto.class);
         this.userSessionFinder = userSessionFinder;
         this.userFinder = userFinder;
-        this.authenticateUser = authenticateUser;
     }
 
     public Result showLoginForm() {
@@ -112,27 +108,55 @@ public class LoginController extends Controller {
 
     public Result showChangePasswordAfterResetForm()
     {
-        return ok(views.html.ChangePasswordAfterReset.render(this.changePasswordForm));
+        return ok(views.html.ChangePasswordAfterReset.render(this.changePasswordForm, false));
     }
 
     public Result changePasswordAfterReset()
     {
-        Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat");
+        Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat", "recaptcha");
         if (boundForm.hasErrors()) {
-            return ok(views.html.ChangePasswordAfterReset.render(boundForm));
-        }
-        ChangePasswordAfterResetDto changePasswordData = boundForm.get();
-        Optional<User> userOptional = this.userFinder.byName(changePasswordData.getUsername());
-        if(!userOptional.isPresent()) {
-            return redirect(routes.LoginController.login());
+            return ok(views.html.ChangePasswordAfterReset.render(boundForm, false));
         }
 
-        User user = userOptional.get();
-        if(this.authenticateUser.SecureAuthenticate(user, changePasswordData.getCurrentPassword())) {
-            user.setIsPasswordResetRequired(false);
-            user.setPasswordHash(HashHelper.hashPassword(changePasswordData.getPassword()));
-            user.save();
+        ChangePasswordAfterResetDto changePasswordData = boundForm.get();
+
+        Authentification.Result auth = Authentification.Perform(
+                changePasswordData.getUsername(),
+                changePasswordData.getCurrentPassword()
+        );
+
+        Long uid = null;
+        if(auth.userExists()) {
+            uid = auth.user().getUserId();
         }
+
+        Instance fw = Firewall.Get(request().remoteAddress());
+        Strategy strategy = fw.getStrategy(uid);
+
+        if(strategy.equals(Strategy.BLOCK)) {
+            boundForm = boundForm.withGlobalError("You're banned from logging in");
+            return badRequest(views.html.ChangePasswordAfterReset.render(boundForm, false));
+        }
+
+        if(strategy.equals(Strategy.VERIFY)) {
+            if(!RecaptchaHelper.IsValidResponse(changePasswordData.getRecaptcha(), request().remoteAddress())) {
+                boundForm = boundForm.withGlobalError("Complete the Captcha!");
+                return badRequest(views.html.ChangePasswordAfterReset.render(boundForm, true));
+            }
+        }
+
+        // Wenn der Login nicht erfolgreich war Request abbrechen und Nutzer informieren!
+        if(!auth.success()) {
+            boundForm = boundForm.withGlobalError("Invalid Login Data!");
+            fw.fail(uid);
+            return badRequest(views.html.ChangePasswordAfterReset.render(boundForm, strategy.equals(Strategy.VERIFY)));
+        }
+
+        User user = auth.user();
+        user.setIsPasswordResetRequired(false);
+        user.setPasswordHash(HashHelper.hashPassword(changePasswordData.getPassword()));
+        user.save();
+
         return redirect(routes.LoginController.login());
     }
 

@@ -24,6 +24,8 @@ public class ChangePasswordAfterResetDto implements Constraints.Validatable<Vali
     @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
     private String passwordRepeat;
 
+    private String recaptcha;
+
     public String getUsername() {
         return username;
     }
@@ -54,6 +56,14 @@ public class ChangePasswordAfterResetDto implements Constraints.Validatable<Vali
 
     public void setCurrentPassword(String currentPassword) {
         this.currentPassword = currentPassword;
+    }
+
+    public String getRecaptcha() {
+        return this.recaptcha;
+    }
+
+    public void setRecaptcha(String recaptcha) {
+        this.recaptcha = recaptcha;
     }
 
     @Override
