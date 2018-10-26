@@ -3,6 +3,7 @@ package policy.session;
 import models.User;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import play.Logger;
 import play.mvc.Http;
 import policy.ConstraintValues;
 
@@ -83,5 +84,13 @@ public class SessionManager {
 
     public static boolean HasActiveSession() {
         return CurrentSession() != null;
+    }
+
+    public static void GarbageCollect() {
+        int deletedSessions = Session.finder.query().where()
+            .lt("issuedAt", DateTime.now().minusHours(ConstraintValues.SESSION_TIMEOUT_HOURS))
+            .delete();
+
+        Logger.info("REWRITE/ Delete "+deletedSessions+" Sessions");
     }
 }
