@@ -1,6 +1,6 @@
 package models.dtos;
 
-public class AddUserToGroupDTO {
+public class AddUserToGroupDto {
     private Long userId;
 
     public Long getUserId() {

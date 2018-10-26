@@ -1,6 +1,6 @@
 package models.dtos;
 
-public class RemoveGroupUserDTO {
+public class RemoveGroupUserDto {
     private Long userId;
 
     public Long getUserId() {

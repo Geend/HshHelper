@@ -1,6 +1,6 @@
 package models.dtos;
 
-public class DeleteSessionDTO {
+public class DeleteSessionDto {
     public Long getSessionId() {
         return sessionId;
     }

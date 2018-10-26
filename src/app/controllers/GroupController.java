@@ -7,10 +7,10 @@ import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.Group;
 import models.User;
-import models.dtos.AddUserToGroupDTO;
-import models.dtos.CreateGroupDTO;
-import models.dtos.DeleteGroupDTO;
-import models.dtos.RemoveGroupUserDTO;
+import models.dtos.AddUserToGroupDto;
+import models.dtos.CreateGroupDto;
+import models.dtos.DeleteGroupDto;
+import models.dtos.RemoveGroupUserDto;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import play.data.Form;
@@ -30,21 +30,21 @@ import static play.libs.Scala.asScala;
 @Singleton
 @AuthenticationRequired
 public class GroupController extends Controller {
-    private final Form<CreateGroupDTO> groupForm;
-    private final Form<RemoveGroupUserDTO> removeGroupUserForm;
+    private final Form<CreateGroupDto> groupForm;
+    private final Form<RemoveGroupUserDto> removeGroupUserForm;
     private final UserFinder userFinder;
-    private final Form<AddUserToGroupDTO> addUserToGroupForm;
-    private final Form<DeleteGroupDTO> deleteGroupForm;
+    private final Form<AddUserToGroupDto> addUserToGroupForm;
+    private final Form<DeleteGroupDto> deleteGroupForm;
     private final GroupFinder groupFinder;
 
     @Inject
     public GroupController(FormFactory formFactory, UserFinder userFinder, GroupFinder groupFinder) {
-        this.groupForm = formFactory.form(CreateGroupDTO.class);
-        this.removeGroupUserForm = formFactory.form(RemoveGroupUserDTO.class);
+        this.groupForm = formFactory.form(CreateGroupDto.class);
+        this.removeGroupUserForm = formFactory.form(RemoveGroupUserDto.class);
         this.userFinder = userFinder;
         this.groupFinder = groupFinder;
-        this.addUserToGroupForm = formFactory.form(AddUserToGroupDTO.class);
-        this.deleteGroupForm = formFactory.form(DeleteGroupDTO.class);
+        this.addUserToGroupForm = formFactory.form(AddUserToGroupDto.class);
+        this.deleteGroupForm = formFactory.form(DeleteGroupDto.class);
     }
 
     public Result showCreateGroupForm() {
@@ -52,12 +52,12 @@ public class GroupController extends Controller {
     }
 
     public Result createGroup() {
-        Form<CreateGroupDTO> bf = groupForm.bindFromRequest();
+        Form<CreateGroupDto> bf = groupForm.bindFromRequest();
 
         if(bf.hasErrors()) {
             return badRequest(views.html.CreateGroup.render(bf));
         } else {
-            CreateGroupDTO gDto = bf.get();
+            CreateGroupDto gDto = bf.get();
 
             try(Transaction tx = Ebean.beginTransaction(TxIsolation.REPEATABLE_READ)) {
                 Optional<Group> txGroup = groupFinder.byName(gDto.getName());
@@ -97,12 +97,12 @@ public class GroupController extends Controller {
     }
 
     public Result removeGroupMember(Long groupId) {
-        Form<RemoveGroupUserDTO> form = removeGroupUserForm.bindFromRequest();
+        Form<RemoveGroupUserDto> form = removeGroupUserForm.bindFromRequest();
         if(form.hasErrors()) {
             return badRequest("error");
         }
 
-        RemoveGroupUserDTO ru = form.get();
+        RemoveGroupUserDto ru = form.get();
 
         User toBeDeleted = userFinder.byIdOptional(ru.getUserId()).get();
         Group g = groupFinder.byIdOptional(groupId).get();
@@ -117,12 +117,12 @@ public class GroupController extends Controller {
     }
 
     public Result addGroupMember(Long groupId) {
-        Form<AddUserToGroupDTO> form = addUserToGroupForm.bindFromRequest();
+        Form<AddUserToGroupDto> form = addUserToGroupForm.bindFromRequest();
         if(form.hasErrors()) {
             return badRequest("error");
         }
 
-        AddUserToGroupDTO au = form.get();
+        AddUserToGroupDto au = form.get();
 
         User toBeAdded= userFinder.byIdOptional(au.getUserId()).get();
         Group g = groupFinder.byIdOptional(groupId).get();
@@ -138,12 +138,12 @@ public class GroupController extends Controller {
     }
 
     public Result deleteGroup(Long groupId) {
-        Form<DeleteGroupDTO> form = deleteGroupForm.bindFromRequest();
+        Form<DeleteGroupDto> form = deleteGroupForm.bindFromRequest();
         if(form.hasErrors()) {
             return badRequest("error");
         }
 
-        DeleteGroupDTO dg = form.get();
+        DeleteGroupDto dg = form.get();
         Group g = groupFinder.byIdOptional(groupId).get();
 
         if(!policy.Specification.CanDeleteGroup(ContextArguments.getUser().get(), g)) {

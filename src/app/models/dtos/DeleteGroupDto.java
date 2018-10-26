@@ -1,6 +1,6 @@
 package models.dtos;
 
-public class DeleteGroupDTO {
+public class DeleteGroupDto {
     public Long getGroupId() {
         return groupId;
     }

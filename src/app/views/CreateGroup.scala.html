@@ -1,4 +1,5 @@
-@(form: Form[dtos.CreateGroupDTO])
+@import models.dtos.CreateGroupDto
+@(form: Form[CreateGroupDto])
 
 @Main("Create Group") {
     @bootstrapHelper.form(routes.GroupController.createGroup(),

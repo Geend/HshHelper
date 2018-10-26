@@ -2,7 +2,7 @@ package models.dtos;
 
 import play.data.validation.Constraints;
 
-public class CreateGroupDTO {
+public class CreateGroupDto {
     @Constraints.Required
     @Constraints.MinLength(3)
     private String name;

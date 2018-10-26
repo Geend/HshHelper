@@ -36,7 +36,7 @@ public class UserController extends Controller {
     private Form<CreateUserDto> createUserForm;
     private Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
     private Form<ResetUserPasswordDto> resetUserPasswordForm;
-    private Form<DeleteSessionDTO> deleteSessionForm;
+    private Form<DeleteSessionDto> deleteSessionForm;
     private Form<DeleteUserDto> deleteUserForm;
 
 
@@ -48,7 +48,7 @@ public class UserController extends Controller {
         this.userSessionFinder = userSessionFinder;
         this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
-        this.deleteSessionForm = formFactory.form(DeleteSessionDTO.class);
+        this.deleteSessionForm = formFactory.form(DeleteSessionDto.class);
         this.deleteUserForm = formFactory.form(DeleteUserDto.class);
         this.cah = cah;
     }
@@ -244,7 +244,7 @@ public class UserController extends Controller {
 
     @AuthenticationRequired
     public Result deleteUserSession() {
-        Form<DeleteSessionDTO> bf = deleteSessionForm.bindFromRequest();
+        Form<DeleteSessionDto> bf = deleteSessionForm.bindFromRequest();
 
         Optional<UserSession> session = userSessionFinder.byIdOptional(bf.get().getSessionId());
         if(!session.isPresent()) {
