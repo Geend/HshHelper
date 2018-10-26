@@ -6,10 +6,12 @@ import org.joda.time.DateTime;
 import play.mvc.Http;
 import policy.ConstraintValues;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class SessionManager {
-    private static final String CtxSessionUser = "CurrentSessionUser";
+    private static final String CtxCurrentSession = "CurrentSession";
     private static final String CookieSessionName = "HsHSession";
 
     public static void StartNewSession(User user) {
@@ -21,16 +23,16 @@ public class SessionManager {
         dbs.setUser(user);
         dbs.save();
 
-        // .. cookie
+        ctx.session().put(CookieSessionName, dbs.getSessionKey().toString());
     }
 
-    public static User CurrentUser() {
+    private static Session CurrentSession() {
         Http.Context ctx = Http.Context.current();
-        if(ctx.args.containsKey(CtxSessionUser)) {
-            return (User)ctx.args.get(CtxSessionUser);
+        if(ctx.args.containsKey(CtxCurrentSession)) {
+            return (Session)ctx.args.get(CtxCurrentSession);
         }
 
-        User user = null;
+        Session session = null;
         String sessionId = ctx.session().getOrDefault(CookieSessionName, null);
         if(!StringUtils.isEmpty(sessionId)) {
             UUID sessionUid = UUID.fromString(sessionId);
@@ -39,16 +41,47 @@ public class SessionManager {
                 // IP Addressen müssen matchen && Session darf nicht zu alt sein!
                 if(dbs.getRemoteAddress().equals(ctx.request().remoteAddress()) &&
                     dbs.getIssuedAt().plus(ConstraintValues.SESSION_TIMEOUT_HOURS).isAfterNow()) {
-                        user = dbs.getUser();
+                        session = dbs;
                 }
             }
         }
 
-        ctx.args.put(CtxSessionUser, user);
-        return user;
+        ctx.args.put(CtxCurrentSession, session);
+        return session;
+    }
+
+    public static User CurrentUser() {
+        if(!HasActiveSession()) {
+            throw new RuntimeException("There is no Session that is destroyable");
+        }
+
+        return CurrentSession().getUser();
+    }
+
+    public static void DestroyCurrentSession() {
+        if(!HasActiveSession()) {
+            throw new RuntimeException("There is no Session that is destroyable");
+        }
+
+        Session current = CurrentSession();
+        current.delete();
+        Http.Context.current().session().remove(CookieSessionName);
+
+        // TODO: Nachdenken ob Entfernung aus Kontext Sinn macht?
+    }
+
+    public static List<UserSession> SessionsByUser(User user) {
+        List<Session> sessions = Session.finder.query().where().eq("user", user).findList();
+        List<UserSession> result = new ArrayList<>();
+
+        for(Session s : sessions) {
+            result.add(new UserSession(s));
+        }
+
+        return result;
     }
 
     public static boolean HasActiveSession() {
-        return CurrentUser() != null;
+        return CurrentSession() != null;
     }
 }
