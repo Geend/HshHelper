@@ -63,7 +63,7 @@ public class GroupController extends Controller {
                 Optional<Group> txGroup = groupFinder.byName(gDto.getName());
                 if(txGroup.isPresent()) {
                     bf = bf.withError("name", "Existiert bereits!");
-                    return ok(views.html.CreateGroup.render(bf));
+                    return badRequest(views.html.CreateGroup.render(bf));
                 }
 
                 Group group = new Group(gDto.getName(), ContextArguments.getUser().get());

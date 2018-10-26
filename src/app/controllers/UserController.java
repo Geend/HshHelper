@@ -1,6 +1,9 @@
 package controllers;
 
 import extension.*;
+import io.ebean.Ebean;
+import io.ebean.Transaction;
+import io.ebean.annotation.TxIsolation;
 import models.User;
 import models.UserSession;
 import models.dtos.*;
@@ -110,30 +113,35 @@ public class UserController extends Controller {
             return ok(views.html.CreateUser.render(boundForm));
         }
 
-
         CreateUserDto createUserDto = boundForm.get();
-
         PasswordGenerator passwordGenerator = new PasswordGenerator();
 
         //TODO: Include generated password length in policy
         String plaintextPassword = passwordGenerator.generatePassword(10);
         String passwordHash = HashHelper.hashPassword(plaintextPassword);
 
-        User newUser = new User(createUserDto.getUsername(),
-                createUserDto.getEmail(),
-                passwordHash,
-                true,
-                createUserDto.getQuotaLimit());
+        User newUser;
+        try(Transaction tx = Ebean.beginTransaction(TxIsolation.REPEATABLE_READ)) {
+            if(userFinder.byName(createUserDto.getUsername()).isPresent()) {
+                boundForm = boundForm.withError("username", "Existiert bereits");
+                return badRequest(views.html.CreateUser.render(boundForm));
+            }
 
+            newUser = new User(createUserDto.getUsername(),
+                    createUserDto.getEmail(),
+                    passwordHash,
+                    true,
+                    createUserDto.getQuotaLimit());
+            newUser.save();
 
-        newUser.save();
+            tx.commit();
+        }
 
         UserCreatedDto userCreatedDto = new UserCreatedDto();
         userCreatedDto.setUsername(newUser.getUsername());
         userCreatedDto.setPlaintextPassword(passwordGenerator.generatePassword(10));
 
         return ok(views.html.UserCreated.render(userCreatedDto));
-
     }
 
 
