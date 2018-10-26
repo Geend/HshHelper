@@ -87,6 +87,17 @@ public class UserController extends Controller {
             return unauthorized();
         }
         userToDelete.delete();
+
+        Email email = new Email()
+                .setSubject("HshHelper Account Deleted")
+                .setFrom("HshHelper <hshhelper@hs-hannover.de>")
+                .addTo(userToDelete.getEmail())
+                .setBodyText("Your account was deleted");
+
+        //TODO: Catch possible exception (eg if the mail server is down)
+        mailerClient.send(email);
+
+
         return redirect(routes.UserController.showUsers());
     }
 
