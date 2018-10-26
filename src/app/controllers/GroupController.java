@@ -2,6 +2,9 @@ package controllers;
 
 import extension.AuthenticationRequired;
 import extension.ContextArguments;
+import io.ebean.Ebean;
+import io.ebean.Transaction;
+import io.ebean.annotation.TxIsolation;
 import models.Group;
 import models.User;
 import models.dtos.AddUserToGroupDTO;
@@ -56,9 +59,19 @@ public class GroupController extends Controller {
         } else {
             CreateGroupDTO gDto = bf.get();
 
-            Group group = new Group(gDto.getName(), ContextArguments.getUser().get());
-            group.getMembers().add( ContextArguments.getUser().get());
-            group.save();
+            try(Transaction tx = Ebean.beginTransaction(TxIsolation.REPEATABLE_READ)) {
+                Optional<Group> txGroup = groupFinder.byName(gDto.getName());
+                if(txGroup.isPresent()) {
+                    bf = bf.withError("name", "Existiert bereits!");
+                    return ok(views.html.CreateGroup.render(bf));
+                }
+
+                Group group = new Group(gDto.getName(), ContextArguments.getUser().get());
+                group.getMembers().add( ContextArguments.getUser().get());
+                group.save();
+
+                tx.commit();
+            }
 
             return redirect(routes.GroupController.showOwnGroups());
         }

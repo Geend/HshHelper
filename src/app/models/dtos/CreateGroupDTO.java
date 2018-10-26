@@ -7,8 +7,7 @@ import play.data.validation.ValidationError;
 import validation.ValidatableWithFinder;
 import validation.ValidateWithGroupFinder;
 
-@ValidateWithGroupFinder
-public class CreateGroupDTO implements ValidatableWithFinder<ValidationError, Group> {
+public class CreateGroupDTO {
     @Constraints.Required
     @Constraints.MinLength(3)
     private String name;
@@ -19,13 +18,5 @@ public class CreateGroupDTO implements ValidatableWithFinder<ValidationError, Gr
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public ValidationError validate(final Finder<Long, Group> finder) {
-        if(finder.all().stream().anyMatch(x -> x.getName().equalsIgnoreCase(getName()))){
-            return new ValidationError("name", "Gruppe existiert bereits!");
-        }
-        return null;
     }
 }

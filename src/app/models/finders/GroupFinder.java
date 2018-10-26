@@ -2,6 +2,7 @@ package models.finders;
 
 import io.ebean.Finder;
 import models.Group;
+import models.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,5 +18,9 @@ public class GroupFinder extends Finder<Long, Group> {
 
     public Optional<Group> byIdOptional(Long id) {
         return Optional.of(this.byId(id));
+    }
+
+    public Optional<Group> byName(String name) {
+        return this.query().where().eq("name", name).findOneOrEmpty();
     }
 }
