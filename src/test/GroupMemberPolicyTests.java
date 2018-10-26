@@ -42,22 +42,22 @@ public class GroupMemberPolicyTests {
         rudi = new User("rudi", "rudi@gmx.com", "rudi", true, 10);
 
         allGroup = new Group("Alle", admin);
-        allGroup.isAllGroup = true;
-        allGroup.members = Stream.of(admin, adminTwo, peter, klaus, horst, rudi).collect(Collectors.toSet());
+        allGroup.setIsAllGroup(true);
+        allGroup.setMembers(Stream.of(admin, adminTwo, peter, klaus, horst, rudi).collect(Collectors.toSet()));
 
         adminGroup = new Group("Administrators", admin);
-        adminGroup.isAdminGroup = true;
-        adminGroup.members = Stream.of(admin, adminTwo).collect(Collectors.toSet());
+        adminGroup.setIsAdminGroup(true);
+        adminGroup.setMembers(Stream.of(admin, adminTwo).collect(Collectors.toSet()));
 
         petersGroup = new Group("Peters Group", peter);
-        petersGroup.members = Stream.of(peter, klaus, adminTwo).collect(Collectors.toSet());
+        petersGroup.setMembers(Stream.of(peter, klaus, adminTwo).collect(Collectors.toSet()));
 
-        admin.groups = Stream.of(adminGroup, allGroup).collect(Collectors.toSet());
-        adminTwo.groups = Stream.of(adminGroup, petersGroup, allGroup).collect(Collectors.toSet());
-        peter.groups = Stream.of(petersGroup, allGroup).collect(Collectors.toSet());
-        klaus.groups = Stream.of(petersGroup, allGroup).collect(Collectors.toSet());
-        horst.groups = Stream.of(allGroup).collect(Collectors.toSet());
-        rudi.groups = Stream.of(allGroup).collect(Collectors.toSet());
+        admin.setGroups(Stream.of(adminGroup, allGroup).collect(Collectors.toSet()));
+        adminTwo.setGroups(Stream.of(adminGroup, petersGroup, allGroup).collect(Collectors.toSet()));
+        peter.setGroups(Stream.of(petersGroup, allGroup).collect(Collectors.toSet()));
+        klaus.setGroups(Stream.of(petersGroup, allGroup).collect(Collectors.toSet()));
+        horst.setGroups(Stream.of(allGroup).collect(Collectors.toSet()));
+        rudi.setGroups(Stream.of(allGroup).collect(Collectors.toSet()));
 
         petersSession = new UserSession();
         petersSession.setUser(peter);
