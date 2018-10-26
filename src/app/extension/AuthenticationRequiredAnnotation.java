@@ -10,9 +10,9 @@ import java.util.concurrent.CompletionStage;
 
 public class AuthenticationRequiredAnnotation extends play.mvc.Action.Simple {
     public CompletionStage<Result> call(Http.Context ctx) {
-        String remoteAddress = Http.Context.current().request().remoteAddress();
+        String remoteAddress = ctx.request().remoteAddress();
         Optional<UserSession> userSession = ContextArguments.getUserSession();
-        if(userSession.isPresent() &&  remoteAddress.equals(userSession.get().getConnectedFrom())) {
+        if(userSession.isPresent() && remoteAddress.equals(userSession.get().getConnectedFrom())) {
             return delegate.call(ctx);
         }
 
