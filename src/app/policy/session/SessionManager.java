@@ -40,7 +40,7 @@ public class SessionManager {
             if(dbs != null && dbs.getUser() != null) {
                 // IP Addressen müssen matchen && Session darf nicht zu alt sein!
                 if(dbs.getRemoteAddress().equals(ctx.request().remoteAddress()) &&
-                    dbs.getIssuedAt().plus(ConstraintValues.SESSION_TIMEOUT_HOURS).isAfterNow()) {
+                    dbs.getIssuedAt().plus(ConstraintValues.SESSION_TIMEOUT_HOURS).isBeforeNow()) {
                         session = dbs;
                 }
             }

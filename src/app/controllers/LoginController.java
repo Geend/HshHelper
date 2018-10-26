@@ -18,6 +18,7 @@ import policy.Authentification;
 import policy.ext.loginFirewall.Firewall;
 import policy.ext.loginFirewall.Instance;
 import policy.ext.loginFirewall.Strategy;
+import policy.session.SessionManager;
 
 
 import javax.inject.Inject;
@@ -92,6 +93,9 @@ public class LoginController extends Controller {
         if(auth.user().getIsPasswordResetRequired()) {
             return redirect(routes.LoginController.changePasswordAfterReset());
         }
+
+        // Temp: policy.Session
+        SessionManager.StartNewSession(auth.user());
 
         // TODO: Kein Cookie manuell setzen!
         String remoteIp = request().remoteAddress();
