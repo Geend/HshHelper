@@ -5,7 +5,7 @@
 @if(form.hasGlobalErrors) {
     <p class="error">
     @for(error <- form.globalErrors) {
-        <p>@error</p>
+        <p>@error.format(messages())</p>
     }
     </p>
 }
