@@ -2,6 +2,7 @@ package models.dtos;
 
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
+import policy.ConstraintValues;
 
 import static policy.ConstraintValues.MAX_PASSWORD_LENGTH;
 import static policy.ConstraintValues.MAX_USERNAME_LENGTH;
@@ -11,6 +12,7 @@ public class ChangePasswordAfterResetDto implements Constraints.Validatable<Vali
 
     @Constraints.Required
     @Constraints.MaxLength(MAX_USERNAME_LENGTH)
+    @Constraints.Pattern(ConstraintValues.USERNAME_REGEX)
     private String username;
 
     @Constraints.Required
