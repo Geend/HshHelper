@@ -40,9 +40,8 @@ public class UserController extends Controller {
     private Form<DeleteUserDto> deleteUserForm;
 
 
-    private ContextArgumentsHelper cah;
     @Inject
-    public UserController(FormFactory formFactory, UserFinder userFinder, UserSessionFinder userSessionFinder, ContextArgumentsHelper cah) {
+    public UserController(FormFactory formFactory, UserFinder userFinder, UserSessionFinder userSessionFinder) {
         this.createUserForm = formFactory.form(CreateUserDto.class);
         this.userFinder = userFinder;
         this.userSessionFinder = userSessionFinder;
@@ -50,13 +49,13 @@ public class UserController extends Controller {
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
         this.deleteSessionForm = formFactory.form(DeleteSessionDto.class);
         this.deleteUserForm = formFactory.form(DeleteUserDto.class);
-        this.cah = cah;
+
     }
 
 
     @AuthenticationRequired
     public Result showUsers() {
-        User currentUser = cah.getUser().get();
+        User currentUser = ContextArguments.getUser().get();
         if(!Specification.CanViewAllUsers(currentUser)) {
             return unauthorized();
         }
@@ -77,7 +76,7 @@ public class UserController extends Controller {
     @AuthenticationRequired
     public Result deleteUser()
     {
-        User currentUser = cah.getUser().get();
+        User currentUser = ContextArguments.getUser().get();
         Form<DeleteUserDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
         if(boundForm.hasErrors()) {
             return badRequest();
@@ -104,7 +103,7 @@ public class UserController extends Controller {
 
     @AuthenticationRequired
     public Result showCreateUserForm() {
-        User currentUser = cah.getUser().get();
+        User currentUser = ContextArguments.getUser().get();
         if(!Specification.CanCreateUser(currentUser)) {
             return unauthorized();
         }
@@ -114,7 +113,7 @@ public class UserController extends Controller {
     @AuthenticationRequired
     public Result createUser() {
 
-        User currentUser = cah.getUser().get();
+        User currentUser = ContextArguments.getUser().get();
 
         if (!Specification.CanCreateUser(currentUser))
             return badRequest("error");
@@ -167,7 +166,7 @@ public class UserController extends Controller {
 
     @AuthenticationRequired
     public Result changeOwnPassword() {
-        Optional<User> userOptional = cah.getUser();
+        Optional<User> userOptional = ContextArguments.getUser();
         if (!userOptional.isPresent())
             return badRequest("error");
 
@@ -248,7 +247,7 @@ public class UserController extends Controller {
 
     @AuthenticationRequired
     public Result showActiveUserSessions() {
-        User u = cah.getUser().get();
+        User u = ContextArguments.getUser().get();
         List<UserSession> userSessions = userSessionFinder.byUser(u);
         return ok(views.html.UserSessions.render(asScala(userSessions), deleteSessionForm));
     }
@@ -262,7 +261,7 @@ public class UserController extends Controller {
             return badRequest();
         }
 
-        if(!policy.Specification.CanDeleteSession(cah.getUser().get(), session.get())) {
+        if(!policy.Specification.CanDeleteSession(ContextArguments.getUser().get(), session.get())) {
             return badRequest();
         }
 
