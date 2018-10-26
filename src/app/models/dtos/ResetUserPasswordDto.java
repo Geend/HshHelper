@@ -10,6 +10,7 @@ public class ResetUserPasswordDto {
 
     @Constraints.Required
     @Constraints.MaxLength(ConstraintValues.MAX_USERNAME_LENGTH)
+    @Constraints.Pattern(ConstraintValues.USERNAME_REGEX)
     private String username;
 
 
