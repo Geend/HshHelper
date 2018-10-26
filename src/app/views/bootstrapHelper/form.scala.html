@@ -34,7 +34,7 @@
                 }
                 case _ => {
                     @helper.input(form(k), '_label -> v.label) { (id, name, value, args) =>
-                        <input class="form-control @hasErrors" type="@v.typ.toString" name="@name" id="@id" placeholder="@v.placeholder" aria-describedby="@k.concat("Help")" @toHtmlArgs(args)>
+                        <input class="form-control @hasErrors" type="@v.typ.toString" value="@value" name="@name" id="@id" placeholder="@v.placeholder" aria-describedby="@k.concat("Help")" @toHtmlArgs(args)>
                         <small id="@k.concat("Help")" class="form-text text-muted">@v.help</small>
                     }
                 }
