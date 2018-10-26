@@ -20,6 +20,8 @@ public class Session extends Model {
     private String remoteAddress;
     private DateTime issuedAt;
 
+    protected Session() {}
+
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "user_id")
     private User user;
@@ -56,5 +58,5 @@ public class Session extends Model {
         this.user = user;
     }
 
-    public static Finder<UUID, Session> finder = new Finder(Session.class);
+    protected static Finder<UUID, Session> finder = new Finder(Session.class);
 }
