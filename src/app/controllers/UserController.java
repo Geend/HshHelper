@@ -5,10 +5,9 @@ import io.ebean.Ebean;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.User;
-import models.UserSession;
+import policy.session.UserSession;
 import models.dtos.*;
 import models.finders.UserFinder;
-import models.finders.UserSessionFinder;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.mailer.Email;
@@ -16,6 +15,8 @@ import play.libs.mailer.MailerClient;
 import play.mvc.Controller;
 import play.mvc.Result;
 import policy.Specification;
+import policy.session.Authentication;
+import policy.session.SessionManager;
 import scala.collection.Seq;
 
 import javax.inject.Inject;
@@ -31,7 +32,6 @@ public class UserController extends Controller {
     MailerClient mailerClient;
 
     private UserFinder userFinder;
-    private UserSessionFinder userSessionFinder;
 
     private Form<CreateUserDto> createUserForm;
     private Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
@@ -41,10 +41,9 @@ public class UserController extends Controller {
 
 
     @Inject
-    public UserController(FormFactory formFactory, UserFinder userFinder, UserSessionFinder userSessionFinder) {
+    public UserController(FormFactory formFactory, UserFinder userFinder) {
         this.createUserForm = formFactory.form(CreateUserDto.class);
         this.userFinder = userFinder;
-        this.userSessionFinder = userSessionFinder;
         this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
         this.deleteSessionForm = formFactory.form(DeleteSessionDto.class);
@@ -53,9 +52,9 @@ public class UserController extends Controller {
     }
 
 
-    @AuthenticationRequired
+    @Authentication.Required
     public Result showUsers() {
-        User currentUser = ContextArguments.getUser().get();
+        User currentUser = SessionManager.CurrentUser();
         if(!Specification.CanViewAllUsers(currentUser)) {
             return unauthorized();
         }
@@ -73,10 +72,9 @@ public class UserController extends Controller {
         return ok(views.html.UserList.render(scalaEntries));
     }
 
-    @AuthenticationRequired
-    public Result deleteUser()
-    {
-        User currentUser = ContextArguments.getUser().get();
+    @Authentication.Required
+    public Result deleteUser() {
+        User currentUser = SessionManager.CurrentUser();
         Form<DeleteUserDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
         if(boundForm.hasErrors()) {
             return badRequest();
@@ -101,23 +99,20 @@ public class UserController extends Controller {
     }
 
 
-    @AuthenticationRequired
+    @Authentication.Required
     public Result showCreateUserForm() {
-        User currentUser = ContextArguments.getUser().get();
+        User currentUser = SessionManager.CurrentUser();
         if(!Specification.CanCreateUser(currentUser)) {
             return unauthorized();
         }
         return ok(views.html.CreateUser.render(createUserForm));
     }
 
-    @AuthenticationRequired
+    @Authentication.Required
     public Result createUser() {
-
-        User currentUser = ContextArguments.getUser().get();
-
+        User currentUser = SessionManager.CurrentUser();
         if (!Specification.CanCreateUser(currentUser))
             return badRequest("error");
-
 
         Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
 
@@ -159,23 +154,17 @@ public class UserController extends Controller {
 
 
 
-    @AuthenticationRequired
+    @Authentication.Required
     public Result showChangeOwnPasswordForm() {
         return ok(views.html.ChangePassword.render(changeOwnPasswordForm));
     }
 
-    @AuthenticationRequired
+    @Authentication.Required
     public Result changeOwnPassword() {
-        Optional<User> userOptional = ContextArguments.getUser();
-        if (!userOptional.isPresent())
-            return badRequest("error");
-
-        User currentUser = userOptional.get();
-
+        User currentUser = SessionManager.CurrentUser();
 
         if (!Specification.CanChangePassword(currentUser, currentUser))
             return badRequest("error");
-
 
         Form<ChangeOwnPasswordDto> boundForm = changeOwnPasswordForm.bindFromRequest("password", "passwordRepeat");
 
@@ -192,11 +181,12 @@ public class UserController extends Controller {
         return ok("changedPassword");
     }
 
+    @Authentication.NotAllowed
     public Result showResetUserPasswordForm() {
         return ok(views.html.ResetUserPassword.render(resetUserPasswordForm));
     }
 
-
+    @Authentication.NotAllowed
     public Result resetUserPassword() {
         //TODO: Add brute force and/or dos protection
 
@@ -245,27 +235,27 @@ public class UserController extends Controller {
         mailerClient.send(email);
     }
 
-    @AuthenticationRequired
+    @Authentication.Required
     public Result showActiveUserSessions() {
-        User u = ContextArguments.getUser().get();
-        List<UserSession> userSessions = userSessionFinder.byUser(u);
+        User u = SessionManager.CurrentUser();
+        List<UserSession> userSessions = SessionManager.SessionsByUser(u);
         return ok(views.html.UserSessions.render(asScala(userSessions), deleteSessionForm));
     }
 
-    @AuthenticationRequired
+    @Authentication.Required
     public Result deleteUserSession() {
         Form<DeleteSessionDto> bf = deleteSessionForm.bindFromRequest();
 
-        Optional<UserSession> session = userSessionFinder.byIdOptional(bf.get().getSessionId());
+        Optional<UserSession> session = SessionManager.GetUserSession(SessionManager.CurrentUser(), bf.get().getSessionId());
         if(!session.isPresent()) {
             return badRequest();
         }
 
-        if(!policy.Specification.CanDeleteSession(ContextArguments.getUser().get(), session.get())) {
+        if(!policy.Specification.CanDeleteSession(SessionManager.CurrentUser(), session.get())) {
             return badRequest();
         }
 
-        session.get().delete();
+        session.get().destroy();
 
         return redirect(routes.UserController.showActiveUserSessions());
     }

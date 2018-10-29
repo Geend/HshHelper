@@ -9,6 +9,7 @@ import policy.ConstraintValues;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class SessionManager {
@@ -80,6 +81,17 @@ public class SessionManager {
         }
 
         return result;
+    }
+
+    public static Optional<UserSession> GetUserSession(User user, UUID sessionKey) {
+        Optional<Session> session = Session.finder.query().where().eq("user", user).eq("sessionKey", sessionKey).findOneOrEmpty();
+
+        Optional<UserSession> ret = Optional.empty();
+        if(session.isPresent()) {
+            ret = Optional.of(new UserSession(session.get()));
+        }
+
+        return ret;
     }
 
     public static boolean HasActiveSession() {

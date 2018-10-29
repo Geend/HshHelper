@@ -1,28 +1,22 @@
 package controllers;
 
-import extension.AuthenticationRequired;
-import extension.ContextArguments;
-
 import models.User;
-import models.UserSession;
 import play.mvc.Controller;
 import play.mvc.Result;
+import policy.session.Authentication;
+import policy.session.SessionManager;
 
 import javax.inject.Singleton;
-import java.util.Optional;
 
 import static play.libs.Scala.asScala;
 
 @Singleton
-@AuthenticationRequired
+@Authentication.Required
 public class HomeController extends Controller {
 
     public Result index() {
-        Optional<User> user = extension.ContextArguments.getUser();
-        if (user.isPresent()) {
-            return ok(views.html.Index.render(user.get(), asScala(user.get().getGroups())));
-        }
-        return badRequest("error");
+        User user = SessionManager.CurrentUser();
+        return ok(views.html.Index.render(user, asScala(user.getGroups())));
     }
 
 }

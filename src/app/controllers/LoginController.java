@@ -1,15 +1,10 @@
 package controllers;
 
-import constants.CookieConstants;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
 import models.User;
-import models.UserSession;
 import models.dtos.ChangePasswordAfterResetDto;
 import models.dtos.UserLoginDto;
-import models.finders.UserFinder;
-import models.finders.UserSessionFinder;
-import org.joda.time.DateTime;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -18,37 +13,30 @@ import policy.Authentification;
 import policy.ext.loginFirewall.Firewall;
 import policy.ext.loginFirewall.Instance;
 import policy.ext.loginFirewall.Strategy;
+import policy.session.Authentication;
 import policy.session.SessionManager;
 
 
 import javax.inject.Inject;
-import java.util.Optional;
 
 public class LoginController extends Controller {
 
     private Form<UserLoginDto> loginForm;
     private Form<ChangePasswordAfterResetDto> changePasswordForm;
-    private UserSessionFinder userSessionFinder;
-    private UserFinder userFinder;
 
     @Inject
     public LoginController(
-            FormFactory formFactory,
-            UserSessionFinder userSessionFinder,
-            UserFinder userFinder) {
+            FormFactory formFactory) {
         this.loginForm = formFactory.form(UserLoginDto.class);
         this.changePasswordForm = formFactory.form(ChangePasswordAfterResetDto.class);
-        this.userSessionFinder = userSessionFinder;
-        this.userFinder = userFinder;
     }
 
+    @Authentication.NotAllowed
     public Result showLoginForm() {
-        if (session().containsKey(CookieConstants.USER_SESSION_ID_NAME)) {
-            return redirect(routes.HomeController.index());
-        }
         return ok(views.html.Login.render(loginForm, false));
     }
 
+    @Authentication.NotAllowed
     public Result login() {
         Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password", "recaptcha");
         if (boundForm.hasErrors()) {
@@ -94,29 +82,18 @@ public class LoginController extends Controller {
             return redirect(routes.LoginController.changePasswordAfterReset());
         }
 
-        // Temp: policy.Session
         SessionManager.StartNewSession(auth.user());
-
-        // TODO: Kein Cookie manuell setzen!
-        String remoteIp = request().remoteAddress();
-        UserSession userSession = new UserSession();
-        userSession.setConnectedFrom(remoteIp);
-        userSession.setUser(auth.user());
-        userSession.setIssuedAt(DateTime.now());
-        userSession.save();
-
-        session().put(CookieConstants.USER_SESSION_ID_NAME, userSession.getSessionId().toString());
 
         return redirect(routes.HomeController.index());
     }
 
-    public Result showChangePasswordAfterResetForm()
-    {
+    @Authentication.NotAllowed
+    public Result showChangePasswordAfterResetForm() {
         return ok(views.html.ChangePasswordAfterReset.render(this.changePasswordForm, false));
     }
 
-    public Result changePasswordAfterReset()
-    {
+    @Authentication.NotAllowed
+    public Result changePasswordAfterReset() {
         Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat", "recaptcha");
         if (boundForm.hasErrors()) {
             return ok(views.html.ChangePasswordAfterReset.render(boundForm, false));
@@ -164,20 +141,9 @@ public class LoginController extends Controller {
         return redirect(routes.LoginController.login());
     }
 
+    @Authentication.Required
     public Result logout() {
-
-        if (session().containsKey(CookieConstants.USER_SESSION_ID_NAME)) {
-
-            String sessionIdString = session().getOrDefault(CookieConstants.USER_SESSION_ID_NAME, null);
-            session().remove(CookieConstants.USER_SESSION_ID_NAME);
-
-            Long sessionId = Long.parseLong(sessionIdString);
-            Optional<UserSession> session = this.userSessionFinder.byIdOptional(sessionId);
-            if(session.isPresent()) {
-                session.get().delete();
-            }
-        }
+        SessionManager.DestroyCurrentSession();
         return redirect(routes.HomeController.index());
     }
-
 }

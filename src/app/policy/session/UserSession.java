@@ -1,6 +1,9 @@
 package policy.session;
 
+import models.User;
 import org.joda.time.DateTime;
+
+import java.util.UUID;
 
 public class UserSession {
     private Session session;
@@ -15,6 +18,14 @@ public class UserSession {
 
     public String getRemoteAddress() {
         return session.getRemoteAddress();
+    }
+
+    public User getUser() {
+        return session.getUser();
+    }
+
+    public UUID getSessionKey() {
+        return session.getSessionKey();
     }
 
     public void destroy() {

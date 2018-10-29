@@ -33,11 +33,6 @@ public class User extends Model {
     )
     private Set<Group> ownerOf = new HashSet<>();
 
-    @OneToMany(
-            mappedBy = "user",
-            cascade = CascadeType.ALL
-    )
-    private Set<UserSession> sessions = new HashSet<>();
 
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
@@ -121,14 +116,6 @@ public class User extends Model {
 
     public void setOwnerOf(Set<Group> ownerOf) {
         this.ownerOf = ownerOf;
-    }
-
-    public Set<UserSession> getSessions() {
-        return sessions;
-    }
-
-    public void setSessions(Set<UserSession> sessions) {
-        this.sessions = sessions;
     }
 
     public Set<Group> getGroups() {

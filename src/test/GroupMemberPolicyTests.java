@@ -1,6 +1,7 @@
 import models.Group;
 import models.User;
-import models.UserSession;
+import org.junit.Before;
+import policy.session.UserSession;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import policy.Specification;
@@ -9,6 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class GroupMemberPolicyTests {
 
@@ -58,9 +61,12 @@ public class GroupMemberPolicyTests {
         klaus.setGroups(Stream.of(petersGroup, allGroup).collect(Collectors.toSet()));
         horst.setGroups(Stream.of(allGroup).collect(Collectors.toSet()));
         rudi.setGroups(Stream.of(allGroup).collect(Collectors.toSet()));
+    }
 
-        petersSession = new UserSession();
-        petersSession.setUser(peter);
+    @Before
+    public void setupBeforeAll() {
+        petersSession = mock(UserSession.class);
+        when(petersSession.getUser()).thenReturn(peter);
     }
 
     @Test

@@ -26,5 +26,3 @@ POST        /groups/:groupId/members/add         controllers.GroupController.add
 GET         /sessions                            controllers.UserController.showActiveUserSessions()
 POST        /sessions/delete                     controllers.UserController.deleteUserSession()
 GET         /assets/*file                        controllers.Assets.at(path="/public", file)
-
-GET         /test/                               controllers.TestController.index()

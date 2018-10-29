@@ -2,7 +2,7 @@ package policy;
 
 import models.Group;
 import models.User;
-import models.UserSession;
+import policy.session.UserSession;
 
 public class Specification {
     public static boolean CanViewGroupDetails(User currentUser, Group toBeWatched) {

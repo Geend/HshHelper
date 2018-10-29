@@ -1,13 +1,15 @@
 package models.dtos;
 
+import java.util.UUID;
+
 public class DeleteSessionDto {
-    public Long getSessionId() {
+    public UUID getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId(Long sessionId) {
+    public void setSessionId(UUID sessionId) {
         this.sessionId = sessionId;
     }
 
-    private Long sessionId;
+    private UUID sessionId;
 }

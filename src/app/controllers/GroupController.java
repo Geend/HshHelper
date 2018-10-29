@@ -1,7 +1,5 @@
 package controllers;
 
-import extension.AuthenticationRequired;
-import extension.ContextArguments;
 import io.ebean.Ebean;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
@@ -17,6 +15,8 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
+import policy.session.Authentication;
+import policy.session.SessionManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import static play.libs.Scala.asScala;
 
 @Singleton
-@AuthenticationRequired
+@Authentication.Required
 public class GroupController extends Controller {
     private final Form<CreateGroupDto> groupForm;
     private final Form<RemoveGroupUserDto> removeGroupUserForm;
@@ -66,8 +66,8 @@ public class GroupController extends Controller {
                     return badRequest(views.html.CreateGroup.render(bf));
                 }
 
-                Group group = new Group(gDto.getName(), ContextArguments.getUser().get());
-                group.getMembers().add( ContextArguments.getUser().get());
+                Group group = new Group(gDto.getName(), SessionManager.CurrentUser());
+                group.getMembers().add(SessionManager.CurrentUser());
                 group.save();
 
                 tx.commit();
@@ -78,11 +78,12 @@ public class GroupController extends Controller {
     }
 
     public Result showOwnGroups() {
-        Set<Group> gms = ContextArguments.getUser().get().getGroups();
+        Set<Group> gms = SessionManager.CurrentUser().getGroups();
         return ok(views.html.OwnGroupsList.render(asScala(gms), deleteGroupForm));
     }
 
     public Result showGroup(Long groupId) {
+        // TODO: Policy Check fehlt offensichtlich
         Optional<Group> g = groupFinder.byIdOptional(groupId);
 
         if(!g.isPresent())
@@ -106,7 +107,7 @@ public class GroupController extends Controller {
 
         User toBeDeleted = userFinder.byIdOptional(ru.getUserId()).get();
         Group g = groupFinder.byIdOptional(groupId).get();
-        if(!policy.Specification.CanRemoveGroupMember(ContextArguments.getUser().get(), g, toBeDeleted)) {
+        if(!policy.Specification.CanRemoveGroupMember(SessionManager.CurrentUser(), g, toBeDeleted)) {
             return badRequest("error");
         }
         
@@ -126,8 +127,7 @@ public class GroupController extends Controller {
 
         User toBeAdded= userFinder.byIdOptional(au.getUserId()).get();
         Group g = groupFinder.byIdOptional(groupId).get();
-        if(!policy.Specification.CanAddGroupMember(ContextArguments.getUser().get(), g,
-                toBeAdded)) {
+        if(!policy.Specification.CanAddGroupMember(SessionManager.CurrentUser(), g, toBeAdded)) {
             return badRequest("error");
         }
 
@@ -146,7 +146,7 @@ public class GroupController extends Controller {
         DeleteGroupDto dg = form.get();
         Group g = groupFinder.byIdOptional(groupId).get();
 
-        if(!policy.Specification.CanDeleteGroup(ContextArguments.getUser().get(), g)) {
+        if(!policy.Specification.CanDeleteGroup(SessionManager.CurrentUser(), g)) {
             return badRequest("error");
         }
 

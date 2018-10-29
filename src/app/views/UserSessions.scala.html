@@ -1,16 +1,18 @@
+@import policy.session.UserSession
 @import models.dtos.DeleteSessionDto
+@import policy.session.SessionManager.CurrentUser
 @(sessions: Seq[UserSession], deleteSessionform: Form[DeleteSessionDto])
 
 @import bootstrapHelper._
 
 @sessionButton(s: UserSession) = {
-    @if(policy.Specification.CanDeleteSession(extension.ContextArguments.getUser().get(), s)) {
+    @if(policy.Specification.CanDeleteSession(CurrentUser(), s)) {
         @form(
             routes.UserController.deleteUserSession(),
             deleteSessionform,
             scala.collection.Map(
                 "sessionId" -> Input(InputType.Hidden,
-                    value = Left(s.getSessionId().toString))
+                    value = Left(s.getSessionKey.toString))
             ),
             button = bootstrapHelper.button("Session Zerstören")
         )
@@ -23,7 +25,7 @@
     @bootstrapHelper.center("Aktive Sessions") {
         @table(sessions.map(
             s => scala.collection.Map(
-                "Verwendete IP" -> Left(s.getConnectedFrom),
+                "Verwendete IP" -> Left(s.getRemoteAddress),
                 "Erstellungsdatum" -> Left(s.getIssuedAt.toString("dd.MM.yyyy - HH:mm:ss")),
                 "Aktion" -> Right(sessionButton(s))
             )

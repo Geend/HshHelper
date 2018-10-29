@@ -25,7 +25,6 @@ public class DatabaseInitialization {
         db.withConnection(connection -> {
             Statement stmt = connection.createStatement();
             stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
-            stmt.execute("TRUNCATE TABLE usersession");
             stmt.execute("TRUNCATE TABLE groupmembers");
             stmt.execute("TRUNCATE TABLE users");
             stmt.execute("TRUNCATE TABLE groups");
