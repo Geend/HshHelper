@@ -42,6 +42,7 @@ public class UserManager {
         String plaintextPassword = passwordGenerator.generatePassword(10);
         String passwordHash = hashHelper.hashPassword(plaintextPassword);
 
+
         User newUser;
         try(Transaction tx = this.ebeanServer.beginTransaction(TxIsolation.REPEATABLE_READ)) {
             if(userFinder.byName(username).isPresent()) {
