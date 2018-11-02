@@ -11,11 +11,13 @@ import models.User;
 import models.finders.UserFinder;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import play.libs.mailer.MailerClient;
 import policy.Specification;
 
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -99,6 +101,23 @@ public class UserManagerTest {
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserManager sut = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
         sut.createUser(1l, "klaus", "test@test.de", 5);
+    }
+
+    @Test
+    public void createUserIssuesAdd() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
+        HashHelper hashHelper = mock(HashHelper.class);
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        EbeanServer server = mock(EbeanServer.class);
+        when(server.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
+        UserManager sut = new UserManager(defaultUserFinder, passwordGenerator, defaultMailerClient, hashHelper, server, defaultSpecification);
+
+        ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
+        sut.createUser(1l, "klaus", "test@test.de", 5);
+        verify(server).save(argumentCaptor.capture());
+        User addedUser = argumentCaptor.getValue();
+        assertEquals(addedUser.getUsername(), "klaus");
+        assertEquals(addedUser.getEmail(), "test@test.de");
+        assertEquals(addedUser.getQuotaLimit(), 5);
     }
 
     @Test
