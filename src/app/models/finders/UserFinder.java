@@ -22,4 +22,7 @@ public class UserFinder extends Finder<Long, User> {
     public Optional<User> byName(String username) {
         return this.query().where().eq("username", username).findOneOrEmpty();
     }
+    public Optional<User> byEmail(String email) {
+        return this.query().where().eq("email", email).findOneOrEmpty();
+    }
 }
