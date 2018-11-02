@@ -11,6 +11,7 @@ import play.Application;
 import play.mvc.Http;
 import play.test.Helpers;
 import policy.ext.loginFirewall.Firewall;
+import policy.session.SessionManager;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,11 +45,13 @@ public class LoginManagerTest {
     UserFinder userFinder;
     LoginManager loginManager;
     Firewall firewall;
+    SessionManager sessionManager;
 
     @Before
     public void setup() {
         firewall = new Firewall();
-        loginManager = new LoginManager(hashHelper, firewall);
+        sessionManager = new SessionManager();
+        loginManager = new LoginManager(hashHelper, firewall, sessionManager);
         userFinder = new UserFinder();
 
         Http.Request request = Helpers.fakeRequest("GET", "/").remoteAddress("1.2.23.4").build();

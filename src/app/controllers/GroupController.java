@@ -39,14 +39,16 @@ public class GroupController extends Controller {
     private final Form<DeleteGroupDto> deleteGroupForm;
 
     private final GroupManager groupManager;
+    private final SessionManager sessionManager;
 
     @Inject
-    public GroupController(FormFactory formFactory, UserFinder userFinder, GroupFinder groupFinder, GroupManager groupManager) {
+    public GroupController(FormFactory formFactory, UserFinder userFinder, GroupFinder groupFinder, GroupManager groupManager, SessionManager sessionManager) {
         this.groupForm = formFactory.form(CreateGroupDto.class);
         this.removeGroupUserForm = formFactory.form(RemoveGroupUserDto.class);
         this.addUserToGroupForm = formFactory.form(AddUserToGroupDto.class);
         this.deleteGroupForm = formFactory.form(DeleteGroupDto.class);
         this.groupManager = groupManager;
+        this.sessionManager = sessionManager;
     }
 
     public Result showCreateGroupForm() {
@@ -62,7 +64,7 @@ public class GroupController extends Controller {
             CreateGroupDto gDto = bf.get();
 
             try {
-                groupManager.createGroup(SessionManager.CurrentUser().getUserId(), gDto.getName());
+                groupManager.createGroup(sessionManager.currentUser().getUserId(), gDto.getName());
             } catch (GroupNameAlreadyExistsException e) {
                 bf = bf.withError("name", e.getMessage());
                 return badRequest(views.html.CreateGroup.render(bf));
@@ -75,15 +77,15 @@ public class GroupController extends Controller {
     }
 
     public Result showOwnGroups() {
-        Set<Group> gms = groupManager.getOwnGroups(SessionManager.CurrentUser().getUserId());
+        Set<Group> gms = groupManager.getOwnGroups(sessionManager.currentUser().getUserId());
         return ok(views.html.OwnGroupsList.render(asScala(gms), deleteGroupForm));
     }
 
     public Result showGroup(Long groupId) {
         try {
-            Set<User> members = groupManager.getGroupMembers(SessionManager.CurrentUser().getUserId(), groupId);
-            Set<User> notMember = groupManager.getUsersWhichAreNotInThisGroup(SessionManager.CurrentUser().getUserId(), groupId);
-            Group grp = groupManager.getGroup(SessionManager.CurrentUser().getUserId(), groupId);
+            Set<User> members = groupManager.getGroupMembers(sessionManager.currentUser().getUserId(), groupId);
+            Set<User> notMember = groupManager.getUsersWhichAreNotInThisGroup(sessionManager.currentUser().getUserId(), groupId);
+            Group grp = groupManager.getGroup(sessionManager.currentUser().getUserId(), groupId);
             return ok(views.html.GroupMembersList.render(grp,
                             asScala(members), asScala(notMember), addUserToGroupForm, removeGroupUserForm));
         } catch (UnauthorizedException e) {
@@ -104,7 +106,7 @@ public class GroupController extends Controller {
         RemoveGroupUserDto ru = form.get();
 
         try {
-            groupManager.removeGroupMember(SessionManager.CurrentUser().getUserId(), ru.getUserId(), groupId);
+            groupManager.removeGroupMember(sessionManager.currentUser().getUserId(), ru.getUserId(), groupId);
         } catch (UnauthorizedException e) {
             return forbidden(e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -123,7 +125,7 @@ public class GroupController extends Controller {
         AddUserToGroupDto au = form.get();
 
         try {
-            groupManager.addGroupMember(SessionManager.CurrentUser().getUserId(), au.getUserId(), groupId);
+            groupManager.addGroupMember(sessionManager.currentUser().getUserId(), au.getUserId(), groupId);
         } catch (UnauthorizedException e) {
             return forbidden(e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -142,7 +144,7 @@ public class GroupController extends Controller {
         DeleteGroupDto dg = form.get();
 
         try {
-            groupManager.deleteGroup(SessionManager.CurrentUser().getUserId(), groupId);
+            groupManager.deleteGroup(sessionManager.currentUser().getUserId(), groupId);
         } catch (UnauthorizedException e) {
             return forbidden(e.getMessage());
         } catch (IllegalArgumentException e) {

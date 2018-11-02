@@ -72,13 +72,21 @@ public class UserManager {
         return plaintextPassword;
     }
 
-    public void deleteUser(Long userId, Long id) throws UnauthorizedException {
-        User currentUser = this.userFinder.byId(userId);
-        User userToDelete = this.userFinder.byId(id);
-        if(!this.specification.CanDeleteUser(currentUser, userToDelete)) {
+    public void deleteUser(Long userId, Long userToBeDeletedId) throws UnauthorizedException {
+        Optional<User> currentUser = this.userFinder.byIdOptional(userId);
+        Optional<User> userToDelete = this.userFinder.byIdOptional(userToBeDeletedId);
+
+        if(!currentUser.isPresent())
+            throw new IllegalArgumentException("Dieser User existiert nicht.");
+
+        if(!userToDelete.isPresent())
+            throw new IllegalArgumentException("Dieser User existiert nicht.");
+
+
+        if(!this.specification.CanDeleteUser(currentUser.get(), userToDelete.get())) {
             throw new UnauthorizedException();
         }
-        userToDelete.delete();
+        ebeanServer.delete(userToDelete.get());
     }
 
     public List<User> getAllUsers(Long userId) throws UnauthorizedException {
@@ -92,7 +100,7 @@ public class UserManager {
     public void resetPassword(String username) {
         Optional<User> userOptional = userFinder.byName(username);
         if (!userOptional.isPresent()) {
-            return;
+            throw new IllegalArgumentException("Dieser User existiert nicht.");
         }
         User user = userOptional.get();
 

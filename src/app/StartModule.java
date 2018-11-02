@@ -13,18 +13,11 @@ public class StartModule extends AbstractModule {
         bind(LoginFwInitialization.class).asEagerSingleton();
         bind(SessionInitialization.class).asEagerSingleton();
         bind(EbeanServer.class).toProvider(new EbeanServerProvider());
-        bind(Http.Context.class).toProvider(new HttpContextProvider());
     }
 
     public class EbeanServerProvider implements Provider<EbeanServer> {
         public EbeanServer get() {
             return Ebean.getDefaultServer();
-        }
-    }
-
-    public class HttpContextProvider implements Provider<Http.Context> {
-        public Http.Context get() {
-            return Http.Context.current();
         }
     }
 }

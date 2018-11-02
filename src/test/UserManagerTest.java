@@ -9,6 +9,8 @@ import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.User;
 import models.finders.UserFinder;
+import org.apache.xpath.operations.Bool;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -120,7 +122,7 @@ public class UserManagerTest {
         assertEquals(addedUser.getQuotaLimit(), 5);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testChangePasswordWithNullInput(){
 
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
@@ -130,5 +132,92 @@ public class UserManagerTest {
         userManager = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
 
         userManager.resetPassword(null);
+    }
+
+    @Test
+    public void testDeleteUser() throws UnauthorizedException {
+
+        UserFinder userFinder = mock(UserFinder.class);
+
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        HashHelper hashHelper = mock(HashHelper.class);
+
+        userManager = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, new Specification());
+
+        Long adminUserId = 0l;
+        when(userFinder.byIdOptional(adminUserId)).thenReturn(Optional.of(adminUser));
+
+        Long userToBeDeletedId = 10l;
+
+        User userToBeDeleted = mock(User.class);
+        when(userToBeDeleted.getUserId()).thenReturn(userToBeDeletedId);
+        when(userFinder.byIdOptional(userToBeDeletedId)).thenReturn(Optional.of(userToBeDeleted));
+
+
+        userManager.deleteUser(adminUserId, userToBeDeletedId);
+
+        verify(defaultServer,times(1)).delete(userToBeDeleted);
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void testDeleteUserWithUnauthorizedUser() throws UnauthorizedException {
+
+        UserFinder userFinder = mock(UserFinder.class);
+
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        HashHelper hashHelper = mock(HashHelper.class);
+
+        userManager = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, new Specification());
+
+        Long unauthorizedUserId = 0l;
+        when(userFinder.byIdOptional(unauthorizedUserId)).thenReturn(Optional.of(mock(User.class)));
+
+        Long userToBeDeletedId = 10l;
+
+        User userToBeDeleted = mock(User.class);
+        when(userToBeDeleted.getUserId()).thenReturn(userToBeDeletedId);
+        when(userFinder.byIdOptional(userToBeDeletedId)).thenReturn(Optional.of(userToBeDeleted));
+
+        userManager.deleteUser(unauthorizedUserId, userToBeDeletedId);
+
+        verify(defaultServer, never()).delete(userToBeDeleted);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteUserWithNullInput1() throws UnauthorizedException {
+
+        UserFinder userFinder = mock(UserFinder.class);
+
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        HashHelper hashHelper = mock(HashHelper.class);
+
+        userManager = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
+
+        Long userToBeDeletedId = 10l;
+        User userToBeDeleted = mock(User.class);
+        when(userToBeDeleted.getUserId()).thenReturn(userToBeDeletedId);
+        when(userFinder.byId(userToBeDeletedId)).thenReturn(userToBeDeleted);
+
+        userManager.deleteUser(null, userToBeDeletedId);
+
+        verify(defaultServer, never()).delete(userToBeDeleted);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteUserWithNullInput2() throws UnauthorizedException {
+
+        UserFinder userFinder = mock(UserFinder.class);
+
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        HashHelper hashHelper = mock(HashHelper.class);
+
+        userManager = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
+
+        Long adminUserId = 0l;
+        when(userFinder.byId(adminUserId)).thenReturn(adminUser);
+
+        userManager.deleteUser(adminUserId, null);
+
+        verify(defaultServer, never()).delete(null);
     }
 }

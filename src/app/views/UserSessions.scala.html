@@ -1,13 +1,13 @@
 @import policy.session.Session
 @import models.dtos.DeleteSessionDto
-@import policy.session.SessionManager.CurrentUser
+@import policy.session.SessionManager.SessionInstance
 @import policy.session.Session
 @(sessions: Seq[Session], deleteSessionform: Form[DeleteSessionDto])
 
 @import bootstrapHelper._
 
 @sessionButton(s: Session) = {
-    @if(policy.Specification.instance.CanDeleteSession(CurrentUser(), s)) {
+    @if(policy.Specification.instance.CanDeleteSession(SessionInstance().currentUser(), s)) {
         @form(
             routes.UserController.deleteUserSession(),
             deleteSessionform,
