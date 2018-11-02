@@ -34,6 +34,13 @@ public class SessionManager {
         dbs.save();
 
         ctx.session().put(CookieSessionName, dbs.getSessionKey().toString());
+        
+        purgeSessionCache();
+    }
+
+    private void purgeSessionCache() {
+        Http.Context ctx = Http.Context.current();
+        ctx.args.remove(CtxCurrentSession);
     }
 
     private InternalSession currentSession() {
@@ -51,7 +58,7 @@ public class SessionManager {
             if(dbs != null && dbs.getUser() != null) {
                 // IP Addressen müssen matchen && InternalSession darf nicht zu alt sein!
                 if(dbs.getRemoteAddress().equals(ctx.request().remoteAddress()) &&
-                    dbs.getIssuedAt().plus(ConstraintValues.SESSION_TIMEOUT_HOURS).isBeforeNow()) {
+                    dbs.getIssuedAt().plusHours(ConstraintValues.SESSION_TIMEOUT_HOURS).isAfterNow()) {
                         session = dbs;
                 }
             }
@@ -78,7 +85,7 @@ public class SessionManager {
         current.delete();
         Http.Context.current().session().remove(CookieSessionName);
 
-        // TODO: Nachdenken ob Entfernung aus Kontext Sinn macht?
+        purgeSessionCache();
     }
 
     public List<Session> sessionsByUser(User user) {
