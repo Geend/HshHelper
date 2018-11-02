@@ -1,12 +1,11 @@
-@import policy.session.SessionManager.CurrentUser
-@import policy.session.SessionManager.HasActiveSession
+@import policy.session.SessionManager.SessionInstance
 @import policy.Specification
 @(title: String)(content: Html)
 
 @navbar() = {
     <nav class="navbar navbar-expand-sm navbar-dark bg-hsh-f4-orange">
         <a class="navbar-brand" href="@routes.HomeController.index()">HsH-Helfer</a>
-        @if(HasActiveSession()) {
+        @if(SessionInstance().hasActiveSession()) {
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
@@ -19,14 +18,14 @@
                             Sessions
                         </a>
                     </li>
-                    @if(Specification.instance.CanCreateUser(CurrentUser())) {
+                    @if(Specification.instance.CanCreateUser(SessionInstance().currentUser())) {
                         <li>
                             <a class="nav-link" href="@routes.UserController.showCreateUserForm()">
                                 Benutzer anlegen
                             </a>
                         </li>
                     }
-                    @if(Specification.instance.CanViewAllUsers(CurrentUser())) {
+                    @if(Specification.instance.CanViewAllUsers(SessionInstance().currentUser())) {
                         <li>
                             <a class="nav-link" href="@routes.UserController.showUsers()">
                                 Benutzerübersicht

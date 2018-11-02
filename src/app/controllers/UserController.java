@@ -35,21 +35,23 @@ public class UserController extends Controller {
     private Form<ResetUserPasswordDto> resetUserPasswordForm;
     private Form<DeleteSessionDto> deleteSessionForm;
     private Form<DeleteUserDto> deleteUserForm;
+    private final SessionManager sessionManager;
 
 
     @Inject
-    public UserController(FormFactory formFactory, UserManager userManager) {
+    public UserController(FormFactory formFactory, UserManager userManager, SessionManager sessionManager) {
         this.userManager = userManager;
         this.createUserForm = formFactory.form(CreateUserDto.class);
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
         this.deleteSessionForm = formFactory.form(DeleteSessionDto.class);
         this.deleteUserForm = formFactory.form(DeleteUserDto.class);
+        this.sessionManager = sessionManager;
     }
 
     @Authentication.Required
     public Result showUsers() {
         try {
-            User currentUser = SessionManager.CurrentUser();
+            User currentUser = sessionManager.currentUser();
             List<User> users = this.userManager.getAllUsers(currentUser.getUserId());
             List<UserListEntryDto> entries = users
                     .stream()
@@ -67,7 +69,7 @@ public class UserController extends Controller {
 
     @Authentication.Required
     public Result deleteUser() {
-        User currentUser = SessionManager.CurrentUser();
+        User currentUser = sessionManager.currentUser();
         Form<DeleteUserDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
         if(boundForm.hasErrors()) {
             return badRequest();
@@ -84,7 +86,7 @@ public class UserController extends Controller {
 
     @Authentication.Required
     public Result showCreateUserForm() {
-        User currentUser = SessionManager.CurrentUser();
+        User currentUser = sessionManager.currentUser();
         if(!Specification.instance.CanCreateUser(currentUser)) {
             return unauthorized();
         }
@@ -93,7 +95,7 @@ public class UserController extends Controller {
 
     @Authentication.Required
     public Result createUser() {
-        User currentUser = SessionManager.CurrentUser();
+        User currentUser = sessionManager.currentUser();
         Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
         if (boundForm.hasErrors()) {
             return ok(views.html.CreateUser.render(boundForm));
@@ -141,8 +143,8 @@ public class UserController extends Controller {
 
     @Authentication.Required
     public Result showActiveUserSessions() {
-        User u = SessionManager.CurrentUser();
-        List<Session> userSessions = SessionManager.SessionsByUser(u);
+        User u = sessionManager.currentUser();
+        List<Session> userSessions = sessionManager.sessionsByUser(u);
         return ok(views.html.UserSessions.render(asScala(userSessions), deleteSessionForm));
     }
 
@@ -150,12 +152,12 @@ public class UserController extends Controller {
     public Result deleteUserSession() {
         Form<DeleteSessionDto> bf = deleteSessionForm.bindFromRequest();
 
-        Optional<Session> session = SessionManager.GetUserSession(SessionManager.CurrentUser(), bf.get().getSessionId());
+        Optional<Session> session = sessionManager.getUserSession(sessionManager.currentUser(), bf.get().getSessionId());
         if(!session.isPresent()) {
             return badRequest();
         }
 
-        if(!policy.Specification.instance.CanDeleteSession(SessionManager.CurrentUser(), session.get())) {
+        if(!policy.Specification.instance.CanDeleteSession(sessionManager.currentUser(), session.get())) {
             return badRequest();
         }
 

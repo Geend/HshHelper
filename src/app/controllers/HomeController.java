@@ -4,8 +4,10 @@ import models.User;
 import play.mvc.Controller;
 import play.mvc.Result;
 import policy.session.Authentication;
+import policy.session.Session;
 import policy.session.SessionManager;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import static play.libs.Scala.asScala;
@@ -13,9 +15,15 @@ import static play.libs.Scala.asScala;
 @Singleton
 @Authentication.Required
 public class HomeController extends Controller {
+    private final SessionManager sessionManager;
+
+    @Inject
+    public HomeController(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
+    }
 
     public Result index() {
-        User user = SessionManager.CurrentUser();
+        User user = sessionManager.currentUser();
         return ok(views.html.Index.render(user, asScala(user.getGroups())));
     }
 

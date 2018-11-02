@@ -7,16 +7,24 @@ import play.Logger;
 import play.mvc.Http;
 import policy.ConstraintValues;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Singleton
 public class SessionManager {
+    // Hack for templates
+    public static SessionManager SessionInstance() {
+        return new SessionManager();
+    }
+
     private static final String CtxCurrentSession = "CurrentSession";
     private static final String CookieSessionName = "HsHSession";
 
-    public static void StartNewSession(User user) {
+    public void startNewSession(User user) {
         Http.Context ctx = Http.Context.current();
 
         InternalSession dbs = new InternalSession();
@@ -28,8 +36,9 @@ public class SessionManager {
         ctx.session().put(CookieSessionName, dbs.getSessionKey().toString());
     }
 
-    private static InternalSession CurrentSession() {
+    private InternalSession currentSession() {
         Http.Context ctx = Http.Context.current();
+
         if(ctx.args.containsKey(CtxCurrentSession)) {
             return (InternalSession)ctx.args.get(CtxCurrentSession);
         }
@@ -52,27 +61,27 @@ public class SessionManager {
         return session;
     }
 
-    public static User CurrentUser() {
-        if(!HasActiveSession()) {
-            throw new RuntimeException("There is no InternalSession that is destroyable");
+    public User currentUser() {
+        if(!hasActiveSession()) {
+            throw new RuntimeException("There is no active session");
         }
 
-        return CurrentSession().getUser();
+        return currentSession().getUser();
     }
 
-    public static void DestroyCurrentSession() {
-        if(!HasActiveSession()) {
-            throw new RuntimeException("There is no InternalSession that is destroyable");
+    public void destroyCurrentSession() {
+        if(!hasActiveSession()) {
+            throw new RuntimeException("There is no active session");
         }
 
-        InternalSession current = CurrentSession();
+        InternalSession current = currentSession();
         current.delete();
         Http.Context.current().session().remove(CookieSessionName);
 
         // TODO: Nachdenken ob Entfernung aus Kontext Sinn macht?
     }
 
-    public static List<Session> SessionsByUser(User user) {
+    public List<Session> sessionsByUser(User user) {
         List<InternalSession> sessions = InternalSession.finder.query().where().eq("user", user).findList();
         List<Session> result = new ArrayList<>();
 
@@ -83,7 +92,7 @@ public class SessionManager {
         return result;
     }
 
-    public static Optional<Session> GetUserSession(User user, UUID sessionKey) {
+    public Optional<Session> getUserSession(User user, UUID sessionKey) {
         Optional<InternalSession> session = InternalSession.finder.query().where().eq("user", user).eq("sessionKey", sessionKey).findOneOrEmpty();
 
         Optional<Session> ret = Optional.empty();
@@ -94,11 +103,11 @@ public class SessionManager {
         return ret;
     }
 
-    public static boolean HasActiveSession() {
-        return CurrentSession() != null;
+    public boolean hasActiveSession() {
+        return currentSession() != null;
     }
 
-    public static void GarbageCollect() {
+    public void garbageCollect() {
         int deletedSessions = InternalSession.finder.query().where()
             .lt("issuedAt", DateTime.now().minusHours(ConstraintValues.SESSION_TIMEOUT_HOURS))
             .delete();

@@ -7,6 +7,7 @@ import play.mvc.Http;
 import policy.ext.loginFirewall.Firewall;
 import policy.ext.loginFirewall.Instance;
 import policy.ext.loginFirewall.Strategy;
+import policy.session.Session;
 import policy.session.SessionManager;
 
 import javax.inject.Inject;
@@ -15,11 +16,13 @@ public class LoginManager {
 
     private HashHelper hashHelper;
     private Firewall loginFirewall;
+    private SessionManager sessionManager;
 
     @Inject
-    public LoginManager(HashHelper hashHelper, Firewall loginFirewall){
+    public LoginManager(HashHelper hashHelper, Firewall loginFirewall, SessionManager sessionManager){
         this.hashHelper = hashHelper;
         this.loginFirewall = loginFirewall;
+        this.sessionManager = sessionManager;
     }
 
     private User authenticate(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidUsernameOrPasswordException {
@@ -61,7 +64,7 @@ public class LoginManager {
             throw new PasswordChangeRequiredException();
         }
 
-        SessionManager.StartNewSession(authenticatedUser);
+        sessionManager.startNewSession(authenticatedUser);
     }
 
     public void changePassword(String username, String currentPassword, String newPassword, String captchaToken) throws InvalidUsernameOrPasswordException, CaptchaRequiredException {
@@ -73,6 +76,6 @@ public class LoginManager {
     }
 
     public void logout() {
-        SessionManager.DestroyCurrentSession();
+        sessionManager.destroyCurrentSession();
     }
 }
