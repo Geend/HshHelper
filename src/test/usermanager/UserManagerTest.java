@@ -1,3 +1,5 @@
+package usermanager;
+
 import domainlogic.UnauthorizedException;
 import domainlogic.usermanager.EmailAlreadyExistsException;
 import domainlogic.usermanager.UserManager;
@@ -72,6 +74,16 @@ public class UserManagerTest {
 
         verify(user).setPasswordHash(hashHelper.hashPassword(newPassword));
         verify(user).setIsPasswordResetRequired(true);
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void getAllObeysSpecification() throws UnauthorizedException {
+        Specification spec = mock(Specification.class);
+        when(spec.CanViewAllUsers(any(User.class))).thenReturn(false);
+        HashHelper hashHelper = mock(HashHelper.class);
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        UserManager sut = new UserManager(defaultUserFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, spec);
+        sut.getAllUsers(1l);
     }
 
     @Test(expected = UnauthorizedException.class)
