@@ -134,7 +134,13 @@ public class UserController extends Controller {
             return ok(views.html.ResetUserPassword.render(boundForm));
         }
         ResetUserPasswordDto resetUserPasswordDto = boundForm.get();
-        this.userManager.resetPassword(resetUserPasswordDto.getUsername());
+        try{
+            this.userManager.resetPassword(resetUserPasswordDto.getUsername());
+        }catch(IllegalArgumentException e){
+            //Ignore the exception in order to not reveal potential usernames.
+        }
+
+
         return ok("An email with a temporary password was send to you");
     }
 
