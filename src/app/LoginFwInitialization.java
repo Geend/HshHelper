@@ -9,17 +9,19 @@ import java.util.concurrent.TimeUnit;
 public class LoginFwInitialization {
     private final ActorSystem actorSystem;
     private final ExecutionContext executionContext;
+    private final Firewall firewall;
 
     @Inject
-    public LoginFwInitialization(ActorSystem actorSystem, ExecutionContext executionContext) {
+    public LoginFwInitialization(ActorSystem actorSystem, ExecutionContext executionContext, Firewall firewall) {
         this.actorSystem = actorSystem;
         this.executionContext = executionContext;
-        Firewall.Initialize();
+        this.firewall = firewall;
+        this.firewall.initialize();
 
         this.actorSystem.scheduler().schedule(
                 Duration.create(0, TimeUnit.SECONDS), // initialDelay
                 Duration.create(5, TimeUnit.MINUTES), // interval
-                Firewall::GarbageCollect,
+                this.firewall::garbageCollect,
                 this.executionContext
         );
     }

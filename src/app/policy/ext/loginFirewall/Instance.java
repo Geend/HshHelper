@@ -52,7 +52,7 @@ public class Instance {
     }
 
     private void incrKey(String key) {
-        DateTime laggyDt = Firewall.GetLaggyDT();
+        DateTime laggyDt = LaggyDT.Get();
 
         String incrSql =
             "INSERT INTO loginFirewall (ident, laggy_dt, count, expiry) \n"+
@@ -69,7 +69,7 @@ public class Instance {
         String countSql =
             "SELECT nvl(sum(count),0) as count FROM loginFirewall WHERE ident=:ident AND laggy_dt > :dt_lower_bound";
 
-        DateTime lowerBound = Firewall.GetLaggyDT();
+        DateTime lowerBound = LaggyDT.Get();
         lowerBound = lowerBound.minusHours(Firewall.RelevantHours);
 
         SqlQuery qry = Ebean.createSqlQuery(countSql);
