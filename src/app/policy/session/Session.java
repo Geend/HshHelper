@@ -1,62 +1,34 @@
 package policy.session;
 
-import io.ebean.Finder;
-import io.ebean.Model;
 import models.User;
 import org.joda.time.DateTime;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import java.util.UUID;
 
-@Entity
-public class Session extends Model {
-    // TODO: Herausfinden ob garantiert werden kann, dass UUID.randomUUID() verwendet wird
-    // -> nutzt SecureRandom!
-    @Id
-    private UUID sessionKey;
-    private String remoteAddress;
-    private DateTime issuedAt;
+public class Session {
+    private InternalSession internalSession;
 
-    protected Session() {}
-
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "user_id")
-    private User user;
-
-    public UUID getSessionKey() {
-        return sessionKey;
-    }
-
-    public void setSessionKey(UUID sessionKey) {
-        this.sessionKey = sessionKey;
-    }
-
-    public String getRemoteAddress() {
-        return remoteAddress;
-    }
-
-    public void setRemoteAddress(String remoteAddress) {
-        this.remoteAddress = remoteAddress;
+    protected Session(InternalSession underlyingInternalSession) {
+        this.internalSession = underlyingInternalSession;
     }
 
     public DateTime getIssuedAt() {
-        return issuedAt;
+        return internalSession.getIssuedAt();
     }
 
-    public void setIssuedAt(DateTime issuedAt) {
-        this.issuedAt = issuedAt;
+    public String getRemoteAddress() {
+        return internalSession.getRemoteAddress();
     }
 
     public User getUser() {
-        return user;
+        return internalSession.getUser();
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public UUID getSessionKey() {
+        return internalSession.getSessionKey();
     }
 
-    protected static Finder<UUID, Session> finder = new Finder(Session.class);
+    public void destroy() {
+        internalSession.delete();
+    }
 }

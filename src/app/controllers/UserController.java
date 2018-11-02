@@ -5,7 +5,7 @@ import io.ebean.Ebean;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.User;
-import policy.session.UserSession;
+import policy.session.Session;
 import models.dtos.*;
 import models.finders.UserFinder;
 import play.data.Form;
@@ -238,7 +238,7 @@ public class UserController extends Controller {
     @Authentication.Required
     public Result showActiveUserSessions() {
         User u = SessionManager.CurrentUser();
-        List<UserSession> userSessions = SessionManager.SessionsByUser(u);
+        List<Session> userSessions = SessionManager.SessionsByUser(u);
         return ok(views.html.UserSessions.render(asScala(userSessions), deleteSessionForm));
     }
 
@@ -246,7 +246,7 @@ public class UserController extends Controller {
     public Result deleteUserSession() {
         Form<DeleteSessionDto> bf = deleteSessionForm.bindFromRequest();
 
-        Optional<UserSession> session = SessionManager.GetUserSession(SessionManager.CurrentUser(), bf.get().getSessionId());
+        Optional<Session> session = SessionManager.GetUserSession(SessionManager.CurrentUser(), bf.get().getSessionId());
         if(!session.isPresent()) {
             return badRequest();
         }
