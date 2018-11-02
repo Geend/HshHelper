@@ -9,7 +9,6 @@ import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.User;
 import models.finders.UserFinder;
-import org.apache.xpath.operations.Bool;
 import org.junit.Before;
 import org.junit.Test;
 import play.libs.mailer.MailerClient;
@@ -22,24 +21,24 @@ import static org.mockito.Mockito.*;
 
 public class UserManagerTest {
 
-
-    UserManager userManager;
     User adminUser;
-    MailerClient mailerClient;
+    UserManager userManager;
+    UserFinder defaultUserFinder;
+    MailerClient defaultMailerClient;
     EbeanServer defaultServer;
     Specification defaultSpecification;
 
     @Before
     public void init() {
+        defaultUserFinder = mock(UserFinder.class);
         defaultSpecification = mock(Specification.class);
         when(defaultSpecification.CanCreateUser(any())).thenReturn(true);
-        mailerClient = mock(MailerClient.class);
+        defaultMailerClient = mock(MailerClient.class);
         adminUser = mock(User.class);
         defaultServer = mock(EbeanServer.class);
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
         when(adminUser.isAdmin()).thenReturn(true);
     }
-
 
     @Test
     public void testChangePassword() {
@@ -62,7 +61,7 @@ public class UserManagerTest {
         UserFinder userFinder = mock(UserFinder.class);
         when(userFinder.byName(testUsername)).thenReturn(Optional.of(user));
 
-        userManager = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer, defaultSpecification);
+        userManager = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
 
         userManager.resetPassword(testUsername);
 
@@ -74,10 +73,9 @@ public class UserManagerTest {
     public void createUserObeysSpecification() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
         Specification spec = mock(Specification.class);
         when(spec.CanCreateUser(any(User.class))).thenReturn(false);
-        UserFinder userFinder = mock(UserFinder.class);
         HashHelper hashHelper = mock(HashHelper.class);
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer, defaultSpecification);
+        UserManager sut = new UserManager(defaultUserFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
         sut.createUser(1l, "klaus", "test@test.de", 5);
     }
 
@@ -88,7 +86,18 @@ public class UserManagerTest {
         User klausUser = mock(User.class);
         when(userFinder.byName("klaus")).thenReturn(Optional.of(klausUser));
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer, defaultSpecification);
+        UserManager sut = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
+        sut.createUser(1l, "klaus", "test@test.de", 5);
+    }
+
+    @Test(expected = EmailAlreadyExistsException.class)
+    public void createUserEmailHasToBeUnique() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
+        UserFinder userFinder = mock(UserFinder.class);
+        HashHelper hashHelper = mock(HashHelper.class);
+        User klausUser = mock(User.class);
+        when(userFinder.byEmail("test@test.de")).thenReturn(Optional.of(klausUser));
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        UserManager sut = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
         sut.createUser(1l, "klaus", "test@test.de", 5);
     }
 
@@ -99,7 +108,7 @@ public class UserManagerTest {
         UserFinder userFinder= mock(UserFinder.class);
         HashHelper hashHelper = mock(HashHelper.class);
 
-        userManager = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer, defaultSpecification);
+        userManager = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
 
         userManager.resetPassword(null);
     }
