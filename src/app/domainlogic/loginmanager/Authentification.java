@@ -40,7 +40,10 @@ public class Authentification {
         }
 
         // Nutzer existiert
-        boolean success = HashHelper.checkHash(password, user.get().getPasswordHash());
+
+        //TODO: Use dependency injection for this HashHelper
+        HashHelper hashHelper = new HashHelper();
+        boolean success = hashHelper.checkHash(password, user.get().getPasswordHash());
         return new Result(success, true, user.get());
     }
 }
