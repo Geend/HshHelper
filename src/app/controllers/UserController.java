@@ -1,5 +1,9 @@
 package controllers;
 
+import domainlogic.UnauthorizedException;
+import domainlogic.usermanager.EmailAlreadyExistsException;
+import domainlogic.usermanager.UserManager;
+import domainlogic.usermanager.UsernameAlreadyExistsException;
 import extension.*;
 import io.ebean.Ebean;
 import io.ebean.Transaction;
@@ -7,11 +11,8 @@ import io.ebean.annotation.TxIsolation;
 import models.User;
 import policy.session.UserSession;
 import models.dtos.*;
-import models.finders.UserFinder;
 import play.data.Form;
 import play.data.FormFactory;
-import play.libs.mailer.Email;
-import play.libs.mailer.MailerClient;
 import play.mvc.Controller;
 import play.mvc.Result;
 import policy.Specification;
@@ -28,48 +29,40 @@ import static play.libs.Scala.asScala;
 
 public class UserController extends Controller {
 
-    @Inject
-    MailerClient mailerClient;
-
-    private UserFinder userFinder;
+    private UserManager userManager;
 
     private Form<CreateUserDto> createUserForm;
-    private Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
     private Form<ResetUserPasswordDto> resetUserPasswordForm;
     private Form<DeleteSessionDto> deleteSessionForm;
     private Form<DeleteUserDto> deleteUserForm;
 
 
     @Inject
-    public UserController(FormFactory formFactory, UserFinder userFinder) {
+    public UserController(FormFactory formFactory, UserManager userManager) {
+        this.userManager = userManager;
         this.createUserForm = formFactory.form(CreateUserDto.class);
-        this.userFinder = userFinder;
-        this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
         this.deleteSessionForm = formFactory.form(DeleteSessionDto.class);
         this.deleteUserForm = formFactory.form(DeleteUserDto.class);
-
     }
-
 
     @Authentication.Required
     public Result showUsers() {
-        User currentUser = SessionManager.CurrentUser();
-        if(!Specification.CanViewAllUsers(currentUser)) {
+        try {
+            User currentUser = SessionManager.CurrentUser();
+            List<User> users = this.userManager.getAllUsers(currentUser.getUserId());
+            List<UserListEntryDto> entries = users
+                    .stream()
+                    .map(x -> new UserListEntryDto(x.getUserId(), x.getUsername()))
+                    .collect(Collectors.toList());
+            for(int i = 0; i < entries.size(); i++) {
+                entries.get(i).setIndex(i + 1);
+            }
+            Seq<UserListEntryDto> scalaEntries = asScala(entries);
+            return ok(views.html.UserList.render(scalaEntries));
+        } catch (UnauthorizedException e) {
             return unauthorized();
         }
-
-        List<UserListEntryDto> entries = this.userFinder
-                .all()
-                .stream()
-                .map(x -> new UserListEntryDto(x.getUserId(), x.getUsername()))
-                .collect(Collectors.toList());
-
-        for(int i = 0; i < entries.size(); i++) {
-            entries.get(i).setIndex(i + 1);
-        }
-        Seq<UserListEntryDto> scalaEntries = asScala(entries);
-        return ok(views.html.UserList.render(scalaEntries));
     }
 
     @Authentication.Required
@@ -79,22 +72,12 @@ public class UserController extends Controller {
         if(boundForm.hasErrors()) {
             return badRequest();
         }
-        User userToDelete = this.userFinder.byId(boundForm.get().getUserId());
-        if(!Specification.CanDeleteUser(currentUser, userToDelete)) {
+        Long userToDeleteId = boundForm.get().getUserId();
+        try {
+            this.userManager.deleteUser(currentUser.getUserId(), userToDeleteId);
+        } catch (UnauthorizedException e) {
             return unauthorized();
         }
-        userToDelete.delete();
-
-        Email email = new Email()
-                .setSubject("HshHelper Account Deleted")
-                .setFrom("HshHelper <hshhelper@hs-hannover.de>")
-                .addTo(userToDelete.getEmail())
-                .setBodyText("Your account was deleted");
-
-        //TODO: Catch possible exception (eg if the mail server is down)
-        mailerClient.send(email);
-
-
         return redirect(routes.UserController.showUsers());
     }
 
@@ -111,74 +94,30 @@ public class UserController extends Controller {
     @Authentication.Required
     public Result createUser() {
         User currentUser = SessionManager.CurrentUser();
-        if (!Specification.CanCreateUser(currentUser))
-            return badRequest("error");
-
         Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
-
         if (boundForm.hasErrors()) {
             return ok(views.html.CreateUser.render(boundForm));
         }
-
         CreateUserDto createUserDto = boundForm.get();
-        PasswordGenerator passwordGenerator = new PasswordGenerator();
-
-        //TODO: Include generated password length in policy
-        String plaintextPassword = passwordGenerator.generatePassword(10);
-        String passwordHash = HashHelper.hashPassword(plaintextPassword);
-
-        User newUser;
-        try(Transaction tx = Ebean.beginTransaction(TxIsolation.REPEATABLE_READ)) {
-            if(userFinder.byName(createUserDto.getUsername()).isPresent()) {
-                boundForm = boundForm.withError("username", "Existiert bereits");
-                return badRequest(views.html.CreateUser.render(boundForm));
-            }
-
-            newUser = new User(createUserDto.getUsername(),
+        try {
+            String plaintextPassword = this.userManager.createUser(
+                    currentUser.getUserId(),
+                    createUserDto.getUsername(),
                     createUserDto.getEmail(),
-                    passwordHash,
-                    true,
                     createUserDto.getQuotaLimit());
-            newUser.save();
 
-            tx.commit();
+            UserCreatedDto userCreatedDto = new UserCreatedDto();
+            userCreatedDto.setUsername(createUserDto.getUsername());
+            userCreatedDto.setPlaintextPassword(plaintextPassword);
+            return ok(views.html.UserCreated.render(userCreatedDto));
+        } catch (EmailAlreadyExistsException e) {
+            boundForm = boundForm.withError("username", "Existiert bereits");
+            return badRequest(views.html.CreateUser.render(boundForm));
+        } catch (UsernameAlreadyExistsException e) {
+            return unauthorized();
+        } catch (UnauthorizedException e) {
+            return unauthorized();
         }
-
-        UserCreatedDto userCreatedDto = new UserCreatedDto();
-        userCreatedDto.setUsername(newUser.getUsername());
-        userCreatedDto.setPlaintextPassword(passwordGenerator.generatePassword(10));
-
-        return ok(views.html.UserCreated.render(userCreatedDto));
-    }
-
-
-
-
-    @Authentication.Required
-    public Result showChangeOwnPasswordForm() {
-        return ok(views.html.ChangePassword.render(changeOwnPasswordForm));
-    }
-
-    @Authentication.Required
-    public Result changeOwnPassword() {
-        User currentUser = SessionManager.CurrentUser();
-
-        if (!Specification.CanChangePassword(currentUser, currentUser))
-            return badRequest("error");
-
-        Form<ChangeOwnPasswordDto> boundForm = changeOwnPasswordForm.bindFromRequest("password", "passwordRepeat");
-
-        if (boundForm.hasErrors()) {
-            return ok(views.html.ChangePassword.render(boundForm));
-        }
-
-        ChangeOwnPasswordDto changeOwnPasswordDto = boundForm.get();
-
-        currentUser.setPasswordHash(HashHelper.hashPassword(changeOwnPasswordDto.getPassword()));
-        currentUser.setIsPasswordResetRequired(false);
-        currentUser.save();
-
-        return ok("changedPassword");
     }
 
     @Authentication.NotAllowed
@@ -191,49 +130,14 @@ public class UserController extends Controller {
         //TODO: Add brute force and/or dos protection
 
         Form<ResetUserPasswordDto> boundForm = resetUserPasswordForm.bindFromRequest("username");
-
         if (boundForm.hasErrors()) {
             return ok(views.html.ResetUserPassword.render(boundForm));
         }
-
         ResetUserPasswordDto resetUserPasswordDto = boundForm.get();
-
-        String username = resetUserPasswordDto.getUsername();
-
-        Optional<User> userOptional = userFinder.byName(username);
-
-
-        if (!userOptional.isPresent())
-            return ok("An email with a temporary password was send to you");
-
-
-        User user = userOptional.get();
-
-        PasswordGenerator passwordGenerator = new PasswordGenerator();
-
-        //TODO: Include generated password length in policy
-        String tempPassword = passwordGenerator.generatePassword(10);
-
-        user.setPasswordHash(HashHelper.hashPassword(tempPassword));
-        user.setIsPasswordResetRequired(true);
-        user.save();
-
-        sendPasswordEmail(user, tempPassword);
-
+        this.userManager.resetPassword(resetUserPasswordDto.getUsername());
         return ok("An email with a temporary password was send to you");
-
     }
 
-    public void sendPasswordEmail(User user, String tempPassword) {
-        Email email = new Email()
-                .setSubject("HshHelper Password Rest")
-                .setFrom("HshHelper <hshhelper@hs-hannover.de>")
-                .addTo(user.getEmail())
-                .setBodyText("Your temp password is " + tempPassword);
-
-        //TODO: Catch possible exception (eg if the mail server is down)
-        mailerClient.send(email);
-    }
 
     @Authentication.Required
     public Result showActiveUserSessions() {

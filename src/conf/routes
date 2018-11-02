@@ -3,8 +3,6 @@ POST        /users/create                        controllers.UserController.crea
 GET         /users/create                        controllers.UserController.showCreateUserForm
 GET         /users                               controllers.UserController.showUsers
 POST        /users/delete                        controllers.UserController.deleteUser
-GET         /user/changepassword                 controllers.UserController.showChangeOwnPasswordForm
-POST        /user/changepassword                 controllers.UserController.changeOwnPassword
 GET         /resetpassword                       controllers.UserController.showResetUserPasswordForm
 POST        /resetpassword                       controllers.UserController.resetUserPassword
 

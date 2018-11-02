@@ -1,21 +1,99 @@
 package domainlogic.usermanager;
 
 import domainlogic.UnauthorizedException;
+import extension.HashHelper;
+import extension.PasswordGenerator;
+import io.ebean.Ebean;
+import io.ebean.Transaction;
+import io.ebean.annotation.TxIsolation;
 import models.User;
+import models.finders.UserFinder;
+import play.libs.mailer.Email;
+import play.libs.mailer.MailerClient;
+import policy.Specification;
 
+import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 
 public class UserManager {
+    private UserFinder userFinder;
+    private PasswordGenerator passwordGenerator;
+    private MailerClient mailerClient;
 
-    public String createUser(String username, String email, int quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException {
-
+    @Inject
+    public UserManager(UserFinder userFinder, PasswordGenerator passwordGenerator, MailerClient mailerClient) {
+        this.mailerClient = mailerClient;
+        this.passwordGenerator = passwordGenerator;
+        this.userFinder = userFinder;
     }
 
-    public void deleteUser(Long id) throws UnauthorizedException {
+    public String createUser(Long userId, String username, String email, int quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException {
+        User currentUser = this.userFinder.byId(userId);
+        if(!Specification.CanCreateUser(currentUser)) {
+            throw new UnauthorizedException();
+        }
 
+        //TODO: Include generated password length in policy
+        String plaintextPassword = passwordGenerator.generatePassword(10);
+        String passwordHash = HashHelper.hashPassword(plaintextPassword);
+
+        User newUser;
+        try(Transaction tx = Ebean.beginTransaction(TxIsolation.REPEATABLE_READ)) {
+            if(userFinder.byName(username).isPresent()) {
+                throw new UsernameAlreadyExistsException();
+            }
+            if(userFinder.byEmail(email).isPresent()) {
+                throw new EmailAlreadyExistsException();
+            }
+            newUser = new User(username,
+                    email,
+                    passwordHash,
+                    true,
+                    quota);
+            newUser.save();
+
+            tx.commit();
+        }
+        return plaintextPassword;
     }
 
-    public List<User> getAllUsers() throws UnauthorizedException {
+    public void deleteUser(Long userId, Long id) throws UnauthorizedException {
+        User currentUser = this.userFinder.byId(userId);
+        User userToDelete = this.userFinder.byId(id);
+        if(!Specification.CanDeleteUser(currentUser, userToDelete)) {
+            throw new UnauthorizedException();
+        }
+        userToDelete.delete();
+    }
 
+    public List<User> getAllUsers(Long userId) throws UnauthorizedException {
+        User currentUser = this.userFinder.byId(userId);
+        if(!Specification.CanViewAllUsers(currentUser)) {
+            throw new UnauthorizedException();
+        }
+        return this.userFinder.all();
+    }
+
+    public void resetPassword(String username) {
+        Optional<User> userOptional = userFinder.byName(username);
+        if (!userOptional.isPresent()) {
+            return;
+        }
+        User user = userOptional.get();
+        PasswordGenerator passwordGenerator = new PasswordGenerator();
+
+        //TODO: Include generated password length in policy
+        String tempPassword = passwordGenerator.generatePassword(10);
+        user.setPasswordHash(HashHelper.hashPassword(tempPassword));
+        user.setIsPasswordResetRequired(true);
+        user.save();
+
+        Email email = new Email()
+                .setSubject("HshHelper Password Rest")
+                .setFrom("HshHelper <hshhelper@hs-hannover.de>")
+                .addTo(user.getEmail())
+                .setBodyText("Your temp password is " + tempPassword);
+        mailerClient.send(email);
     }
 }
