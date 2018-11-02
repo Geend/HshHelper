@@ -68,7 +68,7 @@ public class UserManager {
         if(!Specification.CanDeleteUser(currentUser, userToDelete)) {
             throw new UnauthorizedException();
         }
-        userToDelete.delete();
+        ebeanServer.delete(userToDelete);
     }
 
     public List<User> getAllUsers(Long userId) throws UnauthorizedException {

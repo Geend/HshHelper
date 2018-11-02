@@ -9,6 +9,7 @@ import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.User;
 import models.finders.UserFinder;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import play.libs.mailer.MailerClient;
@@ -88,4 +89,56 @@ public class UserManagerTest {
 
         userManager.resetPassword(null);
     }
+
+    @Test
+    public void testDeleteUser() throws UnauthorizedException {
+
+        UserFinder userFinder = mock(UserFinder.class);
+
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        HashHelper hashHelper = mock(HashHelper.class);
+
+        userManager = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer);
+
+        Long adminUserId = 0l;
+        when(userFinder.byId(adminUserId)).thenReturn(adminUser);
+
+        Long userToBeDeletedId = 10l;
+
+        User userToBeDeleted = mock(User.class);
+        when(userToBeDeleted.getUserId()).thenReturn(userToBeDeletedId);
+        when(userFinder.byId(userToBeDeletedId)).thenReturn(userToBeDeleted);
+
+
+        userManager.deleteUser(adminUserId, userToBeDeletedId);
+
+        verify(defaultServer,times(1)).delete(userToBeDeleted);
+
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void testDeleteUserWithUnauthorizedUser() throws UnauthorizedException {
+
+        UserFinder userFinder = mock(UserFinder.class);
+
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        HashHelper hashHelper = mock(HashHelper.class);
+
+        userManager = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer);
+
+        Long unauthorizedUserId = 0l;
+        when(userFinder.byId(unauthorizedUserId)).thenReturn(mock(User.class));
+
+        Long userToBeDeletedId = 10l;
+
+        User userToBeDeleted = mock(User.class);
+        when(userToBeDeleted.getUserId()).thenReturn(userToBeDeletedId);
+        when(userFinder.byId(userToBeDeletedId)).thenReturn(userToBeDeleted);
+
+        userManager.deleteUser(unauthorizedUserId, userToBeDeletedId);
+
+        verify(defaultServer, never()).delete(userToBeDeleted);
+
+    }
+
 }
