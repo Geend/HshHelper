@@ -1,25 +1,28 @@
 package domainlogic.loginmanager;
 
-import domainlogic.usermanager.UserManager;
 import extension.HashHelper;
 import models.User;
+import models.finders.UserFinder;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import play.Application;
+import play.mvc.Http;
 import play.test.Helpers;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class LoginManagerTest {
     public static Application app;
-    public static User klaus;
-    public static User peter;
+    public static User lydia;
+    public static User annika;
     public static HashHelper hashHelper = new HashHelper();
+
     @AfterClass
     public static void stopApp() {
-        peter.delete();
-        klaus.delete();
         Helpers.stop(app);
     }
 
@@ -29,28 +32,65 @@ public class LoginManagerTest {
         Helpers.start(app);
 
         // PW reset nicht required
-        klaus = new User("klaus", "hsh.helper+klaus@gmail.com", hashHelper.hashPassword("klaus"), false, 10);
-        klaus.save();
+        lydia = new User("lydia", "hsh.helper+lydia@gmail.com", hashHelper.hashPassword("lydia"), false, 10);
+        lydia.save();
 
         // PW reset required
-        peter = new User("peter", "hsh.helper+peter@gmail.com", hashHelper.hashPassword("peter"), true, 10);
-        peter.save();
+        annika = new User("annika", "hsh.helper+annika@gmail.com", hashHelper.hashPassword("annika"), true, 10);
+        annika.save();
+    }
+
+    UserFinder userFinder;
+    LoginManager loginManager;
+
+    @Before
+    public void setup() {
+        loginManager = new LoginManager(hashHelper);
+        userFinder = new UserFinder();
+
+        Http.Request request = Helpers.fakeRequest("GET", "/").remoteAddress("1.2.23.4").build();
+        Http.Context.current.set(Helpers.httpContext(request));
     }
 
     @Test
-    public void login() throws InvalidUsernameOrPasswordException, PasswordChangeRequiredException, CaptchaRequiredException {
-        LoginManager loginManager = new LoginManager(hashHelper);
-
+    public void successfulLogin() throws InvalidUsernameOrPasswordException, PasswordChangeRequiredException, CaptchaRequiredException {
         loginManager.login(
-            "klaus", "klaus", ""
+                "lydia", "lydia", ""
+        );
+    }
+
+    @Test(expected = InvalidUsernameOrPasswordException.class)
+    public void failedLogin() throws InvalidUsernameOrPasswordException, PasswordChangeRequiredException, CaptchaRequiredException {
+        loginManager.login(
+                "lydia", "lydiaxxxxxxxxx", ""
         );
     }
 
     @Test
-    public void changePassword() {
+    public void successfulChangePassword() throws InvalidUsernameOrPasswordException, CaptchaRequiredException {
+        loginManager.changePassword(
+                "annika", "annika", "neuesPw", ""
+        );
+
+        User newAnnika = userFinder.byId(annika.getUserId());
+
+        assertThat(
+            newAnnika.getIsPasswordResetRequired(),
+            is(false)
+        );
+
+        assertTrue(
+            hashHelper.checkHash(
+                "neuesPw",
+                newAnnika.getPasswordHash()
+            )
+        );
     }
 
-    @Test
-    public void logout() {
+    @Test(expected = InvalidUsernameOrPasswordException.class)
+    public void failedChangePassword() throws InvalidUsernameOrPasswordException, CaptchaRequiredException {
+        loginManager.changePassword(
+                "annika", "xx", "neuesPw", ""
+        );
     }
 }
