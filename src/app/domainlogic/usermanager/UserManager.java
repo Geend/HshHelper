@@ -4,6 +4,7 @@ import domainlogic.UnauthorizedException;
 import extension.HashHelper;
 import extension.PasswordGenerator;
 import io.ebean.Ebean;
+import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.User;
@@ -21,9 +22,10 @@ public class UserManager {
     private PasswordGenerator passwordGenerator;
     private MailerClient mailerClient;
     private HashHelper hashHelper;
+    private EbeanServer ebeanServer;
 
-    @Inject
-    public UserManager(UserFinder userFinder, PasswordGenerator passwordGenerator, MailerClient mailerClient, HashHelper hashHelper) {
+    public UserManager(UserFinder userFinder, PasswordGenerator passwordGenerator, MailerClient mailerClient, HashHelper hashHelper, EbeanServer server) {
+        this.ebeanServer = server;
         this.mailerClient = mailerClient;
         this.passwordGenerator = passwordGenerator;
         this.userFinder = userFinder;
@@ -41,7 +43,7 @@ public class UserManager {
         String passwordHash = hashHelper.hashPassword(plaintextPassword);
 
         User newUser;
-        try(Transaction tx = Ebean.beginTransaction(TxIsolation.REPEATABLE_READ)) {
+        try(Transaction tx = this.ebeanServer.beginTransaction(TxIsolation.REPEATABLE_READ)) {
             if(userFinder.byName(username).isPresent()) {
                 throw new UsernameAlreadyExistsException();
             }
@@ -53,8 +55,7 @@ public class UserManager {
                     passwordHash,
                     true,
                     quota);
-            newUser.save();
-
+            this.ebeanServer.save(newUser);
             tx.commit();
         }
         return plaintextPassword;
