@@ -7,7 +7,6 @@ import play.mvc.Http;
 import policy.ext.loginFirewall.Firewall;
 import policy.ext.loginFirewall.Instance;
 import policy.ext.loginFirewall.Strategy;
-import policy.session.Session;
 import policy.session.SessionManager;
 
 import javax.inject.Inject;
@@ -25,7 +24,7 @@ public class LoginManager {
         this.sessionManager = sessionManager;
     }
 
-    private User authenticate(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidUsernameOrPasswordException {
+    private User authenticate(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidLoginException {
         Authentification.Result auth = Authentification.Perform(
             username,
             password
@@ -40,7 +39,7 @@ public class LoginManager {
         Strategy strategy = fw.getStrategy(uid);
 
         if(strategy.equals(Strategy.BLOCK)) {
-            throw new InvalidUsernameOrPasswordException();
+            throw new InvalidLoginException();
         }
 
         if(strategy.equals(Strategy.VERIFY)) {
@@ -51,13 +50,13 @@ public class LoginManager {
 
         if(!auth.success()) {
             fw.fail(uid);
-            throw new InvalidUsernameOrPasswordException();
+            throw new InvalidLoginException();
         }
 
         return auth.user();
     }
 
-    public void login(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidUsernameOrPasswordException, PasswordChangeRequiredException {
+    public void login(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException {
         User authenticatedUser = this.authenticate(username, password, captchaToken);
 
         if(authenticatedUser.getIsPasswordResetRequired()) {
@@ -67,7 +66,7 @@ public class LoginManager {
         sessionManager.startNewSession(authenticatedUser);
     }
 
-    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken) throws InvalidUsernameOrPasswordException, CaptchaRequiredException {
+    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken) throws InvalidLoginException, CaptchaRequiredException {
         User authenticatedUser = this.authenticate(username, currentPassword, captchaToken);
 
         authenticatedUser.setIsPasswordResetRequired(false);

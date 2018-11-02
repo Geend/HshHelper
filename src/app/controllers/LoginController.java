@@ -1,20 +1,13 @@
 package controllers;
 
 import domainlogic.loginmanager.*;
-import extension.HashHelper;
-import extension.RecaptchaHelper;
-import models.User;
 import models.dtos.ChangePasswordAfterResetDto;
 import models.dtos.UserLoginDto;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
-import policy.ext.loginFirewall.Firewall;
-import policy.ext.loginFirewall.Instance;
-import policy.ext.loginFirewall.Strategy;
 import policy.session.Authentication;
-import policy.session.SessionManager;
 
 
 import javax.inject.Inject;
@@ -56,7 +49,7 @@ public class LoginController extends Controller {
         } catch (CaptchaRequiredException e) {
             boundForm = boundForm.withGlobalError("Complete the Captcha!");
             return badRequest(views.html.Login.render(boundForm, true));
-        } catch (InvalidUsernameOrPasswordException e) {
+        } catch (InvalidLoginException e) {
             boundForm = boundForm.withGlobalError("Invalid Login Data!");
             return badRequest(views.html.Login.render(boundForm, false));
         } catch (PasswordChangeRequiredException e) {
@@ -88,7 +81,7 @@ public class LoginController extends Controller {
                     changePasswordData.getPassword(),
                     changePasswordData.getRecaptcha()
             );
-        } catch (InvalidUsernameOrPasswordException e) {
+        } catch (InvalidLoginException e) {
             boundForm = boundForm.withGlobalError("Invalid Login Data!");
             return badRequest(views.html.ChangePasswordAfterReset.render(boundForm, false));
         } catch (CaptchaRequiredException e) {
