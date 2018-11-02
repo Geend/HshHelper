@@ -15,6 +15,7 @@ import policy.Specification;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class UserManager {
@@ -42,7 +43,7 @@ public class UserManager {
         this.hashHelper = hashHelper;
     }
 
-    public String createUser(Long userId, String username, String email, int quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException {
+    public String createUser(Long userId, String username, String email, int quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException, UsernameCannotBeAdmin {
         User currentUser = this.userFinder.byId(userId);
         if(!this.specification.CanCreateUser(currentUser)) {
             throw new UnauthorizedException();
@@ -51,9 +52,11 @@ public class UserManager {
         //TODO: Include generated password length in policy
         String plaintextPassword = passwordGenerator.generatePassword(10);
         String passwordHash = hashHelper.hashPassword(plaintextPassword);
-
-
         User newUser;
+        if(Objects.equals(username.toLowerCase(), "admin")) {
+            throw new UsernameCannotBeAdmin();
+        }
+
         try(Transaction tx = this.ebeanServer.beginTransaction(TxIsolation.REPEATABLE_READ)) {
             if(userFinder.byName(username).isPresent()) {
                 throw new UsernameAlreadyExistsException();
