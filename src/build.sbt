@@ -36,6 +36,8 @@ libraryDependencies += "joda-time" % "joda-time" % "2.10"
 libraryDependencies += "org.webjars" % "bootstrap" % "4.1.3"
 libraryDependencies += "io.github.keetraxx" % "recaptcha" % "0.5"
 
+libraryDependencies += ws
+
 TwirlKeys.templateImports += "views.bootstrapHelper.Input"
 TwirlKeys.templateImports += "views.bootstrapHelper.enums._"
 
