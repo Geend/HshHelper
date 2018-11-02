@@ -1,16 +1,71 @@
 package domainlogic.loginmanager;
 
+import policy.session.SessionManager;
+import extension.HashHelper;
+import extension.RecaptchaHelper;
+import models.User;
+import models.finders.UserFinder;
+import org.apache.http.protocol.HttpContext;
+import play.mvc.Http;
+import policy.ext.loginFirewall.Firewall;
+import policy.ext.loginFirewall.Instance;
+import policy.ext.loginFirewall.Strategy;
+
+import javax.inject.Inject;
+import java.util.Optional;
+
 public class LoginManager {
+    private User authenticate(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidUsernameOrPasswordException {
+        Authentification.Result auth = Authentification.Perform(
+            username,
+            password
+        );
 
-    public void login(String username, String password) throws CaptchaRequiredException, InvalidUsernameOrPasswordException {
+        Long uid = null;
+        if(auth.userExists()) {
+            uid = auth.user().getUserId();
+        }
 
+        Instance fw = Firewall.Get(Http.Context.current().request().remoteAddress());
+        Strategy strategy = fw.getStrategy(uid);
+
+        if(strategy.equals(Strategy.BLOCK)) {
+            throw new InvalidUsernameOrPasswordException();
+        }
+
+        if(strategy.equals(Strategy.VERIFY)) {
+            if(!RecaptchaHelper.IsValidResponse(captchaToken, Http.Context.current().request().remoteAddress())) {
+                throw new CaptchaRequiredException();
+            }
+        }
+
+        if(!auth.success()) {
+            fw.fail(uid);
+            throw new InvalidUsernameOrPasswordException();
+        }
+
+        return auth.user();
     }
 
-    public void changePassword(String username, String currentPassword, String newPassword) throws InvalidUsernameOrPasswordException, CaptchaRequiredException {
+    public void login(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidUsernameOrPasswordException, PasswordChangeRequiredException {
+        User authenticatedUser = this.authenticate(username, password, captchaToken);
 
+        if(authenticatedUser.getIsPasswordResetRequired()) {
+            throw new PasswordChangeRequiredException();
+        }
+
+        SessionManager.StartNewSession(authenticatedUser);
+    }
+
+    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken) throws InvalidUsernameOrPasswordException, CaptchaRequiredException {
+        User authenticatedUser = this.authenticate(username, currentPassword, captchaToken);
+
+        authenticatedUser.setIsPasswordResetRequired(false);
+        authenticatedUser.setPasswordHash(HashHelper.hashPassword(newPassword));
+        authenticatedUser.save();
     }
 
     public void logout() {
-
+        SessionManager.DestroyCurrentSession();
     }
 }

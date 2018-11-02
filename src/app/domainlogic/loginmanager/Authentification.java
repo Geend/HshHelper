@@ -1,4 +1,4 @@
-package policy;
+package domainlogic.loginmanager;
 
 import extension.HashHelper;
 import models.User;

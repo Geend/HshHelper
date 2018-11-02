@@ -1,5 +1,6 @@
 package controllers;
 
+import domainlogic.loginmanager.*;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
 import models.User;
@@ -9,7 +10,6 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
-import policy.Authentification;
 import policy.ext.loginFirewall.Firewall;
 import policy.ext.loginFirewall.Instance;
 import policy.ext.loginFirewall.Strategy;
@@ -23,12 +23,14 @@ public class LoginController extends Controller {
 
     private Form<UserLoginDto> loginForm;
     private Form<ChangePasswordAfterResetDto> changePasswordForm;
+    private LoginManager loginManager;
 
     @Inject
     public LoginController(
-            FormFactory formFactory) {
+            FormFactory formFactory, LoginManager loginManager) {
         this.loginForm = formFactory.form(UserLoginDto.class);
         this.changePasswordForm = formFactory.form(ChangePasswordAfterResetDto.class);
+        this.loginManager = loginManager;
     }
 
     @Authentication.NotAllowed
@@ -45,44 +47,21 @@ public class LoginController extends Controller {
 
         UserLoginDto loginData = boundForm.get();
 
-        Authentification.Result auth = Authentification.Perform(
-                loginData.getUsername(),
-                loginData.getPassword()
-        );
-
-        Long uid = null;
-        if(auth.userExists()) {
-            uid = auth.user().getUserId();
-        }
-
-        Instance fw = Firewall.Get(request().remoteAddress());
-        Strategy strategy = fw.getStrategy(uid);
-
-        if(strategy.equals(Strategy.BLOCK)) {
-            boundForm = boundForm.withGlobalError("You're banned from logging in");
-            return badRequest(views.html.Login.render(boundForm, false));
-        }
-
-        if(strategy.equals(Strategy.VERIFY)) {
-            if(!RecaptchaHelper.IsValidResponse(loginData.getRecaptcha(), request().remoteAddress())) {
-                boundForm = boundForm.withGlobalError("Complete the Captcha!");
-                return badRequest(views.html.Login.render(boundForm, true));
-            }
-        }
-
-        // Wenn der Login nicht erfolgreich war Request abbrechen und Nutzer informieren!
-        if(!auth.success()) {
+        try {
+            loginManager.login(
+                    loginData.getUsername(),
+                    loginData.getPassword(),
+                    loginData.getRecaptcha()
+            );
+        } catch (CaptchaRequiredException e) {
+            boundForm = boundForm.withGlobalError("Complete the Captcha!");
+            return badRequest(views.html.Login.render(boundForm, true));
+        } catch (InvalidUsernameOrPasswordException e) {
             boundForm = boundForm.withGlobalError("Invalid Login Data!");
-            fw.fail(uid);
-            return badRequest(views.html.Login.render(boundForm, strategy.equals(Strategy.VERIFY)));
-        }
-
-        // TODO: Ugly AF / muss weg. Ist Policy-Frage und sollte nicht Gegenstand von Hacky-Code sein!
-        if(auth.user().getIsPasswordResetRequired()) {
+            return badRequest(views.html.Login.render(boundForm, false));
+        } catch (PasswordChangeRequiredException e) {
             return redirect(routes.LoginController.changePasswordAfterReset());
         }
-
-        SessionManager.StartNewSession(auth.user());
 
         return redirect(routes.HomeController.index());
     }
@@ -92,6 +71,7 @@ public class LoginController extends Controller {
         return ok(views.html.ChangePasswordAfterReset.render(this.changePasswordForm, false));
     }
 
+    // TODO: Sollte man nach password reset eingelogged sein?!
     @Authentication.NotAllowed
     public Result changePasswordAfterReset() {
         Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat", "recaptcha");
@@ -101,49 +81,27 @@ public class LoginController extends Controller {
 
         ChangePasswordAfterResetDto changePasswordData = boundForm.get();
 
-        Authentification.Result auth = Authentification.Perform(
-                changePasswordData.getUsername(),
-                changePasswordData.getCurrentPassword()
-        );
-
-        Long uid = null;
-        if(auth.userExists()) {
-            uid = auth.user().getUserId();
-        }
-
-        Instance fw = Firewall.Get(request().remoteAddress());
-        Strategy strategy = fw.getStrategy(uid);
-
-        if(strategy.equals(Strategy.BLOCK)) {
-            boundForm = boundForm.withGlobalError("You're banned from logging in");
-            return badRequest(views.html.ChangePasswordAfterReset.render(boundForm, false));
-        }
-
-        if(strategy.equals(Strategy.VERIFY)) {
-            if(!RecaptchaHelper.IsValidResponse(changePasswordData.getRecaptcha(), request().remoteAddress())) {
-                boundForm = boundForm.withGlobalError("Complete the Captcha!");
-                return badRequest(views.html.ChangePasswordAfterReset.render(boundForm, true));
-            }
-        }
-
-        // Wenn der Login nicht erfolgreich war Request abbrechen und Nutzer informieren!
-        if(!auth.success()) {
+        try {
+            loginManager.changePassword(
+                    changePasswordData.getUsername(),
+                    changePasswordData.getCurrentPassword(),
+                    changePasswordData.getPassword(),
+                    changePasswordData.getRecaptcha()
+            );
+        } catch (InvalidUsernameOrPasswordException e) {
             boundForm = boundForm.withGlobalError("Invalid Login Data!");
-            fw.fail(uid);
-            return badRequest(views.html.ChangePasswordAfterReset.render(boundForm, strategy.equals(Strategy.VERIFY)));
+            return badRequest(views.html.ChangePasswordAfterReset.render(boundForm, false));
+        } catch (CaptchaRequiredException e) {
+            boundForm = boundForm.withGlobalError("Complete the Captcha!");
+            return badRequest(views.html.ChangePasswordAfterReset.render(boundForm, true));
         }
-
-        User user = auth.user();
-        user.setIsPasswordResetRequired(false);
-        user.setPasswordHash(HashHelper.hashPassword(changePasswordData.getPassword()));
-        user.save();
 
         return redirect(routes.LoginController.login());
     }
 
     @Authentication.Required
     public Result logout() {
-        SessionManager.DestroyCurrentSession();
-        return redirect(routes.HomeController.index());
+        loginManager.logout();
+        return redirect(routes.LoginController.login());
     }
 }
