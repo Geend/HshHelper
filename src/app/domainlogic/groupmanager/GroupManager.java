@@ -1,7 +1,7 @@
 package domainlogic.groupmanager;
 
 import domainlogic.UnauthorizedException;
-import io.ebean.Ebean;
+import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.Group;
@@ -18,11 +18,13 @@ public class GroupManager {
 
     private final GroupFinder groupFinder;
     private final UserFinder userFinder;
+    private final EbeanServer ebeanServer;
 
     @Inject
-    public GroupManager(GroupFinder groupFinder, UserFinder userFinder) {
+    public GroupManager(GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer) {
         this.groupFinder = groupFinder;
         this.userFinder = userFinder;
+        this.ebeanServer = ebeanServer;
     }
 
     public void createGroup(Long userId, String groupName) throws GroupNameAlreadyExistsException {
@@ -33,7 +35,8 @@ public class GroupManager {
         }
         User currentUser = currentUserOptional.get();
 
-        try(Transaction tx = Ebean.beginTransaction(TxIsolation.REPEATABLE_READ)) {
+
+        try(Transaction tx = ebeanServer.beginTransaction(TxIsolation.REPEATABLE_READ)) {
             Optional<Group> txGroup = groupFinder.byName(groupName);
             if(txGroup.isPresent()) {
                 throw new GroupNameAlreadyExistsException("Gruppe existiert bereits.");
@@ -41,7 +44,7 @@ public class GroupManager {
 
             Group group = new Group(groupName, currentUser);
             group.getMembers().add(currentUser);
-            group.save();
+            ebeanServer.save(group);
 
             tx.commit();
         }
@@ -151,7 +154,7 @@ public class GroupManager {
         }
 
         g.getMembers().remove(toBeRemovedUser);
-        g.save();
+        ebeanServer.save(g);
     }
 
     public void addGroupMember(Long userId, Long userToAdd, Long groupId) throws UnauthorizedException {
@@ -181,7 +184,7 @@ public class GroupManager {
         }
 
         g.getMembers().add(toBeAddedUser);
-        g.save();
+        ebeanServer.save(g);
     }
 
     public void deleteGroup(Long currentUser, Long groupId) throws UnauthorizedException, IllegalArgumentException {
@@ -202,6 +205,6 @@ public class GroupManager {
             throw new UnauthorizedException("Du bist nicht authorisiert, eine Gruppe zu loeschen.");
         }
 
-        g.delete();
+        ebeanServer.delete(g);
     }
 }
