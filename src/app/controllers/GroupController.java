@@ -1,5 +1,8 @@
 package controllers;
 
+import domainlogic.UnauthorizedException;
+import domainlogic.groupmanager.GroupManager;
+import domainlogic.groupmanager.GroupNameAlreadyExistsException;
 import io.ebean.Ebean;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
@@ -32,19 +35,18 @@ import static play.libs.Scala.asScala;
 public class GroupController extends Controller {
     private final Form<CreateGroupDto> groupForm;
     private final Form<RemoveGroupUserDto> removeGroupUserForm;
-    private final UserFinder userFinder;
     private final Form<AddUserToGroupDto> addUserToGroupForm;
     private final Form<DeleteGroupDto> deleteGroupForm;
-    private final GroupFinder groupFinder;
+
+    private final GroupManager groupManager;
 
     @Inject
-    public GroupController(FormFactory formFactory, UserFinder userFinder, GroupFinder groupFinder) {
+    public GroupController(FormFactory formFactory, UserFinder userFinder, GroupFinder groupFinder, GroupManager groupManager) {
         this.groupForm = formFactory.form(CreateGroupDto.class);
         this.removeGroupUserForm = formFactory.form(RemoveGroupUserDto.class);
-        this.userFinder = userFinder;
-        this.groupFinder = groupFinder;
         this.addUserToGroupForm = formFactory.form(AddUserToGroupDto.class);
         this.deleteGroupForm = formFactory.form(DeleteGroupDto.class);
+        this.groupManager = groupManager;
     }
 
     public Result showCreateGroupForm() {
@@ -59,18 +61,13 @@ public class GroupController extends Controller {
         } else {
             CreateGroupDto gDto = bf.get();
 
-            try(Transaction tx = Ebean.beginTransaction(TxIsolation.REPEATABLE_READ)) {
-                Optional<Group> txGroup = groupFinder.byName(gDto.getName());
-                if(txGroup.isPresent()) {
-                    bf = bf.withError("name", "Existiert bereits!");
-                    return badRequest(views.html.CreateGroup.render(bf));
-                }
-
-                Group group = new Group(gDto.getName(), SessionManager.CurrentUser());
-                group.getMembers().add(SessionManager.CurrentUser());
-                group.save();
-
-                tx.commit();
+            try {
+                groupManager.createGroup(SessionManager.CurrentUser().getUserId(), gDto.getName());
+            } catch (GroupNameAlreadyExistsException e) {
+                bf = bf.withError("name", e.getMessage());
+                return badRequest(views.html.CreateGroup.render(bf));
+            } catch (IllegalArgumentException e) {
+                return badRequest(e.getMessage());
             }
 
             return redirect(routes.GroupController.showOwnGroups());
@@ -78,23 +75,24 @@ public class GroupController extends Controller {
     }
 
     public Result showOwnGroups() {
-        Set<Group> gms = SessionManager.CurrentUser().getGroups();
+        Set<Group> gms = groupManager.getOwnGroups(SessionManager.CurrentUser().getUserId());
         return ok(views.html.OwnGroupsList.render(asScala(gms), deleteGroupForm));
     }
 
     public Result showGroup(Long groupId) {
-        // TODO: Policy Check fehlt offensichtlich
-        Optional<Group> g = groupFinder.byIdOptional(groupId);
-
-        if(!g.isPresent())
-            return notFound("404");
-        List<User> notMember = userFinder.all().stream().filter(
-                user -> !g.get().getMembers().contains(user))
-                .collect(Collectors.toList());
-        return g.map(grp ->
-                ok(views.html.GroupMembersList.render(grp,
-                        asScala(grp.getMembers()), asScala(notMember), addUserToGroupForm, removeGroupUserForm)))
-                .get();
+        try {
+            Set<User> members = groupManager.getGroupMembers(SessionManager.CurrentUser().getUserId(), groupId);
+            Set<User> notMember = groupManager.getUsersWhichAreNotInThisGroup(SessionManager.CurrentUser().getUserId(), groupId);
+            Group grp = groupManager.getGroup(SessionManager.CurrentUser().getUserId(), groupId);
+            return ok(views.html.GroupMembersList.render(grp,
+                            asScala(members), asScala(notMember), addUserToGroupForm, removeGroupUserForm));
+        } catch (UnauthorizedException e) {
+            return forbidden(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return badRequest(e.getMessage());
+        } catch (Exception e) {
+            return internalServerError(e.getMessage());
+        }
     }
 
     public Result removeGroupMember(Long groupId) {
@@ -105,14 +103,13 @@ public class GroupController extends Controller {
 
         RemoveGroupUserDto ru = form.get();
 
-        User toBeDeleted = userFinder.byIdOptional(ru.getUserId()).get();
-        Group g = groupFinder.byIdOptional(groupId).get();
-        if(!policy.Specification.CanRemoveGroupMember(SessionManager.CurrentUser(), g, toBeDeleted)) {
-            return badRequest("error");
+        try {
+            groupManager.removeGroupMember(SessionManager.CurrentUser().getUserId(), ru.getUserId(), groupId);
+        } catch (UnauthorizedException e) {
+            return forbidden(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return badRequest(e.getMessage());
         }
-        
-        g.getMembers().remove(toBeDeleted);
-        g.save();
 
         return redirect(routes.GroupController.showGroup(groupId));
     }
@@ -125,14 +122,13 @@ public class GroupController extends Controller {
 
         AddUserToGroupDto au = form.get();
 
-        User toBeAdded= userFinder.byIdOptional(au.getUserId()).get();
-        Group g = groupFinder.byIdOptional(groupId).get();
-        if(!policy.Specification.CanAddGroupMember(SessionManager.CurrentUser(), g, toBeAdded)) {
-            return badRequest("error");
+        try {
+            groupManager.addGroupMember(SessionManager.CurrentUser().getUserId(), au.getUserId(), groupId);
+        } catch (UnauthorizedException e) {
+            return forbidden(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return badRequest(e.getMessage());
         }
-
-        g.getMembers().add(toBeAdded);
-        g.save();
 
         return redirect(routes.GroupController.showGroup(groupId));
     }
@@ -144,13 +140,14 @@ public class GroupController extends Controller {
         }
 
         DeleteGroupDto dg = form.get();
-        Group g = groupFinder.byIdOptional(groupId).get();
 
-        if(!policy.Specification.CanDeleteGroup(SessionManager.CurrentUser(), g)) {
-            return badRequest("error");
+        try {
+            groupManager.deleteGroup(SessionManager.CurrentUser().getUserId(), groupId);
+        } catch (UnauthorizedException e) {
+            return forbidden(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return badRequest(e.getMessage());
         }
-
-        g.delete();
 
         return redirect(routes.GroupController.showOwnGroups());
     }
