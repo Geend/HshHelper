@@ -28,6 +28,7 @@ public class DatabaseInitialization {
             stmt.execute("TRUNCATE TABLE groupmembers");
             stmt.execute("TRUNCATE TABLE users");
             stmt.execute("TRUNCATE TABLE groups");
+            stmt.execute("TRUNCATE TABLE internal_session");
             stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
         });
         Logger.info("DatabaseInitialization - Prepare DB; Truncated");
