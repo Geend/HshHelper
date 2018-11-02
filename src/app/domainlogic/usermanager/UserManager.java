@@ -23,8 +23,17 @@ public class UserManager {
     private MailerClient mailerClient;
     private HashHelper hashHelper;
     private EbeanServer ebeanServer;
+    private Specification specification;
 
-    public UserManager(UserFinder userFinder, PasswordGenerator passwordGenerator, MailerClient mailerClient, HashHelper hashHelper, EbeanServer server) {
+    public UserManager(
+            UserFinder userFinder,
+            PasswordGenerator passwordGenerator,
+            MailerClient mailerClient,
+            HashHelper hashHelper,
+            EbeanServer server,
+            Specification specification)
+    {
+        this.specification = specification;
         this.ebeanServer = server;
         this.mailerClient = mailerClient;
         this.passwordGenerator = passwordGenerator;
@@ -34,7 +43,7 @@ public class UserManager {
 
     public String createUser(Long userId, String username, String email, int quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException {
         User currentUser = this.userFinder.byId(userId);
-        if(!Specification.CanCreateUser(currentUser)) {
+        if(!this.specification.CanCreateUser(currentUser)) {
             throw new UnauthorizedException();
         }
 
@@ -65,7 +74,7 @@ public class UserManager {
     public void deleteUser(Long userId, Long id) throws UnauthorizedException {
         User currentUser = this.userFinder.byId(userId);
         User userToDelete = this.userFinder.byId(id);
-        if(!Specification.CanDeleteUser(currentUser, userToDelete)) {
+        if(!this.specification.CanDeleteUser(currentUser, userToDelete)) {
             throw new UnauthorizedException();
         }
         ebeanServer.delete(userToDelete);
@@ -73,7 +82,7 @@ public class UserManager {
 
     public List<User> getAllUsers(Long userId) throws UnauthorizedException {
         User currentUser = this.userFinder.byId(userId);
-        if(!Specification.CanViewAllUsers(currentUser)) {
+        if(!this.specification.CanViewAllUsers(currentUser)) {
             throw new UnauthorizedException();
         }
         return this.userFinder.all();

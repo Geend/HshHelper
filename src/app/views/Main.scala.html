@@ -19,14 +19,14 @@
                             Sessions
                         </a>
                     </li>
-                    @if(Specification.CanCreateUser(CurrentUser())) {
+                    @if(Specification.instance.CanCreateUser(CurrentUser())) {
                         <li>
                             <a class="nav-link" href="@routes.UserController.showCreateUserForm()">
                                 Benutzer anlegen
                             </a>
                         </li>
                     }
-                    @if(Specification.CanViewAllUsers(CurrentUser())) {
+                    @if(Specification.instance.CanViewAllUsers(CurrentUser())) {
                         <li>
                             <a class="nav-link" href="@routes.UserController.showUsers()">
                                 Benutzerübersicht

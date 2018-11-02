@@ -85,7 +85,7 @@ public class UserController extends Controller {
     @Authentication.Required
     public Result showCreateUserForm() {
         User currentUser = SessionManager.CurrentUser();
-        if(!Specification.CanCreateUser(currentUser)) {
+        if(!Specification.instance.CanCreateUser(currentUser)) {
             return unauthorized();
         }
         return ok(views.html.CreateUser.render(createUserForm));
@@ -155,7 +155,7 @@ public class UserController extends Controller {
             return badRequest();
         }
 
-        if(!policy.Specification.CanDeleteSession(SessionManager.CurrentUser(), session.get())) {
+        if(!policy.Specification.instance.CanDeleteSession(SessionManager.CurrentUser(), session.get())) {
             return badRequest();
         }
 

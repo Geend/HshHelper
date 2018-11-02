@@ -7,7 +7,7 @@
 @import bootstrapHelper._
 
 @sessionButton(s: Session) = {
-    @if(policy.Specification.CanDeleteSession(CurrentUser(), s)) {
+    @if(policy.Specification.instance.CanDeleteSession(CurrentUser(), s)) {
         @form(
             routes.UserController.deleteUserSession(),
             deleteSessionform,

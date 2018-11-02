@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import play.libs.mailer.MailerClient;
+import policy.Specification;
 
 import java.util.Optional;
 
@@ -26,9 +27,11 @@ public class UserManagerTest {
     User adminUser;
     MailerClient mailerClient;
     EbeanServer defaultServer;
+    Specification defaultSpecification;
 
     @Before
     public void init() {
+        defaultSpecification = mock(Specification.class);
         mailerClient = mock(MailerClient.class);
         adminUser = mock(User.class);
         defaultServer = mock(EbeanServer.class);
@@ -58,7 +61,7 @@ public class UserManagerTest {
         UserFinder userFinder = mock(UserFinder.class);
         when(userFinder.byName(testUsername)).thenReturn(Optional.of(user));
 
-        userManager = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer);
+        userManager = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer, defaultSpecification);
 
         userManager.resetPassword(testUsername);
 
@@ -67,14 +70,13 @@ public class UserManagerTest {
     }
 
     @Test(expected = UnauthorizedException.class)
-    public void onlyAdminCanCreateUser() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
+    public void createUserObeysSpecification() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
+        Specification spec = mock(Specification.class);
+        when(spec.CanCreateUser(any(User.class))).thenReturn(false);
         UserFinder userFinder = mock(UserFinder.class);
-        User normalUser = mock(User.class);
-        when(normalUser.isAdmin()).thenReturn(false);
-        when(userFinder.byId(1l)).thenReturn(normalUser);
         HashHelper hashHelper = mock(HashHelper.class);
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer);
+        UserManager sut = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer, defaultSpecification);
         sut.createUser(1l, "klaus", "test@test.de", 5);
     }
 
@@ -85,7 +87,7 @@ public class UserManagerTest {
         UserFinder userFinder= mock(UserFinder.class);
         HashHelper hashHelper = mock(HashHelper.class);
 
-        userManager = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer);
+        userManager = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer, defaultSpecification);
 
         userManager.resetPassword(null);
     }
