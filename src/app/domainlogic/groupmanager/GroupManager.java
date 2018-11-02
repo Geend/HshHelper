@@ -93,7 +93,7 @@ public class GroupManager {
         Group group = groupOptional.get();
         User currentUser = currentUserOptional.get();
 
-        if (!policy.Specification.CanViewGroupDetails(currentUser, group)) {
+        if (!policy.Specification.instance.CanViewGroupDetails(currentUser, group)) {
             throw new UnauthorizedException("Du bist nicht authorisiert, die Mitglieder dieser Gruppe zu sehen.");
         }
 
@@ -115,7 +115,7 @@ public class GroupManager {
         Group group = groupOptional.get();
         User currentUser = currentUserOptional.get();
 
-        if (!policy.Specification.CanViewGroupDetails(currentUser, group)) {
+        if (!policy.Specification.instance.CanViewGroupDetails(currentUser, group)) {
             throw new UnauthorizedException("Du bist nicht authorisiert, die Mitglieder dieser Gruppe zu sehen.");
         }
 
@@ -146,7 +146,7 @@ public class GroupManager {
         User currentUser = currentUserOptional.get();
         User toBeRemovedUser = tobeRemovedUserOptional.get();
 
-        if(!policy.Specification.CanRemoveGroupMember(currentUser, g, toBeRemovedUser)) {
+        if(!policy.Specification.instance.CanRemoveGroupMember(currentUser, g, toBeRemovedUser)) {
             throw new UnauthorizedException("Du bist nicht authorisiert, einen Member aus dieser Gruppe zu loeschen.");
         }
 
@@ -176,7 +176,7 @@ public class GroupManager {
         User currentUser = currentUserOptional.get();
         User toBeAddedUser = tobeAddedUserOptional.get();
 
-        if (!policy.Specification.CanAddGroupMember(currentUser, g, toBeAddedUser)) {
+        if (!policy.Specification.instance.CanAddGroupMember(currentUser, g, toBeAddedUser)) {
             throw new UnauthorizedException("Du bist nicht authorisiert, einen Member zu dieser Gruppe hinzu zu fuegen.");
         }
 
@@ -198,7 +198,7 @@ public class GroupManager {
 
         Group g = groupOptional.get();
         User u = currentUserOptional.get();
-        if (!policy.Specification.CanDeleteGroup(u, g)) {
+        if (!policy.Specification.instance.CanDeleteGroup(u, g)) {
             throw new UnauthorizedException("Du bist nicht authorisiert, eine Gruppe zu loeschen.");
         }
 

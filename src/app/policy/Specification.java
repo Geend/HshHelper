@@ -5,7 +5,9 @@ import models.User;
 import policy.session.Session;
 
 public class Specification {
-    public static boolean CanViewGroupDetails(User currentUser, Group toBeWatched) {
+    public static Specification instance = new Specification();
+
+    public boolean CanViewGroupDetails(User currentUser, Group toBeWatched) {
         if(currentUser == null) {
             return false;
         }
@@ -21,7 +23,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanViewAllUsers(User currentUser) {
+    public boolean CanViewAllUsers(User currentUser) {
         if(currentUser == null) {
             return false;
         }
@@ -33,7 +35,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanViewAllGroupsList(User currentUser) {
+    public boolean CanViewAllGroupsList(User currentUser) {
         if(currentUser == null) {
             return false;
         }
@@ -45,7 +47,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanCreateUser(User currentUser) {
+    public boolean CanCreateUser(User currentUser) {
         if(currentUser == null) {
             return false;
         }
@@ -57,7 +59,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanDeleteUser(User currentUser, User userToBeDeleted) {
+    public boolean CanDeleteUser(User currentUser, User userToBeDeleted) {
         if(currentUser == null || userToBeDeleted == null) {
             return false;
         }
@@ -74,7 +76,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanChangePassword(User currentUser, User toBeUpdated) {
+    public boolean CanChangePassword(User currentUser, User toBeUpdated) {
         if(currentUser == null) {
             return false;
         }
@@ -86,7 +88,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanResetPassword(User currentUser) {
+    public boolean CanResetPassword(User currentUser) {
         if(currentUser == null) {
             return true;
         }
@@ -94,7 +96,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanDeleteGroup(User currentUser, Group group) {
+    public boolean CanDeleteGroup(User currentUser, Group group) {
         if(currentUser == null) {
             return false;
         }
@@ -114,7 +116,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanRemoveGroupMember(User currentUser, Group group, User toBeDeleted) {
+    public boolean CanRemoveGroupMember(User currentUser, Group group, User toBeDeleted) {
         if(currentUser == null) {
             return false;
         }
@@ -138,7 +140,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean isAllowedToAddGroupMember(User currentUser, Group group) {
+    public boolean isAllowedToAddGroupMember(User currentUser, Group group) {
         if(currentUser.isAdmin()) {
             return true;
         }
@@ -150,7 +152,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanAddGroupMember(User currentUser, Group group, User toBeAdded) {
+    public boolean CanAddGroupMember(User currentUser, Group group, User toBeAdded) {
         if(currentUser == null) {
             return false;
         }
@@ -171,7 +173,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanCreateGroup(User currentUser) {
+    public boolean CanCreateGroup(User currentUser) {
         if(currentUser == null) {
             return false;
         }
@@ -179,7 +181,7 @@ public class Specification {
         return true;
     }
 
-    public static boolean CanUpdatePassword(User currentUser, User toBeUpdated) {
+    public boolean CanUpdatePassword(User currentUser, User toBeUpdated) {
         if(currentUser == null) {
             return false;
         }
@@ -191,7 +193,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanDeleteSession(User currentUser, Session session) {
+    public boolean CanDeleteSession(User currentUser, Session session) {
         if(currentUser == null) {
             return false;
         }

@@ -34,7 +34,7 @@ public class UserManager {
 
     public String createUser(Long userId, String username, String email, int quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException {
         User currentUser = this.userFinder.byId(userId);
-        if(!Specification.CanCreateUser(currentUser)) {
+        if(!Specification.instance.CanCreateUser(currentUser)) {
             throw new UnauthorizedException();
         }
 
@@ -65,7 +65,7 @@ public class UserManager {
     public void deleteUser(Long userId, Long id) throws UnauthorizedException {
         User currentUser = this.userFinder.byId(userId);
         User userToDelete = this.userFinder.byId(id);
-        if(!Specification.CanDeleteUser(currentUser, userToDelete)) {
+        if(!Specification.instance.CanDeleteUser(currentUser, userToDelete)) {
             throw new UnauthorizedException();
         }
         userToDelete.delete();
@@ -73,7 +73,7 @@ public class UserManager {
 
     public List<User> getAllUsers(Long userId) throws UnauthorizedException {
         User currentUser = this.userFinder.byId(userId);
-        if(!Specification.CanViewAllUsers(currentUser)) {
+        if(!Specification.instance.CanViewAllUsers(currentUser)) {
             throw new UnauthorizedException();
         }
         return this.userFinder.all();

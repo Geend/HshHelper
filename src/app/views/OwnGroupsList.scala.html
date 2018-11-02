@@ -5,13 +5,13 @@
 @import bootstrapHelper._
 
 @viewGroupButton(g: Group) = {
-    @if(policy.Specification.CanViewGroupDetails(CurrentUser(), g)) {
+    @if(policy.Specification.instance.CanViewGroupDetails(CurrentUser(), g)) {
         @link("Mitglieder bearbeiten", routes.GroupController.showGroup(g.getGroupId()))
     }
 }
 
 @deleteGroupButton(g: Group) = {
-    @if(policy.Specification.CanDeleteGroup(CurrentUser(), g)) {
+    @if(policy.Specification.instance.CanDeleteGroup(CurrentUser(), g)) {
         @bootstrapHelper.form(
             routes.GroupController.deleteGroup(g.getGroupId()),
             deleteGroupForm,
