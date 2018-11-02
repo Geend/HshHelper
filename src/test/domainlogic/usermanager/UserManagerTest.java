@@ -14,6 +14,8 @@ import org.mockito.ArgumentCaptor;
 import play.libs.mailer.MailerClient;
 import policy.Specification;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -34,6 +36,7 @@ public class UserManagerTest {
         defaultUserFinder = mock(UserFinder.class);
         defaultSpecification = mock(Specification.class);
         when(defaultSpecification.CanCreateUser(any())).thenReturn(true);
+        when(defaultSpecification.CanViewAllUsers(any())).thenReturn(true);
         defaultMailerClient = mock(MailerClient.class);
         adminUser = mock(User.class);
         defaultServer = mock(EbeanServer.class);
@@ -78,6 +81,20 @@ public class UserManagerTest {
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserManager sut = new UserManager(defaultUserFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, spec);
         sut.getAllUsers(1l);
+    }
+
+    @Test
+    public void getAllReturnsUsers() throws UnauthorizedException {
+        List<User> users = new ArrayList<User>();
+        users.add(new User("müller", "email", "hash", true, 5));
+        users.add(new User("michi", "email", "hash", true, 5));
+        UserFinder userFinder = mock(UserFinder.class);
+        when(userFinder.all()).thenReturn(users);
+        HashHelper hashHelper = mock(HashHelper.class);
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        UserManager sut = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
+        List<User> result = sut.getAllUsers(1l);
+        assertEquals(result.size(), 2);
     }
 
     @Test(expected = UnauthorizedException.class)
