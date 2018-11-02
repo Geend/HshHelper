@@ -1,10 +1,6 @@
-package usermanager;
+package domainlogic.usermanager;
 
 import domainlogic.UnauthorizedException;
-import domainlogic.usermanager.EmailAlreadyExistsException;
-import domainlogic.usermanager.UserManager;
-import domainlogic.usermanager.UsernameAlreadyExistsException;
-import domainlogic.usermanager.UsernameCannotBeAdmin;
 import extension.HashHelper;
 import extension.PasswordGenerator;
 import io.ebean.EbeanServer;

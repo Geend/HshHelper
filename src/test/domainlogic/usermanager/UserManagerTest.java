@@ -1,10 +1,6 @@
-package usermanager;
+package domainlogic.usermanager;
 
 import domainlogic.UnauthorizedException;
-import domainlogic.usermanager.EmailAlreadyExistsException;
-import domainlogic.usermanager.UserManager;
-import domainlogic.usermanager.UsernameAlreadyExistsException;
-import domainlogic.usermanager.UsernameCannotBeAdmin;
 import extension.HashHelper;
 import extension.PasswordGenerator;
 import io.ebean.EbeanServer;
@@ -12,8 +8,6 @@ import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.User;
 import models.finders.UserFinder;
-import org.apache.xpath.operations.Bool;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
