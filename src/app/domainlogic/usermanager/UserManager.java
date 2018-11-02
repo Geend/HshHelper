@@ -20,12 +20,14 @@ public class UserManager {
     private UserFinder userFinder;
     private PasswordGenerator passwordGenerator;
     private MailerClient mailerClient;
+    private HashHelper hashHelper;
 
     @Inject
-    public UserManager(UserFinder userFinder, PasswordGenerator passwordGenerator, MailerClient mailerClient) {
+    public UserManager(UserFinder userFinder, PasswordGenerator passwordGenerator, MailerClient mailerClient, HashHelper hashHelper) {
         this.mailerClient = mailerClient;
         this.passwordGenerator = passwordGenerator;
         this.userFinder = userFinder;
+        this.hashHelper = hashHelper;
     }
 
     public String createUser(Long userId, String username, String email, int quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException {
@@ -36,7 +38,7 @@ public class UserManager {
 
         //TODO: Include generated password length in policy
         String plaintextPassword = passwordGenerator.generatePassword(10);
-        String passwordHash = HashHelper.hashPassword(plaintextPassword);
+        String passwordHash = hashHelper.hashPassword(plaintextPassword);
 
         User newUser;
         try(Transaction tx = Ebean.beginTransaction(TxIsolation.REPEATABLE_READ)) {
@@ -81,11 +83,10 @@ public class UserManager {
             return;
         }
         User user = userOptional.get();
-        PasswordGenerator passwordGenerator = new PasswordGenerator();
 
         //TODO: Include generated password length in policy
         String tempPassword = passwordGenerator.generatePassword(10);
-        user.setPasswordHash(HashHelper.hashPassword(tempPassword));
+        user.setPasswordHash(hashHelper.hashPassword(tempPassword));
         user.setIsPasswordResetRequired(true);
         user.save();
 

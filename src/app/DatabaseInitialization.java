@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public class DatabaseInitialization {
 
     @Inject
-    public DatabaseInitialization(Database db) {
+    public DatabaseInitialization(Database db, HashHelper hashHelper) {
         Logger.info("DatabaseInitialization - Prepare DB");
 
         // TODO: Add new tables for truncation
@@ -34,10 +34,10 @@ public class DatabaseInitialization {
         Logger.info("DatabaseInitialization - Prepare DB; Truncated");
 
         Logger.info("ApplicationStart - Prepare DB; Add new users and groups");
-        User u1 = new User("admin", "hsh.helper+admin@gmail.com", HashHelper.hashPassword("admin"), false, 10);
-        User u2 = new User("peter", "hsh.helper+peter@gmail.com",  HashHelper.hashPassword("peter"), false, 10);
-        User u3 = new User("klaus", "hsh.helper+klaus@gmail.com",  HashHelper.hashPassword("klaus"), false, 10);
-        User u4 = new User("hans", "hsh.helper+hans@gmail.com",  HashHelper.hashPassword("hans"), true, 10);
+        User u1 = new User("admin", "hsh.helper+admin@gmail.com", hashHelper.hashPassword("admin"), false, 10);
+        User u2 = new User("peter", "hsh.helper+peter@gmail.com",  hashHelper.hashPassword("peter"), false, 10);
+        User u3 = new User("klaus", "hsh.helper+klaus@gmail.com",  hashHelper.hashPassword("klaus"), false, 10);
+        User u4 = new User("hans", "hsh.helper+hans@gmail.com",  hashHelper.hashPassword("hans"), true, 10);
 
         Group g1 = new Group("All", u1);
         Group g2 = new Group("Administrators", u1);

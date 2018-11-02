@@ -15,7 +15,7 @@ public class LoginManagerTest {
     public static Application app;
     public static User klaus;
     public static User peter;
-
+    public static HashHelper hashHelper = new HashHelper();
     @AfterClass
     public static void stopApp() {
         peter.delete();
@@ -29,17 +29,17 @@ public class LoginManagerTest {
         Helpers.start(app);
 
         // PW reset nicht required
-        klaus = new User("klaus", "hsh.helper+klaus@gmail.com", HashHelper.hashPassword("klaus"), false, 10);
+        klaus = new User("klaus", "hsh.helper+klaus@gmail.com", hashHelper.hashPassword("klaus"), false, 10);
         klaus.save();
 
         // PW reset required
-        peter = new User("peter", "hsh.helper+peter@gmail.com", HashHelper.hashPassword("peter"), true, 10);
+        peter = new User("peter", "hsh.helper+peter@gmail.com", hashHelper.hashPassword("peter"), true, 10);
         peter.save();
     }
 
     @Test
     public void login() throws InvalidUsernameOrPasswordException, PasswordChangeRequiredException, CaptchaRequiredException {
-        LoginManager loginManager = new LoginManager();
+        LoginManager loginManager = new LoginManager(hashHelper);
 
         loginManager.login(
             "klaus", "klaus", ""
