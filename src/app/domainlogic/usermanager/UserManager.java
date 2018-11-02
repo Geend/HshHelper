@@ -25,6 +25,7 @@ public class UserManager {
     private EbeanServer ebeanServer;
     private Specification specification;
 
+    @Inject
     public UserManager(
             UserFinder userFinder,
             PasswordGenerator passwordGenerator,

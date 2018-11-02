@@ -31,6 +31,7 @@ public class UserManagerTest {
     @Before
     public void init() {
         defaultSpecification = mock(Specification.class);
+        when(defaultSpecification.CanCreateUser(any(User.class))).thenReturn(true);
         mailerClient = mock(MailerClient.class);
         adminUser = mock(User.class);
         defaultServer = mock(EbeanServer.class);
@@ -79,6 +80,17 @@ public class UserManagerTest {
         sut.createUser(1l, "klaus", "test@test.de", 5);
     }
 
+    /*
+    @Test(expected = UsernameAlreadyExistsException.class)
+    public void createUsernameHasToBeUnique() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
+        UserFinder userFinder = mock(UserFinder.class);
+        HashHelper hashHelper = mock(HashHelper.class);
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        UserManager sut = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer, defaultSpecification);
+        sut.createUser(1l, "klaus", "test@test.de", 5);
+    }
+    */
+    
     @Test
     public void testChangePasswordWithNullInput(){
 
