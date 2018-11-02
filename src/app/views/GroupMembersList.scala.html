@@ -5,11 +5,11 @@
 
 @import models.dtos.AddUserToGroupDto
 @import models.dtos.RemoveGroupUserDto
-@import policy.session.SessionManager.CurrentUser
+@import policy.session.SessionManager.SessionInstance
 @(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[AddUserToGroupDto], removeGroupUserForm: Form[RemoveGroupUserDto])
 
 @removeMemberButton(member: User) = {
-    @if(policy.Specification.instance.CanRemoveGroupMember(CurrentUser(), group, member)) {
+    @if(policy.Specification.instance.CanRemoveGroupMember(SessionInstance().currentUser(), group, member)) {
         @bootstrapHelper.form(
             routes.GroupController.removeGroupMember(group.getGroupId()),
             removeGroupUserForm,
@@ -25,7 +25,7 @@
 }
 
 @addMemberButton() = {
-    @if(policy.Specification.instance.isAllowedToAddGroupMember(CurrentUser(), group)) {
+    @if(policy.Specification.instance.isAllowedToAddGroupMember(SessionInstance().currentUser(), group)) {
         @bootstrapHelper.form(
             routes.GroupController.addGroupMember(group.getGroupId()),
             addUserForm,
