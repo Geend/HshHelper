@@ -77,12 +77,12 @@ public class UserManagerTest {
         when(spec.CanCreateUser(any(User.class))).thenReturn(false);
         HashHelper hashHelper = mock(HashHelper.class);
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(defaultUserFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
+        UserManager sut = new UserManager(defaultUserFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, spec);
         sut.createUser(1l, "klaus", "test@test.de", 5);
     }
 
     @Test(expected = UsernameAlreadyExistsException.class)
-    public void createUsernameHasToBeUnique() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
+    public void createUserUsernameHasToBeUnique() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
         UserFinder userFinder = mock(UserFinder.class);
         HashHelper hashHelper = mock(HashHelper.class);
         User klausUser = mock(User.class);
