@@ -1,18 +1,13 @@
 package domainlogic.loginmanager;
 
-import policy.session.SessionManager;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
 import models.User;
-import models.finders.UserFinder;
-import org.apache.http.protocol.HttpContext;
 import play.mvc.Http;
 import policy.ext.loginFirewall.Firewall;
 import policy.ext.loginFirewall.Instance;
 import policy.ext.loginFirewall.Strategy;
-
-import javax.inject.Inject;
-import java.util.Optional;
+import policy.session.SessionManager;
 
 public class LoginManager {
     private User authenticate(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidUsernameOrPasswordException {
