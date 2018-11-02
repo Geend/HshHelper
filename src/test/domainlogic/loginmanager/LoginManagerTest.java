@@ -10,6 +10,7 @@ import org.junit.Test;
 import play.Application;
 import play.mvc.Http;
 import play.test.Helpers;
+import policy.ext.loginFirewall.Firewall;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,10 +43,12 @@ public class LoginManagerTest {
 
     UserFinder userFinder;
     LoginManager loginManager;
+    Firewall firewall;
 
     @Before
     public void setup() {
-        loginManager = new LoginManager(hashHelper);
+        firewall = new Firewall();
+        loginManager = new LoginManager(hashHelper, firewall);
         userFinder = new UserFinder();
 
         Http.Request request = Helpers.fakeRequest("GET", "/").remoteAddress("1.2.23.4").build();

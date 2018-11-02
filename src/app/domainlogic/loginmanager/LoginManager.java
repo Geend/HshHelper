@@ -8,17 +8,18 @@ import policy.ext.loginFirewall.Firewall;
 import policy.ext.loginFirewall.Instance;
 import policy.ext.loginFirewall.Strategy;
 import policy.session.SessionManager;
-import sun.rmi.runtime.Log;
 
 import javax.inject.Inject;
 
 public class LoginManager {
 
     private HashHelper hashHelper;
+    private Firewall loginFirewall;
 
     @Inject
-    public LoginManager(HashHelper hashHelper){
+    public LoginManager(HashHelper hashHelper, Firewall loginFirewall){
         this.hashHelper = hashHelper;
+        this.loginFirewall = loginFirewall;
     }
 
     private User authenticate(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidUsernameOrPasswordException {
@@ -32,7 +33,7 @@ public class LoginManager {
             uid = auth.user().getUserId();
         }
 
-        Instance fw = Firewall.Get(Http.Context.current().request().remoteAddress());
+        Instance fw = loginFirewall.get(Http.Context.current().request().remoteAddress());
         Strategy strategy = fw.getStrategy(uid);
 
         if(strategy.equals(Strategy.BLOCK)) {

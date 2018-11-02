@@ -8,6 +8,7 @@ import play.Application;
 import play.test.Helpers;
 import policy.ext.loginFirewall.Firewall;
 import policy.ext.loginFirewall.Instance;
+import policy.ext.loginFirewall.LaggyDT;
 import policy.ext.loginFirewall.Strategy;
 
 import java.util.List;
@@ -25,11 +26,13 @@ public class LoginFirewallTests {
     private static Instance fwInstanceOne;
     private static Instance fwInstanceTwo;
     private static long currentDt = 1540117115508L;
+    private static Firewall firewall;
 
     @BeforeClass
     public static void startApp() {
         app = Helpers.fakeApplication();
         Helpers.start(app);
+        firewall = new Firewall();
     }
 
     @AfterClass
@@ -39,16 +42,14 @@ public class LoginFirewallTests {
 
     @Before
     public void setup() {
-        Firewall.Initialize();
-        Firewall.Flush();
-
-        fwInstanceOne = Firewall.Get("12.21.12.21");
-        fwInstanceTwo = Firewall.Get("21.21.12.21");
+        firewall.flush();
+        fwInstanceOne = firewall.get("12.21.12.21");
+        fwInstanceTwo = firewall.get("21.21.12.21");
     }
 
     @After
     public void tearDown() {
-        Firewall.Flush();
+        firewall.flush();
         DateTimeUtils.setCurrentMillisSystem();
     }
 
@@ -240,7 +241,7 @@ public class LoginFirewallTests {
         assertThat(rows.size(), is(Firewall.RelevantHours+bucketsToExpiry));
 
         SetLaggyTs(0);
-        Firewall.GarbageCollect();
+        firewall.garbageCollect();
 
         sql = "SELECT * FROM loginFirewall ORDER BY laggy_dt DESC";
         q = Ebean.createSqlQuery(sql);
@@ -250,7 +251,7 @@ public class LoginFirewallTests {
         for(int i=0; i<rows.size(); i++) {
             SetLaggyTs(i);
             DateTime rowDt = new DateTime(rows.get(i).getLong("laggy_dt"));
-            DateTime currentDt = Firewall.GetLaggyDT();
+            DateTime currentDt = LaggyDT.Get();
             assertThat(rowDt, is(currentDt));
         }
     }

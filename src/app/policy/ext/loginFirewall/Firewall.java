@@ -5,6 +5,9 @@ import io.ebean.SqlUpdate;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class Firewall {
     public static int LaggyTsIntervalHours = 1; // 1 Std
     public static int RelevantHours = 5;
@@ -12,7 +15,11 @@ public class Firewall {
     public static int NIPLoginsTriggerBan = 100;
     public static int NUidLoginsTriggerVerification = 5;
 
-    public static void Initialize() {
+    public Firewall() {
+        this.initialize();
+    }
+
+    public void initialize() {
         String createTableSql =
             "CREATE TABLE IF NOT EXISTS loginFirewall (\n" +
                 "ident VARCHAR(255) NOT NULL,\n" +
@@ -29,30 +36,22 @@ public class Firewall {
         Ebean.createSqlUpdate(createDTIndexSql).execute();
     }
 
-    public static void GarbageCollect() {
+    public void garbageCollect() {
         String cleanSql =
             "DELETE FROM loginFirewall WHERE expiry <= :current";
 
         SqlUpdate upd = Ebean.createSqlUpdate(cleanSql);
-        upd.setParameter("current", GetLaggyDT());
+        upd.setParameter("current", LaggyDT.Get());
         upd.execute();
     }
 
-    public static void Flush() {
+    public void flush() {
         String cleanSql =
             "DELETE FROM loginFirewall";
         Ebean.createSqlUpdate(cleanSql).execute();
     }
 
-    public static Instance Get(String remoteIp) {
+    public Instance get(String remoteIp) {
         return new Instance(remoteIp);
-    }
-
-    public static DateTime GetLaggyDT() {
-        long unixTime = DateTimeUtils.currentTimeMillis() / 1000L;
-        unixTime = unixTime / (3600L*Firewall.LaggyTsIntervalHours); // laggen. ts soll nur in intervallen ansteigen
-        unixTime = unixTime * (3600L*Firewall.LaggyTsIntervalHours); // alles was zwischen diesen intervallen liegt
-        unixTime = unixTime * 1000L;                                 // soll verworfen werden! -> ganzzahl-division!
-        return new DateTime(unixTime);
     }
 }
