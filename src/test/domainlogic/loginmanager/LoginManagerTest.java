@@ -1,12 +1,10 @@
 package domainlogic.loginmanager;
 
 import extension.HashHelper;
+import io.ebean.Ebean;
 import models.User;
 import models.finders.UserFinder;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import play.Application;
 import play.mvc.Http;
 import play.test.Helpers;
@@ -38,14 +36,6 @@ public class LoginManagerTest {
     public static void setupGlobal() {
         app = Helpers.fakeApplication();
         Helpers.start(app);
-
-        // PW reset nicht required
-        lydia = new User("lydia", "hsh.helper+lydia@gmail.com", hashHelper.hashPassword("lydia"), false, 10);
-        lydia.save();
-
-        // PW reset required
-        annika = new User("annika", "hsh.helper+annika@gmail.com", hashHelper.hashPassword("annika"), true, 10);
-        annika.save();
     }
 
     UserFinder userFinder;
@@ -79,12 +69,36 @@ public class LoginManagerTest {
 
         Http.Request request = Helpers.fakeRequest("GET", "/").remoteAddress("1.2.23.4").build();
         Http.Context.current.set(Helpers.httpContext(request));
+
+
+        // PW reset nicht required
+        lydia = new User("lydia", "hsh.helper+lydia@gmail.com", hashHelper.hashPassword("lydia"), false, 10);
+        lydia.save();
+
+        // PW reset required
+        annika = new User("annika", "hsh.helper+annika@gmail.com", hashHelper.hashPassword("annika"), true, 10);
+        annika.save();
+    }
+
+    @After
+    public void teardown() {
+        Ebean.createSqlUpdate("DELETE FROM internal_session").execute();
+
+        lydia.delete();
+        annika.delete();
     }
 
     @Test
     public void successfulLogin() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException {
         loginManager.login(
                 "lydia", "lydia", ""
+        );
+    }
+
+    @Test(expected = PasswordChangeRequiredException.class)
+    public void successfulLoginResetRequired() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException {
+        loginManager.login(
+                "annika", "annika", ""
         );
     }
 
@@ -152,6 +166,38 @@ public class LoginManagerTest {
         LoginManager lm = new LoginManager(hashHelper, alwaysBannedFirewall, sessionManager);
         lm.login(
                 "lydia", "lydiaxxxx", ""
+        );
+    }
+
+    @Test(expected = CaptchaRequiredException.class)
+    public void validPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException {
+        LoginManager lm = new LoginManager(hashHelper, alwaysCaptchaFirewall, sessionManager);
+        lm.changePassword(
+                "annika", "annika", "neuesPw", ""
+        );
+    }
+
+    @Test(expected = CaptchaRequiredException.class)
+    public void invalidPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException {
+        LoginManager lm = new LoginManager(hashHelper, alwaysCaptchaFirewall, sessionManager);
+        lm.changePassword(
+                "annika", "annixxka", "neuesPw", ""
+        );
+    }
+
+    @Test(expected = InvalidLoginException.class)
+    public void validPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException {
+        LoginManager lm = new LoginManager(hashHelper, alwaysBannedFirewall, sessionManager);
+        lm.changePassword(
+                "annika", "annika", "neuesPw", ""
+        );
+    }
+
+    @Test(expected = InvalidLoginException.class)
+    public void invalidPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException {
+        LoginManager lm = new LoginManager(hashHelper, alwaysBannedFirewall, sessionManager);
+        lm.changePassword(
+                "annika", "annikxxxa", "neuesPw", ""
         );
     }
 }
