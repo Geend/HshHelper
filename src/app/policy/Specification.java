@@ -2,7 +2,7 @@ package policy;
 
 import models.Group;
 import models.User;
-import policy.session.UserSession;
+import policy.session.Session;
 
 public class Specification {
     public static boolean CanViewGroupDetails(User currentUser, Group toBeWatched) {
@@ -191,7 +191,7 @@ public class Specification {
         return false;
     }
 
-    public static boolean CanDeleteSession(User currentUser, UserSession session) {
+    public static boolean CanDeleteSession(User currentUser, Session session) {
         if(currentUser == null) {
             return false;
         }

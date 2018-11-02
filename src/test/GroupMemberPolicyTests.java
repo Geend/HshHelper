@@ -1,7 +1,7 @@
 import models.Group;
 import models.User;
 import org.junit.Before;
-import policy.session.UserSession;
+import policy.session.Session;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import policy.Specification;
@@ -24,7 +24,7 @@ public class GroupMemberPolicyTests {
     private static Group allGroup;
     private static Group adminGroup;
     private static Group petersGroup;
-    private static UserSession petersSession;
+    private static Session petersSession;
     /*
         adminGroup:
             admin, adminTwo
@@ -65,7 +65,7 @@ public class GroupMemberPolicyTests {
 
     @Before
     public void setupBeforeAll() {
-        petersSession = mock(UserSession.class);
+        petersSession = mock(Session.class);
         when(petersSession.getUser()).thenReturn(peter);
     }
 

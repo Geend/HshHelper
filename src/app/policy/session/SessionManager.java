@@ -19,7 +19,7 @@ public class SessionManager {
     public static void StartNewSession(User user) {
         Http.Context ctx = Http.Context.current();
 
-        Session dbs = new Session();
+        InternalSession dbs = new InternalSession();
         dbs.setRemoteAddress(ctx.request().remoteAddress());
         dbs.setIssuedAt(DateTime.now());
         dbs.setUser(user);
@@ -28,19 +28,19 @@ public class SessionManager {
         ctx.session().put(CookieSessionName, dbs.getSessionKey().toString());
     }
 
-    private static Session CurrentSession() {
+    private static InternalSession CurrentSession() {
         Http.Context ctx = Http.Context.current();
         if(ctx.args.containsKey(CtxCurrentSession)) {
-            return (Session)ctx.args.get(CtxCurrentSession);
+            return (InternalSession)ctx.args.get(CtxCurrentSession);
         }
 
-        Session session = null;
+        InternalSession session = null;
         String sessionId = ctx.session().getOrDefault(CookieSessionName, null);
         if(!StringUtils.isEmpty(sessionId)) {
             UUID sessionUid = UUID.fromString(sessionId);
-            Session dbs = Session.finder.byId(sessionUid);
+            InternalSession dbs = InternalSession.finder.byId(sessionUid);
             if(dbs != null && dbs.getUser() != null) {
-                // IP Addressen müssen matchen && Session darf nicht zu alt sein!
+                // IP Addressen müssen matchen && InternalSession darf nicht zu alt sein!
                 if(dbs.getRemoteAddress().equals(ctx.request().remoteAddress()) &&
                     dbs.getIssuedAt().plus(ConstraintValues.SESSION_TIMEOUT_HOURS).isBeforeNow()) {
                         session = dbs;
@@ -54,7 +54,7 @@ public class SessionManager {
 
     public static User CurrentUser() {
         if(!HasActiveSession()) {
-            throw new RuntimeException("There is no Session that is destroyable");
+            throw new RuntimeException("There is no InternalSession that is destroyable");
         }
 
         return CurrentSession().getUser();
@@ -62,33 +62,33 @@ public class SessionManager {
 
     public static void DestroyCurrentSession() {
         if(!HasActiveSession()) {
-            throw new RuntimeException("There is no Session that is destroyable");
+            throw new RuntimeException("There is no InternalSession that is destroyable");
         }
 
-        Session current = CurrentSession();
+        InternalSession current = CurrentSession();
         current.delete();
         Http.Context.current().session().remove(CookieSessionName);
 
         // TODO: Nachdenken ob Entfernung aus Kontext Sinn macht?
     }
 
-    public static List<UserSession> SessionsByUser(User user) {
-        List<Session> sessions = Session.finder.query().where().eq("user", user).findList();
-        List<UserSession> result = new ArrayList<>();
+    public static List<Session> SessionsByUser(User user) {
+        List<InternalSession> sessions = InternalSession.finder.query().where().eq("user", user).findList();
+        List<Session> result = new ArrayList<>();
 
-        for(Session s : sessions) {
-            result.add(new UserSession(s));
+        for(InternalSession s : sessions) {
+            result.add(new Session(s));
         }
 
         return result;
     }
 
-    public static Optional<UserSession> GetUserSession(User user, UUID sessionKey) {
-        Optional<Session> session = Session.finder.query().where().eq("user", user).eq("sessionKey", sessionKey).findOneOrEmpty();
+    public static Optional<Session> GetUserSession(User user, UUID sessionKey) {
+        Optional<InternalSession> session = InternalSession.finder.query().where().eq("user", user).eq("sessionKey", sessionKey).findOneOrEmpty();
 
-        Optional<UserSession> ret = Optional.empty();
+        Optional<Session> ret = Optional.empty();
         if(session.isPresent()) {
-            ret = Optional.of(new UserSession(session.get()));
+            ret = Optional.of(new Session(session.get()));
         }
 
         return ret;
@@ -99,7 +99,7 @@ public class SessionManager {
     }
 
     public static void GarbageCollect() {
-        int deletedSessions = Session.finder.query().where()
+        int deletedSessions = InternalSession.finder.query().where()
             .lt("issuedAt", DateTime.now().minusHours(ConstraintValues.SESSION_TIMEOUT_HOURS))
             .delete();
 
