@@ -4,6 +4,7 @@ import domainlogic.UnauthorizedException;
 import domainlogic.usermanager.EmailAlreadyExistsException;
 import domainlogic.usermanager.UserManager;
 import domainlogic.usermanager.UsernameAlreadyExistsException;
+import domainlogic.usermanager.UsernameCannotBeAdmin;
 import extension.*;
 import io.ebean.Ebean;
 import io.ebean.Transaction;
@@ -119,6 +120,9 @@ public class UserController extends Controller {
             return unauthorized();
         } catch (UnauthorizedException e) {
             return unauthorized();
+        } catch (UsernameCannotBeAdmin usernameCannotBeAdmin) {
+            boundForm = boundForm.withError("username", "username darf nicht admin sein");
+            return badRequest(views.html.CreateUser.render(boundForm));
         }
     }
 

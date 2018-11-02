@@ -1,7 +1,6 @@
+package domainlogic.usermanager;
+
 import domainlogic.UnauthorizedException;
-import domainlogic.usermanager.EmailAlreadyExistsException;
-import domainlogic.usermanager.UserManager;
-import domainlogic.usermanager.UsernameAlreadyExistsException;
 import extension.HashHelper;
 import extension.PasswordGenerator;
 import io.ebean.EbeanServer;
@@ -9,14 +8,14 @@ import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.User;
 import models.finders.UserFinder;
-import org.apache.xpath.operations.Bool;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import play.libs.mailer.MailerClient;
 import policy.Specification;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -37,6 +36,7 @@ public class UserManagerTest {
         defaultUserFinder = mock(UserFinder.class);
         defaultSpecification = mock(Specification.class);
         when(defaultSpecification.CanCreateUser(any())).thenReturn(true);
+        when(defaultSpecification.CanViewAllUsers(any())).thenReturn(true);
         defaultMailerClient = mock(MailerClient.class);
         adminUser = mock(User.class);
         defaultServer = mock(EbeanServer.class);
@@ -74,7 +74,31 @@ public class UserManagerTest {
     }
 
     @Test(expected = UnauthorizedException.class)
-    public void createUserObeysSpecification() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
+    public void getAllObeysSpecification() throws UnauthorizedException {
+        Specification spec = mock(Specification.class);
+        when(spec.CanViewAllUsers(any(User.class))).thenReturn(false);
+        HashHelper hashHelper = mock(HashHelper.class);
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        UserManager sut = new UserManager(defaultUserFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, spec);
+        sut.getAllUsers(1l);
+    }
+
+    @Test
+    public void getAllReturnsUsers() throws UnauthorizedException {
+        List<User> users = new ArrayList<User>();
+        users.add(new User("müller", "email", "hash", true, 5));
+        users.add(new User("michi", "email", "hash", true, 5));
+        UserFinder userFinder = mock(UserFinder.class);
+        when(userFinder.all()).thenReturn(users);
+        HashHelper hashHelper = mock(HashHelper.class);
+        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        UserManager sut = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
+        List<User> result = sut.getAllUsers(1l);
+        assertEquals(result.size(), 2);
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void createUserObeysSpecification() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException, UsernameCannotBeAdmin {
         Specification spec = mock(Specification.class);
         when(spec.CanCreateUser(any(User.class))).thenReturn(false);
         HashHelper hashHelper = mock(HashHelper.class);
@@ -84,7 +108,7 @@ public class UserManagerTest {
     }
 
     @Test(expected = UsernameAlreadyExistsException.class)
-    public void createUserUsernameHasToBeUnique() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
+    public void createUserUsernameHasToBeUnique() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException, UsernameCannotBeAdmin {
         UserFinder userFinder = mock(UserFinder.class);
         HashHelper hashHelper = mock(HashHelper.class);
         User klausUser = mock(User.class);
@@ -95,7 +119,7 @@ public class UserManagerTest {
     }
 
     @Test(expected = EmailAlreadyExistsException.class)
-    public void createUserEmailHasToBeUnique() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
+    public void createUserEmailHasToBeUnique() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException, UsernameCannotBeAdmin {
         UserFinder userFinder = mock(UserFinder.class);
         HashHelper hashHelper = mock(HashHelper.class);
         User klausUser = mock(User.class);
@@ -106,7 +130,7 @@ public class UserManagerTest {
     }
 
     @Test
-    public void createUserIssuesAdd() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
+    public void createUserIssuesAdd() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException, UsernameCannotBeAdmin {
         HashHelper hashHelper = mock(HashHelper.class);
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         EbeanServer server = mock(EbeanServer.class);
