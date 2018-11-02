@@ -9,6 +9,7 @@ import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.User;
 import models.finders.UserFinder;
+import org.apache.xpath.operations.Bool;
 import org.junit.Before;
 import org.junit.Test;
 import play.libs.mailer.MailerClient;
@@ -31,7 +32,7 @@ public class UserManagerTest {
     @Before
     public void init() {
         defaultSpecification = mock(Specification.class);
-        when(defaultSpecification.CanCreateUser(any(User.class))).thenReturn(true);
+        when(defaultSpecification.CanCreateUser(any())).thenReturn(true);
         mailerClient = mock(MailerClient.class);
         adminUser = mock(User.class);
         defaultServer = mock(EbeanServer.class);
@@ -80,17 +81,17 @@ public class UserManagerTest {
         sut.createUser(1l, "klaus", "test@test.de", 5);
     }
 
-    /*
     @Test(expected = UsernameAlreadyExistsException.class)
     public void createUsernameHasToBeUnique() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException {
         UserFinder userFinder = mock(UserFinder.class);
         HashHelper hashHelper = mock(HashHelper.class);
+        User klausUser = mock(User.class);
+        when(userFinder.byName("klaus")).thenReturn(Optional.of(klausUser));
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserManager sut = new UserManager(userFinder, passwordGenerator, mailerClient, hashHelper, defaultServer, defaultSpecification);
         sut.createUser(1l, "klaus", "test@test.de", 5);
     }
-    */
-    
+
     @Test
     public void testChangePasswordWithNullInput(){
 
