@@ -34,12 +34,6 @@ public class SessionManager {
         dbs.save();
 
         ctx.session().put(CookieSessionName, dbs.getSessionKey().toString());
-        
-        purgeSessionCache();
-    }
-
-    private void purgeSessionCache() {
-        Http.Context ctx = Http.Context.current();
         ctx.args.remove(CtxCurrentSession);
     }
 
@@ -58,8 +52,8 @@ public class SessionManager {
             if(dbs != null && dbs.getUser() != null) {
                 // IP Addressen müssen matchen && InternalSession darf nicht zu alt sein!
                 if(dbs.getRemoteAddress().equals(ctx.request().remoteAddress()) &&
-                    dbs.getIssuedAt().plusHours(ConstraintValues.SESSION_TIMEOUT_HOURS).isAfterNow()) {
-                        session = dbs;
+                        dbs.getIssuedAt().plusHours(ConstraintValues.SESSION_TIMEOUT_HOURS).isAfterNow()) {
+                    session = dbs;
                 }
             }
         }
@@ -81,11 +75,12 @@ public class SessionManager {
             throw new RuntimeException("There is no active session");
         }
 
+        Http.Context ctx = Http.Context.current();
+
         InternalSession current = currentSession();
         current.delete();
-        Http.Context.current().session().remove(CookieSessionName);
-
-        purgeSessionCache();
+        ctx.session().remove(CookieSessionName);
+        ctx.args.remove(CtxCurrentSession);
     }
 
     public List<Session> sessionsByUser(User user) {
@@ -120,5 +115,9 @@ public class SessionManager {
             .delete();
 
         Logger.info("REWRITE/ Delete "+deletedSessions+" Sessions");
+    }
+
+    public int getSessionTimeoutHours() {
+        return ConstraintValues.SESSION_TIMEOUT_HOURS;
     }
 }
