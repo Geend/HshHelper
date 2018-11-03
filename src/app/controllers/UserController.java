@@ -88,7 +88,7 @@ public class UserController extends Controller {
     }
 
     @Authentication.Required
-    public Result createUser() throws UnauthorizedException {
+    public Result createUser() throws UnauthorizedException, InvalidArgumentException {
 
         User currentUser = sessionManager.currentUser();
         Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
@@ -111,7 +111,7 @@ public class UserController extends Controller {
             boundForm = boundForm.withError("email", "Email already in use");
             return badRequest(views.html.CreateUser.render(boundForm));
         } catch (UsernameAlreadyExistsException e) {
-            return unauthorized();
+            throw new InvalidArgumentException(e.getMessage());
         } catch (UsernameCannotBeAdmin usernameCannotBeAdmin) {
             boundForm = boundForm.withError("username", "Username must not be admin");
             return badRequest(views.html.CreateUser.render(boundForm));
@@ -151,16 +151,16 @@ public class UserController extends Controller {
     }
 
     @Authentication.Required
-    public Result deleteUserSession() {
+    public Result deleteUserSession() throws InvalidArgumentException, UnauthorizedException {
         Form<DeleteSessionDto> bf = deleteSessionForm.bindFromRequest();
 
         Optional<Session> session = sessionManager.getUserSession(sessionManager.currentUser(), bf.get().getSessionId());
         if (!session.isPresent()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         if (!policy.Specification.instance.CanDeleteSession(sessionManager.currentUser(), session.get())) {
-            return badRequest();
+            throw new UnauthorizedException();
         }
 
         session.get().destroy();
