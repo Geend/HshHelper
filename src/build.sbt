@@ -17,6 +17,7 @@ libraryDependencies += "com.h2database" % "h2" % "1.4.197"
 
 // needed to run the evolutions during startup
 libraryDependencies += PlayImport.evolutions
+libraryDependencies += javaJdbc % Test
 
 //needed for sending emails (password reset)
 libraryDependencies += "com.typesafe.play" %% "play-mailer" % "6.0.1"
