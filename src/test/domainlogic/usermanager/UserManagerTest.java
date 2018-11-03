@@ -123,7 +123,7 @@ public class UserManagerTest {
         UserFinder userFinder = mock(UserFinder.class);
         HashHelper hashHelper = mock(HashHelper.class);
         User klausUser = mock(User.class);
-        when(userFinder.byEmail("test@test.de", any())).thenReturn(Optional.of(klausUser));
+        when(userFinder.byEmail(eq("test@test.de"), any())).thenReturn(Optional.of(klausUser));
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserManager sut = new UserManager(userFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSpecification);
         sut.createUser(1l, "klaus", "test@test.de", 5);
