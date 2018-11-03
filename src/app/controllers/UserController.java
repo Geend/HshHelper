@@ -5,12 +5,7 @@ import domainlogic.usermanager.EmailAlreadyExistsException;
 import domainlogic.usermanager.UserManager;
 import domainlogic.usermanager.UsernameAlreadyExistsException;
 import domainlogic.usermanager.UsernameCannotBeAdmin;
-import extension.*;
-import io.ebean.Ebean;
-import io.ebean.Transaction;
-import io.ebean.annotation.TxIsolation;
 import models.User;
-import policy.session.Session;
 import models.dtos.*;
 import play.data.Form;
 import play.data.FormFactory;
@@ -18,6 +13,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import policy.Specification;
 import policy.session.Authentication;
+import policy.session.Session;
 import policy.session.SessionManager;
 import scala.collection.Seq;
 
@@ -50,52 +46,49 @@ public class UserController extends Controller {
     }
 
     @Authentication.Required
-    public Result showUsers() {
-        try {
-            User currentUser = sessionManager.currentUser();
-            List<User> users = this.userManager.getAllUsers(currentUser.getUserId());
-            List<UserListEntryDto> entries = users
-                    .stream()
-                    .map(x -> new UserListEntryDto(x.getUserId(), x.getUsername()))
-                    .collect(Collectors.toList());
-            for(int i = 0; i < entries.size(); i++) {
-                entries.get(i).setIndex(i + 1);
-            }
-            Seq<UserListEntryDto> scalaEntries = asScala(entries);
-            return ok(views.html.UserList.render(scalaEntries));
-        } catch (UnauthorizedException e) {
-            return unauthorized();
+    public Result showUsers() throws UnauthorizedException {
+
+        User currentUser = sessionManager.currentUser();
+        List<User> users = this.userManager.getAllUsers(currentUser.getUserId());
+        List<UserListEntryDto> entries = users
+                .stream()
+                .map(x -> new UserListEntryDto(x.getUserId(), x.getUsername()))
+                .collect(Collectors.toList());
+        for (int i = 0; i < entries.size(); i++) {
+            entries.get(i).setIndex(i + 1);
         }
+        Seq<UserListEntryDto> scalaEntries = asScala(entries);
+        return ok(views.html.UserList.render(scalaEntries));
+
     }
 
     @Authentication.Required
-    public Result deleteUser() {
+    public Result deleteUser() throws UnauthorizedException {
         User currentUser = sessionManager.currentUser();
         Form<UserIdDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
-        if(boundForm.hasErrors()) {
+        if (boundForm.hasErrors()) {
             return badRequest();
         }
         Long userToDeleteId = boundForm.get().getUserId();
-        try {
-            this.userManager.deleteUser(currentUser.getUserId(), userToDeleteId);
-        } catch (UnauthorizedException e) {
-            return unauthorized();
-        }
+
+        this.userManager.deleteUser(currentUser.getUserId(), userToDeleteId);
+
         return redirect(routes.UserController.showUsers());
     }
 
 
     @Authentication.Required
-    public Result showCreateUserForm() {
+    public Result showCreateUserForm() throws UnauthorizedException {
         User currentUser = sessionManager.currentUser();
-        if(!Specification.instance.CanCreateUser(currentUser)) {
-            return unauthorized();
+        if (!Specification.instance.CanCreateUser(currentUser)) {
+            throw new UnauthorizedException();
         }
         return ok(views.html.CreateUser.render(createUserForm));
     }
 
     @Authentication.Required
-    public Result createUser() {
+    public Result createUser() throws UnauthorizedException {
+
         User currentUser = sessionManager.currentUser();
         Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
         if (boundForm.hasErrors()) {
@@ -118,8 +111,6 @@ public class UserController extends Controller {
             return badRequest(views.html.CreateUser.render(boundForm));
         } catch (UsernameAlreadyExistsException e) {
             return unauthorized();
-        } catch (UnauthorizedException e) {
-            return unauthorized();
         } catch (UsernameCannotBeAdmin usernameCannotBeAdmin) {
             boundForm = boundForm.withError("username", "username darf nicht admin sein");
             return badRequest(views.html.CreateUser.render(boundForm));
@@ -140,9 +131,9 @@ public class UserController extends Controller {
             return ok(views.html.ResetUserPassword.render(boundForm));
         }
         ResetUserPasswordDto resetUserPasswordDto = boundForm.get();
-        try{
+        try {
             this.userManager.resetPassword(resetUserPasswordDto.getUsername());
-        }catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             //Ignore the exception in order to not reveal potential usernames.
         }
 
@@ -163,11 +154,11 @@ public class UserController extends Controller {
         Form<DeleteSessionDto> bf = deleteSessionForm.bindFromRequest();
 
         Optional<Session> session = sessionManager.getUserSession(sessionManager.currentUser(), bf.get().getSessionId());
-        if(!session.isPresent()) {
+        if (!session.isPresent()) {
             return badRequest();
         }
 
-        if(!policy.Specification.instance.CanDeleteSession(sessionManager.currentUser(), session.get())) {
+        if (!policy.Specification.instance.CanDeleteSession(sessionManager.currentUser(), session.get())) {
             return badRequest();
         }
 
