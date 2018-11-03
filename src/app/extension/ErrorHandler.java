@@ -1,6 +1,5 @@
 package extension;
 
-import controllers.routes;
 import domainlogic.InvalidArgumentException;
 import domainlogic.UnauthorizedException;
 import play.*;
@@ -30,43 +29,39 @@ public class ErrorHandler extends DefaultHttpErrorHandler {
     }
 
     protected CompletionStage<Result> onProdServerError(RequestHeader request, UsefulException exception) {
-        if(exception.cause instanceof UnauthorizedException){
-            Context.current().flash().put(ERROR_KEY, exception.cause.getMessage());
-            return CompletableFuture.completedFuture(
-                    Results.redirect(controllers.routes.ErrorController.showForbiddenMessage())
-            );
-        }
-        else if(exception.cause instanceof InvalidArgumentException){
-            Context.current().flash().put(ERROR_KEY, exception.cause.getMessage());
-            return CompletableFuture.completedFuture(
-                    Results.redirect(controllers.routes.ErrorController.showBadRequestMessage())
-            );
-        }
+        CompletionStage<Result> x = customExceptionHandler(exception);
+        if (x != null) return x;
 
         return super.onProdServerError(request, exception);
     }
 
     @Override
     protected CompletionStage<Result> onDevServerError(RequestHeader request, UsefulException exception) {
-
-        if(exception.cause instanceof UnauthorizedException){
-            Context.current().flash().put(ERROR_KEY, exception.cause.getMessage());
-            return CompletableFuture.completedFuture(
-                    Results.redirect(controllers.routes.ErrorController.showForbiddenMessage())
-            );
-        }
-        else if(exception.cause instanceof InvalidArgumentException){
-            Context.current().flash().put(ERROR_KEY, exception.cause.getMessage());
-            return CompletableFuture.completedFuture(
-                    Results.redirect(controllers.routes.ErrorController.showBadRequestMessage())
-            );
-        }
+        CompletionStage<Result> x = customExceptionHandler(exception);
+        if (x != null) return x;
 
 
         return super.onDevServerError(request, exception);
     }
 
+    private CompletionStage<Result> customExceptionHandler(UsefulException exception) {
+        if(exception.cause instanceof UnauthorizedException){
+            if(exception.cause.getMessage() != null)
+                Context.current().flash().put(ERROR_KEY, exception.cause.getMessage());
+            return CompletableFuture.completedFuture(
+                    Results.redirect(controllers.routes.ErrorController.showForbiddenMessage())
+            );
+        }
+        else if(exception.cause instanceof InvalidArgumentException){
+            if(exception.cause.getMessage() != null)
+                Context.current().flash().put(ERROR_KEY, exception.cause.getMessage());
 
+            return CompletableFuture.completedFuture(
+                    Results.redirect(controllers.routes.ErrorController.showBadRequestMessage())
+            );
+        }
+        return null;
+    }
 
 
 }
