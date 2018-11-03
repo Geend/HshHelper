@@ -7,68 +7,55 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.openqa.selenium.By;
 import play.api.test.CSRFTokenHelper;
 import play.data.Form;
 import play.mvc.Http;
 import play.test.Helpers;
+import play.test.WithBrowser;
 import play.twirl.api.Content;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static play.test.Helpers.contentAsString;
 
-public class LoginTemplateTests {
-
-    @Mock
-    Form<UserLoginDto> loginForm;
-
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
+public class LoginTemplateTests extends WithBrowser {
 
     @Before
     public void setup() {
-        Http.Request request = CSRFTokenHelper.addCSRFToken(Helpers.fakeRequest()).build();
-        Http.Context.current.set(Helpers.httpContext(request));
+        browser.goTo("/login");
+        assertEquals(browser.url(), "login");
+        assertThat(browser.$("title").text()).isNotEmpty();
     }
+
 
     @Test
     public void loginTemplateHasCorrectTitle() {
-        Boolean captchaRequired = false;
-
-        Content html = views.html.Login.render(loginForm, captchaRequired);
-        assertEquals("text/html", html.contentType());
-        assertTrue(contentAsString(html).contains("<title>HsH-Helper: Login</title>"));
-        assertTrue(contentAsString(html).contains("<form action=\"/login\" method=\"POST\"> "));
-        assertTrue(contentAsString(html).contains("<input type=\"hidden\" name=\"csrfToken\""));
-        assertTrue(contentAsString(html).contains("<div class=\"form-group\"> "));
-        assertTrue(contentAsString(html).contains("<label for=\"username\">Benutzername</label> "));
-        assertTrue(contentAsString(html).contains("<br> "));
-        assertTrue(contentAsString(html).contains("<input class=\"form-control \" type=\"text\" value=\"\" name=\"username\" id=\"username\" placeholder=\"Benutzernamen hier eingeben\" aria-describedby=\"usernameHelp\"> "));
-        assertTrue(contentAsString(html).contains("<small id=\"usernameHelp\" class=\"form-text text-muted\"></small> "));
-        assertTrue(contentAsString(html).contains("</div> "));
-        assertTrue(contentAsString(html).contains("<div class=\"form-group\"> "));
-        assertTrue(contentAsString(html).contains("<label for=\"password\">Passwort</label> "));
-        assertTrue(contentAsString(html).contains("<br> "));
-        assertTrue(contentAsString(html).contains("<input class=\"form-control \" type=\"password\" value=\"\" name=\"password\" id=\"password\" placeholder=\"Passwort hier eingeben\" aria-describedby=\"passwordHelp\"> "));
-        assertTrue(contentAsString(html).contains("<small id=\"passwordHelp\" class=\"form-text text-muted\">Passwort durch Sonderzeichen maskiert</small> "));
-        assertTrue(contentAsString(html).contains("</div> "));
-        assertTrue(contentAsString(html).contains("<button type=\"submit\" class=\"btn btn-primary\">Login</button> "));
-        assertTrue(contentAsString(html).contains("</form>"));
+        assertThat(browser.$("title").text()).isNotEmpty();
+        assertThat(browser.$("title").text()).isEqualTo("HsH-Helper: Login");
     }
 
     @Test
-    public void renderLoginTemplateWithoutCaptcha() {
-        Boolean captchaRequired = false;
-
-        Content html = views.html.Login.render(loginForm, captchaRequired);
-        assertEquals("text/html", html.contentType());
+    public void loginTemplateHasCorrentForm() {
+        assertThat(browser.find(By.xpath("/html/body/div/div/div/main/div/form"))).isNotEmpty();
+        assertThat(browser.find(By.xpath("/html/body/div/div/div/main/div/form/input"))).isNotEmpty();
+        assertThat(browser.find(By.xpath("//*[@id=\"password\"]"))).isNotEmpty();
+        assertThat(browser.find(By.xpath("//*[@id=\"username\"]"))).isNotEmpty();
+        assertThat(browser.find(By.xpath("/html/body/div/div/div/main/div/form/button"))).isNotEmpty();
+        assertThat(browser.find(By.xpath("/html/body/div/div/div/main/div/form/button")).text())
+                .isEqualTo("Login");
+        assertThat(browser.find(By.className(".g-recaptcha"))).isEmpty();
     }
 
     @Test
     public void renderLoginTemplateWithCaptcha() {
-        Boolean captchaRequired = true;
-
-        Content html = views.html.Login.render(loginForm, captchaRequired);
-        assertEquals("text/html", html.contentType());
+        // Falsely login 5 times to trigger the captcha
+        for (int i = 0; i < 5; i++) {
+            browser.find(By.xpath("//*[@id=\"username\"]")).write("admin");
+            browser.find(By.xpath("//*[@id=\"password\"]")).write("admin");
+            browser.find(By.xpath("/html/body/div/div/div/main/div/form/button")).click();
+        }
+        assertThat(browser.find(By.className(".g-recaptcha"))).isNotEmpty();
     }
 }

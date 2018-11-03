@@ -5,8 +5,10 @@ import models.Group;
 import models.User;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import play.mvc.Http;
 import play.test.Helpers;
+import play.test.WithBrowser;
 import play.twirl.api.Content;
 
 import java.util.regex.Matcher;
@@ -14,24 +16,29 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static play.libs.Scala.asScala;
 import static play.test.Helpers.contentAsString;
 
 
-public class IndexTemplateTests {
+public class IndexTemplateTests  extends WithBrowser {
 
     @Before
     public void setup() {
-        Http.Request request = Helpers.fakeRequest().build();
-        Http.Context.current.set(Helpers.httpContext(request));
+        browser.goTo("/login");
+        assertEquals(browser.url(), "login");
+        assertThat(browser.$("title").text()).isNotEmpty();
+        browser.find(By.xpath("//*[@id=\"username\"]")).write("admin");
+        browser.find(By.xpath("//*[@id=\"password\"]")).write("admin");
+        browser.find(By.xpath("/html/body/div/div/div/main/div/form/button")).click();
     }
 
     @Test
     public void renderIndexTemplate() {
         HashHelper hashHelper = new HashHelper();
-        User admin = new User("admin", "hsh.helper+admin@gmail.com", hashHelper.hashPassword("admin"), false, 10);
+        User admin = new User("admin", "hsh.helper+admin@gmaisl.com", hashHelper.hashPassword("admin"), false, 10);
         Group all = new Group("All", admin);
         Group admins = new Group("Administrators", admin);
 
