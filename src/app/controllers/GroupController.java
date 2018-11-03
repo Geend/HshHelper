@@ -137,7 +137,8 @@ public class GroupController extends Controller {
     public Result deleteGroup(Long groupId) {
         Form<DeleteGroupDto> form = deleteGroupForm.bindFromRequest();
         if(form.hasErrors()) {
-            return badRequest("error");
+            Set<Group> gms = groupManager.getOwnGroups(sessionManager.currentUser().getUserId());
+            return badRequest(views.html.OwnGroupsList.render(asScala(gms), form));
         }
 
         DeleteGroupDto dg = form.get();

@@ -28,9 +28,11 @@
 @tableHead() = {
     <thead class="thead-dark">
         <th scope="col">#</th>
-        @for((k, v) <- rows.head) {
-            @if(k != "") {
-                <th scope="col">@k</th>
+        @if(rows.nonEmpty){
+            @for((k, v) <- rows.head) {
+                @if(k != "") {
+                    <th scope="col">@k</th>
+                }
             }
         }
     </thead>
