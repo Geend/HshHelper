@@ -4,7 +4,6 @@ import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 
 import static policy.ConstraintValues.MAX_PASSWORD_LENGTH;
-import static policy.ConstraintValues.MAX_USERNAME_LENGTH;
 
 @Constraints.Validate
 public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationError>{
