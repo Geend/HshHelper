@@ -13,6 +13,7 @@ import models.finders.UserFinder;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import policy.session.Authentication;
 import policy.session.SessionManager;
@@ -75,12 +76,17 @@ public class GroupController extends Controller {
     }
 
     public Result showGroup(Long groupId) {
+        return renderGroupMemberList(groupId, addUserToGroupForm, removeGroupUserForm, Http.Status.OK);
+    }
+
+    private Result renderGroupMemberList(Long groupId, Form<UserIdDto> addUserToGroupForm, Form<UserIdDto> removeGroupUserForm, int httpStatus){
+
         try {
             Set<User> members = groupManager.getGroupMembers(sessionManager.currentUser().getUserId(), groupId);
             Set<User> notMember = groupManager.getUsersWhichAreNotInThisGroup(sessionManager.currentUser().getUserId(), groupId);
             Group grp = groupManager.getGroup(sessionManager.currentUser().getUserId(), groupId);
-            return ok(views.html.GroupMembersList.render(grp,
-                            asScala(members), asScala(notMember), addUserToGroupForm, removeGroupUserForm));
+            return status(httpStatus, views.html.GroupMembersList.render(grp,
+                    asScala(members), asScala(notMember), addUserToGroupForm, removeGroupUserForm));
         } catch (UnauthorizedException e) {
             return forbidden(e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -93,7 +99,7 @@ public class GroupController extends Controller {
     public Result removeGroupMember(Long groupId) {
         Form<UserIdDto> form = removeGroupUserForm.bindFromRequest();
         if(form.hasErrors()) {
-            return badRequest("error");
+            return renderGroupMemberList(groupId, addUserToGroupForm, form, Http.Status.BAD_REQUEST);
         }
 
         UserIdDto ru = form.get();
@@ -112,7 +118,7 @@ public class GroupController extends Controller {
     public Result addGroupMember(Long groupId) {
         Form<UserIdDto> form = addUserToGroupForm.bindFromRequest();
         if(form.hasErrors()) {
-            return badRequest("error");
+            return renderGroupMemberList(groupId, form, removeGroupUserForm, Http.Status.BAD_REQUEST);
         }
 
         UserIdDto au = form.get();
