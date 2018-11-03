@@ -87,8 +87,6 @@ public class GroupController extends Controller {
             Group grp = groupManager.getGroup(sessionManager.currentUser().getUserId(), groupId);
             return status(httpStatus, views.html.GroupMembersList.render(grp,
                     asScala(members), asScala(notMember), addUserToGroupForm, removeGroupUserForm));
-        } catch (UnauthorizedException e) {
-            return forbidden(e.getMessage());
         } catch (IllegalArgumentException e) {
             return badRequest(e.getMessage());
         } catch (Exception e) {
@@ -96,7 +94,7 @@ public class GroupController extends Controller {
         }
     }
 
-    public Result removeGroupMember(Long groupId) {
+    public Result removeGroupMember(Long groupId) throws UnauthorizedException {
         Form<UserIdDto> form = removeGroupUserForm.bindFromRequest();
         if(form.hasErrors()) {
             return renderGroupMemberList(groupId, addUserToGroupForm, form, Http.Status.BAD_REQUEST);
@@ -106,8 +104,6 @@ public class GroupController extends Controller {
 
         try {
             groupManager.removeGroupMember(sessionManager.currentUser().getUserId(), ru.getUserId(), groupId);
-        } catch (UnauthorizedException e) {
-            return forbidden(e.getMessage());
         } catch (IllegalArgumentException e) {
             return badRequest(e.getMessage());
         }
@@ -115,7 +111,7 @@ public class GroupController extends Controller {
         return redirect(routes.GroupController.showGroup(groupId));
     }
 
-    public Result addGroupMember(Long groupId) {
+    public Result addGroupMember(Long groupId) throws UnauthorizedException {
         Form<UserIdDto> form = addUserToGroupForm.bindFromRequest();
         if(form.hasErrors()) {
             return renderGroupMemberList(groupId, form, removeGroupUserForm, Http.Status.BAD_REQUEST);
@@ -125,8 +121,6 @@ public class GroupController extends Controller {
 
         try {
             groupManager.addGroupMember(sessionManager.currentUser().getUserId(), au.getUserId(), groupId);
-        } catch (UnauthorizedException e) {
-            return forbidden(e.getMessage());
         } catch (IllegalArgumentException e) {
             return badRequest(e.getMessage());
         }
@@ -134,7 +128,7 @@ public class GroupController extends Controller {
         return redirect(routes.GroupController.showGroup(groupId));
     }
 
-    public Result deleteGroup(Long groupId) {
+    public Result deleteGroup(Long groupId) throws UnauthorizedException {
         Form<DeleteGroupDto> form = deleteGroupForm.bindFromRequest();
         if(form.hasErrors()) {
             Set<Group> gms = groupManager.getOwnGroups(sessionManager.currentUser().getUserId());
@@ -145,8 +139,6 @@ public class GroupController extends Controller {
 
         try {
             groupManager.deleteGroup(sessionManager.currentUser().getUserId(), groupId);
-        } catch (UnauthorizedException e) {
-            return forbidden(e.getMessage());
         } catch (IllegalArgumentException e) {
             return badRequest(e.getMessage());
         }
