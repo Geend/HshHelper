@@ -22,7 +22,7 @@ public class Firewall {
     public void initialize() {
         String createTableSql =
             "CREATE TABLE IF NOT EXISTS loginFirewall (\n" +
-                "ident VARCHAR(255) NOT NULL,\n" +
+                "ident VARCHAR NOT NULL,\n" +
                 "laggy_dt DATETIME NOT NULL,\n" +
                 "count BIGINT unsigned NOT NULL,\n" +
                 "expiry DATETIME NOT NULL,\n" +
