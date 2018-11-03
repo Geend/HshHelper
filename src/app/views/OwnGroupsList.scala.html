@@ -13,7 +13,7 @@
 @deleteGroupButton(g: Group) = {
     @if(policy.Specification.instance.CanDeleteGroup(SessionInstance().currentUser(), g)) {
         @bootstrapHelper.form(
-            routes.GroupController.deleteGroup(g.getGroupId()),
+            routes.GroupController.deleteOwnGroup(g.getGroupId()),
             deleteGroupForm,
             scala.collection.Map(
                 "groupId" -> Input(InputType.Hidden,

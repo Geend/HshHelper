@@ -128,7 +128,7 @@ public class GroupController extends Controller {
         return redirect(routes.GroupController.showGroup(groupId));
     }
 
-    public Result deleteGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
+    public Result deleteOwnGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Form<DeleteGroupDto> form = deleteGroupForm.bindFromRequest();
 
         if (form.hasErrors()) {
@@ -140,5 +140,18 @@ public class GroupController extends Controller {
         groupManager.deleteGroup(sessionManager.currentUser().getUserId(), groupId);
 
         return redirect(routes.GroupController.showOwnGroups());
+    }
+
+    public Result deleteGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
+        Form<DeleteGroupDto> form = deleteGroupForm.bindFromRequest();
+
+        if (form.hasErrors()) {
+            Set<Group> gms = groupManager.getAllGroups(sessionManager.currentUser().getUserId());
+            return badRequest(views.html.OwnGroupsList.render(asScala(gms), form));
+        }
+
+        groupManager.deleteGroup(sessionManager.currentUser().getUserId(), groupId);
+
+        return redirect(routes.GroupController.showAllGroups());
     }
 }
