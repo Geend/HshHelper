@@ -1,7 +1,6 @@
 package domainlogic.loginmanager;
 
 import extension.HashHelper;
-import io.ebean.Ebean;
 import models.User;
 import models.finders.UserFinder;
 import org.junit.*;
@@ -11,6 +10,7 @@ import play.test.Helpers;
 import policy.ext.loginFirewall.Firewall;
 import policy.ext.loginFirewall.Instance;
 import policy.ext.loginFirewall.Strategy;
+import policy.session.InternalSession;
 import policy.session.SessionManager;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -82,8 +82,7 @@ public class LoginManagerTest {
 
     @After
     public void teardown() {
-        Ebean.createSqlUpdate("DELETE FROM internal_session").execute();
-
+        InternalSession.db().createSqlUpdate("DELETE FROM internal_session").execute();
         lydia.delete();
         annika.delete();
     }
