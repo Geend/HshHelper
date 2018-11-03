@@ -2,9 +2,7 @@ package models.finders;
 
 import io.ebean.Finder;
 import models.Group;
-import models.User;
 
-import java.util.List;
 import java.util.Optional;
 
 public class GroupFinder extends Finder<Long, Group> {

@@ -10,9 +10,6 @@ public class UserFinder extends Finder<Long, User> {
     public UserFinder() {
         super(User.class);
     }
-    public UserFinder(String serverName) {
-        super(User.class, serverName);
-    }
 
     public Optional<User> byIdOptional(Long id) {
         User u = this.byId(id);

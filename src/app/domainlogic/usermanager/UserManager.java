@@ -3,7 +3,6 @@ package domainlogic.usermanager;
 import domainlogic.UnauthorizedException;
 import extension.HashHelper;
 import extension.PasswordGenerator;
-import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
