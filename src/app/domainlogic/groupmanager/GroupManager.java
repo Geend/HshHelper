@@ -122,9 +122,10 @@ public class GroupManager {
             throw new UnauthorizedException("Du bist nicht authorisiert, die Mitglieder dieser Gruppe zu sehen.");
         }
 
-        return userFinder.all().stream().filter(
-                user -> !group.getMembers().contains(user))
-                .collect(Collectors.toSet());
+
+        return userFinder.query().where().notIn("userId",
+                group.getMembers().stream().map(user -> user.getUserId()).collect(Collectors.toSet())
+        ).findSet();
     }
 
     public void removeGroupMember(Long userId, Long userToRemove, Long groupId) throws UnauthorizedException {
