@@ -20,7 +20,6 @@ import scala.collection.Seq;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
@@ -153,18 +152,7 @@ public class UserController extends Controller {
     @Authentication.Required
     public Result deleteUserSession() throws InvalidArgumentException, UnauthorizedException {
         Form<DeleteSessionDto> bf = deleteSessionForm.bindFromRequest();
-
-        Optional<Session> session = sessionManager.getUserSession(sessionManager.currentUser(), bf.get().getSessionId());
-        if (!session.isPresent()) {
-            throw new InvalidArgumentException();
-        }
-
-        if (!policy.Specification.instance.CanDeleteSession(sessionManager.currentUser(), session.get())) {
-            throw new UnauthorizedException();
-        }
-
-        session.get().destroy();
-
+        sessionManager.destroySessionOfCurrentUser(bf.get().getSessionId());
         return redirect(routes.UserController.showActiveUserSessions());
     }
 }

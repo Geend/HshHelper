@@ -16,6 +16,7 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Security;
 import policy.session.Authentication;
 import policy.session.SessionManager;
 
@@ -74,6 +75,11 @@ public class GroupController extends Controller {
         return ok(views.html.OwnGroupsList.render(asScala(gms), deleteGroupForm));
     }
 
+    public Result showAllGroups() throws InvalidArgumentException, UnauthorizedException {
+        Set<Group> gms = groupManager.getAllGroups(sessionManager.currentUser().getUserId());
+        return ok(views.html.AllGroupsList.render(asScala(gms), deleteGroupForm));
+    }
+
     public Result showGroup(Long groupId) throws UnauthorizedException {
         return renderGroupMemberList(groupId, addUserToGroupForm, removeGroupUserForm, Http.Status.OK);
     }
@@ -124,16 +130,14 @@ public class GroupController extends Controller {
 
     public Result deleteGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Form<DeleteGroupDto> form = deleteGroupForm.bindFromRequest();
+
         if (form.hasErrors()) {
             Set<Group> gms = groupManager.getOwnGroups(sessionManager.currentUser().getUserId());
             return badRequest(views.html.OwnGroupsList.render(asScala(gms), form));
         }
 
         DeleteGroupDto dg = form.get();
-
-
         groupManager.deleteGroup(sessionManager.currentUser().getUserId(), groupId);
-
 
         return redirect(routes.GroupController.showOwnGroups());
     }

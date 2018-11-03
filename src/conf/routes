@@ -13,6 +13,7 @@ GET         /changePasswordAfterReset              controllers.LoginController.s
 POST        /changePasswordAfterReset              controllers.LoginController.changePasswordAfterReset
 
 GET         /user/groups                           controllers.GroupController.showOwnGroups
+GET         /groups                                controllers.GroupController.showAllGroups
 GET         /groups/create                         controllers.GroupController.showCreateGroupForm
 POST        /groups/create                         controllers.GroupController.createGroup
 GET         /groups/:groupId                       controllers.GroupController.showGroup(groupId : Long)

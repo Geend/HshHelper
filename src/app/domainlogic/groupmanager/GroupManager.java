@@ -9,8 +9,10 @@ import models.Group;
 import models.User;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
+import policy.Specification;
 
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,6 +63,23 @@ public class GroupManager {
 
         return currentUser.getGroups();
     }
+
+
+    public Set<Group> getAllGroups(Long userId) throws InvalidArgumentException, UnauthorizedException {
+        Optional<User> currentUserOptional = userFinder.byIdOptional(userId);
+        if (!currentUserOptional.isPresent()) {
+            // TODO: change into a correct exception.
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
+        }
+        User currentUser = currentUserOptional.get();
+
+
+        if(!Specification.instance.CanSeeAllGroups(currentUser))
+            throw new UnauthorizedException();
+
+        return new HashSet<Group>(groupFinder.all());
+    }
+
 
     public Group getGroup(Long userId, Long groupId) throws InvalidArgumentException {
         Optional<Group> groupOptional = groupFinder.byIdOptional(groupId);
@@ -123,9 +142,10 @@ public class GroupManager {
             throw new UnauthorizedException("Du bist nicht authorisiert, die Mitglieder dieser Gruppe zu sehen.");
         }
 
-        return userFinder.all().stream().filter(
-                user -> !group.getMembers().contains(user))
-                .collect(Collectors.toSet());
+
+        return userFinder.query().where().notIn("userId",
+                group.getMembers().stream().map(user -> user.getUserId()).collect(Collectors.toSet())
+        ).findSet();
     }
 
     public void removeGroupMember(Long userId, Long userToRemove, Long groupId) throws UnauthorizedException, InvalidArgumentException {
@@ -208,4 +228,5 @@ public class GroupManager {
 
         ebeanServer.delete(g);
     }
+
 }

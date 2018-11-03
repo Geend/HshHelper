@@ -10,7 +10,7 @@
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
                         <a class="nav-link" href="@routes.GroupController.showOwnGroups()">
-                            Gruppenuebersicht
+                            Gruppenübersicht
                         </a>
                     </li>
                     <li class="nav-item">
@@ -29,6 +29,13 @@
                         <li>
                             <a class="nav-link" href="@routes.UserController.showUsers()">
                                 Benutzerübersicht
+                            </a>
+                        </li>
+                    }
+                    @if(Specification.instance.CanSeeAllGroups(SessionInstance().currentUser())) {
+                        <li>
+                            <a class="nav-link" href="@routes.GroupController.showAllGroups()">
+                                Alle Gruppen
                             </a>
                         </li>
                     }
