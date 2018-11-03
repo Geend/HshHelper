@@ -1,5 +1,6 @@
 package controllers;
 
+import domainlogic.InvalidArgumentException;
 import domainlogic.UnauthorizedException;
 import domainlogic.usermanager.EmailAlreadyExistsException;
 import domainlogic.usermanager.UserManager;
@@ -63,7 +64,7 @@ public class UserController extends Controller {
     }
 
     @Authentication.Required
-    public Result deleteUser() throws UnauthorizedException {
+    public Result deleteUser() throws UnauthorizedException, InvalidArgumentException {
         User currentUser = sessionManager.currentUser();
         Form<UserIdDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
         if (boundForm.hasErrors()) {
@@ -133,7 +134,7 @@ public class UserController extends Controller {
         ResetUserPasswordDto resetUserPasswordDto = boundForm.get();
         try {
             this.userManager.resetPassword(resetUserPasswordDto.getUsername());
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidArgumentException e) {
             //Ignore the exception in order to not reveal potential usernames.
         }
 

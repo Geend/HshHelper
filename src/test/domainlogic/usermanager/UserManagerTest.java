@@ -1,5 +1,6 @@
 package domainlogic.usermanager;
 
+import domainlogic.InvalidArgumentException;
 import domainlogic.UnauthorizedException;
 import extension.HashHelper;
 import extension.PasswordGenerator;
@@ -45,7 +46,7 @@ public class UserManagerTest {
     }
 
     @Test
-    public void testChangePassword() {
+    public void testChangePassword() throws InvalidArgumentException {
 
         String testUsername = "test";
         String newPassword = "0123456789";
@@ -146,8 +147,8 @@ public class UserManagerTest {
         assertEquals(addedUser.getQuotaLimit(), 5);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testChangePasswordWithNullInput(){
+    @Test(expected = InvalidArgumentException.class)
+    public void testChangePasswordWithNullInput() throws InvalidArgumentException {
 
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserFinder userFinder= mock(UserFinder.class);
@@ -159,7 +160,7 @@ public class UserManagerTest {
     }
 
     @Test
-    public void testDeleteUser() throws UnauthorizedException {
+    public void testDeleteUser() throws UnauthorizedException, InvalidArgumentException {
 
         UserFinder userFinder = mock(UserFinder.class);
 
@@ -184,7 +185,7 @@ public class UserManagerTest {
     }
 
     @Test(expected = UnauthorizedException.class)
-    public void testDeleteUserWithUnauthorizedUser() throws UnauthorizedException {
+    public void testDeleteUserWithUnauthorizedUser() throws UnauthorizedException, InvalidArgumentException {
 
         UserFinder userFinder = mock(UserFinder.class);
 
@@ -207,8 +208,8 @@ public class UserManagerTest {
         verify(defaultServer, never()).delete(userToBeDeleted);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testDeleteUserWithNullInput1() throws UnauthorizedException {
+    @Test(expected = InvalidArgumentException.class)
+    public void testDeleteUserWithNullInput1() throws UnauthorizedException, InvalidArgumentException {
 
         UserFinder userFinder = mock(UserFinder.class);
 
@@ -227,8 +228,8 @@ public class UserManagerTest {
         verify(defaultServer, never()).delete(userToBeDeleted);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testDeleteUserWithNullInput2() throws UnauthorizedException {
+    @Test(expected = InvalidArgumentException.class)
+    public void testDeleteUserWithNullInput2() throws UnauthorizedException, InvalidArgumentException {
 
         UserFinder userFinder = mock(UserFinder.class);
 

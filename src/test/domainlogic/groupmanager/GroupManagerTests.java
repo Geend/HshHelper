@@ -1,5 +1,6 @@
 package domainlogic.groupmanager;
 
+import domainlogic.InvalidArgumentException;
 import domainlogic.UnauthorizedException;
 import extension.HashHelper;
 import io.ebean.EbeanServer;
@@ -87,7 +88,7 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void canCreateGroup() throws GroupNameAlreadyExistsException {
+    public void canCreateGroup() throws GroupNameAlreadyExistsException, InvalidArgumentException {
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
         when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
 
@@ -97,7 +98,7 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void cannotCreateGroupWithAnExistingName() throws GroupNameAlreadyExistsException {
+    public void cannotCreateGroupWithAnExistingName() throws GroupNameAlreadyExistsException, InvalidArgumentException {
         String groupName = "All";
 
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
@@ -110,7 +111,7 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void canGetOwnGroups() {
+    public void canGetOwnGroups() throws InvalidArgumentException {
         when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
 
         Set<Group> ownGroups = gm.getOwnGroups(adminId);
@@ -123,7 +124,7 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void canSeeGroupMembers() throws UnauthorizedException {
+    public void canSeeGroupMembers() throws UnauthorizedException, InvalidArgumentException {
         when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
 
@@ -132,7 +133,7 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void cannotSeeGroupMembersOfAnotherGroup() throws UnauthorizedException {
+    public void cannotSeeGroupMembersOfAnotherGroup() throws UnauthorizedException, InvalidArgumentException {
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
         when(groupFinder.byIdOptional(adminsGrpId)).thenReturn(Optional.of(admins));
 
@@ -141,7 +142,7 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void canRemoveGroupMember() throws UnauthorizedException {
+    public void canRemoveGroupMember() throws UnauthorizedException, InvalidArgumentException {
         when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
@@ -152,7 +153,7 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void cannotRemoveGroupMemberOfAnotherGroup() throws UnauthorizedException {
+    public void cannotRemoveGroupMemberOfAnotherGroup() throws UnauthorizedException, InvalidArgumentException {
         when(userFinder.byIdOptional(peterId)).thenReturn(Optional.of(peter));
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
@@ -163,7 +164,7 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void canAddGroupMember() throws UnauthorizedException {
+    public void canAddGroupMember() throws UnauthorizedException, InvalidArgumentException {
         when(userFinder.byIdOptional(peterId)).thenReturn(Optional.of(peter));
         when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
@@ -174,7 +175,7 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void cannotAddGroupMemberToAnotherGroup() throws UnauthorizedException {
+    public void cannotAddGroupMemberToAnotherGroup() throws UnauthorizedException, InvalidArgumentException {
         when(userFinder.byIdOptional(peterId)).thenReturn(Optional.of(peter));
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
@@ -185,7 +186,7 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void canDeleteGroup() throws UnauthorizedException {
+    public void canDeleteGroup() throws UnauthorizedException, InvalidArgumentException {
         when(userFinder.byIdOptional(peterId)).thenReturn(Optional.of(peter));
         when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
 
@@ -194,7 +195,7 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void cannotDeleteGroupAnotherGroup() throws UnauthorizedException {
+    public void cannotDeleteGroupAnotherGroup() throws UnauthorizedException, InvalidArgumentException {
         when(userFinder.byIdOptional(peterId)).thenReturn(Optional.of(peter));
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
 

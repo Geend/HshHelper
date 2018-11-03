@@ -1,5 +1,6 @@
 package controllers;
 
+import domainlogic.InvalidArgumentException;
 import domainlogic.UnauthorizedException;
 import domainlogic.groupmanager.GroupManager;
 import domainlogic.groupmanager.GroupNameAlreadyExistsException;
@@ -49,10 +50,10 @@ public class GroupController extends Controller {
         return ok(views.html.CreateGroup.render(groupForm));
     }
 
-    public Result createGroup() {
+    public Result createGroup() throws InvalidArgumentException {
         Form<CreateGroupDto> bf = groupForm.bindFromRequest();
 
-        if(bf.hasErrors()) {
+        if (bf.hasErrors()) {
             return badRequest(views.html.CreateGroup.render(bf));
         } else {
             CreateGroupDto gDto = bf.get();
@@ -62,24 +63,22 @@ public class GroupController extends Controller {
             } catch (GroupNameAlreadyExistsException e) {
                 bf = bf.withError("name", e.getMessage());
                 return badRequest(views.html.CreateGroup.render(bf));
-            } catch (IllegalArgumentException e) {
-                return badRequest(e.getMessage());
             }
 
             return redirect(routes.GroupController.showOwnGroups());
         }
     }
 
-    public Result showOwnGroups() {
+    public Result showOwnGroups() throws InvalidArgumentException {
         Set<Group> gms = groupManager.getOwnGroups(sessionManager.currentUser().getUserId());
         return ok(views.html.OwnGroupsList.render(asScala(gms), deleteGroupForm));
     }
 
-    public Result showGroup(Long groupId) {
+    public Result showGroup(Long groupId) throws UnauthorizedException {
         return renderGroupMemberList(groupId, addUserToGroupForm, removeGroupUserForm, Http.Status.OK);
     }
 
-    private Result renderGroupMemberList(Long groupId, Form<UserIdDto> addUserToGroupForm, Form<UserIdDto> removeGroupUserForm, int httpStatus){
+    private Result renderGroupMemberList(Long groupId, Form<UserIdDto> addUserToGroupForm, Form<UserIdDto> removeGroupUserForm, int httpStatus) throws UnauthorizedException {
 
         try {
             Set<User> members = groupManager.getGroupMembers(sessionManager.currentUser().getUserId(), groupId);
@@ -87,61 +86,54 @@ public class GroupController extends Controller {
             Group grp = groupManager.getGroup(sessionManager.currentUser().getUserId(), groupId);
             return status(httpStatus, views.html.GroupMembersList.render(grp,
                     asScala(members), asScala(notMember), addUserToGroupForm, removeGroupUserForm));
-        } catch (IllegalArgumentException e) {
-            return badRequest(e.getMessage());
+        } catch (IllegalArgumentException | UnauthorizedException e) {
+            throw e;
         } catch (Exception e) {
             return internalServerError(e.getMessage());
         }
     }
 
-    public Result removeGroupMember(Long groupId) throws UnauthorizedException {
+    public Result removeGroupMember(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Form<UserIdDto> form = removeGroupUserForm.bindFromRequest();
-        if(form.hasErrors()) {
+        if (form.hasErrors()) {
             return renderGroupMemberList(groupId, addUserToGroupForm, form, Http.Status.BAD_REQUEST);
         }
 
         UserIdDto ru = form.get();
 
-        try {
-            groupManager.removeGroupMember(sessionManager.currentUser().getUserId(), ru.getUserId(), groupId);
-        } catch (IllegalArgumentException e) {
-            return badRequest(e.getMessage());
-        }
+
+        groupManager.removeGroupMember(sessionManager.currentUser().getUserId(), ru.getUserId(), groupId);
+
 
         return redirect(routes.GroupController.showGroup(groupId));
     }
 
-    public Result addGroupMember(Long groupId) throws UnauthorizedException {
+    public Result addGroupMember(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Form<UserIdDto> form = addUserToGroupForm.bindFromRequest();
-        if(form.hasErrors()) {
+        if (form.hasErrors()) {
             return renderGroupMemberList(groupId, form, removeGroupUserForm, Http.Status.BAD_REQUEST);
         }
 
         UserIdDto au = form.get();
 
-        try {
-            groupManager.addGroupMember(sessionManager.currentUser().getUserId(), au.getUserId(), groupId);
-        } catch (IllegalArgumentException e) {
-            return badRequest(e.getMessage());
-        }
+
+        groupManager.addGroupMember(sessionManager.currentUser().getUserId(), au.getUserId(), groupId);
 
         return redirect(routes.GroupController.showGroup(groupId));
     }
 
-    public Result deleteGroup(Long groupId) throws UnauthorizedException {
+    public Result deleteGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Form<DeleteGroupDto> form = deleteGroupForm.bindFromRequest();
-        if(form.hasErrors()) {
+        if (form.hasErrors()) {
             Set<Group> gms = groupManager.getOwnGroups(sessionManager.currentUser().getUserId());
             return badRequest(views.html.OwnGroupsList.render(asScala(gms), form));
         }
 
         DeleteGroupDto dg = form.get();
 
-        try {
-            groupManager.deleteGroup(sessionManager.currentUser().getUserId(), groupId);
-        } catch (IllegalArgumentException e) {
-            return badRequest(e.getMessage());
-        }
+
+        groupManager.deleteGroup(sessionManager.currentUser().getUserId(), groupId);
+
 
         return redirect(routes.GroupController.showOwnGroups());
     }

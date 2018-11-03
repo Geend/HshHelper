@@ -1,5 +1,6 @@
 package domainlogic.groupmanager;
 
+import domainlogic.InvalidArgumentException;
 import domainlogic.UnauthorizedException;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
@@ -27,11 +28,11 @@ public class GroupManager {
         this.ebeanServer = ebeanServer;
     }
 
-    public void createGroup(Long userId, String groupName) throws GroupNameAlreadyExistsException {
+    public void createGroup(Long userId, String groupName) throws GroupNameAlreadyExistsException, InvalidArgumentException {
         Optional<User> currentUserOptional = userFinder.byIdOptional(userId);
         if (!currentUserOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
         User currentUser = currentUserOptional.get();
 
@@ -50,27 +51,27 @@ public class GroupManager {
         }
     }
 
-    public Set<Group> getOwnGroups(Long userId) {
+    public Set<Group> getOwnGroups(Long userId) throws InvalidArgumentException {
         Optional<User> currentUserOptional = userFinder.byIdOptional(userId);
         if (!currentUserOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
         User currentUser = currentUserOptional.get();
 
         return currentUser.getGroups();
     }
 
-    public Group getGroup(Long userId, Long groupId) {
+    public Group getGroup(Long userId, Long groupId) throws InvalidArgumentException {
         Optional<Group> groupOptional = groupFinder.byIdOptional(groupId);
         Optional<User> currentUserOptional = userFinder.byIdOptional(userId);
         if (!groupOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Diese Gruppe existiert nicht.");
+            throw new InvalidArgumentException("Diese Gruppe existiert nicht.");
         }
         if (!currentUserOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
 
         Group group = groupOptional.get();
@@ -81,16 +82,16 @@ public class GroupManager {
         return group;
     }
 
-    public Set<User> getGroupMembers(Long userId, Long groupId) throws UnauthorizedException {
+    public Set<User> getGroupMembers(Long userId, Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Optional<Group> groupOptional = groupFinder.byIdOptional(groupId);
         Optional<User> currentUserOptional = userFinder.byIdOptional(userId);
         if (!groupOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Diese Gruppe existiert nicht.");
+            throw new InvalidArgumentException("Diese Gruppe existiert nicht.");
         }
         if (!currentUserOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
 
         Group group = groupOptional.get();
@@ -103,16 +104,16 @@ public class GroupManager {
         return group.getMembers();
     }
 
-    public Set<User> getUsersWhichAreNotInThisGroup(Long userId, Long groupId) throws UnauthorizedException {
+    public Set<User> getUsersWhichAreNotInThisGroup(Long userId, Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Optional<Group> groupOptional = groupFinder.byIdOptional(groupId);
         Optional<User> currentUserOptional = userFinder.byIdOptional(userId);
         if (!groupOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Diese Gruppe existiert nicht.");
+            throw new InvalidArgumentException("Diese Gruppe existiert nicht.");
         }
         if (!currentUserOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
 
         Group group = groupOptional.get();
@@ -127,22 +128,22 @@ public class GroupManager {
                 .collect(Collectors.toSet());
     }
 
-    public void removeGroupMember(Long userId, Long userToRemove, Long groupId) throws UnauthorizedException {
+    public void removeGroupMember(Long userId, Long userToRemove, Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Optional<User> currentUserOptional = userFinder.byIdOptional(userId);
         Optional<User> tobeRemovedUserOptional = userFinder.byIdOptional(userToRemove);
         Optional<Group> groupOptional = groupFinder.byIdOptional(groupId);
 
         if (!groupOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Diese Gruppe existiert nicht.");
+            throw new InvalidArgumentException("Diese Gruppe existiert nicht.");
         }
         if (!currentUserOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
         if (!tobeRemovedUserOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Dieser User kann nicht geloescht werden, weil er nicht existiert.");
+            throw new InvalidArgumentException("Dieser User kann nicht geloescht werden, weil er nicht existiert.");
         }
 
         Group g = groupOptional.get();
@@ -157,22 +158,22 @@ public class GroupManager {
         ebeanServer.save(g);
     }
 
-    public void addGroupMember(Long userId, Long userToAdd, Long groupId) throws UnauthorizedException {
+    public void addGroupMember(Long userId, Long userToAdd, Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Optional<User> currentUserOptional = userFinder.byIdOptional(userId);
         Optional<User> tobeAddedUserOptional = userFinder.byIdOptional(userToAdd);
         Optional<Group> groupOptional = groupFinder.byIdOptional(groupId);
 
         if (!groupOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Diese Gruppe existiert nicht.");
+            throw new InvalidArgumentException("Diese Gruppe existiert nicht.");
         }
         if (!currentUserOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
         if (!tobeAddedUserOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Dieser User kann nicht hinzugefuegt werden, weil er nicht existiert.");
+            throw new InvalidArgumentException("Dieser User kann nicht hinzugefuegt werden, weil er nicht existiert.");
         }
 
         Group g = groupOptional.get();
@@ -187,16 +188,16 @@ public class GroupManager {
         ebeanServer.save(g);
     }
 
-    public void deleteGroup(Long currentUser, Long groupId) throws UnauthorizedException, IllegalArgumentException {
+    public void deleteGroup(Long currentUser, Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Optional<Group> groupOptional = groupFinder.byIdOptional(groupId);
         Optional<User> currentUserOptional = userFinder.byIdOptional(currentUser);
         if (!groupOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Diese Gruppe existiert nicht.");
+            throw new InvalidArgumentException("Diese Gruppe existiert nicht.");
         }
         if (!currentUserOptional.isPresent()) {
             // TODO: change into a correct exception.
-            throw new IllegalArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
 
         Group g = groupOptional.get();
