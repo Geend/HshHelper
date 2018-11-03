@@ -1,9 +1,6 @@
 package models.dtos;
 
-import play.data.validation.Constraints;
-
-public class AddUserToGroupDto {
-    @Constraints.Required
+public class UserIdDto {
     private Long userId;
 
     public Long getUserId() {

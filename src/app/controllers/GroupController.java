@@ -3,15 +3,11 @@ package controllers;
 import domainlogic.UnauthorizedException;
 import domainlogic.groupmanager.GroupManager;
 import domainlogic.groupmanager.GroupNameAlreadyExistsException;
-import io.ebean.Ebean;
-import io.ebean.Transaction;
-import io.ebean.annotation.TxIsolation;
 import models.Group;
 import models.User;
-import models.dtos.AddUserToGroupDto;
 import models.dtos.CreateGroupDto;
 import models.dtos.DeleteGroupDto;
-import models.dtos.RemoveGroupUserDto;
+import models.dtos.UserIdDto;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import play.data.Form;
@@ -23,10 +19,7 @@ import policy.session.SessionManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
 
@@ -34,8 +27,8 @@ import static play.libs.Scala.asScala;
 @Authentication.Required
 public class GroupController extends Controller {
     private final Form<CreateGroupDto> groupForm;
-    private final Form<RemoveGroupUserDto> removeGroupUserForm;
-    private final Form<AddUserToGroupDto> addUserToGroupForm;
+    private final Form<UserIdDto> removeGroupUserForm;
+    private final Form<UserIdDto> addUserToGroupForm;
     private final Form<DeleteGroupDto> deleteGroupForm;
 
     private final GroupManager groupManager;
@@ -44,8 +37,8 @@ public class GroupController extends Controller {
     @Inject
     public GroupController(FormFactory formFactory, UserFinder userFinder, GroupFinder groupFinder, GroupManager groupManager, SessionManager sessionManager) {
         this.groupForm = formFactory.form(CreateGroupDto.class);
-        this.removeGroupUserForm = formFactory.form(RemoveGroupUserDto.class);
-        this.addUserToGroupForm = formFactory.form(AddUserToGroupDto.class);
+        this.removeGroupUserForm = formFactory.form(UserIdDto.class);
+        this.addUserToGroupForm = formFactory.form(UserIdDto.class);
         this.deleteGroupForm = formFactory.form(DeleteGroupDto.class);
         this.groupManager = groupManager;
         this.sessionManager = sessionManager;
@@ -98,12 +91,12 @@ public class GroupController extends Controller {
     }
 
     public Result removeGroupMember(Long groupId) {
-        Form<RemoveGroupUserDto> form = removeGroupUserForm.bindFromRequest();
+        Form<UserIdDto> form = removeGroupUserForm.bindFromRequest();
         if(form.hasErrors()) {
             return badRequest("error");
         }
 
-        RemoveGroupUserDto ru = form.get();
+        UserIdDto ru = form.get();
 
         try {
             groupManager.removeGroupMember(sessionManager.currentUser().getUserId(), ru.getUserId(), groupId);
@@ -117,12 +110,12 @@ public class GroupController extends Controller {
     }
 
     public Result addGroupMember(Long groupId) {
-        Form<AddUserToGroupDto> form = addUserToGroupForm.bindFromRequest();
+        Form<UserIdDto> form = addUserToGroupForm.bindFromRequest();
         if(form.hasErrors()) {
             return badRequest("error");
         }
 
-        AddUserToGroupDto au = form.get();
+        UserIdDto au = form.get();
 
         try {
             groupManager.addGroupMember(sessionManager.currentUser().getUserId(), au.getUserId(), groupId);

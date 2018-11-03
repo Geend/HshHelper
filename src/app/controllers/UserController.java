@@ -35,7 +35,7 @@ public class UserController extends Controller {
     private Form<CreateUserDto> createUserForm;
     private Form<ResetUserPasswordDto> resetUserPasswordForm;
     private Form<DeleteSessionDto> deleteSessionForm;
-    private Form<DeleteUserDto> deleteUserForm;
+    private Form<UserIdDto> deleteUserForm;
     private final SessionManager sessionManager;
 
 
@@ -45,7 +45,7 @@ public class UserController extends Controller {
         this.createUserForm = formFactory.form(CreateUserDto.class);
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
         this.deleteSessionForm = formFactory.form(DeleteSessionDto.class);
-        this.deleteUserForm = formFactory.form(DeleteUserDto.class);
+        this.deleteUserForm = formFactory.form(UserIdDto.class);
         this.sessionManager = sessionManager;
     }
 
@@ -71,7 +71,7 @@ public class UserController extends Controller {
     @Authentication.Required
     public Result deleteUser() {
         User currentUser = sessionManager.currentUser();
-        Form<DeleteUserDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
+        Form<UserIdDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
         if(boundForm.hasErrors()) {
             return badRequest();
         }
