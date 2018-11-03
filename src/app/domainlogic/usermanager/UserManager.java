@@ -1,5 +1,6 @@
 package domainlogic.usermanager;
 
+import domainlogic.InvalidArgumentException;
 import domainlogic.UnauthorizedException;
 import extension.HashHelper;
 import extension.PasswordGenerator;
@@ -75,15 +76,15 @@ public class UserManager {
         return plaintextPassword;
     }
 
-    public void deleteUser(Long userId, Long userToBeDeletedId) throws UnauthorizedException {
+    public void deleteUser(Long userId, Long userToBeDeletedId) throws UnauthorizedException, InvalidArgumentException {
         Optional<User> currentUser = this.userFinder.byIdOptional(userId);
         Optional<User> userToDelete = this.userFinder.byIdOptional(userToBeDeletedId);
 
         if(!currentUser.isPresent())
-            throw new IllegalArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
 
         if(!userToDelete.isPresent())
-            throw new IllegalArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
 
 
         if(!this.specification.CanDeleteUser(currentUser.get(), userToDelete.get())) {
@@ -100,10 +101,10 @@ public class UserManager {
         return this.userFinder.all();
     }
 
-    public void resetPassword(String username) {
+    public void resetPassword(String username) throws InvalidArgumentException {
         Optional<User> userOptional = userFinder.byName(username);
         if (!userOptional.isPresent()) {
-            throw new IllegalArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
         User user = userOptional.get();
 

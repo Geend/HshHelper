@@ -24,7 +24,8 @@ POST        /groups/:groupId/members/add           controllers.GroupController.a
 GET         /sessions                              controllers.UserController.showActiveUserSessions()
 POST        /sessions/delete                       controllers.UserController.deleteUserSession()
 
-GET         /forbidden                             controllers.ForbiddenController.showForbiddenMessage()
+GET         /forbidden                             controllers.ErrorController.showForbiddenMessage()
+GET         /badrequest                            controllers.ErrorController.showBadRequestMessage()
 
 
 GET         /assets/*file                          controllers.Assets.at(path="/public", file)

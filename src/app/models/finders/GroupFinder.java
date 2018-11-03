@@ -15,7 +15,12 @@ public class GroupFinder extends Finder<Long, Group> {
     }
 
     public Optional<Group> byIdOptional(Long id) {
-        return Optional.of(this.byId(id));
+
+        Group group = this.byId(id);
+        if (group == null) {
+            return Optional.empty();
+        }
+        return Optional.of(group);
     }
 
     public Optional<Group> byName(String name) {
