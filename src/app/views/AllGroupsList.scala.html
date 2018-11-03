@@ -1,0 +1,49 @@
+@import models.dtos.DeleteGroupDto
+@import policy.session.SessionManager.SessionInstance
+@(groups: Seq[Group], deleteGroupForm: Form[DeleteGroupDto])
+
+@import bootstrapHelper._
+
+@viewGroupButton(g: Group) = {
+    @if(policy.Specification.instance.CanViewGroupDetails(SessionInstance().currentUser(), g)) {
+        @link("Mitglieder bearbeiten", routes.GroupController.showGroup(g.getGroupId()))
+    }
+}
+
+@deleteGroupButton(g: Group) = {
+    @if(policy.Specification.instance.CanDeleteGroup(SessionInstance().currentUser(), g)) {
+        @bootstrapHelper.form(
+            routes.GroupController.deleteGroup(g.getGroupId()),
+            deleteGroupForm,
+            scala.collection.Map(
+                "groupId" -> Input(InputType.Hidden,
+                    value = Left(g.getGroupId().toString))
+            ),
+            button = bootstrapHelper.button("Gruppe loeschen")
+        )
+    }
+}
+
+@Main("Alle Gruppen") {
+        <div class="container-fluid">
+            <div class="row justify-content-between">
+                <div class="col-auto mr-auto">
+                    <h2>Alle Gruppen</h2>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid" role="main">
+            <div class="row flex-xl-row">
+                <div class="col px-3 py-3 bd-content col-align-self-center">
+                @table(groups
+                        .map(g => scala.collection.Map(
+                                "Gruppenname" -> Left(g.getName()),
+                                "Gruppenmitglieder anschauen" -> Right(viewGroupButton(g)),
+                                "Gruppe loeschen" -> Right(deleteGroupButton(g))
+                )))
+                </div>
+            </div>
+        </div>
+
+
+}

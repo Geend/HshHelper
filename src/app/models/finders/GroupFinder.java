@@ -26,4 +26,6 @@ public class GroupFinder extends Finder<Long, Group> {
     public Optional<Group> byName(String name) {
         return this.query().where().eq("name", name).findOneOrEmpty();
     }
+
+
 }

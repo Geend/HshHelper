@@ -204,4 +204,15 @@ public class Specification {
 
         return false;
     }
+
+    public boolean CanSeeAllGroups(User currentUser) {
+        if(currentUser == null) {
+            return false;
+        }
+        if(currentUser.isAdmin()) {
+            return true;
+        }
+
+        return false;
+    }
 }

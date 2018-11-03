@@ -203,4 +203,32 @@ public class GroupManagerTests {
         gm.deleteGroup(peterId, allId);
         verify(defaultServer, never()).delete(all);
     }
+
+    @Test
+    public void adminCanSeeAllGroups() throws UnauthorizedException, InvalidArgumentException {
+        when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
+        when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
+        when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
+
+        gm.getAllGroups(adminId);
+        verify(groupFinder).all();
+    }
+
+    @Test
+    public void nonAdminCanNotSeeAllGroups() throws UnauthorizedException, InvalidArgumentException {
+        when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
+        when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
+        when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
+
+        expected.expect(UnauthorizedException.class);
+        gm.getAllGroups(klausId);
+        verify(groupFinder, never()).all();
+    }
+
+    @Test
+    public void getAllGroupsNullInput() throws UnauthorizedException, InvalidArgumentException {
+        expected.expect(InvalidArgumentException.class);
+        gm.getAllGroups(null);
+        verify(groupFinder, never()).all();
+    }
 }
