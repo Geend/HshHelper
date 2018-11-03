@@ -9,6 +9,6 @@ import static play.libs.Scala.asScala;
 public class ForbiddenController  extends Controller {
 
     public Result showForbiddenMessage() {
-        return ok(views.html.Forbidden.render());
+        return forbidden(views.html.Forbidden.render());
     }
 }
