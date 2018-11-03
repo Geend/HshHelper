@@ -138,7 +138,7 @@ public class UserController extends Controller {
         }
 
 
-        return ok("An email with a temporary password was send to you");
+        return ok(views.html.ResetUserPasswordResult.render());
     }
 
 
