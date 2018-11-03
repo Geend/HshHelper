@@ -1,6 +1,10 @@
 package models.dtos;
 
-public class RemoveGroupUserDto {
+import play.data.validation.Constraints;
+
+public class UserIdDto {
+
+    @Constraints.Required
     private Long userId;
 
     public Long getUserId() {
@@ -10,5 +14,4 @@ public class RemoveGroupUserDto {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
-    
 }

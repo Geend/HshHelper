@@ -3,10 +3,9 @@
 
 @import scala.collection.JavaConverters._
 
-@import models.dtos.AddUserToGroupDto
-@import models.dtos.RemoveGroupUserDto
+@import models.dtos.UserIdDto
 @import policy.session.SessionManager.SessionInstance
-@(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[AddUserToGroupDto], removeGroupUserForm: Form[RemoveGroupUserDto])
+@(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[UserIdDto], removeGroupUserForm: Form[UserIdDto])
 
 @removeMemberButton(member: User) = {
     @if(policy.Specification.instance.CanRemoveGroupMember(SessionInstance().currentUser(), group, member)) {

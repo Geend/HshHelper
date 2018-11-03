@@ -3,8 +3,6 @@ package models.dtos;
 import play.data.validation.Constraints;
 import policy.ConstraintValues;
 
-import javax.validation.Constraint;
-
 import static policy.ConstraintValues.MAX_USERNAME_LENGTH;
 
 public class CreateUserDto {
