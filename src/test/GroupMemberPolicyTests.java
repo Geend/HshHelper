@@ -183,11 +183,6 @@ public class GroupMemberPolicyTests {
     }
 
     @Test
-    public void memberCanRemoveHimselfFromGroup() {
-        assertThat(true).isFalse();
-    }
-
-    @Test
     public void memberCannotRemoveOtherMembersFromGroup() {
         boolean actual = Specification.instance.CanRemoveGroupMember(klaus, petersGroup, adminTwo);
         assertThat(actual).isFalse();
