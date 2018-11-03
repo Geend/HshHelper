@@ -1,5 +1,7 @@
 package policy.session;
 
+import domainlogic.InvalidArgumentException;
+import domainlogic.UnauthorizedException;
 import models.User;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -70,6 +72,31 @@ public class SessionManager {
         return currentSession().getUser();
     }
 
+    public void destroySessionOfCurrentUser(UUID sessionId) throws InvalidArgumentException, UnauthorizedException {
+        Optional<Session> session = getUserSession(currentUser(), sessionId);
+        if (!session.isPresent()) {
+            throw new InvalidArgumentException();
+        }
+
+        if (!policy.Specification.instance.CanDeleteSession(currentUser(), session.get())) {
+            throw new UnauthorizedException();
+        }
+
+        session.get().destroy();
+    }
+
+    private Optional<Session> getUserSession(User user, UUID sessionKey) {
+        Optional<InternalSession> session = InternalSession.finder.query().where().eq("user", user).eq("sessionKey", sessionKey).findOneOrEmpty();
+
+        Optional<Session> ret = Optional.empty();
+        if(session.isPresent()) {
+            ret = Optional.of(new Session(session.get()));
+        }
+
+        return ret;
+    }
+
+
     public void destroyCurrentSession() {
         if(!hasActiveSession()) {
             throw new RuntimeException("There is no active session");
@@ -94,16 +121,6 @@ public class SessionManager {
         return result;
     }
 
-    public Optional<Session> getUserSession(User user, UUID sessionKey) {
-        Optional<InternalSession> session = InternalSession.finder.query().where().eq("user", user).eq("sessionKey", sessionKey).findOneOrEmpty();
-
-        Optional<Session> ret = Optional.empty();
-        if(session.isPresent()) {
-            ret = Optional.of(new Session(session.get()));
-        }
-
-        return ret;
-    }
 
     public boolean hasActiveSession() {
         return currentSession() != null;
