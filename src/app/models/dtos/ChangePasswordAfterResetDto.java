@@ -4,6 +4,8 @@ import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import policy.ConstraintValues;
 
+import java.util.Objects;
+
 import static policy.ConstraintValues.MAX_PASSWORD_LENGTH;
 import static policy.ConstraintValues.MAX_USERNAME_LENGTH;
 
@@ -71,7 +73,7 @@ public class ChangePasswordAfterResetDto implements Constraints.Validatable<Vali
     @Override
     public ValidationError validate() {
 
-        if(!password.equals(passwordRepeat)){
+        if(!Objects.equals(password, passwordRepeat)){
             return new ValidationError("passwordRepeat", "Passwords do not match");
         }
         return null;
