@@ -9,6 +9,7 @@ import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.User;
 import models.finders.UserFinder;
+import models.finders.UserFinderQueryOptions;
 import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
 import policy.Specification;
@@ -61,7 +62,7 @@ public class UserManager {
             if(userFinder.byName(username).isPresent()) {
                 throw new UsernameAlreadyExistsException();
             }
-            if(userFinder.byEmail(email).isPresent()) {
+            if(userFinder.byEmail(email, UserFinderQueryOptions.CaseInsensitive).isPresent()) {
                 throw new EmailAlreadyExistsException();
             }
             newUser = new User(username,
