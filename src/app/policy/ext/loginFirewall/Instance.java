@@ -56,18 +56,19 @@ public class Instance {
 
         String incrSql =
             "INSERT INTO loginFirewall (ident, laggy_dt, count, expiry) \n"+
-            "VALUES(:ident, :laggy_dt, 1, :expiry_dt) \n"+
-            "ON DUPLICATE KEY UPDATE count = count + 1";
+            "VALUES(:ident, :laggy_dt, :one, :expiry_dt) \n"+
+            "ON DUPLICATE KEY UPDATE count = count + :one";
         SqlUpdate upd = Ebean.createSqlUpdate(incrSql);
         upd.setParameter("ident", key);
         upd.setParameter("laggy_dt", laggyDt);
         upd.setParameter("expiry_dt", laggyDt.plusHours(Firewall.RelevantHours));
+        upd.setParameter("one", 1);
         upd.execute();
     }
 
     private long getKeyCount(String key) {
         String countSql =
-            "SELECT nvl(sum(count),0) as count FROM loginFirewall WHERE ident=:ident AND laggy_dt > :dt_lower_bound";
+            "SELECT nvl(sum(count),ZERO()) as count FROM loginFirewall WHERE ident=:ident AND laggy_dt > :dt_lower_bound";
 
         DateTime lowerBound = LaggyDT.Get();
         lowerBound = lowerBound.minusHours(Firewall.RelevantHours);

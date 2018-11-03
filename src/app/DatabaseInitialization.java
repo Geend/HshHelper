@@ -30,6 +30,7 @@ public class DatabaseInitialization {
             stmt.execute("TRUNCATE TABLE groups");
             stmt.execute("TRUNCATE TABLE internal_session");
             stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
+            stmt.execute("SET ALLOW_LITERALS NONE");
         });
         Logger.info("DatabaseInitialization - Prepare DB; Truncated");
 
