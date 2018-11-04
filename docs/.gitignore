@@ -11,6 +11,11 @@
 *.run.xml
 *.toc
 *.eps
+*.dvi
+*.ps
+*.fls
+*.glsdefs
+*.fdb_latexmk
 
 # ignore all pdfs but these two because they contain images needed for the HsH LaTeX template
 *.pdf
