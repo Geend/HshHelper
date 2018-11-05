@@ -1,10 +1,14 @@
 # ignore files LaTeX creates during compilation
 *.acn
+*.acr
+*.alg
 *.aux
 *.bbl
 *.bcf
 *.blg
 *.glo
+*.glg
+*.gls
 *.ist
 *.lof
 *.out

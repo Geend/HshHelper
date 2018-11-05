@@ -1,0 +1,112 @@
+\typeout{Default HsH template with few adjustments and same base imports for our master project <2018-10-31> Dennis Grabowski}
+\NeedsTeXFormat{LaTeX2e}
+
+\ProvidesClass{hshhelper_base}[2018-10-31 hshhelper: Default HsH template with few adjustments and same base imports for our master project]
+
+% Grundgröße 12pt, zweiseitig
+% \LoadClass[fontsize=12pt,DIV=14,BCOR=10mm,a4paper,parskip=half-,bibliography=totocnumbered]{scrreprt}
+
+% Sprachpaket für Deutsch (Umlaute, Trennung,deutsche Überschriften)
+\RequirePackage[ngerman, english]{babel}
+\RequirePackage{blindtext}
+%Graphikeinbindung, Hyperref (alles klickbar, Bookmarks),
+%Math. Symbole aus AmsTeX
+\RequirePackage{graphicx,amssymb,url,atbegshi,etoolbox}
+
+\RequirePackage[backend=biber,natbib=true, style=numeric, citestyle=numeric, maxnames=7, minnames=1, maxcitenames=2, url=true]{biblatex}
+% Umlaute und über Tastatur einzugeben
+\RequirePackage[utf8]{inputenc}
+% add table of contents and other tables automatically
+\RequirePackage[nottoc]{tocbibind}
+%\RequirePackage[toc,page]{appendix}
+
+%% json related packages
+% dont use bera, can't get it at the work PC
+%\RequirePackage{bera} % optional: just to have a nice mono-spaced font
+\RequirePackage{listings}
+\RequirePackage{textcomp}
+\RequirePackage{tabularx}
+\RequirePackage{pifont}
+
+\RequirePackage{xcolor}
+\definecolor{hsh-f4-orange}{rgb}{0.862745098, 0.235294118, 0.019607843}
+
+\RequirePackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={hsh-f4-orange},
+    citecolor={hsh-f4-orange},
+    urlcolor={blue!80!black}
+}
+
+\ExecuteOptions{ngerman}
+\ProcessOptions
+
+% create glossaries
+\RequirePackage[toc,section=chapter,nopostdot,acronym,style=list]{glossaries}
+% style & idea copied from: https://tex.stackexchange.com/questions/8946/how-to-combine-acronym-and-glossary
+\RequirePackage{xparse}
+\DeclareDocumentCommand{\newdualentry}{ O{} O{} m m m m } {
+
+  %%% The glossary entry the acronym links to
+  \newglossaryentry{g-#3}{name={#5},
+      description={#6},#1}
+
+  %%% define the acronym and use the see= option
+  \newglossaryentry{#3}{type=\acronymtype, name={#4}, description={#5}, first={#5 (#4)\glsadd{g-#3}}, see=[Glossareintrag:]{g-#3}}
+}
+
+\RequirePackage[autostyle=true,german=quotes]{csquotes}
+
+\RequirePackage[headsepline,automark]{scrlayer-scrpage}
+
+% Seitenköpfe automatisch
+\KOMAoptions{headinclude}
+
+%%% Change settings for epigraphs
+%%% Change chapter format, if needed.
+% customize chapter format:
+% \KOMAoption{headings}{twolinechapter}
+% \renewcommand*\chapterformat{\thechapter\autodot}
+
+% customize dictum format:
+\setkomafont{dictumtext}{\itshape\small}
+\setkomafont{dictumauthor}{\normalfont}
+\renewcommand*\dictumwidth{\linewidth}
+\renewcommand*\dictumauthorformat[1]{--- #1}
+\renewcommand*\dictumrule{}
+
+\renewcommand{\lstlistingname}{Quellcode}
+
+\makeatletter
+\makeatother
+
+\makeglossaries
+
+\loadglsentries[main]{acronyms.tex}
+
+% Festlegung Kopf- und Fußzeile
+\defpagestyle{meinstil}{%
+{\headmark \hfill}
+{\hfill \headmark}
+{\hfill \headmark\hfill }
+(\textwidth,.4pt)
+}{%
+(\textwidth,.4pt)
+{\pagemark\hfill Dennis Grabowski, Julius Zint, Philip Matesanz, Torben Voltmer}
+{Version 1.0 vom \today \hfill \pagemark}
+{Version 1.0 vom \today\hfill\pagemark}
+}
+\pagestyle{meinstil}
+
+\raggedbottom
+\renewcommand{\topfraction}{1}
+\renewcommand{\bottomfraction}{1}
+
+\bibliography{literature.bib}
+\graphicspath{{./images/}}
+
+\newcommand{\greencheckmark}{\textcolor{green}{\ding{51}}}%
+\newcommand{\redxmark}{\textcolor{red}{\ding{55}}}%
+
+\endinput
