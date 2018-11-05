@@ -4,6 +4,7 @@ import extension.HashHelper;
 import models.User;
 import models.finders.UserFinder;
 
+import javax.inject.Inject;
 import java.util.Optional;
 
 public class Authentification {
@@ -31,18 +32,27 @@ public class Authentification {
         }
     }
 
-    public static Result Perform(String username, String password) {
-        Optional<User> user = UserFinder.byName(username);
+    private UserFinder userFinder;
+    private HashHelper hashHelper;
+
+    @Inject
+    public Authentification(UserFinder userFinder, HashHelper hashHelper) {
+        this.userFinder = userFinder;
+        this.hashHelper = hashHelper;
+    }
+
+    public Result Perform(String username, String password) {
+        Optional<User> user = userFinder.byName(username);
 
         // Nutzer existiert nicht!
         if(!user.isPresent()) {
+            // Statistik-Angriff verhindern.
+            // Aufrufzeit darf sich nicht maßgeblich unterscheiden, wenn kein Nutzer existiert.
+            hashHelper.hashPassword(password);
             return new Result(false, false, null);
         }
 
         // Nutzer existiert
-
-        //TODO: Use dependency injection for this HashHelper
-        HashHelper hashHelper = new HashHelper();
         boolean success = hashHelper.checkHash(password, user.get().getPasswordHash());
         return new Result(success, true, user.get());
     }

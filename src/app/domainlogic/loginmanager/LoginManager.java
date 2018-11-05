@@ -13,19 +13,21 @@ import javax.inject.Inject;
 
 public class LoginManager {
 
-    private HashHelper hashHelper;
+    private Authentification authentification;
     private Firewall loginFirewall;
     private SessionManager sessionManager;
+    private HashHelper hashHelper;
 
     @Inject
-    public LoginManager(HashHelper hashHelper, Firewall loginFirewall, SessionManager sessionManager){
-        this.hashHelper = hashHelper;
+    public LoginManager(Authentification authentification, Firewall loginFirewall, SessionManager sessionManager, HashHelper hashHelper){
+        this.authentification = authentification;
         this.loginFirewall = loginFirewall;
         this.sessionManager = sessionManager;
+        this.hashHelper = hashHelper;
     }
 
     private User authenticate(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidLoginException {
-        Authentification.Result auth = Authentification.Perform(
+        Authentification.Result auth = authentification.Perform(
             username,
             password
         );
