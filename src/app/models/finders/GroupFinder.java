@@ -23,6 +23,10 @@ public class GroupFinder extends Finder<Long, Group> {
         return Optional.of(group);
     }
 
+    public Group getAllGroup() {
+        return this.query().where().eq("is_all_group", true).findOne();
+    }
+
     public Optional<Group> byName(String name) {
         return this.query().where().eq("name", name).findOneOrEmpty();
     }

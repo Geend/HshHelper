@@ -7,7 +7,9 @@ import extension.PasswordGenerator;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
+import models.Group;
 import models.User;
+import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import models.finders.UserFinderQueryOptions;
 import play.libs.mailer.Email;
@@ -15,12 +17,14 @@ import play.libs.mailer.MailerClient;
 import policy.Specification;
 
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 public class UserManager {
     private UserFinder userFinder;
+    private GroupFinder groupFinder;
     private PasswordGenerator passwordGenerator;
     private MailerClient mailerClient;
     private HashHelper hashHelper;
@@ -30,12 +34,14 @@ public class UserManager {
     @Inject
     public UserManager(
             UserFinder userFinder,
+            GroupFinder groupFinder,
             PasswordGenerator passwordGenerator,
             MailerClient mailerClient,
             HashHelper hashHelper,
             EbeanServer server,
             Specification specification)
     {
+        this.groupFinder = groupFinder;
         this.specification = specification;
         this.ebeanServer = server;
         this.mailerClient = mailerClient;
@@ -58,7 +64,8 @@ public class UserManager {
             throw new UsernameCannotBeAdmin();
         }
 
-        try(Transaction tx = this.ebeanServer.beginTransaction(TxIsolation.REPEATABLE_READ)) {
+        Group allGroup = this.groupFinder.getAllGroup();
+        try(Transaction tx = this.ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
             if(userFinder.byName(username).isPresent()) {
                 throw new UsernameAlreadyExistsException();
             }
@@ -70,6 +77,10 @@ public class UserManager {
                     passwordHash,
                     true,
                     quota);
+            HashSet<Group> groups = new HashSet<>();
+            groups.add(allGroup);
+            newUser.setGroups(groups);
+
             this.ebeanServer.save(newUser);
             tx.commit();
         }
