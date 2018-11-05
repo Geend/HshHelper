@@ -35,6 +35,13 @@ public class LoginManager {
         Long uid = null;
         if(auth.userExists()) {
             uid = auth.user().getUserId();
+        } else {
+            // Negativen Zahlenraum für "virtuelle" UIDs (Hashmapping) nutzen
+            Long fakeUid = hashHelper.insecureStringHash(username);
+            if(fakeUid > 0) {
+                fakeUid = fakeUid * -1;
+            }
+            uid = fakeUid;
         }
 
         Instance fw = loginFirewall.get(Http.Context.current().request().remoteAddress());
