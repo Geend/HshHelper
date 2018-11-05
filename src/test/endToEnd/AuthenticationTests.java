@@ -1,134 +1,85 @@
 package endToEnd;
 
-import com.typesafe.config.ConfigFactory;
-import controllers.LoginController;
-import controllers.UserController;
-import controllers.routes;
-import org.apache.http.protocol.HTTP;
-import org.hamcrest.Matchers;
-import org.junit.*;
+import com.google.common.collect.ImmutableList;
+import extension.test.WSTestClientStateful;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import play.Application;
-import play.api.http.HttpErrorHandlerExceptions;
 import play.api.test.CSRFTokenHelper;
-import play.filters.csrf.CSRF;
-import play.filters.csrf.CSRFFilter;
-import play.inject.guice.GuiceApplicationBuilder;
-import play.libs.ws.WSClient;
 import play.libs.ws.WSCookie;
 import play.libs.ws.WSRequest;
 import play.libs.ws.WSResponse;
-import play.mvc.EssentialFilter;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.TestServer;
-import play.test.WSTestClient;
-import play.test.WithApplication;
-import router.Routes;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.ebean.Ebean.json;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.stop;
 
 @RunWith(Enclosed.class)
 public class AuthenticationTests {
-
-    private static WSClient ws;
-    private static List<WSCookie> wsCookies;
     private static TestServer server;
     private static Application app;
+    private static WSTestClientStateful ws;
 
     @BeforeClass
     public static void setup() {
         app = fakeApplication();
         server = new TestServer(19001, app);
-        ws = WSTestClient.newClient(19001);
         server.start();
+        ws = new WSTestClientStateful(19001);
     }
 
     @AfterClass
-    public static void teardown() {
-        try {
-            ws.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void teardown() throws IOException {
+        ws.close();
         server.stop();
     }
 
-    public static String getCsrfToken(String url) {
-        CompletionStage<WSResponse> request = request(url).get();
+    public static String getCsrfToken(String url) throws Exception {
+        WSResponse response = ws.get(url);
+        String body = response.getBody();
+        String regex = "csrfToken\" value=\"([^\"]+)";
+        Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+        Matcher matcher = pattern.matcher(body);
 
-        try {
-            WSResponse response = request.toCompletableFuture().get();
-            String body = response.getBody();
-
-            String regex = "csrfToken\" value=\"([^\"]+)";
-            Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-            Matcher matcher = pattern.matcher(body);
-
-            if(!matcher.find()) {
-                throw new Exception("Couldn't find any tokens");
-            }
-
-            return matcher.group(1);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
+        if(!matcher.find()) {
+            throw new Exception("Couldn't find any tokens");
         }
 
-        return null;
+        return matcher.group(1);
     }
 
-    public static void login(String username, String password) {
-        String loginCsrf = getCsrfToken("/login");
+    public static void login(String username, String password) throws Exception {
+        String csrfToken = getCsrfToken("/login");
 
-        CompletionStage<WSResponse> postRequest = ws.url("/login")
-                .setContentType("application/x-www-form-urlencoded")
-                .post("username="+username+"&password="+password+"&csrfToken="+loginCsrf);
-
-        try {
-            WSResponse response = postRequest.toCompletableFuture().get();
-            int test = response.getStatus();
-            if(response.getStatus() <300 || response.getStatus() > 399) {
-                fail();
-            }
-
-            wsCookies = response.getCookies();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
-    }
-
-    public static WSRequest request(String url) {
-        if(wsCookies == null)
-            return ws.url(url);
-        return ws.url(url).setCookies(wsCookies);
+        WSResponse response = ws.post("/login", ImmutableList.of(
+                new BasicNameValuePair("username", username),
+                new BasicNameValuePair("password", password),
+                new BasicNameValuePair("csrfToken", csrfToken)
+        ));
     }
 
     @RunWith(Parameterized.class)
     public static class AdminUserAuthenticationTests {
-        private static List<WSCookie> cookies;
-
         @BeforeClass
-        public static void setup() {
+        public static void setup() throws Exception {
             login("admin", "admin");
         }
 
@@ -160,23 +111,16 @@ public class AuthenticationTests {
         @Test
         public void checkThatUnauthorizedUserCanOnlyAccessTheirPages() throws Exception {
             if(httpVerb.equals("GET")) {
-                WSResponse response = request(httpEndpoint).get().toCompletableFuture().get();
+                WSResponse response = ws.get(httpEndpoint);
                 assertEquals(expectedHttpStatus, response.getStatus());
             }
 
             else if(httpVerb.equals("POST")) {
                 String csrfToken = getCsrfToken(httpEndpoint);
-                WSRequest req = request(httpEndpoint).setContentType("application/x-www-form-urlencoded");
-                req = req.setMethod("POST");
-                req = req.setBody("csrfToken="+csrfToken);
-                CompletionStage<WSResponse> response = req.execute();
-                WSResponse xresponse = response.toCompletableFuture().get();
-                CompletionStage<WSResponse> request = request(httpEndpoint).setContentType("application/x-www-form-urlencoded").post("csrfToken="+csrfToken);
-                /*
-                WSResponse xresponse = request(httpEndpoint).setContentType("application/x-www-form-urlencoded").post("csrfToken="+csrfToken).toCompletableFuture().get();
-                String body = response.getBody();
+                WSResponse response = ws.post(httpEndpoint, ImmutableList.of(
+                        new BasicNameValuePair("csrfToken", csrfToken)
+                ));
                 assertEquals(expectedHttpStatus, response.getStatus());
-                */
             }
 
             else {
@@ -239,52 +183,6 @@ public class AuthenticationTests {
             builder = CSRFTokenHelper.addCSRFToken(builder);
             Result result = Helpers.route(app, builder);
             assertEquals(expectedHttpStatus, result.status());
-        }
-    }
-
-    public static class AdminAuthenticationTests {
-
-        @Test
-        public void checkThatAdminCanLogin() {
-            HashMap<String, String> formValues = new HashMap<String, String>();
-            formValues.put("username", "admin");
-            formValues.put("password", "admin");
-            Http.RequestBuilder builder = new Http.RequestBuilder()
-                    .method("POST")
-                    .uri("/login")
-                    .bodyForm(formValues);
-            builder = CSRFTokenHelper.addCSRFToken(builder);
-            Result result = Helpers.route(app, builder);
-            assertEquals(Http.Status.SEE_OTHER, result.status());
-            Optional<String> location = result.redirectLocation();
-            assertThat(location.get()).isEqualTo("/");
-        }
-
-        @Test
-        public void loginAdminWithWSClient() {
-            try {
-                CompletionStage<WSResponse> postRequest = ws.url("/login")
-                        .addHeader("Csrf-Token", "nocheck")
-                        .setContentType("application/x-www-form-urlencoded")
-                        .post("username=admin&password=admin");
-                WSResponse response = postRequest.toCompletableFuture().get();
-                assertEquals(Http.Status.SEE_OTHER, response.getStatus());
-                assertEquals(response.getSingleHeader("Location").get(), "/");
-
-                List<WSCookie> cookies = new ArrayList<>();
-                cookies.add(response.getCookie("PLAY_SESSION").get());
-
-                CompletionStage<WSResponse> getRequest = ws
-                        .url(response.getSingleHeader("Location").get())
-                        .setCookies(cookies)
-                        .get();
-                WSResponse getResponse = getRequest.toCompletableFuture().get();
-                assertEquals(Http.Status.OK, getResponse.getStatus());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

@@ -1,4 +1,10 @@
-\documentclass[12pt,DIV14,BCOR10mm,a4paper,twoside,parskip=half-,headsepline,headinclude,english,ngerman,bibliography=totocnumbered]{scrreprt}
+% arara: pdflatex: { shell: true, draft: true }
+% arara: makeglossaries
+% arara: biber
+% arara: pdflatex: { shell: true, synctex: true }
+% arara: pdflatex: { shell: true, synctex: true }
+
+\documentclass[12pt,DIV14,BCOR10mm,a4paper,parskip=half-,english,ngerman,bibliography=totocnumbered]{scrreprt}
 % Grundgröße 12pt, zweiseitig
 \usepackage[headsepline,automark]{scrpage2}
 \KOMAoptions{headinclude}
@@ -9,6 +15,7 @@
 %Graphikeinbindung, Hyperref (alles klickbar, Bookmarks),
 %Math. Symbole aus AmsTeX
 \usepackage{graphicx,hyperref,amssymb,url,atbegshi,etoolbox}
+
 \usepackage[backend=biber,natbib=true, style=numeric, citestyle=numeric, maxnames=7, minnames=1, maxcitenames=2, url=true]{biblatex}
 % Umlaute und über Tastatur einzugeben
 \usepackage[utf8]{inputenc}
@@ -23,6 +30,18 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{textcomp}
+\usepackage{tabularx}
+\usepackage{pifont}
+
+\definecolor{hsh-f4-orange}{rgb}{0.862745098, 0.235294118, 0.019607843}
+
+\usepackage{xcolor}
+\hypersetup{
+    colorlinks,
+    linkcolor={hsh-f4-orange},
+    citecolor={hsh-f4-orange},
+    urlcolor={blue!80!black}
+}
 
 %%% Change settings for epigraphs
 %%% Change chapter format, if needed.
@@ -58,7 +77,7 @@
 
 \makeglossaries
 
-%\loadglsentries[main]{acronyms.tex}
+\loadglsentries[main]{acronyms.tex}
 
 % Festlegung Kopf- und Fußzeile
 \defpagestyle{meinstil}{%
@@ -81,6 +100,15 @@
 \bibliography{literature.bib}
 \graphicspath{{./images/}}
 
+\newcommand{\greencheckmark}{\textcolor{green}{\ding{51}}}%
+\newcommand{\redxmark}{\textcolor{red}{\ding{55}}}%
+
+\makeatletter
+\patchcmd{\scr@startchapter}{\if@openright\cleardoublepage\else\clearpage\fi}{}{}{}
+\makeatother
+
+\pagestyle{plain}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}    % hier gehts los
   \thispagestyle{empty} % Titelseite
@@ -93,8 +121,11 @@
 
   {\Large
   Dennis Grabowski, Julius Zint, Philip Matesanz, Torben Voltmer \\[2ex]
-  Masterprojekt \enquote{Entwicklung und Analyse einer sicheren Web-Anwendung} \\
-  Wintersemester 18/19
+  Masterprojekt \\
+  \enquote{Entwicklung und Analyse einer sicheren Web-Anwendung} \\
+  Wintersemester 18/19\makeatletter
+  \patchcmd{\scr@startchapter}{\if@openright\cleardoublepage\else\clearpage\fi}{}{}{}
+  \makeatother
  \\[5ex]
    \today }
 }
@@ -105,19 +136,127 @@
 
 \vspace*{-3cm}
 
+\clearpage
+
 \tableofcontents  % Inhaltsverzeichnis
+
+\clearpage
+
+\chapter{Annahmen}
+
+\begin{itemize}
+  \item Netzwerkverbindungen sind abhörsicher und von außen nicht beeinflussbar.
+  \item Betriebssystem, Hardware sowie verwendetete Bibliotheken enthalten keine sicherheitsrelevanten Fehler.
+  \item Hashing-Algorithmus \enquote{bcrypt} macht es einem Angreifer wirtschaftlich unmöglich, Passwörter durch Brute-Force oder Rainbow Tables herauszufinden.
+  \item Lösen eines Captchas ist für einen Angreifer wirtschaftlich undurchführbar.
+  \item Bibliotheksfunktion \texttt{java.security.SecureRandom} \autocite{JavaDocs.SecureRandom} erstellt Zufallszahlen, die kryptografisch sicher sind.
+  \item Einstellung \texttt{ALLOW\_LITERALS} der Datenbank \enquote{h2} verhindert SQL-Injections.
+  \item \enquote{\gls{jwt}}-Format ist kryptografisch sicher zur Speicherung von Session- sowie Cookie-Daten.
+  \item Applikation kann nur über die definierten Eintrittspunkte verwendet werden.
+  \item Benutzer des HsH-Helfers verraten nicht ihr Passwort an andere.
+  \item Initiale Benutzer \enquote{admin} ist vertrauenswürdig.
+  \item \textcolor{red}{Sicherheitsluecken, die durch HTTPS geloest werden koennen, werden nicht betrachtet?}
+\end{itemize}
+
+\chapter{Akteur}
+
+\begin{itemize}
+  \item Administratoren (A)
+  \item Gruppenbesitzer (GO)
+  \item Gruppenmitglied (GM)
+  \item Authentisierter Benutzer (U+)
+  \item Unauthentisierter Benutzer (U-)
+  \item \textcolor{red}{E-Mail Server}
+  \item \textcolor{red}{Google Recaptcha}
+\end{itemize}
+
+\chapter{Eintrittspunkte}
+
+\begin{itemize}
+  \item Netzwerkschnittstellen
+  \begin{itemize}
+    \item HTTP (Port 80)  [U-, U+, GM, GO, A]
+    \item \textcolor{red}{SMTP (Port 587) [U-]}
+  \end{itemize}
+\end{itemize}
+
+\chapter{Assets}
+
+\begin{itemize}
+  \item Benutzeranmeldeinformationen
+  \begin{itemize}
+    \item Passwort [-]
+    \item IP Adresse [-]
+    \item Session [-]
+  \end{itemize}
+  \item Privater Schlüssel zur Generation des JWT/der Sessions [-]
+  \item Gruppen [U+, GM, GO, A]
+  \item Nutzerkonto [-]
+\end{itemize}
+
+\chapter{Aktionen}
+
+\begin{itemize}
+  \item \textbf{AK1:} \textcolor{red}{Einloggen [U-]}
+  \item \textbf{AK2:} \textcolor{red}{Ausloggen [U+, GM, GO, A]}
+  \item \textbf{AK3:} Nutzer erstellen oder löschen [A]
+  \item \textbf{AK4:} Passwort zurücksetzen lassen [U-]
+  \item \textbf{AK5:} Passwort nach Zurücksetzung anpassen [U+, GM, GO, A]
+  \item \textbf{AK6:} Aktive Sessions anzeigen lassen [U+, GM, GO, A]
+  \item \textbf{AK7:} Aktive Sessions zerstören [U+, GM, GO, A]
+  \item \textbf{AK8:} Gruppe erstellen [U+, GM, GO, A]
+  \item \textbf{AK9:} Gruppe löschen [GO, A]
+  \item \textbf{AK10:} Nutzer zu einer Gruppe hinzufügen oder löschen [GO, A]
+  \item \textbf{AK11:} Gruppen anzeigen lassen [U+, GM, GO, A]
+  \item \textbf{AK12:} Mitglieder einer Gruppe sehen [GM, GO, A]
+\end{itemize}
+
+\chapter{Richtlinien}
+
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+
+% htbp = HereTopBottomPage (priority of where to place the table in case previous placement fails)
+\begin{table}[ht]
+  \begin{tabularx}{\textwidth}{| l | Y | Y | Y | Y |}
+      \hline
+      Aktion     & Administrator     & Gruppenbesitzer & Gruppenmitglied & Nutzer     \\ \hline
+      AK1        & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK2        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
+      AK3        & \greencheckmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK4        & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK5        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
+      AK6        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
+      AK7        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
+      AK8        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
+      AK9        & \greencheckmark & \greencheckmark  & \redxmark & \redxmark \\ \hline
+      AK10        & \greencheckmark & \greencheckmark  & \redxmark & \redxmark \\ \hline
+      AK11       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
+      AK12       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark \\ \hline
+  \end{tabularx}
+\end{table}
+
+\begin{itemize}
+  \item Nutzer können nur mit dem System interagieren, wenn sie authentisiert sind.
+  \item Nutzer können nur Gruppen sehen, dessen Mitglied sie sind.
+  \item Ausschliesslich Administratoren können alle Gruppen sehen.
+  \item Nutzer dürfen nur Mitglieder einer Gruppe hinzufügen, wenn sie der Besitzer dieser Gruppe sind.
+  \item Ausschliesslich Administratoren können Mitglieder zu allen Gruppen hinzufügen.
+  \item Nutzer dürfen nur Mitglieder aus einer Gruppe entfernen, wenn sie der Besitzer dieser Gruppe sind.
+  \item Ausschliesslich Administratoren können Mitglieder (aber nicht den Besitzer) aus allen Gruppen entfernen.
+  \item Kein Nutzer, auch nicht Administratoren, kann die Sessions anderer Nutzer betrachten oder zerstören.
+  \item \textcolor{red}{Soll hier noch rein, dass Passwörter/IPs auch nicht ausgelesen werden koennen?}
+\end{itemize}
+
+\clearpage
 
 \printbibliography
 
 % Can be used to add a list of acronyms with their description
-%\glsaddall
+% \glsaddall
 %\deftranslation{to=German}{Acronyms}{Abkürzungsverzeichnis}
 %\deftranslation{to=German}{Glossary}{Glossar}
 \printacronyms[title=Abkürzungsverzeichnis,toctitle=Abkürzungsverzeichnis]
 \printglossary[type=main]
-
-%\addcontentsline{toc}{chapter}{\listfigurename}
-\listoffigures      % Abbildungsverzeichnis
 
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis

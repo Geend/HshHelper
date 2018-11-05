@@ -107,6 +107,56 @@
 
 \tableofcontents  % Inhaltsverzeichnis
 
+\chapter{Benutzte Methoden}
+\section{Vier-Augen-Prinzip}
+\section{Tests}
+
+\subsection{Funktionale Tests}
+
+Classcoverage, Branchcoverage, Linecoverage, Methodcoverage
+End-to-End? Unittests? Wird DB getestet?
+Welche Funktionen wurden nicht getestet?
+
+\subsection{Tests zur Pruefung von sicherheitsrelevanten Funktionen}
+
+Sessionmanagement?
+Ist unser Cookie sicher und wirklich zufaellig?
+Brute-force Schutz (Stichwort: "Firewall")
+Authorization? Koennen Endpoints nur von den richtigen Privilegien angesurft werden?
+Wird CSRF richtig genutzt?
+Salted bcrypt richtig? Nutzen wir ausreichend Iterationen oder koennen wir mit einem Test das irgendwie knacken?
+Kommt das Captcha zur richtigen Zeit? Ist das Captcha austricksbar?
+Haben wir Quality rules fuer passwoerter?
+Koennen wir kaputte Daten in die Forms eintragen?
+Koennen wir irgendwelche Requests forgen?
+Koennen SQL-Injections ausgefuehrt werden?
+Setzen wir alle richtigen Security-Header?
+
+\subsection{Penetrationstests}
+
+Welche Penetrationstests wurden durchgefuehrt?
+Gibt es ggf. automatisierbare Skripts?
+Wenn ja, fuer welche Angriffe?
+
+\section{Reviews}
+
+Wer hat wann welchen Code reviewed?
+Zeitliche Schaetzung?
+
+\section{Static Analysis}
+
+Welche Tools haben wir benutzt?
+Wie haben wir sie eingeschaetzt?
+Warum haben wir sie verwendet?
+Wie haben wir sie verwendet?
+
+\section{Quelltextinspektion}
+
+Haben wir ggf. irgendwelche Checklisten nutzen koennen?
+Siehe
+
+\chapter{Gefundene Maengel}
+
 \printbibliography
 
 % Can be used to add a list of acronyms with their description
