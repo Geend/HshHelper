@@ -154,8 +154,8 @@
   \item \enquote{\gls{jwt}}-Format ist kryptografisch sicher zur Speicherung von Session- sowie Cookie-Daten.
   \item Applikation kann nur über die definierten Eintrittspunkte verwendet werden.
   \item Benutzer des HsH-Helfers verraten nicht ihr Passwort an andere.
-  \item Initiale Benutzer \enquote{admin} ist vertrauenswürdig.
-  \item \textcolor{red}{Sicherheitsluecken, die durch HTTPS geloest werden koennen, werden nicht betrachtet?}
+  \item Initialer Benutzer \enquote{admin} ist vertrauenswürdig.
+  \item Autogenerierte IDs der Datenbank \enquote{h2} sind aufsteigend und werden nicht wiederverwendet, sofern eine ID wieder frei wird.
 \end{itemize}
 
 \chapter{Akteur}
@@ -166,7 +166,7 @@
   \item Gruppenmitglied (GM)
   \item Authentisierter Benutzer (U+)
   \item Unauthentisierter Benutzer (U-)
-  \item \textcolor{red}{E-Mail Server}
+  \item E-Mail Server (EM)
   \item \textcolor{red}{Google Recaptcha}
 \end{itemize}
 
@@ -176,7 +176,8 @@
   \item Netzwerkschnittstellen
   \begin{itemize}
     \item HTTP (Port 80)  [U-, U+, GM, GO, A]
-    \item \textcolor{red}{SMTP (Port 587) [U-]}
+    \item SMTP (Port 587) [U-]
+    \item Konfigurationsdatei
   \end{itemize}
 \end{itemize}
 
@@ -186,29 +187,31 @@
   \item Benutzeranmeldeinformationen
   \begin{itemize}
     \item Passwort [-]
-    \item IP Adresse [-]
-    \item Session [-]
+    \item Session [U+, GM, GO, A]
   \end{itemize}
   \item Privater Schlüssel zur Generation des JWT/der Sessions [-]
+  \item Privater Schlüssel zur Validierung der Captchas [-]
   \item Gruppen [U+, GM, GO, A]
-  \item Nutzerkonto [-]
+  \item Nutzerkonto [A]
 \end{itemize}
 
 \chapter{Aktionen}
 
 \begin{itemize}
-  \item \textbf{AK1:} \textcolor{red}{Einloggen [U-]}
-  \item \textbf{AK2:} \textcolor{red}{Ausloggen [U+, GM, GO, A]}
-  \item \textbf{AK3:} Nutzer erstellen oder löschen [A]
-  \item \textbf{AK4:} Passwort zurücksetzen lassen [U-]
-  \item \textbf{AK5:} Passwort nach Zurücksetzung anpassen [U+, GM, GO, A]
-  \item \textbf{AK6:} Aktive Sessions anzeigen lassen [U+, GM, GO, A]
-  \item \textbf{AK7:} Aktive Sessions zerstören [U+, GM, GO, A]
-  \item \textbf{AK8:} Gruppe erstellen [U+, GM, GO, A]
-  \item \textbf{AK9:} Gruppe löschen [GO, A]
-  \item \textbf{AK10:} Nutzer zu einer Gruppe hinzufügen oder löschen [GO, A]
-  \item \textbf{AK11:} Gruppen anzeigen lassen [U+, GM, GO, A]
-  \item \textbf{AK12:} Mitglieder einer Gruppe sehen [GM, GO, A]
+  \item \textbf{AK1:} Einloggen [U-]
+  \item \textbf{AK2:} Ausloggen [U+, GM, GO, A]
+  \item \textbf{AK3:} Nutzer erstellen [A]
+  \item \textbf{AK4:} Nutzer löschen [A]
+  \item \textbf{AK5:} Passwort zurücksetzen lassen [U-, EM]
+  \item \textbf{AK6:} Passwort nach Zurücksetzung anpassen [U+, GM, GO, A]
+  \item \textbf{AK7:} Aktive Sessions anzeigen lassen [U+, GM, GO, A]
+  \item \textbf{AK8:} Aktive Sessions zerstören [U+, GM, GO, A]
+  \item \textbf{AK9:} Gruppe erstellen [U+, GM, GO, A]
+  \item \textbf{AK10:} Gruppe löschen [GO, A]
+  \item \textbf{AK11:} Nutzer zu einer Gruppe hinzufügen [GO, A]
+  \item \textbf{AK12:} Nutzer aus einer Gruppe löschen [GO, A]
+  \item \textbf{AK13:} Gruppen anzeigen lassen [U+, GM, GO, A]
+  \item \textbf{AK14:} Mitglieder einer Gruppe sehen [GM, GO, A]
 \end{itemize}
 
 \chapter{Richtlinien}
@@ -223,15 +226,17 @@
       AK1        & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
       AK2        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
       AK3        & \greencheckmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK4        & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK5        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
+      AK4        & \greencheckmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK5        & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
       AK6        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
       AK7        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
       AK8        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
-      AK9        & \greencheckmark & \greencheckmark  & \redxmark & \redxmark \\ \hline
+      AK9        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
       AK10        & \greencheckmark & \greencheckmark  & \redxmark & \redxmark \\ \hline
-      AK11       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
-      AK12       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark \\ \hline
+      AK11        & \greencheckmark & \greencheckmark  & \redxmark & \redxmark \\ \hline
+      AK12        & \greencheckmark & \greencheckmark  & \redxmark & \redxmark \\ \hline
+      AK13       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
+      AK14       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark \\ \hline
   \end{tabularx}
 \end{table}
 
@@ -244,7 +249,8 @@
   \item Nutzer dürfen nur Mitglieder aus einer Gruppe entfernen, wenn sie der Besitzer dieser Gruppe sind.
   \item Ausschliesslich Administratoren können Mitglieder (aber nicht den Besitzer) aus allen Gruppen entfernen.
   \item Kein Nutzer, auch nicht Administratoren, kann die Sessions anderer Nutzer betrachten oder zerstören.
-  \item \textcolor{red}{Soll hier noch rein, dass Passwörter/IPs auch nicht ausgelesen werden koennen?}
+  \item Passwörter der Nutzer können von keiner Person ausgelesen werden.
+  \item Ein Administrator hat nur schreibenden Zugriff auf ein Nutzerkonto beim Löschen. Ihm ist nicht möglich, andere Informationen aus dem Nutzerkonto zu lesen.
 \end{itemize}
 
 \clearpage
