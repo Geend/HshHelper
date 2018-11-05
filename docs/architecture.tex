@@ -116,6 +116,30 @@ Welche Klasse macht mit welcher Klasse was?
 
 \chapter{Sicherheitsmassnahmen}
 
+\section{Login Firewall}
+Der Login einer Web-Anwendung ist potentiell anfällig für Brute-Force-Angriffe, die darauf abzielen, eine valide Benutzername/Passwort Kombination zu finden. Aus diesem Grund, muss die Anwendung fehlerhafte Zugriffsversuche protokollieren und wenn eine Häufung selbiger auftritt, Maßnahmen ergreifen, um den Angriff zu verlangsamen oder gar zu stoppen. Die ergriffene Maßnahme sollte so gewählt werden, dass sie nicht selbst einen Angriffsvektor darstellt, wie z.B. das vollständige Sperren eines Accounts nach N falschen Logins - man könnte so legitime Nutzer vorsätzlich an der Benutzung der Anwendung hindern (Denial of Service).
+
+Aus diesem Grund verfügt unsere Anwendung über eine Komponente\footnote{policy.ext.loginFirewall}, die falsche Logins protokolliert und eine der folgenden Maßnahmen ergreift:
+
+\begin{enumerate}
+\item Spezifischen Benutzer-Account in Captcha-Mode versetzen
+\item Spezifische IP-Addresse in Captcha-Mode versetzen
+\item Spezifische IP-Addresse von Logins ausschließen
+\end{enumerate}
+
+Beim Captcha-Mode handelt es sich um eine Maßnahme, bei der ein Login lediglich möglich ist, wenn zugleich ein Google Recaptcha gelöst wird. Eine vollständige Sperrung eines Accounts findet durch unsere Firewall so nicht statt. Es wurde die Annahme getroffen, dass das automatisierte Lösen der Recaptchas zu aufwändig/teuer für einen Angreifer ist. Zugleich ist das ``unnötige'' Lösen eines Captchas für das Opfer ein vertretbares Hindernis.
+
+Lediglich IP-Addressen werden als schärfste Maßnahme vollständig von Logins ausgeschlossen. Sofern ein Angreifer nicht die gleiche IP-Adresse wie sein Opfer verwendet, kann er sich höchstens selbst vom Dienst ausschließen. Sollte eine Sitation vorliegen, bei der sich eine Vielzahl von Nutzern eine IP-Adresse teilt, besteht die Möglichkeit diese von der vollständigen Sperre auszuschließen.
+
+Die interne Datenstruktur der Login Firewall ist darauf optimiert, möglichst wenig Speicher zu verwenden und nutzt quasi Buckets, um aggregierte Informationen über Login-Versuche zu speichern. Die Buckets bilden ein fixes Zeitinterval ab. Führt ein Angreifer 1 Million fehlerhafte Logins in 10 Minuten durch, werden lediglich zwei Datenbank-Einträge erstellt: Einen mit Bezug auf den betroffenen Nutzer-Account und einen mit Bezug auf die IP des Angreifers. Beide Einträge verfügen über eine Zählvariable, die jeweils die Anzahl der fehlerhaften Logins beinhält.
+
+Der Verweis auf den Nutzer-Account findet über die numerische und eindeutige ID statt, über die jeder Account verfügt. Jener Fallgestaltung, bei der ein Login bei einem nicht-existenten Account erfolgt, wurde ebenfalls Rechnung getragen. Hierbei ist es erforderlich, dass die Firewall exakt so funktioniert, wie bei existierenden Accounts, um ein Information-Leakage zu verhindern: Würde die erste Maßnahme nie oder anders greifen als bei tatsächlich existenten Accounts wäre es möglich, zu prüfen ob ein Account bzw. der dazu korrospondierende Benutzername tatsächlich existiert.
+
+Zu diesem Zweck wird bei nicht-existenten Accounts der Benutzername mittels Hashing auf eine ``virtuelle'' User-ID gemappt. Die User-ID wird über ein Long repräsentiert, es wird jedoch ausschließlich der positive Zahlenraum verwendet. Vom Username wird der md5-Hash gebildet, die ersten 8 Byte werden als Long verwendet und ggf. invertiert. Der so resultierende negative Long-Wert wird in diesem Fall als Grundlage für die Protokollierung fehlerhafter Logins verwendet. Dass md5 kryptografisch bereits längst als geknackt gilt ist irrelevant, wir machen uns lediglich die gute Streuung und hohe Geschwindigkeit von md5 zu eigen.
+
+\section{Sessionkonzept}
+Zum 
+
 \section{Kryptografisch relevanten Informationen}
 
 Welche Algorithmen verwenden wir?
