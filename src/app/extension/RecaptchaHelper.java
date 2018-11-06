@@ -12,7 +12,7 @@ public class RecaptchaHelper {
     public static Html CaptchaField() {
         String rcPublicKey = Play.application().configuration().getString("recaptcha.publicKey");
         return  new Html("<script src='https://www.google.com/recaptcha/api.js'></script>"+
-                "<div class=\"g-recaptcha\" data-sitekey=\""+rcPublicKey+"\" data-callback=\"captchaCallback\"></div>");
+                "<div class=\"g-recaptcha\" data-sitekey=\""+rcPublicKey+"\"></div>");
     }
 
     public static boolean IsValidResponse(String response, String remoteIp) {
