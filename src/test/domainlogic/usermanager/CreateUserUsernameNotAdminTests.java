@@ -4,6 +4,7 @@ import domainlogic.UnauthorizedException;
 import extension.HashHelper;
 import extension.PasswordGenerator;
 import io.ebean.EbeanServer;
+import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,12 +43,13 @@ public class CreateUserUsernameNotAdminTests {
         MailerClient mailer = mock(MailerClient.class);
         UserFinder userFinder = mock(UserFinder.class);
         HashHelper hashHelper = mock(HashHelper.class);
+        GroupFinder groupFinder = mock(GroupFinder.class);
         EbeanServer defaultServer = mock(EbeanServer.class);
         Specification spec = mock(Specification.class);
         when(spec.CanCreateUser(any())).thenReturn(true);
         when(userFinder.byName(any())).thenReturn(Optional.empty());
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(userFinder, passwordGenerator, mailer, hashHelper, defaultServer, spec);
+        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, spec);
         sut.createUser(1l, this.username, "test@test.de", 5);
     }
 }
