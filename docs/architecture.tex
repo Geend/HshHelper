@@ -59,7 +59,15 @@ Der Verweis auf den Nutzer-Account findet über die numerische und eindeutige ID
 Zu diesem Zweck wird bei nicht-existenten Accounts der Benutzername mittels Hashing auf eine ``virtuelle'' User-ID gemappt. Die User-ID wird über ein Long repräsentiert, es wird jedoch ausschließlich der positive Zahlenraum verwendet. Vom Username wird der md5-Hash gebildet, die ersten 8 Byte werden als Long verwendet und ggf. invertiert. Der so resultierende negative Long-Wert wird in diesem Fall als Grundlage für die Protokollierung fehlerhafter Logins verwendet. Dass md5 kryptografisch bereits längst als geknackt gilt ist irrelevant, wir machen uns lediglich die gute Streuung und hohe Geschwindigkeit von md5 zu eigen.
 
 \section{Sessionkonzept}
-Zum
+Integraler Bestandteil unserer Anwendung ist eine Session-Funktionalität. Theoretisch bietet Play bereits eine Implementierung unter Verwendung von JWT\footnote{\url{https://jwt.io/}} mit der es möglich ist, unter Verwendung von signierten Cookies Daten im Client-Browser zu speichern. Die Sicherstellung der Authentifizierung ist jedoch für nahezu jede Funktionalität unserer Anwendung von Bedeutung. Aus diesem Grund wurde das Session Konzept soweit abstrahiert, dass eine Java-Annotation über einer Controller-Klasse oder einzelnen Controller-Methoden ausreicht, um zu garantieren, dass ausschließlich authentifizierte Nutzer auf selbige zugreifen können.
+
+Die Annotation bewirkt, dass der korrospondierende Request \underline{vor} Errichen der dazugehörigen Controller Methode abgefangen wird und eine Prüfung durchgeführt wird, ob der Absender authentifiziert ist. Ist dies nicht der Fall, wird die weitere Ausführung abgebrochen und der Nutzer auf die Login-Seite weitergeleitet. Ansonsten wird der Request an den entsprechenden Controller weitergereicht.
+
+Zur Umsetzung dieser Funktionalität setzen wir auf dem Session-Konzept von Play auf. Wird eine neue Session initialisiert, wird ein dazugehöriger Eintrag in der Datenbank erstellt. Dieser beinhaltet das Initialierungsdatum, die dazugehörige IP und User-ID sowie eine kryptografisch sichere UUID als Identifikator. Die UUID wird in der Play-Session persistiert. Ein Angreifer kann aufgrund der JWT-Signatur nicht beliebige UUIDs an unsere Anwendung schicken.
+
+Die UUID selbst dient als 2nd Layer of Defense: Sollte die JWT-Signatur geknackt werden, muss der Angreifer noch eine in der Datenbank enthaltene UUID erraten. Selbst, wenn er diese Hürde meistert, muss er noch die dazugehörige IP-Addresse kennen sowie über diese auf unsere Anwendung zugreifen können und dies in einem engen Zeitfenster schaffen, da die Lifetime einer Session begrenzt ist.
+
+Die Anwendung verfügt über eine Sicht, die dem Nutzer sämtliche ``aktive'' Sessions anzeigt und ihm die Möglichkeit bietet, diese nach Bedarf einzeln zu entfernen. Ein Logout-Vorgang führt ebenfalls zu der Entfernung der korrospondierenden Session. Um eine Vermüllung der Datenbank zu vermeiden, läuft im Hintergrund ein Prozess, der in festen Zeitintervallen Sessions aus der Datenbank entfernt, die ``veraltet'' sind, denn wenn der Benutzer sich nicht ausloggt, sondern einfach den Browser schließt, kann unsere Anwendung keine Kenntnis davon erlangen.
 
 \section{Kryptografisch relevanten Informationen}
 
