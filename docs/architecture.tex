@@ -1,6 +1,85 @@
 \documentclass[12pt,DIV14,BCOR10mm,a4paper,twoside,parskip=half-,headsepline,headinclude,english,ngerman,bibliography=totocnumbered]{scrreprt}
+% Grundgröße 12pt, zweiseitig
+\usepackage[headsepline,automark]{scrpage2}
+\KOMAoptions{headinclude}
+% Seitenköpfe automatisch
+% Sprachpaket für Deutsch (Umlaute, Trennung,deutsche Überschriften)
+\usepackage{babel}
+\usepackage{blindtext}
+%Graphikeinbindung, Hyperref (alles klickbar, Bookmarks),
+%Math. Symbole aus AmsTeX
+\usepackage{graphicx,hyperref,amssymb,url,atbegshi,etoolbox}
+\usepackage[backend=biber,natbib=true, style=numeric, citestyle=numeric, maxnames=7, minnames=1, maxcitenames=2, url=true]{biblatex}
+% Umlaute und über Tastatur einzugeben
+\usepackage[utf8]{inputenc}
+% add table of contents and other tables automatically
+\usepackage[nottoc]{tocbibind}
+%\usepackage[toc,page]{appendix}
 
-\usepackage{hshhelper_base}
+\usepackage[autostyle=true,german=quotes]{csquotes}
+%% json related packages
+% dont use bera, can't get it at the work PC
+%\usepackage{bera} % optional: just to have a nice mono-spaced font
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{textcomp}
+
+%%% Change settings for epigraphs
+%%% Change chapter format, if needed.
+% customize chapter format:
+% \KOMAoption{headings}{twolinechapter}
+% \renewcommand*\chapterformat{\thechapter\autodot}
+
+% customize dictum format:
+\setkomafont{dictumtext}{\itshape\small}
+\setkomafont{dictumauthor}{\normalfont}
+\renewcommand*\dictumwidth{\linewidth}
+\renewcommand*\dictumauthorformat[1]{--- #1}
+\renewcommand*\dictumrule{}
+
+\renewcommand{\lstlistingname}{Quellcode}
+
+\makeatletter
+\makeatother
+
+% create glossaries
+\usepackage[toc,section=chapter,nopostdot,acronym,style=list]{glossaries}
+% style & idea copied from: https://tex.stackexchange.com/questions/8946/how-to-combine-acronym-and-glossary
+\usepackage{xparse}
+\DeclareDocumentCommand{\newdualentry}{ O{} O{} m m m m } {
+
+  %%% The glossary entry the acronym links to
+  \newglossaryentry{g-#3}{name={#5},
+      description={#6},#1}
+
+  %%% define the acronym and use the see= option
+  \newglossaryentry{#3}{type=\acronymtype, name={#4}, description={#5}, first={#5 (#4)\glsadd{g-#3}}, see=[Glossareintrag:]{g-#3}}
+}
+
+\makeglossaries
+
+%\loadglsentries[main]{acronyms.tex}
+
+% Festlegung Kopf- und Fußzeile
+\defpagestyle{meinstil}{%
+{\headmark \hfill}
+{\hfill \headmark}
+{\hfill \headmark\hfill }
+(\textwidth,.4pt)
+}{%
+(\textwidth,.4pt)
+{\pagemark\hfill Dennis Grabowski, Julius Zint, Philip Matesanz, Torben Voltmer}
+{Version 1.0 vom \today \hfill \pagemark}
+{Version 1.0 vom \today\hfill\pagemark}
+}
+\pagestyle{meinstil}
+
+\raggedbottom
+\renewcommand{\topfraction}{1}
+\renewcommand{\bottomfraction}{1}
+
+\bibliography{literature.bib}
+\graphicspath{{./images/}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}    % hier gehts los
@@ -37,37 +116,74 @@ Welche Klasse macht mit welcher Klasse was?
 
 \chapter{Sicherheitsmassnahmen}
 
-\section{Login Firewall}
-Der Login einer Web-Anwendung ist potentiell anfällig für Brute-Force-Angriffe, die darauf abzielen, eine valide Benutzername/Passwort Kombination zu finden. Aus diesem Grund, muss die Anwendung fehlerhafte Zugriffsversuche protokollieren und wenn eine Häufung selbiger auftritt, Maßnahmen ergreifen, um den Angriff zu verlangsamen oder gar zu stoppen. Die ergriffene Maßnahme sollte so gewählt werden, dass sie nicht selbst einen Angriffsvektor darstellt, wie z.B. das vollständige Sperren eines Accounts nach N falschen Logins - man könnte so legitime Nutzer vorsätzlich an der Benutzung der Anwendung hindern (Denial of Service).
-
-Aus diesem Grund verfügt unsere Anwendung über eine Komponente\footnote{policy.ext.loginFirewall}, die falsche Logins protokolliert und eine der folgenden Maßnahmen ergreift:
-
-\begin{enumerate}
-\item Spezifischen Benutzer-Account in Captcha-Mode versetzen
-\item Spezifische IP-Addresse in Captcha-Mode versetzen
-\item Spezifische IP-Addresse von Logins ausschließen
-\end{enumerate}
-
-Beim Captcha-Mode handelt es sich um eine Maßnahme, bei der ein Login lediglich möglich ist, wenn zugleich ein Google Recaptcha gelöst wird. Eine vollständige Sperrung eines Accounts findet durch unsere Firewall so nicht statt. Es wurde die Annahme getroffen, dass das automatisierte Lösen der Recaptchas zu aufwändig/teuer für einen Angreifer ist. Zugleich ist das ``unnötige'' Lösen eines Captchas für das Opfer ein vertretbares Hindernis.
-
-Lediglich IP-Addressen werden als schärfste Maßnahme vollständig von Logins ausgeschlossen. Sofern ein Angreifer nicht die gleiche IP-Adresse wie sein Opfer verwendet, kann er sich höchstens selbst vom Dienst ausschließen. Sollte eine Sitation vorliegen, bei der sich eine Vielzahl von Nutzern eine IP-Adresse teilt, besteht die Möglichkeit diese von der vollständigen Sperre auszuschließen.
-
-Die interne Datenstruktur der Login Firewall ist darauf optimiert, möglichst wenig Speicher zu verwenden und nutzt quasi Buckets, um aggregierte Informationen über Login-Versuche zu speichern. Die Buckets bilden ein fixes Zeitinterval ab. Führt ein Angreifer 1 Million fehlerhafte Logins in 10 Minuten durch, werden lediglich zwei Datenbank-Einträge erstellt: Einen mit Bezug auf den betroffenen Nutzer-Account und einen mit Bezug auf die IP des Angreifers. Beide Einträge verfügen über eine Zählvariable, die jeweils die Anzahl der fehlerhaften Logins beinhält.
-
-Der Verweis auf den Nutzer-Account findet über die numerische und eindeutige ID statt, über die jeder Account verfügt. Jener Fallgestaltung, bei der ein Login bei einem nicht-existenten Account erfolgt, wurde ebenfalls Rechnung getragen. Hierbei ist es erforderlich, dass die Firewall exakt so funktioniert, wie bei existierenden Accounts, um ein Information-Leakage zu verhindern: Würde die erste Maßnahme nie oder anders greifen als bei tatsächlich existenten Accounts wäre es möglich, zu prüfen ob ein Account bzw. der dazu korrospondierende Benutzername tatsächlich existiert.
-
-Zu diesem Zweck wird bei nicht-existenten Accounts der Benutzername mittels Hashing auf eine ``virtuelle'' User-ID gemappt. Die User-ID wird über ein Long repräsentiert, es wird jedoch ausschließlich der positive Zahlenraum verwendet. Vom Username wird der md5-Hash gebildet, die ersten 8 Byte werden als Long verwendet und ggf. invertiert. Der so resultierende negative Long-Wert wird in diesem Fall als Grundlage für die Protokollierung fehlerhafter Logins verwendet. Dass md5 kryptografisch bereits längst als geknackt gilt ist irrelevant, wir machen uns lediglich die gute Streuung und hohe Geschwindigkeit von md5 zu eigen.
-
-\section{Sessionkonzept}
-Zum
-
 \section{Kryptografisch relevanten Informationen}
-
 Welche Algorithmen verwenden wir?
 Wie stellen diese sicher, dass Informationen usw nicht geklaut/geknackt/abgehoert/entwendet werden koennen?
 Wie sieht es mit unserer Schluesselverwaltung aus?
 Wie nutzen wir unsere Cookies? Was machen unsere Cookies genau?
 Wann setzen wir sie?
+
+
+\subsection{HshHelper Passwörter}
+Die Passwörter, die Benutzer verwenden um sich bei HshHelper zu authentisieren werden grundsätzlich nur als Hash persistiert. Konkret wird die Hashfunktion bcrypt zum Hashen der Passwörter verwendet.
+
+Um ein Passwort mit bcrypt zu Hashen muss zunächst ein Salt generiert werden. Neben dem Salt und dem gehastem Passwort wird bei bcrypt außerdem noch die bcyrpt Version und die Anzahl der Runden gespeichert. Über die Anzahl der Runden kann die Laufzeit die bcrypt benötigt um ein Passwort zu hashen beeinflusst werden.
+
+Die verwendete Bibilithek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in der Version 0.4. Sie verwendet intern die Java Klasse SecureRandom als CPRNG.
+
+Auch zur Generierung der initalen (und temporären) Benutzer Passwörter beim Anlegen von Benutzer werden auf der Basis von SecureRandom generiert. Dafür zuständig ist die Klasse \textit{PasswordGenerator}. Die generierten Passwörter können die Zeichen a-z, A-Z, 0-9 und die Sonderzeichen \textit{!\%?\#-\_*+} enthalten.
+
+\subsection{CSRF Tokens}
+Play verwendet zum Generieren von CSRF Tokens die Java Klasse SecureRandom als CPRNG:
+
+\begin{lstlisting}
+  def generateToken: String = {
+    val bytes = new Array[Byte](12)
+    random.nextBytes(bytes)
+    new String(Hex.encodeHex(bytes))
+  }
+\end{lstlisting}
+[aus DefaultCSRFTokenSigner, Play 2.6.20]
+
+Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit einer nonce Konkateniert. Das Ergebniss wird anschließend mittels HMAC-SHA1 und einem privatem Schlüssel signiert. 
+
+\begin{lstlisting}
+
+  def signToken(token: String): String = {
+    val nonce = clock.millis()
+    val joined = nonce + "-" + token
+    signer.sign(joined) + "-" + joined
+  }
+\end{lstlisting}
+
+[aus DefaultCSRFTokenSigner, Play 2.6.20]
+
+Das Format eines Play CSRF Token ist demnach
+\begin{lstlisting}
+<signature> - <nonce> - <token>
+\end{lstlisting}
+
+
+Das Token (aus Listing TODO) wird nur ein mal für eine Session generiert. Es bleibt innerhalb der Session immer gleich. Da das nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt.
+
+Um ein Token zu prüfen wird erneut die Signatur über dem Token und dem Nounce gebildet und mit der empfangenen Signatur verglichen. Das modifizieren eines CSRF Tokens wird somit erkannt.
+
+
+
+\subsection{Play Cookies}
+
+
+\subsection{Schlüsselmanagement}
+Für das System sind mehrer Schlüssel notwendig:
+
+\begin{enumerate}
+	\item Der private Schlüssel zum signieren der Play Cookies
+	\item Der private Schlüssel für reCaptcha
+	\item Der öffentlicht Schlüssel für reCaptcha
+	\item Login Credentials für den E-Mail Server
+	\item Login Credentials für die Datenbank
+\end{enumerate}
+
 
 \section{Eingabevalidierung}
 
