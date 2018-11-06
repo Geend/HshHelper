@@ -201,4 +201,10 @@ public class LoginManagerTest {
                 "annika", "annikxxxa", "neuesPw", ""
         );
     }
+
+    public void nulledUsernameDoesntFail() throws PasswordChangeRequiredException, CaptchaRequiredException, InvalidLoginException {
+        loginManager.login(
+            null, "123", ""
+        );
+    }
 }
