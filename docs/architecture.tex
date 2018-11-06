@@ -69,6 +69,13 @@ Die UUID selbst dient als 2nd Layer of Defense: Sollte die JWT-Signatur geknackt
 
 Die Anwendung verfügt über eine Sicht, die dem Nutzer sämtliche ``aktive'' Sessions anzeigt und ihm die Möglichkeit bietet, diese nach Bedarf einzeln zu entfernen. Ein Logout-Vorgang führt ebenfalls zu der Entfernung der korrospondierenden Session. Um eine Vermüllung der Datenbank zu vermeiden, läuft im Hintergrund ein Prozess, der in festen Zeitintervallen Sessions aus der Datenbank entfernt, die ``veraltet'' sind, denn wenn der Benutzer sich nicht ausloggt, sondern einfach den Browser schließt, kann unsere Anwendung keine Kenntnis davon erlangen.
 
+\section{Content Security Policy}
+Play verwendet standardmäßig eine sehr restriktive Content-Security-Policy, die XSS-Angriffe maßgeblich erschwert: Inline-Javascript wird vom Client-Browser grundsätzlich blockiert, es ist lediglich möglich, ein externes Script in eine HTML-Seite einzubinden, das jedoch von der gleichen Top-Level-Domain stammen muss. Zugleich muss dieses Script explizit Javascript als Content-Type im HTTP-Header benennen.
+
+Da unsere Anwendung zum jetzigen Zeitpunkt nur mittelbaren Gebrauch von JavaScript macht, haben wir uns dazu entschlossen die Content-Security-Policy zu verschärfen: JavaScript wird grundsätzlich nicht mehr ausgeführt, es sei denn, es handelt sich um die JavaScript-Libraries von Recaptcha. Zu diesem Zweck haben wir die entsprechenden Quell-Urls auf die Whitelist gesetzt und somit gleichzeitig die Annahme getroffen, dass wir Google als Host-Provider der Libraries vertrauen\footnote{Erforderliche Urls für die CSP Whitelist: \url{https://developers.google.com/recaptcha/docs/faq}}.
+
+Ebenso haben wir uns entschlossen, Browser, die Content Security Policy nicht unterstützen von unserer Anwendung auszuschließen. Hiervon sind nur hinreichend alte Browser betroffen\footnote{Siehe \textquote{Browser compatibility} \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP}}.
+
 \section{Kryptografisch relevanten Informationen}
 
 Welche Algorithmen verwenden wir?
