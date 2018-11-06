@@ -66,26 +66,23 @@ Zeitliche Schaetzung?
 
 \section{Statische Codeanalyse}
 
-Welche Tools haben wir benutzt?
-Wie haben wir sie eingeschaetzt?
-Warum haben wir sie verwendet?
-Wie haben wir sie verwendet?
-
 Da innerhalb der Gruppe keine Praeferenzen bezüglich eines Werkzeugs fuer die statische Codeanalyse bestand, haben wir verschiedene ausprobiert.
 Die Erfahrung aus anderen Sprachökosystemen (bspw. C++) zeigt, dass es dennoch ratsam ist, unterschiedliche Werkzeuge zu verwenden, um eine breitere Menge abzudecken und ggf. \enquote{False Positives} auszuschliessen.
 
 Die Werkzeuge, die wir nach einer kurzen Evaluation ausgesucht haben, sind:
 
 \begin{itemize}
-  \item SpotBugs \autocite{SpotBugs} inkl. \enquote{find-sec-bugs}-Plugin \autocite{SpotBugs.FindSecBugs},
+  \item FindBugs \autocite{FindBugs} inkl. \enquote{find-sec-bugs}-Plugin \autocite{FindBugs.FindSecBugs},
   \item Synopsis SecureAssist (ehemalig Cigital SecureAssist) \autocite{SecureAssist},
   \item SonarLint (ehemalig Sonarqube) \autocite{SonarLint}
 \end{itemize}
 
-\subsection{SpotBugs}
+Allerdings stossen diese Werkzeuge hier an ihre Grenzen, da sie den autogenerierten Code des Play Frameworks, Play-spezifischen Code sowie Scala nicht korrekt analysieren konnten.
 
-Wir haben die Version 3.1.8 verwendet, die am 2018-10-16 veroeffentlicht wurde.
-Fuer \enquote{find-sec-bugs} wurde Version 1.8 verwendet.
+\subsection{FindBugs}
+
+Wir haben die Version 3.0.1 verwendet, die am 2018-10-16 veroeffentlicht wurde.
+Bei dem Plugin \enquote{find-sec-bugs} wurde Version 1.8 verwendet.
 
 Verwendetete Einstellungen:
 
@@ -95,6 +92,11 @@ Verwendetete Einstellungen:
   \item Alle Fehlerkategorien, Filter wurden aktiviert
 \end{itemize}
 
+Da ein Grossteil der Fehler, die \enquote{FindBugs} gefunden hat, sich in den Tests, im autogenerierten Code oder den Templates vom Play Framework befindet, war es schwer, die \enquote{False Positives} herauszufiltern.
+Eine gesamte Auflistung aller gefundenen Fehler kann im Anhang \ref{staticanalysis-find-bugs} eingesehen werden.
+Gefunden wurden Fehler in den Kategorien \enquote{Bad Practice}, \enquote{Richtigkeit}, \enquote{Performance}, \enquote{Dodgy Code} sowie \enquote{Sicherheitsanfaelligkeit durch boesartigen Code}.
+In unserem eigentlichen Applikationscode wurden nur Fehler der Kategorie \enquote{Sicherheitsanfaelligkeit durch boesartigen Code} gefunden, die darauf hinweisen, dass einige Variablen mit \enquote{final} deklariert werden sollten.
+
 \subsection{Synopsis SecureAssist}
 
 Wir haben die Version 3.3.0 verwendet, welche im am 2018-01-29 veroeffentlicht wurde.
@@ -102,25 +104,47 @@ Da dieses Werkzeug im Betracht auf Sicherheitsluecken von beruehmten Sicherheits
 
 \subsubsection{Hardkodierte Passwoerter}
 
-In unserer Testklasse \texttt{UserManagerTest} verwenden wir ein hardkodiertes Passwort, um zu ueberpruefen, ob ein Nutzer sein Passwort aendern kann.
+In unserer Testklasse \texttt{UserManagerTest} verwenden wir ein hardkodiertes Passwort, um zu ueberpruefen, ob ein Nutzer sein Passwort aendern kann, zu sehen in Quellcode \ref{lst:staticanalysis-hardcoded-pw}.
 Das sehen wir nicht als sicherheitsrelevanten Fehler an und ignorieren diesen daher.
 
 \subsubsection{Query Injections}
 
 Die Regel, die SecureAssist verwendet, um moegliche SQL Injections zu finden, scheint nur zu pruefen, ob ein SQL Statement als String verwendet wird, und ob es als \texttt{PreparedStatement} verwendet wird.
 Leider ueberprueft es nicht, ob das als String angegebene SQL Statement ueberhaupt veraenderbar ist; beispielsweise durch Konkatenieren eines Parameters.
-Das Werkzeug hat daher ein \enquote{False Positive} in unserer \texttt{DatabaseInitialization}-Klasse gefunden.
+Das Werkzeug hat daher ein \enquote{False Positive} in unserer \texttt{DatabaseInitialization}-Klasse gefunden, siehe Quellcode \ref{lst:staticanalysis-query-injection}.
 Die Statements in dieser Klasse koennen nicht von einem Nutzer durch Parameter angereichert werden.
 
 \subsubsection{Information Leakage}
 
 Das Ausgeben des Stacktrace im Falle einer Exception sieht das Werkzeug bereits Verletzung der Vertraulichkeit, welchem wir zustimmen.
 Gluecklicherweise schuetzt Play einem in diesem Fall und gibt keine Stacktraces an einen Benutzer weiter, sofern die Applikation im \enquote{Production Mode} ausgefuehrt wird.
-In diesem Fall wird eine Exception mit einer ID in das Applikationslog geschrieben.
+In diesem Fall wird die Exception mit einer ID ausgezeichnet, die ID wird dem Benutzer angezeigt und der Stacktrace wird in das Applikationslog geschrieben.
 
 \subsection{SonarLint}
 
-An dem SonarLint-Plugin fuer die IntelliJ IDE konnten keine relevanten Einstellungen veraendert werden, daher wurden die Werkseinstellungen benutzt.
+An dem \enquote{SonarLint}-Plugin fuer die IntelliJ IDE konnten keine relevanten Einstellungen veraendert werden, daher wurden die Werkseinstellungen benutzt.
+
+Die Maengel, die waehrend des Scans unseres Quellcodes gefunden wurden, werden hier der Vollstaendigkeit halber aufgefuehrt, obwohl nur programmierstil-spezifische Fehler gefunden wurden.
+
+\subsubsection{Verbergen des \texttt{public}-Konstruktors}
+
+Die Klassen
+
+\begin{itemize}
+  \item \texttt{ConstraintValues},
+  \item \texttt{Authentification},
+  \item \texttt{LaggyDT},
+  \item \texttt{Recaptcha}
+\end{itemize}
+
+sind entweder reine Utilityklassen mit statischen Methoden beziehungsweise finalen Variabeln oder implementieren eine Annotation.
+Es bietet sich also an, einen \texttt{private}-Konstruktor fuer diese Klassen zu schreiben, damit der \texttt{public}-Konstruktor verborgen ist, und niemand ausversehen ein Objekt dieser Klassen instanziieren kann.
+
+\subsubsection{Extrahieren von Konstanten in \texttt{final}-Variabeln}
+
+In der \texttt{Firewall} sowie unseren \texttt{Manager}-Klassen verwenden wir Konstanten, die an mehreren Stellen verwendet werden.
+Im Falle der \texttt{Manager}s handelt es sich um aehnliche String, die in einer Exception den Fehler genauer beschreiben.
+Bei diesen Strings koennte man sich der \texttt{i18n}-Implementation von Play bedienen, um diese Fehlermeldungen fuer alle \texttt{Manager}s erreichbar zu machen, aber da Internationalisierung nicht im Umfang dieses Projekts ist, werden sie als statische, finale Variabeln extrahiert.
 
 \section{Quelltextinspektion}
 
@@ -143,5 +167,37 @@ Siehe
 
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis
+
+\begin{appendices}
+
+\chapter{src/test/domainlogic/usermanager/UserManagerTest.java}
+\begin{lstlisting}[language=Java,caption=Hardkodiertes Passwort in einem Test aus der Klasse \texttt{UserManagerTest},label={lst:staticanalysis-hardcoded-pw}]
+@Test
+public void testChangePassword() throws InvalidArgumentException {
+
+String testUsername = "test";
+String newPassword = "0123456789";
+}
+\end{lstlisting}
+
+\chapter{src/app/DatabaseInitialization.java}
+\begin{lstlisting}[language=Java,caption=Von SecureAssist gefundenes False Positive Beispiel fuer Query Injections,label={lst:staticanalysis-query-injection}]
+db.withConnection(connection -> {
+	Statement stmt = connection.createStatement();
+	stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
+	stmt.execute("TRUNCATE TABLE groupmembers");
+	stmt.execute("TRUNCATE TABLE users");
+	stmt.execute("TRUNCATE TABLE groups");
+	stmt.execute("TRUNCATE TABLE internal_session");
+	stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
+	stmt.execute("SET ALLOW_LITERALS NONE");
+});
+\end{lstlisting}
+
+\chapter{FindBugs Report}
+\label{staticanalysis-find-bugs}
+\input{findbugs_result.pdf}
+
+\end{appendices}
 
 \end{document}
