@@ -16,6 +16,10 @@ public class HashHelper {
     }
 
     public Long insecureStringHash(String input) {
+        if(input == null) {
+            input = "";
+        }
+
         byte[] data = DigestUtils.md5(input);
 
         ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
