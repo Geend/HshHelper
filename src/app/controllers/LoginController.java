@@ -11,6 +11,7 @@ import policy.session.Authentication;
 
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 public class LoginController extends Controller {
 
@@ -33,12 +34,16 @@ public class LoginController extends Controller {
 
     @Authentication.NotAllowed
     public Result login() {
-        Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password", "recaptcha");
+        Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password");
         if (boundForm.hasErrors()) {
             return redirect(routes.LoginController.login());
         }
 
         UserLoginDto loginData = boundForm.get();
+        Optional<String> recaptchaData = boundForm.field("g-recaptcha-response").getValue();
+        if(recaptchaData.isPresent()) {
+            loginData.setRecaptcha(recaptchaData.get());
+        }
 
         try {
             loginManager.login(
@@ -67,12 +72,16 @@ public class LoginController extends Controller {
     // TODO: Sollte man nach password reset eingelogged sein?!
     @Authentication.NotAllowed
     public Result changePasswordAfterReset() {
-        Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat", "recaptcha");
+        Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat");
         if (boundForm.hasErrors()) {
             return ok(views.html.ChangePasswordAfterReset.render(boundForm, false));
         }
 
         ChangePasswordAfterResetDto changePasswordData = boundForm.get();
+        Optional<String> recaptchaData = boundForm.field("g-recaptcha-response").getValue();
+        if(recaptchaData.isPresent()) {
+            changePasswordData.setRecaptcha(recaptchaData.get());
+        }
 
         try {
             loginManager.changePassword(
