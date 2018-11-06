@@ -42,16 +42,18 @@ public class LoginManagerTest {
     LoginManager loginManager;
     Firewall firewall;
     SessionManager sessionManager;
+    Authentification authentification;
 
     Firewall alwaysCaptchaFirewall;
     Firewall alwaysBannedFirewall;
 
     @Before
     public void setup() {
+        userFinder = new UserFinder();
         firewall = new Firewall();
         sessionManager = new SessionManager();
-        loginManager = new LoginManager(hashHelper, firewall, sessionManager);
-        userFinder = new UserFinder();
+        authentification = new Authentification(userFinder, hashHelper);
+        loginManager = new LoginManager(authentification, firewall, sessionManager, hashHelper);
 
         Instance alwaysBannedInstance = mock(Instance.class);
         when(alwaysBannedInstance.getStrategy()).thenReturn(Strategy.BLOCK);
@@ -138,7 +140,7 @@ public class LoginManagerTest {
 
     @Test(expected = CaptchaRequiredException.class)
     public void validLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException {
-        LoginManager lm = new LoginManager(hashHelper, alwaysCaptchaFirewall, sessionManager);
+        LoginManager lm = new LoginManager(authentification, alwaysCaptchaFirewall, sessionManager, hashHelper);
         lm.login(
                 "lydia", "lydia", ""
         );
@@ -146,7 +148,7 @@ public class LoginManagerTest {
 
     @Test(expected = CaptchaRequiredException.class)
     public void invalidLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException {
-        LoginManager lm = new LoginManager(hashHelper, alwaysCaptchaFirewall, sessionManager);
+        LoginManager lm = new LoginManager(authentification, alwaysCaptchaFirewall, sessionManager, hashHelper);
         lm.login(
             "lydia", "lydiaxxxxxx", ""
         );
@@ -154,7 +156,7 @@ public class LoginManagerTest {
 
     @Test(expected = InvalidLoginException.class)
     public void validLoginBanned() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException {
-        LoginManager lm = new LoginManager(hashHelper, alwaysBannedFirewall, sessionManager);
+        LoginManager lm = new LoginManager(authentification, alwaysBannedFirewall, sessionManager, hashHelper);
         lm.login(
                 "lydia", "lydia", ""
         );
@@ -162,7 +164,7 @@ public class LoginManagerTest {
 
     @Test(expected = InvalidLoginException.class)
     public void invalidLoginBanned() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException {
-        LoginManager lm = new LoginManager(hashHelper, alwaysBannedFirewall, sessionManager);
+        LoginManager lm = new LoginManager(authentification, alwaysBannedFirewall, sessionManager, hashHelper);
         lm.login(
                 "lydia", "lydiaxxxx", ""
         );
@@ -170,7 +172,7 @@ public class LoginManagerTest {
 
     @Test(expected = CaptchaRequiredException.class)
     public void validPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException {
-        LoginManager lm = new LoginManager(hashHelper, alwaysCaptchaFirewall, sessionManager);
+        LoginManager lm = new LoginManager(authentification, alwaysCaptchaFirewall, sessionManager, hashHelper);
         lm.changePassword(
                 "annika", "annika", "neuesPw", ""
         );
@@ -178,7 +180,7 @@ public class LoginManagerTest {
 
     @Test(expected = CaptchaRequiredException.class)
     public void invalidPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException {
-        LoginManager lm = new LoginManager(hashHelper, alwaysCaptchaFirewall, sessionManager);
+        LoginManager lm = new LoginManager(authentification, alwaysCaptchaFirewall, sessionManager, hashHelper);
         lm.changePassword(
                 "annika", "annixxka", "neuesPw", ""
         );
@@ -186,7 +188,7 @@ public class LoginManagerTest {
 
     @Test(expected = InvalidLoginException.class)
     public void validPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException {
-        LoginManager lm = new LoginManager(hashHelper, alwaysBannedFirewall, sessionManager);
+        LoginManager lm = new LoginManager(authentification, alwaysBannedFirewall, sessionManager, hashHelper);
         lm.changePassword(
                 "annika", "annika", "neuesPw", ""
         );
@@ -194,7 +196,7 @@ public class LoginManagerTest {
 
     @Test(expected = InvalidLoginException.class)
     public void invalidPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException {
-        LoginManager lm = new LoginManager(hashHelper, alwaysBannedFirewall, sessionManager);
+        LoginManager lm = new LoginManager(authentification, alwaysBannedFirewall, sessionManager, hashHelper);
         lm.changePassword(
                 "annika", "annikxxxa", "neuesPw", ""
         );
