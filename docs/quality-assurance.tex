@@ -64,12 +64,63 @@ Wenn ja, fuer welche Angriffe?
 Wer hat wann welchen Code reviewed?
 Zeitliche Schaetzung?
 
-\section{Static Analysis}
+\section{Statische Codeanalyse}
 
 Welche Tools haben wir benutzt?
 Wie haben wir sie eingeschaetzt?
 Warum haben wir sie verwendet?
 Wie haben wir sie verwendet?
+
+Da innerhalb der Gruppe keine Praeferenzen bezüglich eines Werkzeugs fuer die statische Codeanalyse bestand, haben wir verschiedene ausprobiert.
+Die Erfahrung aus anderen Sprachökosystemen (bspw. C++) zeigt, dass es dennoch ratsam ist, unterschiedliche Werkzeuge zu verwenden, um eine breitere Menge abzudecken und ggf. \enquote{False Positives} auszuschliessen.
+
+Die Werkzeuge, die wir nach einer kurzen Evaluation ausgesucht haben, sind:
+
+\begin{itemize}
+  \item SpotBugs \autocite{SpotBugs} inkl. \enquote{find-sec-bugs}-Plugin \autocite{SpotBugs.FindSecBugs},
+  \item Synopsis SecureAssist (ehemalig Cigital SecureAssist) \autocite{SecureAssist},
+  \item SonarLint (ehemalig Sonarqube) \autocite{SonarLint}
+\end{itemize}
+
+\subsection{SpotBugs}
+
+Wir haben die Version 3.1.8 verwendet, die am 2018-10-16 veroeffentlicht wurde.
+Fuer \enquote{find-sec-bugs} wurde Version 1.8 verwendet.
+
+Verwendetete Einstellungen:
+
+\begin{itemize}
+  \item Analyseaufwand: Maximal
+  \item Minimalster Fehlerrang: 20 - Of Concern
+  \item Alle Fehlerkategorien, Filter wurden aktiviert
+\end{itemize}
+
+\subsection{Synopsis SecureAssist}
+
+Wir haben die Version 3.3.0 verwendet, welche im am 2018-01-29 veroeffentlicht wurde.
+Da dieses Werkzeug im Betracht auf Sicherheitsluecken von beruehmten Sicherheitsexperten wie Gary McGraw entwickelt wurde, hoffen wir, dass dieses Werkzeug Luecken findet, die den anderen Werkzeugen nicht auffallen.
+
+\subsubsection{Hardkodierte Passwoerter}
+
+In unserer Testklasse \texttt{UserManagerTest} verwenden wir ein hardkodiertes Passwort, um zu ueberpruefen, ob ein Nutzer sein Passwort aendern kann.
+Das sehen wir nicht als sicherheitsrelevanten Fehler an und ignorieren diesen daher.
+
+\subsubsection{Query Injections}
+
+Die Regel, die SecureAssist verwendet, um moegliche SQL Injections zu finden, scheint nur zu pruefen, ob ein SQL Statement als String verwendet wird, und ob es als \texttt{PreparedStatement} verwendet wird.
+Leider ueberprueft es nicht, ob das als String angegebene SQL Statement ueberhaupt veraenderbar ist; beispielsweise durch Konkatenieren eines Parameters.
+Das Werkzeug hat daher ein \enquote{False Positive} in unserer \texttt{DatabaseInitialization}-Klasse gefunden.
+Die Statements in dieser Klasse koennen nicht von einem Nutzer durch Parameter angereichert werden.
+
+\subsubsection{Information Leakage}
+
+Das Ausgeben des Stacktrace im Falle einer Exception sieht das Werkzeug bereits Verletzung der Vertraulichkeit, welchem wir zustimmen.
+Gluecklicherweise schuetzt Play einem in diesem Fall und gibt keine Stacktraces an einen Benutzer weiter, sofern die Applikation im \enquote{Production Mode} ausgefuehrt wird.
+In diesem Fall wird eine Exception mit einer ID in das Applikationslog geschrieben.
+
+\subsection{SonarLint}
+
+An dem SonarLint-Plugin fuer die IntelliJ IDE konnten keine relevanten Einstellungen veraendert werden, daher wurden die Werkseinstellungen benutzt.
 
 \section{Quelltextinspektion}
 
