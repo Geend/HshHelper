@@ -157,6 +157,11 @@ Nutzer koennen aktive Sessions betrachten und ggf. invalidieren (stichwort usabi
 
 \chapter{Verworfene Entwuerfe}
 
+\section{Sessionkonzept}
+Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit einer Session-Verknüpften IP-Addresse im JWT-Cookie selbst forciert. Wir waren der Annahme, die IP Addresse sei ein personenbezogenes Datum und die Speicherung von selbigen in unserer Datenbank zumindest fragwürdig. Die Verlagerung der Speicherung auf den Cookie-Speicher des Client-Browsers wäre eine potentielle Umgehungsstrategie für diese rechtliche Problematik gewesen: Die IP Addresse wird zwangsläufig vom Nutzer bei jedem Request ``übertragen'', eine doppelte Übertragung würde ``den Braten auch nicht mehr fett machen''. Herr Prof. Dr. Peine hat uns jedoch mitgeteilt, dass Datenschutzbedenken für dieses Projekt Out-Of-Scope wären. Aus diesem Grund wurde diese Idee verworfen, wir speichern die IPs in unserer Datenbank.
+
+Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine numerische ID, die inkrementell aufsteigend war. Das JWT-Token beinhaltet den Schlüssel der korrospondierenden Session-Entität in der Datenbank. Würde ein Angreifer die JWT Signatur knacken, könnte er leicht passende IDs erraten: Er müsste sich anmelden, wüsste dann, welche ID ``aktuell'' ist und könnte anhand dieser Information passende IDs ausprobieren. Wir haben diese Implementierung zugunsten von kryptografisch sicheren UUIDs verworfen, die ein 2nd Layer of Defense darstellen (vgl. [verweis auf session-konzept einfügen]).
+
 \printbibliography
 
 % Can be used to add a list of acronyms with their description
