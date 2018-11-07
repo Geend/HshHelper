@@ -78,7 +78,6 @@ Ebenso haben wir uns entschlossen, Browser, die Content Security Policy nicht un
 
 \section{Kryptografisch relevanten Informationen}
 
-Welche Algorithmen verwenden wir?
 Wie stellen diese sicher, dass Informationen usw nicht geklaut/geknackt/abgehoert/entwendet werden koennen?
 Wie sieht es mit unserer Schluesselverwaltung aus?
 Wie nutzen wir unsere Cookies? Was machen unsere Cookies genau?
@@ -97,19 +96,16 @@ Auch zur Generierung der initalen (und temporären) Benutzer Passwörter beim An
 \subsection{CSRF Tokens}
 Play verwendet zum Generieren von CSRF Tokens die Java Klasse SecureRandom als CPRNG:
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Methode zum Generieren von Tokens. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
   def generateToken: String = {
     val bytes = new Array[Byte](12)
     random.nextBytes(bytes)
     new String(Hex.encodeHex(bytes))
   }
 \end{lstlisting}
-[aus DefaultCSRFTokenSigner, Play 2.6.20]
-
 Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit einer nonce Konkateniert. Das Ergebniss wird anschließend mittels HMAC-SHA1 und einem privatem Schlüssel signiert.
 
-\begin{lstlisting}
-
+\begin{lstlisting}[caption={Methode zum Signieren von Token. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
   def signToken(token: String): String = {
     val nonce = clock.millis()
     val joined = nonce + "-" + token
@@ -117,7 +113,6 @@ Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit ein
   }
 \end{lstlisting}
 
-[aus DefaultCSRFTokenSigner, Play 2.6.20]
 
 Das Format eines Play CSRF Token ist demnach
 \begin{lstlisting}
@@ -132,10 +127,13 @@ Um ein Token zu prüfen wird erneut die Signatur über dem Token und dem Nounce 
 
 
 \subsection{Play Cookies}
+Play verwendet ein JWT (Json Web Token) als Session Cookie mit dem Namen \textit{PLAY\_SESSION}. Es ist durch eine HMAC-SHA256 Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
 
+
+Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, dass genau für einen Request verwendet wird. Es ist nicht signiert und kann dadurch durch den Benutzer verändert werden. Im HshHelper wird es nur zur Anzeige von Fehlermeldungen verwendet.
 
 \subsection{Schlüsselmanagement}
-Für das System sind mehrer Schlüssel notwendig:
+Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 
 \begin{enumerate}
 	\item Der private Schlüssel zum signieren der Play Cookies
@@ -145,6 +143,7 @@ Für das System sind mehrer Schlüssel notwendig:
 	\item Login Credentials für die Datenbank
 \end{enumerate}
 
+Die Schlüssel und Zugangsdaten liegen alle in der Datei \textit{application.conf}.
 
 \section{Eingabevalidierung}
 
