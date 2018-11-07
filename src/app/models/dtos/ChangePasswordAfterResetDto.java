@@ -18,6 +18,7 @@ public class ChangePasswordAfterResetDto implements Constraints.Validatable<Vali
     private String username;
 
     @Constraints.Required
+    @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
     private String currentPassword;
 
     @Constraints.Required

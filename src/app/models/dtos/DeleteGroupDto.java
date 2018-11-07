@@ -5,6 +5,8 @@ import policy.session.Authentication;
 
 public class DeleteGroupDto {
     @Constraints.Required
+    private Long groupId;
+
     public Long getGroupId() {
         return groupId;
     }
@@ -12,6 +14,4 @@ public class DeleteGroupDto {
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
     }
-
-    private Long groupId;
 }

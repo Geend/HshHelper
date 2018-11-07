@@ -3,6 +3,10 @@ package models.dtos;
 import java.util.UUID;
 
 public class DeleteSessionDto {
+
+
+    private UUID sessionId;
+
     public UUID getSessionId() {
         return sessionId;
     }
@@ -11,5 +15,4 @@ public class DeleteSessionDto {
         this.sessionId = sessionId;
     }
 
-    private UUID sessionId;
 }
