@@ -42,106 +42,111 @@
 
 \subsection{Layered Entrypoints}
 
-\renewcommand{\labelenumi}{\arabic{enumi}}
-\renewcommand{\labelenumii}{\arabic{enumii}}
-\renewcommand{\labelenumiii}{\arabic{enumiii}}
-\renewcommand{\labelenumvi}{\arabic{enumvi}}
+\renewcommand{\labelenumi}{\theenumi}
+\renewcommand{\theenumi}{\arabic{enumi}}
+\renewcommand{\labelenumii}{\theenumii}
+\renewcommand{\theenumii}{\theenumi.\arabic{enumii}}
+\renewcommand{\labelenumiii}{\theenumiii}
+\renewcommand{\theenumiii}{\theenumii.\arabic{enumiii}}
+\renewcommand{\labelenumiv}{\theenumiv}
+\renewcommand{\theenumiv}{\theenumiii.\arabic{enumiv}}
+
 
 \begin{enumerate}
-  \item HTTP
+  \item HTTP (Port 80)
   \begin{enumerate}
-    \item HomeController
+    \item \texttt{HomeController}
     \begin{enumerate}
-      \item GET - /
+      \item GET - \texttt{/}
     \end{enumerate}
 
-    \item UserController
+    \item \texttt{UserController}
     \begin{enumerate}
-      \item /users
+      \item \texttt{/users}
       \begin{enumerate}
-        \item GET - showUsers
+        \item GET - \texttt{showUsers}
       \end{enumerate}
-      \item /users/create
+      \item \texttt{/users/create}
       \begin{enumerate}
-        \item POST - createUser
-        \item GET - showCreateUserForm
+        \item POST - \texttt{createUser}
+        \item GET - \texttt{showCreateUserForm}
       \end{enumerate}
-      \item /users/delete
+      \item \texttt{/users/delete}
       \begin{enumerate}
-        \item POST - deleteUser
+        \item POST - \texttt{deleteUser}
       \end{enumerate}
-      \item /resetpassword
+      \item \texttt{/resetpassword}
       \begin{enumerate}
-        \item GET - showResetUserPasswordForm
-        \item POST - resetUserPassword
+        \item GET - \texttt{showResetUserPasswordForm}
+        \item POST - \texttt{resetUserPassword}
       \end{enumerate} 
-      \item /sessions
+      \item \texttt{/sessions}
       \begin{enumerate}
-        \item GET - showActiveUserSessions()
+        \item GET - \texttt{showActiveUserSessions()}
       \end{enumerate}
-      \item /sessions/delete
+      \item \texttt{/sessions/delete}
       \begin{enumerate}
-        \item POST - deleteUserSession()
+        \item POST - \texttt{deleteUserSession()}
       \end{enumerate} 
     \end{enumerate}
     
-    \item LoginController
+    \item \texttt{LoginController}
     \begin{enumerate}
-      \item /login
+      \item \texttt{/login}
       \begin{enumerate}
-        \item GET - showLoginForm()
-        \item POST - login()
+        \item GET - \texttt{showLoginForm()}
+        \item POST - \texttt{login()}
       \end{enumerate} 
-      \item /logout
+      \item \texttt{/logout}
       \begin{enumerate}
-        \item POST - logout()
+        \item POST - \texttt{logout()}
       \end{enumerate} 
-      \item /changePasswordAfterReset
+      \item \texttt{/changePasswordAfterReset}
       \begin{enumerate}
-        \item GET - showChangePasswordAfterResetForm
-        \item POST - changePasswordAfterReset
+        \item GET - \texttt{showChangePasswordAfterResetForm}
+        \item POST - \texttt{changePasswordAfterReset}
       \end{enumerate}
     \end{enumerate}
     
-    \item GroupController
+    \item \texttt{GroupController}
     \begin{enumerate}
-      \item /user/groups
+      \item \texttt{/user/groups}
       \begin{enumerate}
-        \item GET - showOwnGroups
+        \item GET - \texttt{showOwnGroups}
       \end{enumerate} 
-      \item /groups
+      \item \texttt{/groups}
       \begin{enumerate}
-        \item GET - showAllGroups
+        \item GET -\texttt{ showAllGroups}
       \end{enumerate} 
-      \item /groups/create
+      \item \texttt{/groups/create}
       \begin{enumerate}
-        \item GET - showCreateGroupForm
-        \item POST - createGroup
+        \item GET - \texttt{showCreateGroupForm}
+        \item POST - \texttt{createGroup}
       \end{enumerate}
-      \item /groups/:groupId
+      \item \texttt{/groups/:groupId}
       \begin{enumerate}
-        \item GET - showGroup(groupId : Long)
+        \item GET - \texttt{showGroup(groupId : Long)}
       \end{enumerate} 
-      \item /groups/:groupId/members/remove
+      \item \texttt{/groups/:groupId/members/remove}
       \begin{enumerate}
-        \item POST - removeGroupMember(groupId : Long)
+        \item POST - \texttt{removeGroupMember(groupId : Long)}
       \end{enumerate} 
-      \item /groups/:groupId/members/add
+      \item \texttt{/groups/:groupId/members/add}
       \begin{enumerate}
-        \item POST - addGroupMember(groupId : Long)
+        \item POST - \texttt{addGroupMember(groupId : Long)}
       \end{enumerate} 
-      \item /groups/:groupId/delete
+      \item \texttt{/groups/:groupId/delete}
       \begin{enumerate}
-        \item POST - GroupController.deleteGroup(groupId : Long)
+        \item POST - \texttt{deleteGroup(groupId : Long)}
       \end{enumerate} 
-      \item /user/groups/:groupId/delete
+      \item \texttt{/user/groups/:groupId/delete}
       \begin{enumerate}
-        \item POST - GroupController.deleteOwnGroup(groupId : Long)
+        \item POST - \texttt{deleteOwnGroup(groupId : Long)}
       \end{enumerate} 
     \end{enumerate}
     
   \end{enumerate}
-  \item SMTP
+  \item SMTP (Port 587)
 \end{enumerate}
 
 
