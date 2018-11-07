@@ -40,6 +40,111 @@
   \caption{Gesamtuebersicht des Datenflusses in unserer Applikation}
 \end{figure}
 
+\subsection{Layered Entrypoints}
+
+\renewcommand{\labelenumi}{\arabic{enumi}}
+\renewcommand{\labelenumii}{\arabic{enumii}}
+\renewcommand{\labelenumiii}{\arabic{enumiii}}
+\renewcommand{\labelenumvi}{\arabic{enumvi}}
+
+\begin{enumerate}
+  \item HTTP
+  \begin{enumerate}
+    \item HomeController
+    \begin{enumerate}
+      \item GET - /
+    \end{enumerate}
+
+    \item UserController
+    \begin{enumerate}
+      \item /users
+      \begin{enumerate}
+        \item GET - showUsers
+      \end{enumerate}
+      \item /users/create
+      \begin{enumerate}
+        \item POST - createUser
+        \item GET - showCreateUserForm
+      \end{enumerate}
+      \item /users/delete
+      \begin{enumerate}
+        \item POST - deleteUser
+      \end{enumerate}
+      \item /resetpassword
+      \begin{enumerate}
+        \item GET - showResetUserPasswordForm
+        \item POST - resetUserPassword
+      \end{enumerate} 
+      \item /sessions
+      \begin{enumerate}
+        \item GET - showActiveUserSessions()
+      \end{enumerate}
+      \item /sessions/delete
+      \begin{enumerate}
+        \item POST - deleteUserSession()
+      \end{enumerate} 
+    \end{enumerate}
+    
+    \item LoginController
+    \begin{enumerate}
+      \item /login
+      \begin{enumerate}
+        \item GET - showLoginForm()
+        \item POST - login()
+      \end{enumerate} 
+      \item /logout
+      \begin{enumerate}
+        \item POST - logout()
+      \end{enumerate} 
+      \item /changePasswordAfterReset
+      \begin{enumerate}
+        \item GET - showChangePasswordAfterResetForm
+        \item POST - changePasswordAfterReset
+      \end{enumerate}
+    \end{enumerate}
+    
+    \item GroupController
+    \begin{enumerate}
+      \item /user/groups
+      \begin{enumerate}
+        \item GET - showOwnGroups
+      \end{enumerate} 
+      \item /groups
+      \begin{enumerate}
+        \item GET - showAllGroups
+      \end{enumerate} 
+      \item /groups/create
+      \begin{enumerate}
+        \item GET - showCreateGroupForm
+        \item POST - createGroup
+      \end{enumerate}
+      \item /groups/:groupId
+      \begin{enumerate}
+        \item GET - showGroup(groupId : Long)
+      \end{enumerate} 
+      \item /groups/:groupId/members/remove
+      \begin{enumerate}
+        \item POST - removeGroupMember(groupId : Long)
+      \end{enumerate} 
+      \item /groups/:groupId/members/add
+      \begin{enumerate}
+        \item POST - addGroupMember(groupId : Long)
+      \end{enumerate} 
+      \item /groups/:groupId/delete
+      \begin{enumerate}
+        \item POST - GroupController.deleteGroup(groupId : Long)
+      \end{enumerate} 
+      \item /user/groups/:groupId/delete
+      \begin{enumerate}
+        \item POST - GroupController.deleteOwnGroup(groupId : Long)
+      \end{enumerate} 
+    \end{enumerate}
+    
+  \end{enumerate}
+  \item SMTP
+\end{enumerate}
+
+
 \section{STRIDE}
 \chapter{Bedrohungen}
 \section{Gefundene Bedrohungen}
