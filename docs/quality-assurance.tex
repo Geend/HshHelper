@@ -60,9 +60,12 @@ Gibt es ggf. automatisierbare Skripts?
 Wenn ja, fuer welche Angriffe?
 
 \section{Reviews}
+\subsection{Review des Session Konzepts}
+Die erste Version unseres Session Konzepts wurde einem Review unterzogen. Das Review wurde von einer Person durchgeführt und benötigte 2 Stunden. Hierbei wurde insb. ein schlechtes Design bemängelt. Die Session-Funktionalität wurde nicht von einer bzw. wenigen Klassen abgebildet, sondern auf verschiedenste Klassen verteilt: Die Login-Methode im Controller erstellte inline einen Datenbank-Eintrag sowie ein Cookie. Andere Controller-Methoden manipulierten inline die entsprechenden Einträge und entfernten nach Bedarf Cookies. Das Wissen darüber, was überhaupt eine Session darstellt war so nicht an einer zentralen Stelle im Code zu finden und entsprechend schwer zu prüfen.
 
-Wer hat wann welchen Code reviewed?
-Zeitliche Schaetzung?
+Ebenfalls wurde ein Bug gefunden, der indirekt eine Folge des mangelhaften Designs war: Eine Endlosschleife von Redirects. Die Prüfung ob, für den aktuellen Benutzer eine ``valide'' Session vorliegt wurde von mehreren Klassen eigenständig implementiert, dies fand auf unterschiedliche Art und Weise statt. Änderte sich während der Benutzung die Benutzer-IP, stellte dies für die eine Komponente eine valide Session dar, für die andere Komponente jedoch nicht. Die Controller-Methode leitete den Nutzer mangels ``valider'' Session so zur Login Seite, diese stellte jedoch eine ``valide'' Session fest und leitete den Nutzer erneut zur Controller-Methode.
+
+Es wurde beschlossen, das Session Konzept einem grundsätzlichen Rewrite zu unterziehen. Das Wissen darüber, was eine Session darstellt, sollte gebündelt an einer zentralen Stelle der Architektur liegen, der Rest der Anwendung nur die API dieser ``zentralen Stelle'' verwenden und unter keinen Umständen selbst an Cookies oder den entsprechenden Datenbank-Entitäten manipulieren. Um sicherzustellen, dass es nicht erneut zu dem bereits festgestellten Redirect-Bug kommt, wurden diese Fälle durch Unit-Tests abgebildet.
 
 \section{Statische Codeanalyse}
 
@@ -196,7 +199,7 @@ db.withConnection(connection -> {
 
 \chapter{FindBugs Report}
 \label{staticanalysis-find-bugs}
-\input{findbugs_result.pdf}
+%\input{findbugs_result.pdf}
 
 \end{appendices}
 
