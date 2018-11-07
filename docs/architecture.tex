@@ -38,13 +38,14 @@ Zu jedem Controller gibt es einen Manager in der Domain Logic. Dieser enthält j
 
 \subsection{Benutzer erstellen Sequenzdiagram}
 
-\includegraphics[width=0.58\paperwidth]{resources/createuserseq_diagram.png}
+\includegraphics[width=0.7\paperwidth]{resources/createuserseq_diagram.png}
 
 Beim Anlegen eines neuen Benutzers wird zuerst durch ein HTTP GET die Form angefragt. Dies ist notwendig um ein gültiges CSRF Token zu erhalten welches beim anschließenden HTTP POST mitgeliefert werden muss. Auch hier wird bereits, wie aus dem Sequenzdiagramm ersichtlich, überprüft ob der anfragende User authentisiert ist. Ist das der fall wird eine HTML Form zurückgeliefert die anschließend ausgefüllt und durch einen weiteren Request wieder an den Server geschickt wird. Hier wird zuerst über die in Play integrierte Möglichkeit mit Annotations eine erste Validierung der Eingaben vorgenommen. Somit werden bereits zu einem frühen Zeitpunkt Eingaben mit nicht unterstützten Zeichen oder ungültiger Länge herausgefiltert und dem Benutzer durch Anzeigen von Fehlermeldungen direkt am Eingabefeld mitgeteilt. Sind alle Eingaben korrekt, wird der Aufruf weiter an den Manager geleitet. Dieser befragt zuerst die Policy ob der authentisierte Benutzer autorisiert ist einen neuen Benutzer anzulegen, generiert ein neues Passwort, Hashed es und legt in einer Transaktion einen neuen Benutzer an. Das Klartext Passwort wird zurückgegeben und dem Administrator angezeigt um dies dem neuen Benutzer zukommen zu lassen.
 
 \subsection{Login Sequenzdiagram}
-\includegraphics[width=0.8\paperwidth]{resources/loginseq_diagram.png}
+\includegraphics[width=0.70\paperwidth]{resources/loginseq_diagram.png}
 
+Das Login Sequenzdiagramm zeigt den Fall das der Benutzer bereits mehrfach das Passwort falsch eingegeben hat und ein Captcha lösen muss. In der Response, die auf den ersten GET Request folgt, sind sowohl das CSRF Token als auch das HTML zum lösen des Captchas enthalten. Im darauffolgenden POST wird wird die Captcha-Information als Form Input mitgeliefert sowie der Benutzername und das Passwort. Bei beiden Requests wird noch sichergestellt das der Benutzer nicht bereits eine gültige Session besitzt um mehrfache Logins zu vermeiden. Die Eingaben werden, wie auch schon bei Create User, zuerst durch Annotations validiert und anschließend an den Login Manager weitergereicht. Diese berechnet unabhängig davon ob der Benutzer existiert oder nicht den Hash des Klartextpassworts vergleicht diesen mit dem Benutzer falls vorhanden. Anschließend wird die LoginFirewall befragt ob es Unstimmigkeiten für diesen Benutzer oder die anfragende IP-Adresse gibt. In diesem Fall liefert diese Verify zurück was bedeutet das für diesen Benutzer ein Captcha gelöst werden muss. Deshalb wird überprüft ob es erfolgreich gelöst wurde und dann beim SessionManager durch startNewSession eine Session angelegt. Damit wurde der Login erfolgreich abgeschlossen.
 
 \chapter{Sicherheitsmassnahmen}
 
