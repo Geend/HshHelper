@@ -72,6 +72,13 @@ Die aktuelle Version unserer Login Firewall wurde einem Review durch zwei Person
 
 Die Login-Firewall wurde angepasst (vgl. [verweis auf das architektur Dokument) und es wurde ein weiteres Review für die finale Version der Anwendung geplant, das Prüfen soll, ob alle möglichen Login-Kombinationen für einen Außenstehenden ``gleich'' sind, um ein solches Information-Leakage zu verhindern.
 
+\subsection{Eingabevalidierung von Forms}
+Um Daten aus übermittelten Forms zu empfangen, nutzt unsere Anwendung DTOs, die mit Play-Constraint-Annotations versehen sind. Über diese Annotations wird sichergestellt, dass diese Daten einem bestimmten Format entsprechen, z.B. eine valide E-Mail Adresse darstellen. Diese Validierung wurde durch eine Person einem Review unterzogen, es hat 2 Stunden benötigt.
+
+Im Zuge des Reviews wurde festgestellt, dass das vorhandene Design Race Condition begünstigt. Die Validierungen im DTO waren nicht ausdrücklich auf ``statische'' Tests begrenzt. Es wurden teilweise Validierungen vorgenommen, die Datenbankzugriffe beinhaltet haben, z.B.: Existiert dieser Benutzername bereits? Wird im Controller die Form-Validierung\footnote{boundForm.hasErrors()} aufgerufen, ist die im DTO vorgenommene Validierung sowie der Controller-Code nicht Teil einer Transaktion. D.h. wenn die Form-Validation meldet, dass der Nutzername noch nicht existiert, ist dieser Zustand nicht mehr garantiert, wenn der Benutzer tatsächlich angelegt wird.
+
+Auch wenn dies im vorliegenden Fall aufgrund der Unique-Constraints in der Datenbank kein Sicherheitsproblem darstellt, haben wir uns dazu entschlossen, von einem solchen Design abzusehen. Ein Design was in derartiger Weise Race Conditions begünstigt, ist objektiv schlecht. In den DTOs finden inzwischen nur noch ``statische'' Tests statt. Diese Entscheidung hat zur Entstehung der Manager-Klassen geführt. Diese bieten Methoden, die Transaktionssicher sind und werfen bsp. eine Exception, wenn der Nutzer bereits existiert (vgl. [TODO: Verweis zu der Erklärung wie wir von Controller macht alles zu den Manager Klassen gelangt sind]).
+
 \section{Statische Codeanalyse}
 
 Da innerhalb der Gruppe keine Praeferenzen bezüglich eines Werkzeugs fuer die statische Codeanalyse bestand, haben wir verschiedene ausprobiert.
