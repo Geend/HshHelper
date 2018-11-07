@@ -37,7 +37,7 @@
   \hspace*{-1.75cm}
   \label{overview-dfd-pic}
   \includegraphics[width=1.25\linewidth]{resources/overview-dfd.jpg}
-  \caption{Gesamtuebersicht des Datenflusses in unserer Applikation}
+  \caption{Gesamtübersicht des Datenflusses in unserer Applikation}
 \end{figure}
 
 \subsection{Layered Entrypoints}
@@ -79,7 +79,7 @@
       \begin{enumerate}
         \item GET - \texttt{showResetUserPasswordForm}
         \item POST - \texttt{resetUserPassword}
-      \end{enumerate} 
+      \end{enumerate}
       \item \texttt{/sessions}
       \begin{enumerate}
         \item GET - \texttt{showActiveUserSessions()}
@@ -87,37 +87,37 @@
       \item \texttt{/sessions/delete}
       \begin{enumerate}
         \item POST - \texttt{deleteUserSession()}
-      \end{enumerate} 
+      \end{enumerate}
     \end{enumerate}
-    
+
     \item \texttt{LoginController}
     \begin{enumerate}
       \item \texttt{/login}
       \begin{enumerate}
         \item GET - \texttt{showLoginForm()}
         \item POST - \texttt{login()}
-      \end{enumerate} 
+      \end{enumerate}
       \item \texttt{/logout}
       \begin{enumerate}
         \item POST - \texttt{logout()}
-      \end{enumerate} 
+      \end{enumerate}
       \item \texttt{/changePasswordAfterReset}
       \begin{enumerate}
         \item GET - \texttt{showChangePasswordAfterResetForm}
         \item POST - \texttt{changePasswordAfterReset}
       \end{enumerate}
     \end{enumerate}
-    
+
     \item \texttt{GroupController}
     \begin{enumerate}
       \item \texttt{/user/groups}
       \begin{enumerate}
         \item GET - \texttt{showOwnGroups}
-      \end{enumerate} 
+      \end{enumerate}
       \item \texttt{/groups}
       \begin{enumerate}
         \item GET -\texttt{ showAllGroups}
-      \end{enumerate} 
+      \end{enumerate}
       \item \texttt{/groups/create}
       \begin{enumerate}
         \item GET - \texttt{showCreateGroupForm}
@@ -126,25 +126,25 @@
       \item \texttt{/groups/:groupId}
       \begin{enumerate}
         \item GET - \texttt{showGroup(groupId : Long)}
-      \end{enumerate} 
+      \end{enumerate}
       \item \texttt{/groups/:groupId/members/remove}
       \begin{enumerate}
         \item POST - \texttt{removeGroupMember(groupId : Long)}
-      \end{enumerate} 
+      \end{enumerate}
       \item \texttt{/groups/:groupId/members/add}
       \begin{enumerate}
         \item POST - \texttt{addGroupMember(groupId : Long)}
-      \end{enumerate} 
+      \end{enumerate}
       \item \texttt{/groups/:groupId/delete}
       \begin{enumerate}
         \item POST - \texttt{deleteGroup(groupId : Long)}
-      \end{enumerate} 
+      \end{enumerate}
       \item \texttt{/user/groups/:groupId/delete}
       \begin{enumerate}
         \item POST - \texttt{deleteOwnGroup(groupId : Long)}
-      \end{enumerate} 
+      \end{enumerate}
     \end{enumerate}
-    
+
   \end{enumerate}
   \item SMTP (Port 587)
 \end{enumerate}
@@ -189,7 +189,7 @@
   \item Gegenmaßnahmen: HTTPS/TLS
   \end{itemize}
 
-  \item \textbf{Ungueltig ausgestelltes Zertifikat (Tuerkischer Geheimdienst)}
+  \item \textbf{Ungültig ausgestelltes Zertifikat (Türkischer Geheimdienst)}
   \begin{itemize}
   \item Zweck:
   \item Möglichkeiten:
@@ -242,7 +242,7 @@
   \item Gegenmaßnahmen: CSRF-Tokens bei Requests checken
   \end{itemize}
 
-  \item \textbf{Session faelschen (eine bestimmte oder irgendeine?)}
+  \item \textbf{Session fälschen (eine bestimmte oder irgendeine?)}
   \begin{itemize}
   \item Zweck: Client spoofen
   \item Möglichkeiten:
@@ -258,30 +258,30 @@
   \item Gegenmaßnahmen: Logging von IP + Zeit, Action, User
   \end{itemize}
 
-  \item \textcolor{red}{Captcha loesen lassen von Indern?}
+  \item \textcolor{red}{Captcha lösen lassen von Indern?}
   \item \textcolor{red}{Elevation of privilege -> Frage an Peine. ?}
-  \item \textcolor{red}{Security Header auflisten, warum welcher, wofuer}
+  \item \textcolor{red}{Security Header auflisten, warum welcher, wofür}
 \end{itemize}
 
 \subsection{Domänenspezifische Bedrohungen}
 
-\subsubsection{Moegliche Angriffe waehrend auf den Loginprozess}
+\subsubsection{Mögliche Angriffe während auf den Loginprozess}
 
 \begin{itemize}
-  \item \textbf{Ueberlanges PW beim Login eingeben}
+  \item \textbf{Überlanges PW beim Login eingeben}
   \begin{itemize}
   \item Zweck: Zum DDOSn der Applikation
-  \item Möglichkeiten: Durch Eingabe eines ueberlangen Passworts braucht Hashing-Algo extra lange
+  \item Möglichkeiten: Durch Eingabe eines überlangen Passworts braucht Hashing-Algo extra lange
   \item Risiko: Gering
-  \item Gegenmaßnahmen: Constraint auf PW-Laenge
+  \item Gegenmaßnahmen: Constraint auf PW-Länge
   \end{itemize}
 
   \item \textbf{Timing/Side-Channel auf Loginverhalten}
   \begin{itemize}
   \item Zweck: Herausfinden, ob Username existiert
-  \item Möglichkeiten: Via abhoeren der Netzwerkverbindung, da Hashing/DB-Zugriff laenge des Requests beeinflussen
+  \item Möglichkeiten: Via abhören der Netzwerkverbindung, da Hashing/DB-Zugriff länge des Requests beeinflussen
   \item Risiko: Mittelmäßig-Hoch
-  \item Gegenmaßnahmen: Login Procedure fuer jeden Fall gleich ablaufen lassen
+  \item Gegenmaßnahmen: Login Procedure für jeden Fall gleich ablaufen lassen
   \end{itemize}
 
   \item \textbf{Brute-forcing}
@@ -291,18 +291,18 @@
   \item Risiko: Hoch
   \item Gegenmaßnahmen:
   \begin{itemize}
-      \item Captcha Mode = Login nur moeglich, wenn Captcha geloest wird.
-      \item Accounts muessen nach x falschen Logins, einen Captcha loesen, sowie IP-Adressen sperren nach Y falschen Logins
-      \item Schwache Passwoerter verbieten
-      \item Zwei-Factor-Auth
+      \item Captcha Mode = Login nur möglich, wenn Captcha gelöst wird.
+      \item Accounts müssen nach x falschen Logins, einen Captcha lösen, sowie IP-Adressen sperren nach Y falschen Logins
+      \item Schwache Passworter verbieten
+      \item Zwei-Factor-Authentication
     \end{itemize}
   \end{itemize}
 \end{itemize}
 
-\subsubsection{Moegliche Angriffe beim Versand der Passwort-Reset-E-Mail}
+\subsubsection{Mögliche Angriffe beim Versand der Passwort-Reset-E-Mail}
 
 \begin{itemize}
-\item E-Mailversand abhoeren
+\item E-Mailversand abhören
   \begin{itemize}
   \item Zweck:
   \item Möglichkeiten:
@@ -315,7 +315,7 @@
 
 \textcolor{red}{
 Beispielsweise via Betriebssystem, physikalischer Zugriff auf der Maschine oder HTTPS?
-Oder welche, fuer die es keine Motivation gibt, ggf. Repudiations
+Oder welche, für die es keine Motivation gibt, ggf. Repudiations
 }
 
 % Can be used to add a list of acronyms with their description
