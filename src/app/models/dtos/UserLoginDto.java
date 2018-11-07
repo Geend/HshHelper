@@ -1,8 +1,14 @@
 package models.dtos;
 
+import play.data.validation.Constraints;
+
 public class UserLoginDto {
+    @Constraints.Required
     private String username;
+
+    @Constraints.Required
     private String password;
+
     private String recaptcha;
 
     public String getRecaptcha() {
