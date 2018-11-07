@@ -32,11 +32,45 @@
 \section{Vier-Augen-Prinzip}
 \section{Tests}
 
+Dadurch, dass wir das Play Framework vor dem Projekt nicht kannten, sowie dass wir einen agilen Entwicklungsprozess nutzen wollten, haben wir abgestimmt, möglichst viel Code durch Tests abzudecken.
+Dadurch wird das ein eventuelles Refactoring einfacher, aber auch verstärkt es unser Vertrauen in unsere Software.
+Im Anbetracht dessen, dass Änderungen an der Architektur beziehungsweise Implementation durch eine Bedrohungsanalyse respektive gefundene Sicherheitslücken ausgelöst werden können, und wir iterativ Funktionalität zu unserem System hinzufügen wollen, sind \textbf{automatisierbare} Tests unabdingbar.
+Um dieses Ziel für unsere funktionalen, aber auch nicht-funktionalen Anforderungen zu erreichen, benutzen wir die von Play mitgelieferte JUnit-Bibliothek.
+
 \subsection{Funktionale Tests}
 
-Classcoverage, Branchcoverage, Linecoverage, Methodcoverage
-End-to-End? Unittests? Wird DB getestet?
-Welche Funktionen wurden nicht getestet?
+Zur Verifikation der funktionalen Korrektheit unseres System nutzen wir Unit-, seltener Integrations aber auch Systemtests.
+Hierbei haben wir darauf geachtet, dass es uns durch \enquote{Dependency Injection} möglich ist, die Abhängigkeiten einer Klasse durch \enquote{Mocks} zu ersetzen.
+Dadurch wird garantiert, dass lediglich das Verhalten einer Klasse getestet wird, und dass dieses Verhalten nur auf dem durchs Interface vorgeschriebene Verhalten seiner Abhängigkeiten basiert.
+
+% TODO: Which classes are tested - What contracts are tested
+% Do not forget to write down "easier" tests, e.g. the h2 ALLOW_LITERALS
+% test to verify our understanding of said option
+% Classcoverage, Branchcoverage, Linecoverage, Methodcoverage
+% End-to-End? Unittests? Wird DB getestet?
+
+Bei den View-spezifischen \enquote{Data Transfer Object}-Klassen sehen wir keinen Bedarf zum Testen.
+Sie sind essentiell nur \enquote{Plain Old Data}-Objekte, die ausser trivialen Zugriffsmethoden (Getter und Setter) keine weitere Methoden besitzen.
+Dies gilt für alle trivialen Zugriffsmethoden unserer Klassen.
+Darüber hinaus gibt es keine direkten Tests, die verifizieren, ob eine simple Relation von EBean sachgerecht auf das richtige Objekt abgebildet wird.
+% TODO, Iteration 2: Files too
+Eine Ausnahme bilden hier die \texttt{User}-Entitäten, da beim Löschen eines Benutzers ebenfalls alle Gruppen gelöscht werden müssen, dessen Besitzer er ist. Für so eine kaskadierende Löschoperation wurde extra ein Test geschrieben.
+
+% Which faults have been found through this testing?
+% E.g. NullPointerExceptions in form validations
+% Cascading delete user.ownerOf -> grps
+% Literals used in SQL
+% Captcha does not work in Firefox
+% View errors as our bootstrap helper did not set values from .fill()-method
+% Verification that controllers do return correct HTTP status codes in differing situations on the endpoints
+% E-Mail addresses were not unique, allowing a malicious user to get a PW if he had registried an account with the same email as another user
+% Validation for javascript/html in form fields
+
+
+\textcolor{red}{
+Vielleicht nicht unbedingt erwähnen, wie viel Coverage wir wirklich haben?
+Idee: Coverage Report im Anhang packen, Zahlen grob anreißen. Alles andere zu genau.
+}
 
 \subsection{Tests zur Prüfung von sicherheitsrelevanten Funktionen}
 
