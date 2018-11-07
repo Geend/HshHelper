@@ -64,21 +64,21 @@
     \begin{enumerate}
       \item \texttt{/users}
       \begin{enumerate}
-        \item GET - \texttt{showUsers}
+        \item GET - \texttt{showUsers()}
       \end{enumerate}
       \item \texttt{/users/create}
       \begin{enumerate}
-        \item POST - \texttt{createUser}
-        \item GET - \texttt{showCreateUserForm}
+        \item GET - \texttt{showCreateUserForm()}
+        \item POST - \texttt{createUser(username, email)}
       \end{enumerate}
       \item \texttt{/users/delete}
       \begin{enumerate}
-        \item POST - \texttt{deleteUser}
+        \item POST - \texttt{deleteUser(userId)}
       \end{enumerate}
       \item \texttt{/resetpassword}
       \begin{enumerate}
         \item GET - \texttt{showResetUserPasswordForm}
-        \item POST - \texttt{resetUserPassword}
+        \item POST - \texttt{resetUserPassword(username)}
       \end{enumerate}
       \item \texttt{/sessions}
       \begin{enumerate}
@@ -95,7 +95,7 @@
       \item \texttt{/login}
       \begin{enumerate}
         \item GET - \texttt{showLoginForm()}
-        \item POST - \texttt{login()}
+        \item POST - \texttt{login(username, password, recaptcha)}
       \end{enumerate}
       \item \texttt{/logout}
       \begin{enumerate}
@@ -104,7 +104,7 @@
       \item \texttt{/changePasswordAfterReset}
       \begin{enumerate}
         \item GET - \texttt{showChangePasswordAfterResetForm}
-        \item POST - \texttt{changePasswordAfterReset}
+        \item POST - \texttt{changePasswordAfterReset(username, currentPassword, password, passwordRepeat, recaptcha)}
       \end{enumerate}
     \end{enumerate}
 
@@ -116,37 +116,35 @@
       \end{enumerate}
       \item \texttt{/groups}
       \begin{enumerate}
-        \item GET -\texttt{ showAllGroups}
+        \item GET - \texttt{showAllGroups}
       \end{enumerate}
       \item \texttt{/groups/create}
       \begin{enumerate}
         \item GET - \texttt{showCreateGroupForm}
-        \item POST - \texttt{createGroup}
+        \item POST - \texttt{createGroup(groupname)}
       \end{enumerate}
       \item \texttt{/groups/:groupId}
       \begin{enumerate}
-        \item GET - \texttt{showGroup(groupId : Long)}
+        \item GET - \texttt{showGroup(groupId)}
       \end{enumerate}
       \item \texttt{/groups/:groupId/members/remove}
       \begin{enumerate}
-        \item POST - \texttt{removeGroupMember(groupId : Long)}
+        \item POST - \texttt{removeGroupMember(groupId, userId)}
       \end{enumerate}
       \item \texttt{/groups/:groupId/members/add}
       \begin{enumerate}
-        \item POST - \texttt{addGroupMember(groupId : Long)}
+        \item POST - \texttt{addGroupMember(groupId, userId)}
       \end{enumerate}
       \item \texttt{/groups/:groupId/delete}
       \begin{enumerate}
-        \item POST - \texttt{deleteGroup(groupId : Long)}
-      \end{enumerate}
-      \item \texttt{/user/groups/:groupId/delete}
-      \begin{enumerate}
-        \item POST - \texttt{deleteOwnGroup(groupId : Long)}
+        \item POST - \texttt{deleteGroup(groupId)}
       \end{enumerate}
     \end{enumerate}
-
   \end{enumerate}
   \item SMTP (Port 587)
+  \begin{enumerate}
+    \item Versand der E-Mail für den Passwort-Reset (username, email, tempPassword)
+  \end{enumerate}
 \end{enumerate}
 
 
