@@ -90,8 +90,8 @@ Ebenso haben wir uns entschlossen, Browser, die Content Security Policy nicht un
 
 \section{Kryptografisch relevanten Informationen}
 
-Wie stellen diese sicher, dass Informationen usw nicht geklaut/geknackt/abgehoert/entwendet werden koennen?
-Wie sieht es mit unserer Schluesselverwaltung aus?
+Wie stellen diese sicher, dass Informationen usw nicht geklaut/geknackt/abgehört/entwendet werden können?
+Wie sieht es mit unserer Schlässelverwaltung aus?
 Wie nutzen wir unsere Cookies? Was machen unsere Cookies genau?
 Wann setzen wir sie?
 
@@ -161,12 +161,12 @@ Die Schlüssel und Zugangsdaten liegen alle in der Datei \textit{application.con
 
 \section{Ggf. architekturielle Gegenmassnahmen gegen bestimmte Angriffe}
 
-\chapter{Implementierte Zusatzfunktionalitaet}
+\chapter{Implementierte Zusatzfunktionalität}
 
 \textcolor{red}{Nutzer kann Gruppe selbst verlassen}
-Nutzer koennen aktive Sessions betrachten und ggf. invalidieren (stichwort usability-relevantes securitykonzept)
+Nutzer können aktive Sessions betrachten und ggf. invalidieren (stichwort usability-relevantes securitykonzept)
 
-\chapter{Verworfene Entwuerfe}
+\chapter{Verworfene Entwärfe}
 
 \section{Sessionkonzept}
 Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit einer Session-Verknüpften IP-Addresse im JWT-Cookie selbst forciert. Wir waren der Annahme, die IP Addresse sei ein personenbezogenes Datum und die Speicherung von selbigen in unserer Datenbank zumindest fragwürdig. Die Verlagerung der Speicherung auf den Cookie-Speicher des Client-Browsers wäre eine potentielle Umgehungsstrategie für diese rechtliche Problematik gewesen: Die IP Addresse wird zwangsläufig vom Nutzer bei jedem Request ``übertragen'', eine doppelte Übertragung würde ``den Braten auch nicht mehr fett machen''. Herr Prof. Dr. Peine hat uns jedoch mitgeteilt, dass Datenschutzbedenken für dieses Projekt Out-Of-Scope wären. Aus diesem Grund wurde diese Idee verworfen, wir speichern die IPs in unserer Datenbank.

@@ -38,26 +38,26 @@ Classcoverage, Branchcoverage, Linecoverage, Methodcoverage
 End-to-End? Unittests? Wird DB getestet?
 Welche Funktionen wurden nicht getestet?
 
-\subsection{Tests zur Pruefung von sicherheitsrelevanten Funktionen}
+\subsection{Tests zur Prüfung von sicherheitsrelevanten Funktionen}
 
 Sessionmanagement?
-Ist unser Cookie sicher und wirklich zufaellig?
+Ist unser Cookie sicher und wirklich zufällig?
 Brute-force Schutz (Stichwort: "Firewall")
-Authorization? Koennen Endpoints nur von den richtigen Privilegien angesurft werden?
+Authorization? Können Endpoints nur von den richtigen Privilegien angesurft werden?
 Wird CSRF richtig genutzt?
-Salted bcrypt richtig? Nutzen wir ausreichend Iterationen oder koennen wir mit einem Test das irgendwie knacken?
+Salted bcrypt richtig? Nutzen wir ausreichend Iterationen oder können wir mit einem Test das irgendwie knacken?
 Kommt das Captcha zur richtigen Zeit? Ist das Captcha austricksbar?
-Haben wir Quality rules fuer passwoerter?
-Koennen wir kaputte Daten in die Forms eintragen?
-Koennen wir irgendwelche Requests forgen?
-Koennen SQL-Injections ausgefuehrt werden?
+Haben wir Quality rules für passwörter?
+Können wir kaputte Daten in die Forms eintragen?
+Können wir irgendwelche Requests forgen?
+Können SQL-Injections ausgeführt werden?
 Setzen wir alle richtigen Security-Header?
 
 \subsection{Penetrationstests}
 
-Welche Penetrationstests wurden durchgefuehrt?
+Welche Penetrationstests wurden durchgeführt?
 Gibt es ggf. automatisierbare Skripts?
-Wenn ja, fuer welche Angriffe?
+Wenn ja, für welche Angriffe?
 
 \section{Reviews}
 \subsection{Session Konzept}
@@ -81,7 +81,7 @@ Auch wenn dies im vorliegenden Fall aufgrund der Unique-Constraints in der Daten
 
 \section{Statische Codeanalyse}
 
-Da innerhalb der Gruppe keine Praeferenzen bezüglich eines Werkzeugs fuer die statische Codeanalyse bestand, haben wir verschiedene ausprobiert.
+Da innerhalb der Gruppe keine Präferenzen bezüglich eines Werkzeugs für die statische Codeanalyse bestand, haben wir verschiedene ausprobiert.
 Die Erfahrung aus anderen Sprachökosystemen (bspw. C++) zeigt, dass es dennoch ratsam ist, unterschiedliche Werkzeuge zu verwenden, um eine breitere Menge abzudecken und ggf. \enquote{False Positives} auszuschliessen.
 
 Die Werkzeuge, die wir nach einer kurzen Evaluation ausgesucht haben, sind:
@@ -96,7 +96,7 @@ Allerdings stossen diese Werkzeuge hier an ihre Grenzen, da sie den autogenerier
 
 \subsection{FindBugs}
 
-Wir haben die Version 3.0.1 verwendet, die am 2018-10-16 veroeffentlicht wurde.
+Wir haben die Version 3.0.1 verwendet, die am 2018-10-16 veröffentlicht wurde.
 Bei dem Plugin \enquote{find-sec-bugs} wurde Version 1.8 verwendet.
 
 Verwendetete Einstellungen:
@@ -109,37 +109,37 @@ Verwendetete Einstellungen:
 
 Da ein Grossteil der Fehler, die \enquote{FindBugs} gefunden hat, sich in den Tests, im autogenerierten Code oder den Templates vom Play Framework befindet, war es schwer, die \enquote{False Positives} herauszufiltern.
 Eine gesamte Auflistung aller gefundenen Fehler kann im Anhang \ref{staticanalysis-find-bugs} eingesehen werden.
-Gefunden wurden Fehler in den Kategorien \enquote{Bad Practice}, \enquote{Richtigkeit}, \enquote{Performance}, \enquote{Dodgy Code} sowie \enquote{Sicherheitsanfaelligkeit durch boesartigen Code}.
-In unserem eigentlichen Applikationscode wurden nur Fehler der Kategorie \enquote{Sicherheitsanfaelligkeit durch boesartigen Code} gefunden, die darauf hinweisen, dass einige Variablen mit \enquote{final} deklariert werden sollten.
+Gefunden wurden Fehler in den Kategorien \enquote{Bad Practice}, \enquote{Richtigkeit}, \enquote{Performance}, \enquote{Dodgy Code} sowie \enquote{Sicherheitsanfälligkeit durch bösartigen Code}.
+In unserem eigentlichen Applikationscode wurden nur Fehler der Kategorie \enquote{Sicherheitsanfälligkeit durch bösartigen Code} gefunden, die darauf hinweisen, dass einige Variablen mit \enquote{final} deklariert werden sollten.
 
 \subsection{Synopsis SecureAssist}
 
-Wir haben die Version 3.3.0 verwendet, welche im am 2018-01-29 veroeffentlicht wurde.
-Da dieses Werkzeug im Betracht auf Sicherheitsluecken von beruehmten Sicherheitsexperten wie Gary McGraw entwickelt wurde, hoffen wir, dass dieses Werkzeug Luecken findet, die den anderen Werkzeugen nicht auffallen.
+Wir haben die Version 3.3.0 verwendet, welche im am 2018-01-29 veröffentlicht wurde.
+Da dieses Werkzeug im Betracht auf Sicherheitslücken von berühmten Sicherheitsexperten wie Gary McGraw entwickelt wurde, hoffen wir, dass dieses Werkzeug Lücken findet, die den anderen Werkzeugen nicht auffallen.
 
-\subsubsection{Hardkodierte Passwoerter}
+\subsubsection{Hardkodierte Passwörter}
 
-In unserer Testklasse \texttt{UserManagerTest} verwenden wir ein hardkodiertes Passwort, um zu ueberpruefen, ob ein Nutzer sein Passwort aendern kann, zu sehen in Quellcode \ref{lst:staticanalysis-hardcoded-pw}.
+In unserer Testklasse \texttt{UserManagerTest} verwenden wir ein hardkodiertes Passwort, um zu überprüfen, ob ein Nutzer sein Passwort ändern kann, zu sehen in Quellcode \ref{lst:staticanalysis-hardcoded-pw}.
 Das sehen wir nicht als sicherheitsrelevanten Fehler an und ignorieren diesen daher.
 
 \subsubsection{Query Injections}
 
-Die Regel, die SecureAssist verwendet, um moegliche SQL Injections zu finden, scheint nur zu pruefen, ob ein SQL Statement als String verwendet wird, und ob es als \texttt{PreparedStatement} verwendet wird.
-Leider ueberprueft es nicht, ob das als String angegebene SQL Statement ueberhaupt veraenderbar ist; beispielsweise durch Konkatenieren eines Parameters.
+Die Regel, die SecureAssist verwendet, um mögliche SQL Injections zu finden, scheint nur zu prüfen, ob ein SQL Statement als String verwendet wird, und ob es als \texttt{PreparedStatement} verwendet wird.
+Leider überprüft es nicht, ob das als String angegebene SQL Statement überhaupt veränderbar ist; beispielsweise durch Konkatenieren eines Parameters.
 Das Werkzeug hat daher ein \enquote{False Positive} in unserer \texttt{DatabaseInitialization}-Klasse gefunden, siehe Quellcode \ref{lst:staticanalysis-query-injection}.
-Die Statements in dieser Klasse koennen nicht von einem Nutzer durch Parameter angereichert werden.
+Die Statements in dieser Klasse können nicht von einem Nutzer durch Parameter angereichert werden.
 
 \subsubsection{Information Leakage}
 
 Das Ausgeben des Stacktrace im Falle einer Exception sieht das Werkzeug bereits Verletzung der Vertraulichkeit, welchem wir zustimmen.
-Gluecklicherweise schuetzt Play einem in diesem Fall und gibt keine Stacktraces an einen Benutzer weiter, sofern die Applikation im \enquote{Production Mode} ausgefuehrt wird.
+Glücklicherweise schützt Play einem in diesem Fall und gibt keine Stacktraces an einen Benutzer weiter, sofern die Applikation im \enquote{Production Mode} ausgeführt wird.
 In diesem Fall wird die Exception mit einer ID ausgezeichnet, die ID wird dem Benutzer angezeigt und der Stacktrace wird in das Applikationslog geschrieben.
 
 \subsection{SonarLint}
 
-An dem \enquote{SonarLint}-Plugin fuer die IntelliJ IDE konnten keine relevanten Einstellungen veraendert werden, daher wurden die Werkseinstellungen benutzt.
+An dem \enquote{SonarLint}-Plugin für die IntelliJ IDE konnten keine relevanten Einstellungen verändert werden, daher wurden die Werkseinstellungen benutzt.
 
-Die Maengel, die waehrend des Scans unseres Quellcodes gefunden wurden, werden hier der Vollstaendigkeit halber aufgefuehrt, obwohl nur programmierstil-spezifische Fehler gefunden wurden.
+Die Mängel, die während des Scans unseres Quellcodes gefunden wurden, werden hier der Vollständigkeit halber aufgeführt, obwohl nur programmierstil-spezifische Fehler gefunden wurden.
 
 \subsubsection{Verbergen des \texttt{public}-Konstruktors}
 
@@ -153,20 +153,20 @@ Die Klassen
 \end{itemize}
 
 sind entweder reine Utilityklassen mit statischen Methoden beziehungsweise finalen Variabeln oder implementieren eine Annotation.
-Es bietet sich also an, einen \texttt{private}-Konstruktor fuer diese Klassen zu schreiben, damit der \texttt{public}-Konstruktor verborgen ist, und niemand ausversehen ein Objekt dieser Klassen instanziieren kann.
+Es bietet sich also an, einen \texttt{private}-Konstruktor für diese Klassen zu schreiben, damit der \texttt{public}-Konstruktor verborgen ist, und niemand ausversehen ein Objekt dieser Klassen instanziieren kann.
 
 \subsubsection{Extrahieren von Konstanten in \texttt{final}-Variabeln}
 
 In der \texttt{Firewall} sowie unseren \texttt{Manager}-Klassen verwenden wir Konstanten, die an mehreren Stellen verwendet werden.
-Im Falle der \texttt{Manager}s handelt es sich um aehnliche String, die in einer Exception den Fehler genauer beschreiben.
-Bei diesen Strings koennte man sich der \texttt{i18n}-Implementation von Play bedienen, um diese Fehlermeldungen fuer alle \texttt{Manager}s erreichbar zu machen, aber da Internationalisierung nicht im Umfang dieses Projekts ist, werden sie als statische, finale Variabeln extrahiert.
+Im Falle der \texttt{Manager}s handelt es sich um ähnliche String, die in einer Exception den Fehler genaür beschreiben.
+Bei diesen Strings könnte man sich der \texttt{i18n}-Implementation von Play bedienen, um diese Fehlermeldungen für alle \texttt{Manager}s erreichbar zu machen, aber da Internationalisierung nicht im Umfang dieses Projekts ist, werden sie als statische, finale Variabeln extrahiert.
 
 \section{Quelltextinspektion}
 
-Haben wir ggf. irgendwelche Checklisten nutzen koennen?
+Haben wir ggf. irgendwelche Checklisten nutzen können?
 Siehe
 
-\chapter{Gefundene Maengel}
+\chapter{Gefundene Mängel}
 
 \printbibliography
 
@@ -196,7 +196,7 @@ String newPassword = "0123456789";
 \end{lstlisting}
 
 \chapter{src/app/DatabaseInitialization.java}
-\begin{lstlisting}[language=Java,caption=Von SecureAssist gefundenes False Positive Beispiel fuer Query Injections,label={lst:staticanalysis-query-injection}]
+\begin{lstlisting}[language=Java,caption=Von SecureAssist gefundenes False Positive Beispiel für Query Injections,label={lst:staticanalysis-query-injection}]
 db.withConnection(connection -> {
 	Statement stmt = connection.createStatement();
 	stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
