@@ -36,7 +36,7 @@ public class LoginController extends Controller {
     public Result login() {
         Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password");
         if (boundForm.hasErrors()) {
-            return redirect(routes.LoginController.login());
+            return badRequest(views.html.Login.render(boundForm, false));
         }
 
         UserLoginDto loginData = boundForm.get();
