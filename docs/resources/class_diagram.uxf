@@ -1,22 +1,22 @@
-<diagram program="umletino" version="14.3.0"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>655</x><y>70</y><w>190</w><h>190</h></coordinates><panel_attributes>UserController
+<diagram program="umletino" version="14.3.0"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>665</x><y>70</y><w>240</w><h>190</h></coordinates><panel_attributes>UserController
 --
-+showUsers()
-+deleteUser(userId: Long)
-+showCreateUserForm()
-+createUser()
++showUsers() : Result
++deleteUser(userId: Long) : Result
++showCreateUserForm() : Result
++createUser() : Result
 
-+showResetUserPasswordForm()
-+resetUserPassword()
++showResetUserPasswordForm() : Result
++resetUserPassword() : Result
 
-+showActiveUserSessions()
-+deleteUserSession()
-style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>655</x><y>370</y><w>380</w><h>100</h></coordinates><panel_attributes>UserManager
++showActiveUserSessions() : Result
++deleteUserSession() : Result
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>665</x><y>350</y><w>380</w><h>100</h></coordinates><panel_attributes>UserManager
 --
 + createUser(userId: Long, username: String, email: String, int quota)
 + deleteUser(userId: Long, userIdToDelete: Long)
 + getAllUsers(userId: Long)
 + resetPassword(string username)
-style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>245</x><y>270</y><w>280</w><h>180</h></coordinates><panel_attributes>SessionManager
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>255</x><y>270</y><w>280</w><h>180</h></coordinates><panel_attributes>SessionManager
 --
 + startNewSession(user: User)
 + currentUser()
@@ -27,7 +27,7 @@ style=autoresize</panel_attributes><additional_attributes></additional_attribute
 + garbageCollect()
 + getSessionTimeoutHours()
 style=autoresize
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>655</x><y>490</y><w>430</w><h>180</h></coordinates><panel_attributes>GroupManager
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>665</x><y>470</y><w>430</w><h>180</h></coordinates><panel_attributes>GroupManager
 --
 + createGroup(userId: Long, groupName: String)
 + getOwnGroups(userId: Long) : Set&lt;Group&gt;
@@ -38,28 +38,28 @@ style=autoresize
 + removeGroupMember(userId: Long, userIdToRemove: Long, groupId: Long)
 + addGroupMember(userId: Long, userIdToAdd: Long, groupId: Long)
 + deleteGroup(userId: Long, groupId: Long)
-style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>655</x><y>690</y><w>590</w><h>90</h></coordinates><panel_attributes>LoginManager
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>665</x><y>670</y><w>590</w><h>90</h></coordinates><panel_attributes>LoginManager
 --
 style=autoresize
 + login(username: String, password: String, captchaToken: String)
 + changePassword(username: String, currentPassword: String, newPassword: String, captchaToken: String)
-+ logout()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>655</x><y>860</y><w>220</w><h>70</h></coordinates><panel_attributes>LoginFirewall
++ logout()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>665</x><y>840</y><w>220</w><h>70</h></coordinates><panel_attributes>LoginFirewall
 --
 style=autoresize
 + getStrategy(userId: Long) : Strategy
-+ garbageCollect()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>245</x><y>460</y><w>330</w><h>90</h></coordinates><panel_attributes>PasswordSecurityModule
++ garbageCollect()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>255</x><y>460</y><w>330</w><h>90</h></coordinates><panel_attributes>PasswordSecurityModule
 style=autoresize
 --
 + hashPassword(password: String)
 + checkPassword(password: String, hash: String) : Boolean
-+ generatePassword(length: Int): String</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>885</x><y>1010</y><w>150</w><h>120</h></coordinates><panel_attributes>Group
++ generatePassword(length: Int): String</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>895</x><y>990</y><w>150</w><h>120</h></coordinates><panel_attributes>Group
 --
 style=autoresize
 + name: String
 + user: Owner
 + isAdminGroup: Boolean
 + isAllGroup: Boolean
-+ members: Set&lt;User&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>655</x><y>1010</y><w>210</w><h>150</h></coordinates><panel_attributes>User
++ members: Set&lt;User&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>665</x><y>990</y><w>210</w><h>150</h></coordinates><panel_attributes>User
 --
 style=autoresize
 + username: String
@@ -68,13 +68,13 @@ style=autoresize
 + passwordResetRequired: Boolean
 + quotaLimit: int
 + ownerOf: Set&lt;Group&gt;
-+ groups: Set&lt;Group&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>635</x><y>20</y><w>770</w><h>280</h></coordinates><panel_attributes>Controller
++ groups: Set&lt;Group&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>645</x><y>20</y><w>850</w><h>280</h></coordinates><panel_attributes>Controller
 --
 bg=#FEE4B1
-layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>635</x><y>330</y><w>770</w><h>470</h></coordinates><panel_attributes>DomainLogic - Manager
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>645</x><y>310</y><w>850</w><h>470</h></coordinates><panel_attributes>DomainLogic - Manager
 --
 bg=#A6ECB2
-layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>855</x><y>70</y><w>260</w><h>150</h></coordinates><panel_attributes>LoginController
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>925</x><y>70</y><w>260</w><h>150</h></coordinates><panel_attributes>LoginController
 --
 style=autoresize
 + showLoginForm() : Result
@@ -83,7 +83,7 @@ style=autoresize
 + showChangePasswordAfterReset() : Result
 + changePasswordAfterReset() : Result
 
-+ logout() : Result</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1125</x><y>70</y><w>260</w><h>210</h></coordinates><panel_attributes>GroupController
++ logout() : Result</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1205</x><y>70</y><w>260</w><h>210</h></coordinates><panel_attributes>GroupController
 --
 style=autoresize
 + showCreateGroupForm() : Result
@@ -96,16 +96,16 @@ style=autoresize
 + removeGroupMember(groupId: Long): Result
 + addGroupMember(groupId: Long) : Result
 + deleteOwnGroup(groupId: Long) : Result
-+ deleteGroup(groupId: Long) : Result</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>635</x><y>970</y><w>770</w><h>220</h></coordinates><panel_attributes>Database
++ deleteGroup(groupId: Long) : Result</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>245</x><y>950</y><w>1250</w><h>220</h></coordinates><panel_attributes>Database
 --
 bg=#FEB3B4
-layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>235</x><y>0</y><w>360</w><h>1190</h></coordinates><panel_attributes>Cross Cutting Concerns
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>245</x><y>0</y><w>360</w><h>940</h></coordinates><panel_attributes>Cross Cutting Concerns
 --
 bg=#B6B2FF
-layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>635</x><y>810</y><w>770</w><h>150</h></coordinates><panel_attributes>DomainLogic
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>645</x><y>790</y><w>850</w><h>150</h></coordinates><panel_attributes>DomainLogic
 --
 bg=#A6ECB2
-layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>915</x><y>840</y><w>120</w><h>100</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>925</x><y>820</y><w>120</w><h>100</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
 Strategy
 --
 BYPASS
