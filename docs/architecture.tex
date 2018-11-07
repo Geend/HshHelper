@@ -29,11 +29,16 @@
 \tableofcontents  % Inhaltsverzeichnis
 
 \chapter{Architekturaufbau}
+\subsection{Klassendiagramm}
+Dieses Architekturdiagramm verzichtet zugunsten der Übersichtlichkeit auf die Abhängigkeiten zwischen den Klassen. Es dient lediglich zur Veranschaulichung der Top Level Architektur und zur Illustration der wichtigsten Klassen. Wie die durch Farben abgetrennten logische Gruppierung der Klassen im Zusammenhang stehen wird unter der Abbildung textuel erklärt.
 
-Klassendiagramm (High-Level-Ansicht)
-Ggf. Sequenzdiagramme fuer wichtige Ablaeufe
-Verantwortung der jeweiligen Klassen auflisten
-Welche Klasse macht mit welcher Klasse was?
+\includegraphics[width=0.73\paperwidth]{resources/class_diagram.png}
+
+Zu jedem Controller gibt es einen Manager in der Domain Logic. Dieser enthält jegliche Logik zur Abarbeitung des Requests und liefert auftretende Fehler über eine Exception zurück. Datenbankzugriff erfolgt somit niemals von einem Controller, sondern immer aus dem zugehörigen Manager. Beim Sessionmanager handelt es sich um einen Spezialfall, da das Session Konzept ein integraler Bestandteil der Anwendung ist und somit von sehr vielen stellen aus Verwendung findet. Ebenso wie das PasswordSecurityModule was Beispielsweise beim Einloggen als auch beim Erstellen eines neuen Benutzers oder beim Passwort-Reset benötigt wird. Daher wurden diese beiden Klassen unter Cross Cutting Concerns zusammengefasst. Zugriff aus diese beiden Klassen kann sowohl von Controllern aus erfolgen als auch von Managern in der Domain Logic. Die folgende Sequenzdiagramm sollte weitere Einsicht in das Zusammenspiel des Klassen untereinander ermöglichen.
+
+\includegraphics[width=0.78\paperwidth]{resources/createuserseq_diagram.png}
+
+Beim Anlegen eines neuen Benutzers wird zuerst durch ein HTTP GET die Form angefragt. Dies ist notwendig um ein gültiges CSRF Token zu erhalten welches beim anschließenden HTTP POST mitgeliefert werden muss. Auch hier wird bereits, wie aus dem Sequenzdiagramm ersichtlich, überprüft ob der anfragende User authentisiert ist. Ist das der fall wird eine HTML Form zurückgeliefert die anschließend ausgefüllt und durch einen weiteren Request wieder an den Server geschickt wird. Hier wird zuerst über die in Play integrierte Möglichkeit mit Annotations eine erste Validierung der Eingaben vorgenommen. Somit werden bereits zu einem frühen Zeitpunkt Eingaben mit nicht unterstützten Zeichen oder ungültiger Länge herausgefiltert und dem Benutzer durch Anzeigen von Fehlermeldungen direkt am Eingabefeld mitgeteilt. Sind alle Eingaben korrekt, wird der Aufruf weiter an den Manager geleitet. Dieser befragt zuerst die Policy ob der authentisierte Benutzer autorisiert ist einen neuen Benutzer anzulegen, generiert ein neues Passwort, Hashed es und legt in einer Transaktion einen neuen Benutzer an. Das Klartext Passwort wird zurückgegeben und dem Administrator angezeigt um dies dem neuen Benutzer zukommen zu lassen.
 
 \chapter{Sicherheitsmassnahmen}
 
