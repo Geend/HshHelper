@@ -60,12 +60,17 @@ Gibt es ggf. automatisierbare Skripts?
 Wenn ja, fuer welche Angriffe?
 
 \section{Reviews}
-\subsection{Review des Session Konzepts}
+\subsection{Session Konzept}
 Die erste Version unseres Session Konzepts wurde einem Review unterzogen. Das Review wurde von einer Person durchgeführt und benötigte 2 Stunden. Hierbei wurde insb. ein schlechtes Design bemängelt. Die Session-Funktionalität wurde nicht von einer bzw. wenigen Klassen abgebildet, sondern auf verschiedenste Klassen verteilt: Die Login-Methode im Controller erstellte inline einen Datenbank-Eintrag sowie ein Cookie. Andere Controller-Methoden manipulierten inline die entsprechenden Einträge und entfernten nach Bedarf Cookies. Das Wissen darüber, was überhaupt eine Session darstellt war so nicht an einer zentralen Stelle im Code zu finden und entsprechend schwer zu prüfen.
 
 Ebenfalls wurde ein Bug gefunden, der indirekt eine Folge des mangelhaften Designs war: Eine Endlosschleife von Redirects. Die Prüfung ob, für den aktuellen Benutzer eine ``valide'' Session vorliegt wurde von mehreren Klassen eigenständig implementiert, dies fand auf unterschiedliche Art und Weise statt. Änderte sich während der Benutzung die Benutzer-IP, stellte dies für die eine Komponente eine valide Session dar, für die andere Komponente jedoch nicht. Die Controller-Methode leitete den Nutzer mangels ``valider'' Session so zur Login Seite, diese stellte jedoch eine ``valide'' Session fest und leitete den Nutzer erneut zur Controller-Methode.
 
 Es wurde beschlossen, das Session Konzept einem grundsätzlichen Rewrite zu unterziehen. Das Wissen darüber, was eine Session darstellt, sollte gebündelt an einer zentralen Stelle der Architektur liegen, der Rest der Anwendung nur die API dieser ``zentralen Stelle'' verwenden und unter keinen Umständen selbst an Cookies oder den entsprechenden Datenbank-Entitäten manipulieren. Um sicherzustellen, dass es nicht erneut zu dem bereits festgestellten Redirect-Bug kommt, wurden diese Fälle durch Unit-Tests abgebildet.
+
+\subsection{Login Firewall}
+Die aktuelle Version unserer Login Firewall wurde einem Review durch zwei Personen unterzogen, welches zwei Stunden benötigte. Hierbei wurde ein Bug entdeckt, der ein Information Leakage zur Folge hatte: Die Firewall versetzt Benutzeraccounts nach N falschen Logins in einen Captcha-Modus. Login-Versuche auf nicht-existierende Benutzeraccounts, führten nicht zu dieser Account-``Sperre''. Aufgrund dieser funktional anderen Behandlung wäre es möglich gewesen, feststellen zu können, ob ein Account existiert oder nicht, was ein Brute-Forcing maßgeblich erleichtern würde.
+
+Die Login-Firewall wurde angepasst (vgl. [verweis auf das architektur Dokument) und es wurde ein weiteres Review für die finale Version der Anwendung geplant, das Prüfen soll, ob alle möglichen Login-Kombinationen für einen Außenstehenden ``gleich'' sind, um ein solches Information-Leakage zu verhindern.
 
 \section{Statische Codeanalyse}
 
