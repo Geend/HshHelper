@@ -65,6 +65,8 @@
   \item Autogenerierte IDs der Datenbank \enquote{h2} sind aufsteigend und werden nicht wiederverwendet, sofern eine ID wieder frei wird.
   \item Angreifer verfügen nur über einen begrenzten Pool an IP-Addressen, die ``Anschaffung'' großer Mengen von IP-Adressen für einen Login-Brute-Force ist unwirtschaftlich.
   \item Zertifikate sind grundsätzlich vertrauenswürdig. Certificate Authorities stellen keine Zertifikate für missbräuchliche Zwecke aus.
+  \item Die Quelle der kryptografisch-sicheren Zufallszahlen versiegt nicht (\texttt{/dev/random} (Linux), Cryptography API: Next Generation (Windows) \autocite{Windows.SecureRandom}).
+  \item Google's reCAPTCHA Server sind vertrauenswürdig.
 \end{itemize}
 
 \chapter{Akteur}
@@ -76,7 +78,7 @@
   \item Authentisierter Benutzer (U+)
   \item Unauthentisierter Benutzer (U-)
   \item E-Mail Server (EM)
-  \item \textcolor{red}{Google Recaptcha}
+  \item Google reCAPTCHA Server (GR)
 \end{itemize}
 
 \chapter{Eintrittspunkte}
@@ -86,8 +88,8 @@
   \begin{itemize}
     \item HTTP (Port 80)  [U-, U+, GM, GO, A]
     \item SMTP (Port 587) [U-]
-    \item Konfigurationsdatei
   \end{itemize}
+  \item Eingebettetes Google reCAPTCHA JavaScript
 \end{itemize}
 
 \chapter{Assets}
@@ -95,9 +97,10 @@
 \begin{itemize}
   \item Benutzeranmeldeinformationen
   \begin{itemize}
-    \item Passwort [-]
+    \item Passworthash [-]
     \item Session [U+, GM, GO, A]
   \end{itemize}
+  % Maybe change depending on Prof. Peine's response
   \item Privater Schlüssel zur Generation des JWT/der Sessions [-]
   \item Privater Schlüssel zur Validierung der Captchas [-]
   \item Gruppen [U+, GM, GO, A]
@@ -107,7 +110,7 @@
 \chapter{Aktionen}
 
 \begin{itemize}
-  \item \textbf{AK1:} Einloggen [U-]
+  \item \textbf{AK1:} Einloggen [U-, GR]
   \item \textbf{AK2:} Ausloggen [U+, GM, GO, A]
   \item \textbf{AK3:} Nutzer erstellen [A]
   \item \textbf{AK4:} Nutzer löschen [A]
@@ -160,6 +163,7 @@
   \item Kein Nutzer, auch nicht Administratoren, kann die Sessions anderer Nutzer betrachten oder zerstören.
   \item Passwörter der Nutzer können von keiner Person ausgelesen werden.
   \item Ein Administrator hat nur schreibenden Zugriff auf ein Nutzerkonto beim Löschen. Ihm ist nicht möglich, andere Informationen aus dem Nutzerkonto zu lesen.
+  \item \textcolor{red}{Ein Nutzer muss nur ein reCAPTCHA lösen, wenn er sich entweder fünfmal hintereinander fehlerhaft eingeloggt hat oder auf seinem Account von verschiedenen IP-Addressen Loginversuche verbucht sind.}
 \end{itemize}
 
 \clearpage
