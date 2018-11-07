@@ -52,15 +52,17 @@
 \begin{itemize}
   \item Netzwerkverbindungen sind abhörsicher und von außen nicht beeinflussbar.
   \item Betriebssystem, Hardware sowie verwendetete Bibliotheken enthalten keine sicherheitsrelevanten Fehler.
-  \item Hashing-Algorithmus \enquote{bcrypt} macht es einem Angreifer wirtschaftlich unmöglich, Passwörter durch Brute-Force oder Rainbow Tables herauszufinden.
-  \item Lösen eines Captchas ist für einen Angreifer wirtschaftlich undurchführbar.
+  \item Hashing-Algorithmus \enquote{bcrypt} macht es einem Angreifer wirtschaftlich unmöglich, evtl. erbeutete Password-Hashes durch Brute-Force oder Rainbow Tables in Plaintext zu verwandeln.
+  \item Lösen eines Recaptchas ist für einen Angreifer wirtschaftlich undurchführbar.
+  \item Die von Google-Servern eingebundenen Recaptcha Java-Script Dateien werden niemals zur Code-Injection verwendet / die Google-Server sind sicher.
   \item Bibliotheksfunktion \texttt{java.security.SecureRandom} \autocite{JavaDocs.SecureRandom} erstellt Zufallszahlen, die kryptografisch sicher sind.
   \item Einstellung \texttt{ALLOW\_LITERALS} der Datenbank \enquote{h2} verhindert SQL-Injections.
-  \item \enquote{\gls{jwt}}-Format ist kryptografisch sicher zur Speicherung von Session- sowie Cookie-Daten.
+  \item Die von JWT verwendete Signatur (HMAC-SHA256) verhindert, dass eine Manipulation von JWT-Cookies erfolgen kann.
   \item Applikation kann nur über die definierten Eintrittspunkte verwendet werden.
   \item Benutzer des HsH-Helfers verraten nicht ihr Passwort an andere.
   \item Initialer Benutzer \enquote{admin} ist vertrauenswürdig.
   \item Autogenerierte IDs der Datenbank \enquote{h2} sind aufsteigend und werden nicht wiederverwendet, sofern eine ID wieder frei wird.
+  \item Angreifer verfügen nur über einen begrenzten Pool an IP-Addressen, die ``Anschaffung'' großer Mengen von IP-Adressen für einen Login-Brute-Force ist unwirtschaftlich.
 \end{itemize}
 
 \chapter{Akteur}
