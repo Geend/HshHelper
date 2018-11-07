@@ -166,7 +166,7 @@ Die Schlüssel und Zugangsdaten liegen alle in der Datei \textit{application.con
 \textcolor{red}{Nutzer kann Gruppe selbst verlassen}
 Nutzer können aktive Sessions betrachten und ggf. invalidieren (stichwort usability-relevantes securitykonzept)
 
-\chapter{Verworfene Entwärfe}
+\chapter{Verworfene Entwürfe}
 
 \section{Sessionkonzept}
 Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit einer Session-Verknüpften IP-Addresse im JWT-Cookie selbst forciert. Wir waren der Annahme, die IP Addresse sei ein personenbezogenes Datum und die Speicherung von selbigen in unserer Datenbank zumindest fragwürdig. Die Verlagerung der Speicherung auf den Cookie-Speicher des Client-Browsers wäre eine potentielle Umgehungsstrategie für diese rechtliche Problematik gewesen: Die IP Addresse wird zwangsläufig vom Nutzer bei jedem Request ``übertragen'', eine doppelte Übertragung würde ``den Braten auch nicht mehr fett machen''. Herr Prof. Dr. Peine hat uns jedoch mitgeteilt, dass Datenschutzbedenken für dieses Projekt Out-Of-Scope wären. Aus diesem Grund wurde diese Idee verworfen, wir speichern die IPs in unserer Datenbank.
