@@ -33,6 +33,7 @@
 Dieses Architekturdiagramm verzichtet zugunsten der Übersichtlichkeit auf die Abhängigkeiten zwischen den Klassen. Es dient lediglich zur Veranschaulichung der Top-Level-Architektur und zur Illustration der wichtigsten Klassen. Wie die, durch Farben abgetrennten logischen Gruppierungen der Klassen im Zusammenhang stehen, wird unter der Abbildung textuell erklärt.
 
 \includegraphics[width=0.73\paperwidth]{resources/class_diagram.png}
+\label{architecture:class_diagram}
 
 Zu jedem Controller gibt es einen Manager in der Domain Logik. Dieser enthält jegliche Logik zur Abarbeitung der Anfrage und liefert auftretende Fehler über eine Exception zurück. Datenbankzugriff erfolgt somit niemals von einem Controller, sondern immer aus dem zugehörigen Manager. Beim Sessionmanager handelt es sich um einen Spezialfall, da das Session Konzept ein integraler Bestandteil der Anwendung ist und somit von sehr vielen stellen aus Verwendung findet. Das Gleiche gilt für das PasswordSecurityModule, was beispielsweise beim Einloggen, Erstellen, oder Passwortreset Benutzers benötigt wird. Daher wurden diese beiden Klassen unter Cross-Cutting-Concerns zusammengefasst. Zugriff auf diese beiden Klassen kann sowohl von Controllern aus erfolgen als auch von Managern in der Domain Logik. Die folgenden Sequenzdiagramme geben weitere Einsicht in das Zusammenspiel der Klassen untereinander.
 

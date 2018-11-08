@@ -43,6 +43,41 @@ Zur Verifikation der funktionalen Korrektheit unseres System nutzen wir Unit-, s
 Hierbei haben wir darauf geachtet, dass es uns durch \enquote{Dependency Injection} möglich ist, die Abhängigkeiten einer Klasse durch \enquote{Mocks} zu ersetzen.
 Dadurch wird garantiert, dass lediglich das Verhalten einer Klasse getestet wird, und dass dieses Verhalten nur auf dem durchs Interface vorgeschriebene Verhalten seiner Abhängigkeiten basiert.
 
+\externaldocument[Arch1-]{architecture}
+Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-architecture:class_diagram}) aufgezeigten \enquote{Pakete} werden folgende Voraussetzungen sowie Nachbedingungen getestet:
+
+\begin{enumerate}
+  \item Controller
+  \begin{itemize}
+    \item Routen werden durch die richtigen internen Methoden abgebildet,
+    \item Nutzer muss authentisiert sein, um Route anzusurfen,
+    \item Login-Page kann ausschliesslich ohne valide Session aufgerufen werden,
+    \item Methoden geben erwarteteten HTTP Status Code zurück.
+  \end{itemize}
+
+  \item Manager
+  \begin{itemize}
+    \item
+  \end{itemize}
+
+  \item Domänenlogik
+  \begin{itemize}
+    \item Nach 5 fehlgeschlagenen Logins muss ein Nutzer ein reCAPTCHA lösen,
+    \item Nach 50 fehlgeschlagenen Logins von einer IP-Adresse muss ein reCAPTCHA gelöst werden,
+    \item Nach 100 fehlgeschlagenen Logins ist eine IP-Adresse ausgesperrt
+  \end{itemize}
+
+  \item Database
+  \begin{itemize}
+    \item Von h2 angepriesene \texttt{ALLOW\_LITERALS}-Konfiguration funktioniert wie erwartet
+  \end{itemize}
+
+  \item Cross Cutting Concerns
+  \begin{itemize}
+    \item Maximale Passwortlänge ist auf das von BCrypt vorgegebene Limit gesetzt
+  \end{itemize}
+\end{enumerate}
+
 % TODO: Which classes are tested - What contracts are tested
 % Do not forget to write down "easier" tests, e.g. the h2 ALLOW_LITERALS
 % test to verify our understanding of said option
@@ -65,7 +100,6 @@ Eine Ausnahme bilden hier die \texttt{User}-Entitäten, da beim Löschen eines B
 % Verification that controllers do return correct HTTP status codes in differing situations on the endpoints
 % E-Mail addresses were not unique, allowing a malicious user to get a PW if he had registried an account with the same email as another user
 % Validation for javascript/html in form fields
-
 
 \textcolor{red}{
 Vielleicht nicht unbedingt erwähnen, wie viel Coverage wir wirklich haben?
