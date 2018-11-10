@@ -87,22 +87,24 @@ Idee: Coverage Report im Anhang packen, Zahlen grob anreißen. Alles andere zu g
 \subsection{Tests zur Prüfung von sicherheitsrelevanten Funktionen}
 
 Um SQL-Injections zu verhindern, machen wir uns die von \enquote{h2} angebotene Option \texttt{ALLOW\_LITERALS=NONE} zu eigen.
-Dazu haben wir 2 Tests geschrieben. 
+Dazu haben wir 2 Tests geschrieben.
 Einer, der zunächst verifiziert, dass diese Option wirklich SQL-Injections verhindert, wenn man sie bei einer beliebigen \enquote{h2}-Datenbank aktiviert.
 Ein weiterer Test prüft dann, ob unsere Applikation diese Option richtig gesetzt hat, damit wir sicher sein können, dass auch im Applikationskontext keine SQL-Injections möglich sind.
 
-Um garantieren zu können, dass unsere Authorization funktioniert, haben wir eine Reihe von Tests geschrieben, die mit verschiedenen Nutzer unterschiedlicher Privilegien versucht, die vorhandenen Operationen durchzuführen. 
+Um garantieren zu können, dass unsere Authorization funktioniert, haben wir eine Reihe von Tests geschrieben, die mit verschiedenen Nutzer unterschiedlicher Privilegien versucht, die vorhandenen Operationen durchzuführen.
 
-Sessionmanagement?
-Ist unser Cookie sicher und wirklich zufällig?
-Brute-force Schutz (Stichwort: "Firewall")
-Wird CSRF richtig genutzt?
-Salted bcrypt richtig? Nutzen wir ausreichend Iterationen oder können wir mit einem Test das irgendwie knacken?
-Kommt das Captcha zur richtigen Zeit? Ist das Captcha austricksbar?
-Haben wir Quality rules für passwörter?
-Können wir kaputte Daten in die Forms eintragen?
-Können wir irgendwelche Requests forgen?
-Setzen wir alle richtigen Security-Header?
+\textcolor{red}{
+Sessionmanagement? \\
+Ist unser Cookie sicher und wirklich zufällig? \\
+Brute-force Schutz (Stichwort: "Firewall") \\
+Wird CSRF richtig genutzt? \\
+Salted bcrypt richtig? Nutzen wir ausreichend Iterationen oder können wir mit einem Test das irgendwie knacken? \\
+Kommt das Captcha zur richtigen Zeit? Ist das Captcha austricksbar? \\
+Haben wir Quality rules für passwörter? \\
+Können wir kaputte Daten in die Forms eintragen? \\
+Können wir irgendwelche Requests forgen? \\
+Setzen wir alle richtigen Security-Header? \\
+}
 
 \subsection{Penetrationstests}
 Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationstest durchgeführt. Im ersten Schritt wurde dazu einfach das CSRF-Token aus dem HTML der Form gelöscht. Diese Anfrage wird wie erwartet vom Server mit einer von Play vorgefertigten \enquote{\texttt{Unautorized}} Seite beantwortet. In einem weiteren Schritt wurde mit Curl ein Anfrage erstellt in welcher lediglich der Benutzername und Passwort aber kein CSRF-Token enthalten war. Diese Anfrage wurde vom Server ohne Beanstandung akzeptiert. Der Grund hierfür ist, dass das CSRF-Token weder im Cookie noch als Form-Daten an den Server übermittelt wird. Auch die \texttt{RequireCSRFCheck} Annotation schafft hierfür keine Abhilfe. CSRF Möglichkeit und somit eine Sicherheitslücke liegt vor, wenn folgende Bedingungen gelten:
@@ -238,9 +240,9 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
 
 % htbp = HereTopBottomPage (priority of where to place the table in case previous placement fails)
 \begin{table}[ht]
-  \captionof{table}{Auflistung der Mängel und Methode, der diese gefunden hat} \label{tab:title} 
+  \captionof{table}{Auflistung der Mängel und Methode, der diese gefunden hat} \label{tab:title}
   \begin{tabularx}{\textwidth}{| X | r |}
-  \hline 
+  \hline
   \textbf{Fehler} & \textbf{Methode} \\ \hline
   reCAPTCHA nicht lösbar in Firefox & Selenium-Test sowie Manueller Test \\ \hline
   \texttt{NullPointerException} beim Validieren des \enquote{Passwort ändern}-Formulars & Funktionaler Test der Controllermethode \\ \hline
@@ -250,7 +252,7 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
   Mögliche Race Conditions während der Validation eines Nutzernamens & Review \\ \hline
   Mögliche Side-Channel-Attacke beim Loginversuch durch den Login-Firewall & Review \\ \hline
   Endlosschleife von Redirects beim Login eines Nutzers mit valider Session aber unterschiedlicher IP & Review \\ \hline
-  
+
   \end{tabularx}
 \end{table}
 
