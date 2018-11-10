@@ -86,10 +86,10 @@ Idee: Coverage Report im Anhang packen, Zahlen grob anreißen. Alles andere zu g
 
 \subsection{Tests zur Prüfung von sicherheitsrelevanten Funktionen}
 
-Um SQL-Injections zu verhindern, machen wir uns die von \enquote{h2} angebotene Option \texttt{ALLOW\_LITERALS=NONE} zu eigen.
+Um SQL Injections zu verhindern, machen wir uns die von \enquote{h2} angebotene Option \texttt{ALLOW\_LITERALS=NONE} zu eigen.
 Dazu haben wir 2 Tests geschrieben.
-Einer, der zunächst verifiziert, dass diese Option wirklich SQL-Injections verhindert, wenn man sie bei einer beliebigen \enquote{h2}-Datenbank aktiviert.
-Ein weiterer Test prüft dann, ob unsere Applikation diese Option richtig gesetzt hat, damit wir sicher sein können, dass auch im Applikationskontext keine SQL-Injections möglich sind.
+Einer, der zunächst verifiziert, dass diese Option wirklich SQL Injections verhindert, wenn man sie bei einer beliebigen \enquote{h2}-Datenbank aktiviert.
+Ein weiterer Test prüft dann, ob unsere Applikation diese Option richtig gesetzt hat, damit wir sicher sein können, dass auch im Applikationskontext keine SQL Injections möglich sind.
 
 Um garantieren zu können, dass unsere Authorization funktioniert, haben wir eine Reihe von Tests geschrieben, die mit verschiedenen Nutzer unterschiedlicher Privilegien versucht, die vorhandenen Operationen durchzuführen.
 
