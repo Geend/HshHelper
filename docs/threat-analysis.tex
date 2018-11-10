@@ -263,26 +263,30 @@
 
 \subsection{Domänenspezifische Bedrohungen}
 
-\subsubsection{Mögliche Angriffe während auf den Loginprozess}
+\subsubsection{Mögliche Angriffe auf den Loginprozess}
 
 \begin{itemize}
   \item \textbf{Überlanges PW beim Login eingeben}
   \begin{itemize}
   \item Zweck: Zum DDOSn der Applikation
-  \item Möglichkeiten: Durch Eingabe eines überlangen Passworts braucht Hashing-Algo extra lange
+  \item Möglichkeiten: Durch Eingabe eines überlangen Passworts braucht der Hashing-Algorithmus sehr lange
   \item Risiko: Gering
-  \item Gegenmaßnahmen: Constraint auf PW-Länge
+  \item Gegenmaßnahmen: 
+  \begin{itemize}
+  \item Passwort-Länge mittels Eingabevalidierung beschränken
+  \item Verwendung von bcrypt (lässt nur 72 Zeichen lange Passwörter zu, Lauzeit ist für alle Längen von Eingaben konstant)  
   \end{itemize}
+\end{itemize}
 
   \item \textbf{Timing/Side-Channel auf Loginverhalten}
   \begin{itemize}
   \item Zweck: Herausfinden, ob Username existiert
-  \item Möglichkeiten: Via abhören der Netzwerkverbindung, da Hashing/DB-Zugriff länge des Requests beeinflussen
+  \item Möglichkeiten: Durch Messen der Antwortszeiten des Servers können Rückschlüsse darüber gezogen werden, welcher Code ausgeführt wurde (zB Hashing/DB-Zugriff)
   \item Risiko: Mittelmäßig-Hoch
-  \item Gegenmaßnahmen: Login Procedure für jeden Fall gleich ablaufen lassen
+  \item Gegenmaßnahmen: Loginprozess für jeden Fall gleich ablaufen lassen
   \end{itemize}
 
-  \item \textbf{Brute-forcing}
+  \item \textbf{Online Brute-forcing}
   \begin{itemize}
   \item Zweck: Zum Knacken eines Benutzeraccounts
   \item Möglichkeiten: Beispielsweise durch Wörterbuchattacken
