@@ -143,7 +143,17 @@ Um ein Token zu prüfen wird erneut die Signatur über dem Token und dem Nounce 
 Play verwendet ein JWT (Json Web Token) als Session Cookie mit dem Namen \textit{PLAY\_SESSION}. Es ist durch eine HMAC-SHA256 Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
 
 
-Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, dass genau für einen Request verwendet wird. Es ist nicht signiert und kann dadurch durch den Benutzer verändert werden. Im HshHelper wird es nur zur Anzeige von Fehlermeldungen verwendet.
+Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, was allerdings in der aktuellen Iteration keinerlei Anwendung findet. Der Error-Handling-Code verwendet zwar die Flash-Scope um Fehlermeldungen über eine Klassengrenze hinweg verfügbar zu machen, diese Daten werden aber innerhalb einer Anfrage direkt wieder gelesen und landen somit niemals beim Client.
+
+Die Dokumentation von Play vermerkt \autocite{JavaPlayFlashDocu}, das dass Flash Cookie nicht signiert wird.
+\begin{quote}
+The Flash scope works exactly like the Session, but with two differences:
+
+   - data are kept for only one request
+   
+   - the Flash cookie is not signed, making it possible for the user to modify it.
+\end{quote}
+Dies hat sich allerdings bei einem Test als falsch herausgestellt. Sowohl wird das Flash Cookie in unserer Anwendung signiert als auch validiert, wenn es vom Client bei einer weiteren Anfrage wieder an den Server geschickt wird.
 
 \subsection{Schlüsselmanagement}
 Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
