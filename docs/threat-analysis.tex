@@ -33,8 +33,12 @@
 \chapter{Zur Analyse verwendeten Methoden}
 \section{Dataflow Diagram}
 
+Das folgende \gls{dfd} wurde mithilfe des Programms \enquote{OWASP Threat Dragon} \autocite{OWASP.ThreatDragon} erstellt.
+Dieses Programm erlaubt leider keine Einfärbung in grün zur Kennzeichnung vertrauenswürdiger Prozesse oder Datenflüsse.
+Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betrachten.
+
 \begin{figure}[htbp]
-  \hspace*{-1.75cm}
+  \hspace*{-2.5cm}
   \label{overview-dfd-pic}
   \includegraphics[width=1.25\linewidth]{resources/overview-dfd.jpg}
   \caption{Gesamtübersicht des Datenflusses in unserer Applikation}
@@ -383,33 +387,49 @@ Oder welche, für die es keine Motivation gibt, ggf. Repudiations
 
 \section{HTTP Header}
 
+In der folgenden Liste werden verschiedene sicherheitsrelevante \enquote{HTTP Headers} beschrieben, die uns helfen, einige der Gegenmaßnahmen zu realisieren.
+Diese Werte werden empfohlen, um die \enquote{maximale} Sicherheit zu garantieren.
+Entnommen haben wir diese Empfehlungen verschiedenen Seiten, darunter der \enquote{Mozilla's Enterprise Information Security}-Blog \autocite{Mozilla.SecureHeaders} und das \enquote{OWASP Secure Headers Project} \autocite{OWASP.SecureHeaders}, die wir beide als vertrauenswürdig betrachten.
+
 \subsection{Referrer-Policy}
-\texttt{Referrer-Policy: origin-when-cross-origin, strict-origin-when-cross-origin}\newline
-Mit diesem Header kann gesteuert werden, welche Informationen als Referer an die nächste besuchte Seite weitergegeben wird. \texttt{strict-origin-when-cross-origin} sorgt dafür, dass innerhalb der Seite die vollständige URL verwendet wird. Beim Besuchen einer anderen Seite wird nur die Domain weitergegeben. Wird dabei jedoch von HTTPS auf HTTP gewechselt, wird keine Infromation weiter gegeben.
+\begin{sloppypar}
+\texttt{Referrer-Policy: origin-when-cross-origin, strict-origin-when-cross-origin}
+\end{sloppypar}
+Mit diesem Header kann gesteuert werden, welche Informationen als \enquote{Referrer} an die nächste besuchte Seite weitergegeben werden. \texttt{strict-origin-when-cross-origin} sorgt dafür, dass innerhalb der Seite die vollständige URL weitergegeben wird. Beim Besuchen einer anderen Seite wird nur die Domain weitergegeben. Wird dabei jedoch von HTTPS auf HTTP gewechselt, ist das Weitergeben jeder Information untersagt.
 
 \textcolor{red}{
 TODO: Explizit in Play nur strict-origin-when-cross-origin machen
 }
 \subsection{X-Frame-Options}
-\texttt{X-Frame-Options: DENY}\newline
-Um zu verhindern, dass HshHelper in einem \texttt{<frame>}, \texttt{<iframe>} oder \texttt{<object>} Element auf einer anderen Seite verwendet wird, kann der Header \texttt{X-Frame-Options} verwendet werden. So kann \enquote{Clickjacking} verhindert werden.
+\begin{sloppypar}
+\texttt{X-Frame-Options: DENY}
+\end{sloppypar}
+Um zu verhindern, dass unsere Seite in einem \texttt{<frame>}, \texttt{<iframe>} oder \texttt{<object>} Element auf einer anderen Seite eingebettet wird, kann der Header \texttt{X-Frame-Options} verwendet werden. So können \enquote{Clickjacking} sowie \texttt{<iframe>}-basierte CSRF-Angriffe verhindert werden.
 
 \subsection{X-XSS-Protection}
-\texttt{X-XSS-Protection: 1; mode=block}\newline
-Durch den Header \texttt{X-XSS-Protection} wird der Browser angewiesen, eine XSS Erkennung zu versuchen. Dieses Feature ist für älteren Browser interessant, die noch kein CSP implementieren. Durch den mode \enquote{block} wird das Laden der Seite abgebrochen, sobald ein XSS Versuch erkannt wird.
+\begin{sloppypar}
+\texttt{X-XSS-Protection: 1; mode=block}
+\end{sloppypar}
+Durch den Header \texttt{X-XSS-Protection} wird der Browser angewiesen, eine XSS Erkennung zu versuchen. Dieses Feature ist für älteren Browser interessant, die noch kein CSP implementieren. Durch den Modus \enquote{block} wird das Laden der Seite abgebrochen, sobald ein XSS Versuch erkannt wird.
 
 \subsection{X-Content-Type-Options}
-\texttt{X-Content-Type-Options: nosniff}\newline
-Mit diesem Header wird dem Browser verboten, \enquote{MIME sniffing}\footnote{Beim \enquote{MIME sniffing} versucht der Browser den richtigen MIME Type durch Betrachtung des Inhalts zu erraten, wenn er annimmt, dass der im \texttt{Content-Type} übermittelte Wert nicht korrekt ist.} zu betreiben. Er muss den MIME Typ verwenden, der im \texttt{Content-Type} Header angegeben wurde.
+\begin{sloppypar}
+\texttt{X-Content-Type-Options: nosniff}
+\end{sloppypar}
+Mit diesem Header wird dem Browser verboten, \enquote{MIME sniffing}\footnote{Beim \enquote{MIME sniffing} versucht der Browser den richtigen MIME Type durch Betrachtung des Inhalts zu erraten, wenn er annimmt, dass der im \texttt{Content-Type} übermittelte Wert nicht korrekt ist.} zu betreiben. Er wird gezwungen den MIME Typ zu verwenden, der im \texttt{Content-Type} Header angegeben wurde.
 
 \subsection{Content-Security-Policy}
 \begin{sloppypar}
 \texttt{Content-Security-Policy: default-src 'self'; script-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; frame-src https://www.google.com/recaptcha/}
 \end{sloppypar}
-Mit der \texttt{Content-Security-Policy} soll XSS verhindert werden. Es kann explizit angegeben werden von welchen URLs JavaScript geladen und ausgeführt werden darf (whitelisting). Außerdem wird das Ausführen von inline JavaScript verhindert.
+Innerhalb diesem Header ist es möglich Richtlinien zu definieren, die den Zugriff auf verschiedene Resourcen kontrollieren.
+Dadurch kann verhindert werden, dass JavaScript nicht von jeder URL geladen und ausgeführt werden darf, von welchen Quellen Bilder geladen werden dürfen, oder welches CSS eingebunden werden darf.
+Dieser Header ist dem \enquote{X-XSS-Protection}-Header vorzuziehen.
 
 \subsection{X-Permitted-Cross-Domain-Policies}
-\texttt{X-Permitted-Cross-Domain-Policies: master-only}\newline
+\begin{sloppypar}
+\texttt{X-Permitted-Cross-Domain-Policies: master-only}
+\end{sloppypar}
 
 % Can be used to add a list of acronyms with their description
 %\glsaddall
