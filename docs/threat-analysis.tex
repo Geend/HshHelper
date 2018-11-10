@@ -59,7 +59,25 @@
     \begin{enumerate}
       \item GET - \texttt{/}
     \end{enumerate}
-
+    
+    
+ \item \texttt{LoginController}
+    \begin{enumerate}
+      \item \texttt{/login}
+      \begin{enumerate}
+        \item GET - \texttt{showLoginForm()}
+        \item POST - \texttt{login(username, password, recaptcha)}
+      \end{enumerate}
+      \item \texttt{/logout}
+      \begin{enumerate}
+        \item POST - \texttt{logout()}
+      \end{enumerate}
+      \item \texttt{/changePasswordAfterReset}
+      \begin{enumerate}
+        \item GET - \texttt{showChangePasswordAfterResetForm}
+        \item POST - \texttt{changePasswordAfterReset(username, currentPassword, password, passwordRepeat, recaptcha)}
+      \end{enumerate}
+    \end{enumerate}
     \item \texttt{UserController}
     \begin{enumerate}
       \item \texttt{/users}
@@ -90,23 +108,7 @@
       \end{enumerate}
     \end{enumerate}
 
-    \item \texttt{LoginController}
-    \begin{enumerate}
-      \item \texttt{/login}
-      \begin{enumerate}
-        \item GET - \texttt{showLoginForm()}
-        \item POST - \texttt{login(username, password, recaptcha)}
-      \end{enumerate}
-      \item \texttt{/logout}
-      \begin{enumerate}
-        \item POST - \texttt{logout()}
-      \end{enumerate}
-      \item \texttt{/changePasswordAfterReset}
-      \begin{enumerate}
-        \item GET - \texttt{showChangePasswordAfterResetForm}
-        \item POST - \texttt{changePasswordAfterReset(username, currentPassword, password, passwordRepeat, recaptcha)}
-      \end{enumerate}
-    \end{enumerate}
+   
 
     \item \texttt{GroupController}
     \begin{enumerate}
