@@ -49,57 +49,35 @@ Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-archit
 \begin{enumerate}
   \item Controller
   \begin{itemize}
-    \item Routen werden durch die richtigen internen Methoden abgebildet,
-    \item Nutzer muss authentisiert sein, um Route anzusurfen,
-    \item Login-Page kann ausschliesslich ohne valide Session aufgerufen werden,
-    \item Methoden geben erwarteteten HTTP Status Code zurück.
-  \end{itemize}
-
-  \item Manager
-  \begin{itemize}
-    \item
+    \item Werden die Routen auf die richtigen, internen Methoden abgebildet?
+    \item Sind unsere Routen nur für authentisierten Nutzern erreichbar?
+    \item Kann die Login-Page ausschliesslich ohne valide Session aufgerufen werden?
+    \item Geben die Methoden die erwarteten HTTP Status Codes zurück?
   \end{itemize}
 
   \item Domänenlogik
   \begin{itemize}
-    \item Nach 5 fehlgeschlagenen Logins muss ein Nutzer ein reCAPTCHA lösen,
-    \item Nach 50 fehlgeschlagenen Logins von einer IP-Adresse muss ein reCAPTCHA gelöst werden,
-    \item Nach 100 fehlgeschlagenen Logins ist eine IP-Adresse ausgesperrt
-  \end{itemize}
-
-  \item Database
-  \begin{itemize}
-    \item Von h2 angepriesene \texttt{ALLOW\_LITERALS}-Konfiguration funktioniert wie erwartet
+    \item Können nur die Nutzer mit passender Authorization die Operationen durchführen?
+    \item Verhalten sich die Methoden richtig, wenn nicht vorhandene Entity-IDs übergeben werden?
+    \item Entsprechen die Fehlermeldungen den erwarteten?
+    \item Kriege ich den richtigen Rückgabewert zurück?
+    \item Werden die reCAPTCHAs nach den richtigen Intervallen (5 pro Account, 50 pro IP-Adresse) angezeigt?
+    \item Ist eine IP-Adresse wirklich nach 100 fehlgeschlagenen Logins ausgesperrt?
+    \item Kann das Captcha in verschiedenen Browser gelöst werden?
   \end{itemize}
 
   \item Cross Cutting Concerns
   \begin{itemize}
-    \item Maximale Passwortlänge ist auf das von BCrypt vorgegebene Limit gesetzt
+    \item Ist die Passwortlänge auf das von BCrypt vorgebene Limit gesetzt?
   \end{itemize}
 \end{enumerate}
 
-% TODO: Which classes are tested - What contracts are tested
-% Do not forget to write down "easier" tests, e.g. the h2 ALLOW_LITERALS
-% test to verify our understanding of said option
-% Classcoverage, Branchcoverage, Linecoverage, Methodcoverage
-% End-to-End? Unittests? Wird DB getestet?
-
 Bei den View-spezifischen \enquote{Data Transfer Object}-Klassen sehen wir keinen Bedarf zum Testen.
-Sie sind essentiell nur \enquote{Plain Old Data}-Objekte, die ausser trivialen Zugriffsmethoden (Getter und Setter) keine weitere Methoden besitzen.
+Bei diesen handelt es sich nur \enquote{Plain Old Data}-Objekte, die ausser trivialen Zugriffsmethoden (Getter und Setter) keine weitere Methoden besitzen.
 Dies gilt für alle trivialen Zugriffsmethoden unserer Klassen.
 Darüber hinaus gibt es keine direkten Tests, die verifizieren, ob eine simple Relation von EBean sachgerecht auf das richtige Objekt abgebildet wird.
 % TODO, Iteration 2: Files too
 Eine Ausnahme bilden hier die \texttt{User}-Entitäten, da beim Löschen eines Benutzers ebenfalls alle Gruppen gelöscht werden müssen, dessen Besitzer er ist. Für so eine kaskadierende Löschoperation wurde extra ein Test geschrieben.
-
-% Which faults have been found through this testing?
-% E.g. NullPointerExceptions in form validations
-% Cascading delete user.ownerOf -> grps
-% Literals used in SQL
-% Captcha does not work in Firefox
-% View errors as our bootstrap helper did not set values from .fill()-method
-% Verification that controllers do return correct HTTP status codes in differing situations on the endpoints
-% E-Mail addresses were not unique, allowing a malicious user to get a PW if he had registried an account with the same email as another user
-% Validation for javascript/html in form fields
 
 \textcolor{red}{
 Vielleicht nicht unbedingt erwähnen, wie viel Coverage wir wirklich haben?
@@ -108,17 +86,22 @@ Idee: Coverage Report im Anhang packen, Zahlen grob anreißen. Alles andere zu g
 
 \subsection{Tests zur Prüfung von sicherheitsrelevanten Funktionen}
 
+Um SQL-Injections zu verhindern, machen wir uns die von \enquote{h2} angebotene Option \texttt{ALLOW\_LITERALS=NONE} zu eigen.
+Dazu haben wir 2 Tests geschrieben. 
+Einer, der zunächst verifiziert, dass diese Option wirklich SQL-Injections verhindert, wenn man sie bei einer beliebigen \enquote{h2}-Datenbank aktiviert.
+Ein weiterer Test prüft dann, ob unsere Applikation diese Option richtig gesetzt hat, damit wir sicher sein können, dass auch im Applikationskontext keine SQL-Injections möglich sind.
+
+Um garantieren zu können, dass unsere Authorization funktioniert, haben wir eine Reihe von Tests geschrieben, die mit verschiedenen Nutzer unterschiedlicher Privilegien versucht, die vorhandenen Operationen durchzuführen. 
+
 Sessionmanagement?
 Ist unser Cookie sicher und wirklich zufällig?
 Brute-force Schutz (Stichwort: "Firewall")
-Authorization? Können Endpoints nur von den richtigen Privilegien angesurft werden?
 Wird CSRF richtig genutzt?
 Salted bcrypt richtig? Nutzen wir ausreichend Iterationen oder können wir mit einem Test das irgendwie knacken?
 Kommt das Captcha zur richtigen Zeit? Ist das Captcha austricksbar?
 Haben wir Quality rules für passwörter?
 Können wir kaputte Daten in die Forms eintragen?
 Können wir irgendwelche Requests forgen?
-Können SQL-Injections ausgeführt werden?
 Setzen wir alle richtigen Security-Header?
 
 \subsection{Penetrationstests}
@@ -153,7 +136,7 @@ Die Login-Firewall wurde angepasst (vgl. [verweis auf das architektur Dokument) 
 \subsection{Eingabevalidierung von Forms}
 Um Daten aus übermittelten Forms zu empfangen, nutzt unsere Anwendung DTOs, die mit Play-Constraint-Annotations versehen sind. Über diese Annotations wird sichergestellt, dass diese Daten einem bestimmten Format entsprechen, z.B. eine valide E-Mail Adresse darstellen. Diese Validierung wurde durch eine Person einem Review unterzogen, es hat 2 Stunden benötigt.
 
-Im Zuge des Reviews wurde festgestellt, dass das vorhandene Design Race Condition begünstigt. Die Validierungen im DTO waren nicht ausdrücklich auf ``statische'' Tests begrenzt. Es wurden teilweise Validierungen vorgenommen, die Datenbankzugriffe beinhaltet haben, z.B.: Existiert dieser Benutzername bereits? Wird im Controller die Form-Validierung\footnote{boundForm.hasErrors()} aufgerufen, ist die im DTO vorgenommene Validierung sowie der Controller-Code nicht Teil einer Transaktion. D.h. wenn die Form-Validation meldet, dass der Nutzername noch nicht existiert, ist dieser Zustand nicht mehr garantiert, wenn der Benutzer tatsächlich angelegt wird.
+Im Zuge des Reviews wurde festgestellt, dass das vorhandene Design Race Condition begünstigt. Die Validierungen im DTO waren nicht ausdrücklich auf ``statische'' Tests begrenzt. Es wurden teilweise Validierungen vorgenommen, die Datenbankzugriffe beinhaltet haben, beispielsweise die Prüfung der Existenz eines Benutzernames. Wird im Controller die Form-Validierung\footnote{boundForm.hasErrors()} aufgerufen, ist die im DTO vorgenommene Validierung sowie der Controller-Code nicht Teil einer Transaktion. D.h. wenn die Form-Validation meldet, dass der Nutzername noch nicht existiert, ist dieser Zustand nicht mehr garantiert, wenn der Benutzer tatsächlich angelegt wird.
 
 Auch wenn dies im vorliegenden Fall aufgrund der Unique-Constraints in der Datenbank kein Sicherheitsproblem darstellt, haben wir uns dazu entschlossen, von einem solchen Design abzusehen. Ein Design was in derartiger Weise Race Conditions begünstigt, ist objektiv schlecht. In den DTOs finden inzwischen nur noch ``statische'' Tests statt. Diese Entscheidung hat zur Entstehung der Manager-Klassen geführt. Diese bieten Methoden, die Transaktionssicher sind und werfen bsp. eine Exception, wenn der Nutzer bereits existiert (vgl. [TODO: Verweis zu der Erklärung wie wir von Controller macht alles zu den Manager Klassen gelangt sind]).
 
@@ -210,7 +193,7 @@ Das sehen wir nicht als sicherheitsrelevanten Fehler an und ignorieren diesen da
 Die Regel, die SecureAssist verwendet, um mögliche SQL Injections zu finden, scheint nur zu prüfen, ob ein SQL Statement als String verwendet wird, und ob es als \texttt{PreparedStatement} verwendet wird.
 Leider überprüft es nicht, ob das als String angegebene SQL Statement überhaupt veränderbar ist; beispielsweise durch Konkatenieren eines Parameters.
 Das Werkzeug hat daher ein \enquote{False Positive} in unserer \texttt{DatabaseInitialization}-Klasse gefunden, siehe Quellcode \ref{lst:staticanalysis-query-injection}.
-Die Statements in dieser Klasse können nicht von einem Nutzer durch Parameter angereichert werden.
+Die Statements in dieser Klasse können nicht von einem Nutzer durch Parameter angereichert werden. Daher ignorieren wir diesen Mangel.
 
 \subsubsection{Information Leakage}
 
@@ -250,6 +233,26 @@ Haben wir ggf. irgendwelche Checklisten nutzen können?
 Siehe
 
 \chapter{Gefundene Mängel}
+
+In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gefunden wurden.
+
+% htbp = HereTopBottomPage (priority of where to place the table in case previous placement fails)
+\begin{table}[ht]
+  \captionof{table}{Auflistung der Mängel und Methode, der diese gefunden hat} \label{tab:title} 
+  \begin{tabularx}{\textwidth}{| X | r |}
+  \hline 
+  \textbf{Fehler} & \textbf{Methode} \\ \hline
+  reCAPTCHA nicht lösbar in Firefox & Selenium-Test sowie Manueller Test \\ \hline
+  \texttt{NullPointerException} beim Validieren des \enquote{Passwort ändern}-Formulars & Funktionaler Test der Controllermethode \\ \hline
+  Löschen eines Nutzers führte nicht zum Löschen seiner Gruppe & Funktionaler Test der Controllermethode \\ \hline
+  Bootstrap-Helper-Methoden zur Erstellung eines Formulars haben Felder nicht mit bestehenden Daten befüllt & Aufgefallen während eines Reviews \\ \hline
+  "Nutzer erstellen"-Prozess konnte von einem \enquote{Nicht-Administrator} ausgeführt werden & Authorizationtests \\ \hline
+  Mögliche Race Conditions während der Validation eines Nutzernamens & Review \\ \hline
+  Mögliche Side-Channel-Attacke beim Loginversuch durch den Login-Firewall & Review \\ \hline
+  Endlosschleife von Redirects beim Login eines Nutzers mit valider Session aber unterschiedlicher IP & Review \\ \hline
+  
+  \end{tabularx}
+\end{table}
 
 \printbibliography
 
