@@ -111,4 +111,15 @@
 \newcommand{\greencheckmark}{\textcolor{green}{\ding{51}}}%
 \newcommand{\redxmark}{\textcolor{red}{\ding{55}}}%
 
+% Let numbered lists use arabic numbers and let nested
+% numbered lists use their full enumeration path (1.1.1.1 instead of just .1)
+\renewcommand{\labelenumi}{\theenumi}
+\renewcommand{\theenumi}{\arabic{enumi}}
+\renewcommand{\labelenumii}{\theenumii}
+\renewcommand{\theenumii}{\theenumi.\arabic{enumii}}
+\renewcommand{\labelenumiii}{\theenumiii}
+\renewcommand{\theenumiii}{\theenumii.\arabic{enumiii}}
+\renewcommand{\labelenumiv}{\theenumiv}
+\renewcommand{\theenumiv}{\theenumiii.\arabic{enumiv}}
+
 \endinput
