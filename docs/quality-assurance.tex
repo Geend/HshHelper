@@ -74,7 +74,7 @@ Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-archit
 
 Bei den View-spezifischen \enquote{Data Transfer Object}-Klassen sehen wir keinen Bedarf zum Testen.
 Bei diesen handelt es sich nur \enquote{Plain Old Data}-Objekte, die ausser trivialen Zugriffsmethoden (Getter und Setter) keine weitere Methoden besitzen.
-Dies gilt für alle trivialen Zugriffsmethoden unserer Klassen.
+Dies gilt für alle trivialen Zugriffsmethoden unserer Klassen. \newline
 Darüber hinaus gibt es keine direkten Tests, die verifizieren, ob eine simple Relation von EBean sachgerecht auf das richtige Objekt abgebildet wird.
 % TODO, Iteration 2: Files too
 Eine Ausnahme bilden hier die \texttt{User}-Entitäten, da beim Löschen eines Benutzers ebenfalls alle Gruppen gelöscht werden müssen, dessen Besitzer er ist. Für so eine kaskadierende Löschoperation wurde extra ein Test geschrieben.
