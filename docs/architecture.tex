@@ -61,7 +61,7 @@ Aus diesem Grund verfügt unsere Anwendung über eine Komponente\footnote{policy
 \item Spezifische IP-Addresse von Logins ausschließen
 \end{itemize}
 
-Beim Captcha-Mode handelt es sich um eine Maßnahme, bei der ein Login lediglich möglich ist, wenn zugleich ein Google Recaptcha gelöst wird. Eine vollständige Sperrung eines Accounts findet durch unsere Firewall so nicht statt. Es wurde die Annahme getroffen, dass das automatisierte Lösen der Recaptchas zu aufwändig/teuer für einen Angreifer ist. Zugleich ist das ``unnötige'' Lösen eines Captchas für das Opfer ein vertretbares Hindernis.
+Beim Captcha-Mode handelt es sich um eine Maßnahme, bei der ein Login lediglich möglich ist, wenn zugleich ein Google Recaptcha gelöst wird. Eine vollständige Sperrung eines Accounts findet durch unsere Firewall so nicht statt. Es wurde die Annahme getroffen, dass das automatisierte Lösen der Recaptchas zu aufwändig/teuer für einen Angreifer ist. Zugleich ist das \enquote{unnötige} Lösen eines Captchas für das Opfer ein vertretbares Hindernis.
 
 Lediglich IP-Addressen werden als schärfste Maßnahme vollständig von Logins ausgeschlossen. Sofern ein Angreifer nicht die gleiche IP-Adresse wie sein Opfer verwendet, kann er sich höchstens selbst vom Dienst ausschließen. Sollte eine Sitation vorliegen, bei der sich eine Vielzahl von Nutzern eine IP-Adresse teilt, besteht die Möglichkeit diese von der vollständigen Sperre auszuschließen.
 
@@ -69,7 +69,7 @@ Die interne Datenstruktur der Login Firewall ist darauf optimiert, möglichst we
 
 Der Verweis auf den Nutzer-Account findet über die numerische und eindeutige ID statt, über die jeder Account verfügt. Jener Fallgestaltung, bei der ein Login bei einem nicht-existenten Account erfolgt, wurde ebenfalls Rechnung getragen. Hierbei ist es erforderlich, dass die Firewall exakt so funktioniert, wie bei existierenden Accounts, um ein Information-Leakage zu verhindern: Würde die erste Maßnahme nie oder anders greifen als bei tatsächlich existenten Accounts wäre es möglich, zu prüfen ob ein Account bzw. der dazu korrospondierende Benutzername tatsächlich existiert.
 
-Zu diesem Zweck wird bei nicht-existenten Accounts der Benutzername mittels Hashing auf eine ``virtuelle'' User-ID gemappt. Die User-ID wird über ein Long repräsentiert, es wird jedoch ausschließlich der positive Zahlenraum verwendet. Vom Username wird der md5-Hash gebildet, die ersten 8 Byte werden als Long verwendet und ggf. invertiert. Der so resultierende negative Long-Wert wird in diesem Fall als Grundlage für die Protokollierung fehlerhafter Logins verwendet. Dass md5 kryptografisch bereits längst als geknackt gilt ist irrelevant, wir machen uns lediglich die gute Streuung und hohe Geschwindigkeit von md5 zu eigen.
+Zu diesem Zweck wird bei nicht-existenten Accounts der Benutzername mittels Hashing auf eine \enquote{virtuelle} User-ID gemappt. Die User-ID wird über ein Long repräsentiert, es wird jedoch ausschließlich der positive Zahlenraum verwendet. Vom Username wird der md5-Hash gebildet, die ersten 8 Byte werden als Long verwendet und ggf. invertiert. Der so resultierende negative Long-Wert wird in diesem Fall als Grundlage für die Protokollierung fehlerhafter Logins verwendet. Dass md5 kryptografisch bereits längst als geknackt gilt ist irrelevant, wir machen uns lediglich die gute Streuung und hohe Geschwindigkeit von md5 zu eigen.
 
 \section{Sessionkonzept}
 Integraler Bestandteil unserer Anwendung ist eine Session-Funktionalität. Theoretisch bietet Play bereits eine Implementierung unter Verwendung von JWT\footnote{\url{https://jwt.io/}} mit der es möglich ist, unter Verwendung von signierten Cookies Daten im Client-Browser zu speichern. Die Sicherstellung der Authentifizierung ist jedoch für nahezu jede Funktionalität unserer Anwendung von Bedeutung. Aus diesem Grund wurde das Session Konzept soweit abstrahiert, dass eine Java-Annotation über einer Controller-Klasse oder einzelnen Controller-Methoden ausreicht, um zu garantieren, dass ausschließlich authentifizierte Nutzer auf selbige zugreifen können.
@@ -80,7 +80,7 @@ Zur Umsetzung dieser Funktionalität setzen wir auf dem Session-Konzept von Play
 
 Die UUID selbst dient als 2nd Layer of Defense: Sollte die JWT-Signatur geknackt werden, muss der Angreifer noch eine in der Datenbank enthaltene UUID erraten. Selbst, wenn er diese Hürde meistert, muss er noch die dazugehörige IP-Addresse kennen sowie über diese auf unsere Anwendung zugreifen können und dies in einem engen Zeitfenster schaffen, da die Lifetime einer Session begrenzt ist.
 
-Die Anwendung verfügt über eine Sicht, die dem Nutzer sämtliche ``aktive'' Sessions anzeigt und ihm die Möglichkeit bietet, diese nach Bedarf einzeln zu entfernen. Ein Logout-Vorgang führt ebenfalls zu der Entfernung der korrospondierenden Session. Um eine Vermüllung der Datenbank zu vermeiden, läuft im Hintergrund ein Prozess, der in festen Zeitintervallen Sessions aus der Datenbank entfernt, die ``veraltet'' sind, denn wenn der Benutzer sich nicht ausloggt, sondern einfach den Browser schließt, kann unsere Anwendung keine Kenntnis davon erlangen.
+Die Anwendung verfügt über eine Sicht, die dem Nutzer sämtliche \enquote{aktive} Sessions anzeigt und ihm die Möglichkeit bietet, diese nach Bedarf einzeln zu entfernen. Ein Logout-Vorgang führt ebenfalls zu der Entfernung der korrospondierenden Session. Um eine Vermüllung der Datenbank zu vermeiden, läuft im Hintergrund ein Prozess, der in festen Zeitintervallen Sessions aus der Datenbank entfernt, die \enquote{veraltet} sind, denn wenn der Benutzer sich nicht ausloggt, sondern einfach den Browser schließt, kann unsere Anwendung keine Kenntnis davon erlangen.
 
 \section{Content Security Policy}
 Play verwendet standardmäßig eine sehr restriktive Content-Security-Policy, die XSS-Angriffe maßgeblich erschwert: Inline-Javascript wird vom Client-Browser grundsätzlich blockiert, es ist lediglich möglich, ein externes Script in eine HTML-Seite einzubinden, das jedoch von der gleichen Top-Level-Domain stammen muss. Zugleich muss dieses Script explizit Javascript als Content-Type im HTTP-Header benennen.
@@ -169,6 +169,8 @@ Die Schlüssel und Zugangsdaten liegen alle in der Datei \textit{application.con
 
 \section{Eingabevalidierung}
 
+\textcolor{red}{Hier sollten die Regexes hin!}
+
 \section{Ggf. architekturielle Gegenmassnahmen gegen bestimmte Angriffe}
 
 \chapter{Implementierte Zusatzfunktionalität}
@@ -179,9 +181,9 @@ Nutzer können aktive Sessions betrachten und ggf. invalidieren (stichwort usabi
 \chapter{Verworfene Entwürfe}
 
 \section{Sessionkonzept}
-Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit einer Session-Verknüpften IP-Addresse im JWT-Cookie selbst forciert. Wir waren der Annahme, die IP Addresse sei ein personenbezogenes Datum und die Speicherung von selbigen in unserer Datenbank zumindest fragwürdig. Die Verlagerung der Speicherung auf den Cookie-Speicher des Client-Browsers wäre eine potentielle Umgehungsstrategie für diese rechtliche Problematik gewesen: Die IP Addresse wird zwangsläufig vom Nutzer bei jedem Request ``übertragen'', eine doppelte Übertragung würde ``den Braten auch nicht mehr fett machen''. Herr Prof. Dr. Peine hat uns jedoch mitgeteilt, dass Datenschutzbedenken für dieses Projekt Out-Of-Scope wären. Aus diesem Grund wurde diese Idee verworfen, wir speichern die IPs in unserer Datenbank.
+Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit einer Session-Verknüpften IP-Addresse im JWT-Cookie selbst forciert. Wir waren der Annahme, die IP Addresse sei ein personenbezogenes Datum und die Speicherung von selbigen in unserer Datenbank zumindest fragwürdig. Die Verlagerung der Speicherung auf den Cookie-Speicher des Client-Browsers wäre eine potentielle Umgehungsstrategie für diese rechtliche Problematik gewesen: Die IP Addresse wird zwangsläufig vom Nutzer bei jedem Request \enquote{übertragen}, eine doppelte Übertragung würde \enquote{den Braten auch nicht mehr fett machen}. Herr Prof. Dr. Peine hat uns jedoch mitgeteilt, dass Datenschutzbedenken für dieses Projekt Out-Of-Scope wären. Aus diesem Grund wurde diese Idee verworfen, wir speichern die IPs in unserer Datenbank.
 
-Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine numerische ID, die inkrementell aufsteigend war. Das JWT-Token beinhaltet den Schlüssel der korrospondierenden Session-Entität in der Datenbank. Würde ein Angreifer die JWT Signatur knacken, könnte er leicht passende IDs erraten: Er müsste sich anmelden, wüsste dann, welche ID ``aktuell'' ist und könnte anhand dieser Information passende IDs ausprobieren. Wir haben diese Implementierung zugunsten von kryptografisch sicheren UUIDs verworfen, die ein 2nd Layer of Defense darstellen (vgl. [verweis auf session-konzept einfügen]).
+Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine numerische ID, die inkrementell aufsteigend war. Das JWT-Token beinhaltet den Schlüssel der korrospondierenden Session-Entität in der Datenbank. Würde ein Angreifer die JWT Signatur knacken, könnte er leicht passende IDs erraten: Er müsste sich anmelden, wüsste dann, welche ID \enquote{aktuell} ist und könnte anhand dieser Information passende IDs ausprobieren. Wir haben diese Implementierung zugunsten von kryptografisch sicheren UUIDs verworfen, die ein 2nd Layer of Defense darstellen (vgl. [verweis auf session-konzept einfügen]).
 
 \printbibliography
 
