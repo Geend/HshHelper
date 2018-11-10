@@ -150,7 +150,7 @@ Die Dokumentation von Play vermerkt \autocite{JavaPlayFlashDocu}, das dass Flash
 The Flash scope works exactly like the Session, but with two differences:
 
    - data are kept for only one request
-   
+
    - the Flash cookie is not signed, making it possible for the user to modify it.
 \end{quote}
 Dies hat sich allerdings bei einem Test als falsch herausgestellt. Sowohl wird das Flash Cookie in unserer Anwendung signiert als auch validiert, wenn es vom Client bei einer weiteren Anfrage wieder an den Server geschickt wird.

@@ -107,7 +107,7 @@ Setzen wir alle richtigen Security-Header? \\
 }
 
 \subsection{Penetrationstests}
-Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationstest durchgeführt. Im ersten Schritt wurde dazu einfach das CSRF-Token aus dem HTML der Form gelöscht. Diese Anfrage wird wie erwartet vom Server mit einer von Play vorgefertigten \enquote{\texttt{Unautorized}} Seite beantwortet. In einem weiteren Schritt wurde mit Curl ein Anfrage erstellt in welcher lediglich der Benutzername und Passwort aber kein CSRF-Token enthalten war. Diese Anfrage wurde vom Server ohne Beanstandung akzeptiert. Der Grund hierfür ist, dass das CSRF-Token weder im Cookie noch als Form-Daten an den Server übermittelt wird. Auch die \texttt{RequireCSRFCheck} Annotation schafft hierfür keine Abhilfe. CSRF Möglichkeit und somit eine Sicherheitslücke liegt vor, wenn folgende Bedingungen gelten:
+Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationstest durchgeführt. Im ersten Schritt wurde dazu einfach das CSRF-Token aus dem HTML der Form gelöscht. Diese Anfrage wird wie erwartet vom Server mit einer von Play vorgefertigten \enquote{\texttt{Unauthorized}} Seite beantwortet. In einem weiteren Schritt wurde mit Curl ein Anfrage erstellt in welcher lediglich der Benutzername und Passwort aber kein CSRF-Token enthalten war. Diese Anfrage wurde vom Server ohne Beanstandung akzeptiert. Der Grund hierfür ist, dass das CSRF-Token weder im Cookie noch als Form-Daten an den Server übermittelt wird. Auch die \texttt{RequireCSRFCheck} Annotation schafft hierfür keine Abhilfe. CSRF Möglichkeit und somit eine Sicherheitslücke liegt vor, wenn folgende Bedingungen gelten:
 
   \begin{itemize}
     \item Das Play-Session-Cookie wird nicht für die Session-Implementierung der Anwendung verwendet.
@@ -167,7 +167,7 @@ Allerdings stossen diese Werkzeuge hier an ihre Grenzen, da sie den autogenerier
 Wir haben die Version 3.0.1 verwendet, die am 2018-10-16 veröffentlicht wurde.
 Bei dem Plugin \enquote{find-sec-bugs} wurde Version 1.8 verwendet.
 
-Verwendetete Einstellungen:
+Verwendete Einstellungen:
 
 \begin{itemize}
   \item Analyseaufwand: Maximal
