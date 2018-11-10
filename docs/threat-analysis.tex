@@ -403,9 +403,10 @@ Durch den Header \texttt{X-XSS-Protection} wird der Browser angewiesen, eine XSS
 Mit diesem Header wird dem Browser verboten, \enquote{MIME sniffing}\footnote{Beim \enquote{MIME sniffing} versucht der Browser den richtigen MIME Type durch Betrachtung des Inhalts zu erraten, wenn er annimmt, dass der im \texttt{Content-Type} übermittelte Wert nicht korrekt ist.} zu betreiben. Er muss den MIME Typ verwenden, der im \texttt{Content-Type} Header angegeben wurde.
 
 \subsection{Content-Security-Policy}
-\texttt{Content-Security-Policy: default-src 'self'; script-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; frame-src https://www.google.com/recaptcha/}\newline
+\begin{sloppypar}
+\texttt{Content-Security-Policy: default-src 'self'; script-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; frame-src https://www.google.com/recaptcha/}
+\end{sloppypar}
 Mit der \texttt{Content-Security-Policy} soll XSS verhindert werden. Es kann explizit angegeben werden von welchen URLs JavaScript geladen und ausgeführt werden darf (whitelisting). Außerdem wird das Ausführen von inline JavaScript verhindert.
-
 
 \subsection{X-Permitted-Cross-Domain-Policies}
 \texttt{X-Permitted-Cross-Domain-Policies: master-only}\newline
