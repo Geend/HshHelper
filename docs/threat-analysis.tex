@@ -353,7 +353,7 @@
   \end{itemize}
 \end{itemize}
 
-\subsubsection{Mögliche Angriffe auf den "Passwort ändern"-Prozess}
+\subsubsection{Mögliche Angriffe auf den \enquote{Passwort ändern}-Prozess}
 
 % This is subject to change if we implement the link-based mitigation
 Da dieser Prozess dem Loginprozess gleich ist, treten hier die selben Lücken auf.
@@ -379,6 +379,36 @@ Die hier aufgelisteten Bedrohungen werden ignoriert, da wir im Rahmen des Projek
 Beispielsweise via Betriebssystem, physikalischer Zugriff auf der Maschine oder HTTPS?
 Oder welche, für die es keine Motivation gibt, ggf. Repudiations
 }
+
+
+\section{HTTP Header}
+
+\subsection{Referrer-Policy}
+\texttt{Referrer-Policy: origin-when-cross-origin, strict-origin-when-cross-origin}\newline
+Mit diesem Header kann gesteuert werden, welche Informationen als Referer an die nächste besuchte Seite weitergegeben wird. \texttt{strict-origin-when-cross-origin} sorgt dafür, dass innerhalb der Seite die vollständige URL verwendet wird. Beim Besuchen einer anderen Seite wird nur die Domain weitergegeben. Wird dabei jedoch von HTTPS auf HTTP gewechselt, wird keine Infromation weiter gegeben.
+
+\textcolor{red}{
+TODO: Explizit in Play nur strict-origin-when-cross-origin machen
+}
+\subsection{X-Frame-Options}
+\texttt{X-Frame-Options: DENY}\newline
+Um zu verhindern, dass HshHelper in einem \texttt{<frame>}, \texttt{<iframe>} oder \texttt{<object>} Element auf einer anderen Seite verwendet wird, kann der Header \texttt{X-Frame-Options} verwendet werden. So kann \enquote{Clickjacking} verhindert werden.
+
+\subsection{X-XSS-Protection}
+\texttt{X-XSS-Protection: 1; mode=block}\newline
+Durch den Header \texttt{X-XSS-Protection} wird der Browser angewiesen, eine XSS Erkennung zu versuchen. Dieses Feature ist für älteren Browser interessant, die noch kein CSP implementieren. Durch den mode \enquote{block} wird das Laden der Seite abgebrochen, sobald ein XSS Versuch erkannt wird.
+
+\subsection{X-Content-Type-Options}
+\texttt{X-Content-Type-Options: nosniff}\newline
+Mit diesem Header wird dem Browser verboten, \enquote{MIME sniffing}\footnote{Beim \enquote{MIME sniffing} versucht der Browser den richtigen MIME Type durch Betrachtung des Inhalts zu erraten, wenn er annimmt, dass der im \texttt{Content-Type} übermittelte Wert nicht korrekt ist.} zu betreiben. Er muss den MIME Typ verwenden, der im \texttt{Content-Type} Header angegeben wurde.
+
+\subsection{Content-Security-Policy}
+\texttt{Content-Security-Policy: default-src 'self'; script-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; frame-src https://www.google.com/recaptcha/}\newline
+Mit der \texttt{Content-Security-Policy} soll XSS verhindert werden. Es kann explizit angegeben werden von welchen URLs JavaScript geladen und ausgeführt werden darf (whitelisting). Außerdem wird das Ausführen von inline JavaScript verhindert.
+
+
+\subsection{X-Permitted-Cross-Domain-Policies}
+\texttt{X-Permitted-Cross-Domain-Policies: master-only}\newline
 
 % Can be used to add a list of acronyms with their description
 %\glsaddall
