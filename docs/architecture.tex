@@ -141,7 +141,7 @@ Um ein Token zu prüfen wird erneut die Signatur über dem Token und dem Nounce 
 
 
 \subsection{Play Cookies}
-Play verwendet ein JWT (Json Web Token) als Session Cookie mit dem Namen \textit{PLAY\_SESSION}. Es ist durch eine HMAC-SHA256 Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
+Play verwendet ein JWT (Json Web Token) als Session Cookie mit dem Namen \linebreak\textit{PLAY\_SESSION}. Es ist durch eine HMAC-SHA256 Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
 
 
 Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, was allerdings in der aktuellen Iteration keinerlei Anwendung findet. Der Error-Handling-Code verwendet zwar die Flash-Scope um Fehlermeldungen über eine Klassengrenze hinweg verfügbar zu machen, diese Daten werden aber innerhalb einer Anfrage direkt wieder gelesen und landen somit niemals beim Client.
