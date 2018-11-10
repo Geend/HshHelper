@@ -192,9 +192,9 @@ Das sehen wir nicht als sicherheitsrelevanten Fehler an und ignorieren diesen da
 
 \subsubsection{Query Injections}
 
-Die Regel, die SecureAssist verwendet, um mögliche SQL Injections zu finden, scheint nur zu prüfen, ob ein SQL Statement als String verwendet wird, und ob es als \texttt{PreparedStatement} verwendet wird.
+Die Regel, die SecureAssist verwendet, um mögliche SQL Injections zu finden, scheint nur zu prüfen, ob ein SQL Statement als String verwendet wird, und ob es als \texttt{Prepared\-Statement} verwendet wird.
 Leider überprüft es nicht, ob das als String angegebene SQL Statement überhaupt veränderbar ist; beispielsweise durch Konkatenieren eines Parameters.
-Das Werkzeug hat daher ein \enquote{False Positive} in unserer \texttt{DatabaseInitialization}-Klasse gefunden, siehe Quellcode \ref{lst:staticanalysis-query-injection}.
+Das Werkzeug hat daher ein \enquote{False Positive} in unserer \texttt{Database\-Initialization}-Klasse gefunden, siehe Quellcode \ref{lst:staticanalysis-query-injection}.
 Die Statements in dieser Klasse können nicht von einem Nutzer durch Parameter angereichert werden. Daher ignorieren wir diesen Mangel.
 
 \subsubsection{Information Leakage}
@@ -273,7 +273,7 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
 
 \begin{appendices}
 
-\chapter{src/test/domainlogic/usermanager/UserManagerTest.java}
+\chapter{src/test/domainlogic/\allowbreak usermanager/UserManagerTest.java}
 \begin{lstlisting}[language=Java,caption=Hardkodiertes Passwort in einem Test aus der Klasse \texttt{UserManagerTest},label={lst:staticanalysis-hardcoded-pw}]
 @Test
 public void testChangePassword() throws InvalidArgumentException {
@@ -285,14 +285,14 @@ public void testChangePassword() throws InvalidArgumentException {
 \chapter{src/app/DatabaseInitialization.java}
 \begin{lstlisting}[language=Java,caption=Von SecureAssist gefundenes False Positive Beispiel für Query Injections,label={lst:staticanalysis-query-injection}]
 db.withConnection(connection -> {
-	  Statement stmt = connection.createStatement();
-	  stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
-    stmt.execute("TRUNCATE TABLE groupmembers");
-    stmt.execute("TRUNCATE TABLE users");
-    stmt.execute("TRUNCATE TABLE groups");
-    stmt.execute("TRUNCATE TABLE internal_session");
-    stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
-    stmt.execute("SET ALLOW_LITERALS NONE");
+  Statement stmt = connection.createStatement();
+  stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
+  stmt.execute("TRUNCATE TABLE groupmembers");
+  stmt.execute("TRUNCATE TABLE users");
+  stmt.execute("TRUNCATE TABLE groups");
+  stmt.execute("TRUNCATE TABLE internal_session");
+  stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
+  stmt.execute("SET ALLOW_LITERALS NONE");
 });
 \end{lstlisting}
 
