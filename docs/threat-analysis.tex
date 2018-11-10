@@ -264,12 +264,20 @@
   \item Gegenmaßnahmen: Logging von IP + Zeit, Action, User
   \end{itemize}
 
+  \item \textbf{Nutzer kann eine ihm unerlaubte Operation durchführen}
+  \begin{itemize}
+  \item Zweck: Beispielsweise um einen Denial-of-Service-Angriff auf einen Nutzer durchzuführen
+  \item Möglichkeiten: Beispielsweise Nutzer löscht andere Nutzer
+  \item Risiko: Mittelmäßig - Hoch
+  \item Gegenmaßnahmen: Authorization erzwingen und prüfen bei jeder Operation
+  \end{itemize}
+
   \item \textcolor{red}{Captcha lösen lassen von Indern?}
   \item \textcolor{red}{Elevation of privilege -> Frage an Peine. ?}
   \item \textcolor{red}{Security Header auflisten, warum welcher, wofür}
 \end{itemize}
 
-\subsection{Domänenspezifische Bedrohungen}
+\subsection{HTTP-Endpoint-spezifische Bedrohungen}
 
 \subsubsection{Mögliche Angriffe auf den Loginprozess}
 
@@ -309,6 +317,52 @@
   \end{itemize}
 \end{itemize}
 
+\subsubsection{Mögliche Angriffe auf den "Passwort zurücksetzen lassen"-Prozess}
+
+\begin{itemize}
+  \item \textbf{Nutzer permanent aus der Applikation ausschliessen}
+  \begin{itemize}
+  \item Zweck: Denial-of-Service-Angriff auf einen individuellen Nutzer
+  \item Möglichkeiten: Wiederholtes Absenden des Request mit richtigen Nutzernamen generiert bei jedem Request ein neues temporäres Passwort
+  \item Risiko: Mittel
+  \item Gegenmaßnahmen: 
+  \begin{itemize}
+  \item Einbau eines Captchas
+  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den "Passwort ändern"-Prozess anzustoßen
+  \end{itemize}
+\end{itemize}
+
+  \item \textbf{Timing/Side-Channel auf Verhalten des Requests}
+  \begin{itemize}
+  \item Zweck: Herausfinden, ob Username existiert
+  \item Möglichkeiten: Durch Messen der Antwortszeiten des Servers können Rückschlüsse darüber gezogen werden, welcher Code ausgeführt wurde (E-Mail-Versand)
+  \item Risiko: Mittelmäßig-Hoch
+  \item Gegenmaßnahmen: 
+  \begin{itemize}
+    \item "Passwort zurücksetzen lassen"-Prozess in konstanter Länge ablaufen lassen \textcolor{red}{Ggf. E-Mail an fakeaddresse beim falschen Nutzername}
+    \item E-Mail-Versand asynchron durchführen
+    \end{itemize}
+  \end{itemize}
+
+  \item \textbf{E-Mail Postfach des Nutzers spammen}
+  \begin{itemize}
+  \item Zweck: Verbrauch der vorhandenen Resourcen seines E-Mail-Kontos
+  \item Möglichkeiten: Wiederholtes Absenden des Forms durch Angabe seines Nutzernamens
+  \item Risiko: Hoch
+  \item Gegenmaßnahmen: Nutzer muss Captcha lösen bevor Prozess angestoßen werden darf
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Mögliche Angriffe auf den "Passwort ändern"-Prozess}
+
+% This is subject to change if we implement the link-based mitigation
+Da dieser Prozess dem Loginprozess gleich ist, treten hier die selben Lücken auf.
+Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
+
+\section{Ignorierte Bedrohungen}
+
+Die hier aufgelisteten Bedrohungen werden ignoriert, da wir im Rahmen des Projekts definiert haben, dass nur Angriffe über den HTTP-Vektor betrachtet werden.
+
 \subsubsection{Mögliche Angriffe beim Versand der Passwort-Reset-E-Mail}
 
 \begin{itemize}
@@ -320,8 +374,6 @@
   \item Gegenmaßnahmen: SMTPS (Two-Faktor-Authentisierung)?
   \end{itemize}
 \end{itemize}
-
-\section{Ignorierte Bedrohungen}
 
 \textcolor{red}{
 Beispielsweise via Betriebssystem, physikalischer Zugriff auf der Maschine oder HTTPS?
