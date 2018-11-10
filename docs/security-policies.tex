@@ -51,12 +51,12 @@
 
 \begin{itemize}
   \item Netzwerkverbindungen sind abhörsicher und von außen nicht beeinflussbar.
-  \item Betriebssystem, Hardware sowie verwendetete Bibliotheken enthalten keine sicherheitsrelevanten Fehler.
+  \item Betriebssystem, Hardware sowie verwendete Bibliotheken enthalten keine sicherheitsrelevanten Fehler.
   \item Hashing-Algorithmus \enquote{bcrypt} macht es einem Angreifer wirtschaftlich unmöglich, evtl. erbeutete Password-Hashes durch Brute-Force oder Rainbow Tables in Plaintext zu verwandeln.
   \item Lösen eines Recaptchas ist für einen Angreifer wirtschaftlich undurchführbar.
   \item Die von Google-Servern eingebundenen Recaptcha Java-Script Dateien werden niemals zur Code-Injection verwendet / die Google-Server sind sicher.
   \item Bibliotheksfunktion \texttt{java.security.SecureRandom} \autocite{JavaDocs.SecureRandom} erstellt Zufallszahlen, die kryptografisch sicher sind.
-  \item Einstellung \texttt{ALLOW\_LITERALS=NONE} der Datenbank \enquote{h2} verhindert SQL-Injections.
+  \item Einstellung \texttt{ALLOW\_LITERALS=NONE} der Datenbank \enquote{h2} verhindert SQL Injections.
   \item \enquote{\gls{jwt}}-Format ist kryptografisch sicher zur Speicherung von Session- sowie Cookie-Daten.
   \item Die von JWT verwendete Signatur (HMAC-SHA256) verhindert, dass eine Manipulation von JWT-Cookies erfolgen kann.
   \item Applikation kann nur über die definierten Eintrittspunkte verwendet werden.
@@ -109,8 +109,8 @@
 \begin{itemize}
   \item \textbf{AK1:} Einloggen [U-, GR]
   \item \textbf{AK2:} Ausloggen [U+, GM, GO, A]
-  \item \textbf{AK3:} Nutzer erstellen [A]
-  \item \textbf{AK4:} Nutzer löschen [A]
+  \item \textbf{AK3:} Nutzerkonto erstellen [A]
+  \item \textbf{AK4:} Nutzerkonto löschen [A]
   \item \textbf{AK5:} Passwort zurücksetzen lassen [U-, EM]
   \item \textbf{AK6:} Passwort nach Zurücksetzung anpassen [U+, GM, GO, A]
   \item \textbf{AK7:} Aktive Sessions anzeigen lassen [U+, GM, GO, A]
@@ -118,7 +118,7 @@
   \item \textbf{AK9:} Gruppe erstellen [U+, GM, GO, A]
   \item \textbf{AK10:} Gruppe löschen [GO, A]
   \item \textbf{AK11:} Nutzer zu einer Gruppe hinzufügen [GO, A]
-  \item \textbf{AK12:} Nutzer aus einer Gruppe löschen [GO, A]
+  \item \textbf{AK12:} Nutzer aus einer Gruppe entfernen [GO, A]
   \item \textbf{AK13:} Gruppen anzeigen lassen [U+, GM, GO, A]
   \item \textbf{AK14:} Mitglieder einer Gruppe sehen [GM, GO, A]
 \end{itemize}
@@ -152,16 +152,16 @@
 \begin{itemize}
   \item Nutzer können nur mit dem System interagieren, wenn sie authentisiert sind.
   \item Nutzer können nur Gruppen sehen, dessen Mitglied sie sind.
-  \item Ausschliesslich Administratoren können alle Gruppen sehen.
-  \item Nutzer dürfen nur Mitglieder einer Gruppe hinzufügen, wenn sie der Besitzer dieser Gruppe sind.
-  \item Ausschliesslich Administratoren können Mitglieder zu allen Gruppen hinzufügen.
+  \item Ausschließlich Administratoren können alle Gruppen sehen.
+  \item Nutzer dürfen nur Mitglieder zu einer Gruppe hinzufügen, wenn sie der Besitzer dieser Gruppe sind.
+  \item Ausschließlich Administratoren können Mitglieder zu allen Gruppen hinzufügen.
   \item Nutzer dürfen nur Mitglieder aus einer Gruppe entfernen, wenn sie der Besitzer dieser Gruppe sind.
-  \item Ausschliesslich Administratoren können Mitglieder (aber nicht den Besitzer) aus allen Gruppen entfernen.
-  \item Kein Nutzer, auch nicht Administratoren, kann die Sessions anderer Nutzer betrachten oder zerstören.
+  \item Ausschließlich Administratoren können Mitglieder (aber nicht den Besitzer) aus allen Gruppen entfernen.
+  \item Kein Nutzer, auch nicht Administrator, kann die Sessions anderer Nutzer betrachten oder zerstören.
   \item Passwörter der Nutzer können von keiner Person ausgelesen werden.
-  \item Ein Administrator hat nur schreibenden Zugriff auf ein Nutzerkonto beim Löschen. Ihm ist nicht möglich, andere Informationen aus dem Nutzerkonto zu lesen.
-  \item Ein Nutzer muss nur ein reCAPTCHA lösen, wenn er sich entweder fünfmal hintereinander fehlerhaft eingeloggt hat.
-  \item Die E-Mail eines Benutzerkontos ist einzigartig, so dass nicht 2 Nutzerkontos mit der selben E-Mail erstellt werden können.
+  \item Ein Administrator hat nur schreibenden Zugriff auf ein Nutzerkonto durch das Löschen. Ihm ist nicht möglich, andere Informationen aus dem Nutzerkonto zu lesen.
+  \item Ein Nutzer muss nur ein reCAPTCHA lösen, wenn er sich mehrmals hintereinander fehlerhaft eingeloggt hat.
+  \item Die E-Mail eines nutzerkontos ist einzigartig, so dass die Erstellung zweier Nutzerkonten mit der selben E-Mail-Adresse nicht möglich ist.
 \end{itemize}
 
 \clearpage
