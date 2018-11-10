@@ -63,7 +63,7 @@
     
  \item \texttt{LoginController}
     \begin{enumerate}
-      \item \texttt{/login}
+     \item \texttt{/login}
       \begin{enumerate}
         \item GET - \texttt{showLoginForm()}
         \item POST - \texttt{login(username, password, recaptcha)}
@@ -167,10 +167,10 @@
 
   \item \textbf{Eavesdropping}
   \begin{itemize}
-  \item Zweck:
-  \item Möglichkeiten:
+  \item Zweck: Login-Credentials von Benutzern erlangen
+  \item Möglichkeiten: Man-in-the-Middle-Angriff
   \item Risiko: Mittelmäßig
-  \item Gegenmaßnahmen: HTTPS + HSTS oder SecureCookie
+  \item Gegenmaßnahmen: HTTPS mit HSTS oder SecureCookie
   \end{itemize}
 
   \item \textbf{Replayattacken}
@@ -205,32 +205,38 @@
   \item Gegenmaßnahmen: None, or standard IDS
   \end{itemize}
 
-  \item \textbf{XSS}
+  \item \textbf{XSS (Cross Site Scripting)}
   \begin{itemize}
-  \item Zweck:
+  \item Zweck: Ausführung von JavaScript im HshHelper Kontext eines Benutzers
   \item Möglichkeiten:
-  \begin{itemize}
+  	\begin{itemize}
           \item Skript einbetten in Benutzername bei der Erstellung eines Nutzers
+          \item Skript einbetten in Gruppennamen bei der Erstellung einer Gruppe
       \end{itemize}
   \item Risiko: Hoch
-  \item Gegenmaßnahmen: CSP + alte Browser aussperren + Ausgabecodierung
+  \item Gegenmaßnahmen:
+	\begin{itemize}
+		\item Content Security Policy (CSP) des Browsers aktivieren. \textcolor{red}{Alte Browser bzw Browser die CSP nicht können aussperren} %TODO: Das ist nicht implementiert und vllt auch garnicht so einfach. Ggf einfach in Assumptions aufnehmen, dass nur Browser verwendet werden, die CSP unterstützen
+	
+		\item Ausgabecodierung
+	\end{itemize}	  
   \end{itemize}
       Eingabevalidierung (Kleinbuchstaben und Zahlen, valide E-Mail-Adressen)
 
   \item \textbf{SQL Injection}
   \begin{itemize}
-  \item Zweck:
+  \item Zweck: Ungültige Manipulation von Datenbankeinträgen
   \item Möglichkeiten:
   \item Risiko: Hoch
   \item Gegenmaßnahmen:
   \begin{itemize}
-    \item \texttt{ALLOW\_LITERALS=NONE}
-    \item PreparedStatements
+    \item Die H2 Einstellung \texttt{ALLOW\_LITERALS=NONE} verwenden
+    \item Nur PreparedStatements benutzen
     \item Eingabevalidierung
   \end{itemize}
   \end{itemize}
 
-  \item \textbf{CSRF}
+  \item \textbf{CSRF (Cross-Site-Request-Forgery)}
   \begin{itemize}
   \item Zweck:
   \item Möglichkeiten:
@@ -280,9 +286,9 @@
   \end{itemize}
 \end{itemize}
 
-  \item \textbf{Timing/Side-Channel auf Loginverhalten}
+  \item \textbf{Timing-Angriff auf Loginverhalten}
   \begin{itemize}
-  \item Zweck: Herausfinden, ob Username existiert
+  \item Zweck: Herausfinden, ob ein Benutzer mit einem bestimmten Username existiert
   \item Möglichkeiten: Durch Messen der Antwortszeiten des Servers können Rückschlüsse darüber gezogen werden, welcher Code ausgeführt wurde (zB Hashing/DB-Zugriff)
   \item Risiko: Mittelmäßig-Hoch
   \item Gegenmaßnahmen: Loginprozess für jeden Fall gleich ablaufen lassen
@@ -298,7 +304,7 @@
       \item Captcha Mode = Login nur möglich, wenn Captcha gelöst wird.
       \item Accounts müssen nach x falschen Logins, einen Captcha lösen, sowie IP-Adressen sperren nach Y falschen Logins
       \item Schwache Passworter verbieten
-      \item Zwei-Factor-Authentication
+      \item \textcolor{red}{Zwei-Factor-Authentication} % TODO: Ist nicht implementiert und ggf auch nicht mal eben so gemacht
     \end{itemize}
   \end{itemize}
 \end{itemize}
