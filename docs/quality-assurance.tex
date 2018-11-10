@@ -46,7 +46,7 @@ Dadurch wird garantiert, dass lediglich das Verhalten einer Klasse getestet wird
 \externaldocument[Arch1-]{architecture}
 Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-architecture:class_diagram}) aufgezeigten \enquote{Pakete} werden folgende Voraussetzungen sowie Nachbedingungen getestet:
 
-\begin{enumerate}
+\begin{itemize}
   \item Controller
   \begin{itemize}
     \item Werden die Routen auf die richtigen, internen Methoden abgebildet?
@@ -70,7 +70,7 @@ Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-archit
   \begin{itemize}
     \item Ist die Passwortlänge auf das von BCrypt vorgebene Limit gesetzt?
   \end{itemize}
-\end{enumerate}
+\end{itemize}
 
 Bei den View-spezifischen \enquote{Data Transfer Object}-Klassen sehen wir keinen Bedarf zum Testen.
 Bei diesen handelt es sich nur \enquote{Plain Old Data}-Objekte, die ausser trivialen Zugriffsmethoden (Getter und Setter) keine weitere Methoden besitzen.

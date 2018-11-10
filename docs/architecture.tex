@@ -55,11 +55,11 @@ Der Login einer Web-Anwendung ist potentiell anfällig für Brute-Force-Angriffe
 
 Aus diesem Grund verfügt unsere Anwendung über eine Komponente\footnote{policy.ext.loginFirewall}, die falsche Logins protokolliert und eine der folgenden Maßnahmen ergreift:
 
-\begin{enumerate}
+\begin{itemize}
 \item Spezifischen Benutzer-Account in Captcha-Mode versetzen
 \item Spezifische IP-Addresse in Captcha-Mode versetzen
 \item Spezifische IP-Addresse von Logins ausschließen
-\end{enumerate}
+\end{itemize}
 
 Beim Captcha-Mode handelt es sich um eine Maßnahme, bei der ein Login lediglich möglich ist, wenn zugleich ein Google Recaptcha gelöst wird. Eine vollständige Sperrung eines Accounts findet durch unsere Firewall so nicht statt. Es wurde die Annahme getroffen, dass das automatisierte Lösen der Recaptchas zu aufwändig/teuer für einen Angreifer ist. Zugleich ist das ``unnötige'' Lösen eines Captchas für das Opfer ein vertretbares Hindernis.
 
@@ -158,13 +158,13 @@ Dies hat sich allerdings bei einem Test als falsch herausgestellt. Sowohl wird d
 \subsection{Schlüsselmanagement}
 Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 
-\begin{enumerate}
+\begin{itemize}
 	\item Der private Schlüssel zum signieren der Play Cookies
 	\item Der private Schlüssel für reCaptcha
 	\item Der öffentlicht Schlüssel für reCaptcha
 	\item Login Credentials für den E-Mail Server
 	\item Login Credentials für die Datenbank
-\end{enumerate}
+\end{itemize}
 
 Die Schlüssel und Zugangsdaten liegen alle in der Datei \textit{application.conf}.
 
