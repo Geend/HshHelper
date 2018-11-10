@@ -277,23 +277,22 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
 \begin{lstlisting}[language=Java,caption=Hardkodiertes Passwort in einem Test aus der Klasse \texttt{UserManagerTest},label={lst:staticanalysis-hardcoded-pw}]
 @Test
 public void testChangePassword() throws InvalidArgumentException {
-
-String testUsername = "test";
-String newPassword = "0123456789";
+    String testUsername = "test";
+    String newPassword = "0123456789";
 }
 \end{lstlisting}
 
 \chapter{src/app/DatabaseInitialization.java}
 \begin{lstlisting}[language=Java,caption=Von SecureAssist gefundenes False Positive Beispiel für Query Injections,label={lst:staticanalysis-query-injection}]
 db.withConnection(connection -> {
-	Statement stmt = connection.createStatement();
-	stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
-	stmt.execute("TRUNCATE TABLE groupmembers");
-	stmt.execute("TRUNCATE TABLE users");
-	stmt.execute("TRUNCATE TABLE groups");
-	stmt.execute("TRUNCATE TABLE internal_session");
-	stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
-	stmt.execute("SET ALLOW_LITERALS NONE");
+	  Statement stmt = connection.createStatement();
+	  stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
+    stmt.execute("TRUNCATE TABLE groupmembers");
+    stmt.execute("TRUNCATE TABLE users");
+    stmt.execute("TRUNCATE TABLE groups");
+    stmt.execute("TRUNCATE TABLE internal_session");
+    stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
+    stmt.execute("SET ALLOW_LITERALS NONE");
 });
 \end{lstlisting}
 
