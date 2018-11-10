@@ -122,10 +122,20 @@ Können SQL-Injections ausgeführt werden?
 Setzen wir alle richtigen Security-Header?
 
 \subsection{Penetrationstests}
+Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationstest durchgeführt. Im ersten Schritt wurde dazu einfach das CSRF-Token aus dem HTML der Form gelöscht. Diese Anfrage wird wie erwartet vom Server mit einer von Play vorgefertigten \enquote{\texttt{Unautorized}} Seite beantwortet. In einem weiteren Schritt wurde mit Curl ein Anfrage erstellt in welcher lediglich der Benutzername und Passwort aber kein CSRF-Token enthalten war. Diese Anfrage wurde vom Server ohne Beanstandung akzeptiert. Der Grund hierfür ist, dass das CSRF-Token weder im Cookie noch als Form-Daten an den Server übermittelt wird. Auch die \texttt{RequireCSRFCheck} Annotation schafft hierfür keine Abhilfe. CSRF Möglichkeit und somit eine Sicherheitslücke liegt vor, wenn folgende Bedingungen gelten:
 
-Welche Penetrationstests wurden durchgeführt?
-Gibt es ggf. automatisierbare Skripts?
-Wenn ja, für welche Angriffe?
+  \begin{itemize}
+    \item Das Play-Session-Cookie wird nicht für die Session-Implementierung der Anwendung verwendet.
+    \item Das Play-Session-Cookie ist nicht vorhanden ist.
+  \end{itemize}
+
+Lockt man ein Opfer auf eine Seite mit einer Form kann durch einen Klick beispielsweise ein Nutzer aus einer Gruppe gelöscht werden indem bei der Anfrage das CSRF-Token einfach weggelassen wird.
+
+Ein konkretes Angriffsszenario in dieser Anwendung wäre der Login. Das Opfer muss dazu keinerlei Cookies von der HsH-Helper Seite im Browser haben. Dies kann gegeben sein wenn es seine Cookies gelöscht hat oder den Incognito Modus im Browser verwendet. Ein Angreifer kann nun das Opfer auf eine von ihm präparierte Seite locken, wo durch das Klicken auf einen Link eine Login Form abgeschickt wird. Somit ist das Opfer angemeldet unter einem Benutzeraccount, welcher auch dem Angreifer bekannt ist. Ist das Opfer nun unvorsichtig und verifiziert den aktuellen Benutzeraccount nicht, lädt es Dateien möglicherweise Dateien hoch unter einem Benutzeraccount auf welchen der Angreifer zugriff hat.
+
+%Welche Penetrationstests wurden durchgeführt?
+%Gibt es ggf. automatisierbare Skripts?
+%Wenn ja, für welche Angriffe?
 
 \section{Reviews}
 \subsection{Session Konzept}
