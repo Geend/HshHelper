@@ -49,8 +49,7 @@
     \begin{enumerate}
       \item GET - \texttt{/}
     \end{enumerate}
-    
-    
+
  \item \texttt{LoginController}
     \begin{enumerate}
      \item \texttt{/login}
@@ -97,8 +96,6 @@
         \item POST - \texttt{deleteUserSession()}
       \end{enumerate}
     \end{enumerate}
-
-   
 
     \item \texttt{GroupController}
     \begin{enumerate}
@@ -205,9 +202,9 @@
   \item Gegenmaßnahmen:
 	\begin{itemize}
 		\item Content Security Policy (CSP) des Browsers aktivieren. \textcolor{red}{Alte Browser bzw Browser die CSP nicht können aussperren} %TODO: Das ist nicht implementiert und vllt auch garnicht so einfach. Ggf einfach in Assumptions aufnehmen, dass nur Browser verwendet werden, die CSP unterstützen
-	
+
 		\item Ausgabecodierung
-	\end{itemize}	  
+	\end{itemize}
   \end{itemize}
       Eingabevalidierung (Kleinbuchstaben und Zahlen, valide E-Mail-Adressen)
 
@@ -275,10 +272,10 @@
   \item Zweck: Zum DDOSn der Applikation
   \item Möglichkeiten: Durch Eingabe eines überlangen Passworts braucht der Hashing-Algorithmus sehr lange
   \item Risiko: Gering
-  \item Gegenmaßnahmen: 
+  \item Gegenmaßnahmen:
   \begin{itemize}
   \item Passwort-Länge mittels Eingabevalidierung beschränken
-  \item Verwendung von bcrypt (lässt nur 72 Zeichen lange Passwörter zu, Lauzeit ist für alle Längen von Eingaben konstant)  
+  \item Verwendung von bcrypt (lässt nur 72 Zeichen lange Passwörter zu, Lauzeit ist für alle Längen von Eingaben konstant)
   \end{itemize}
 \end{itemize}
 
@@ -313,7 +310,7 @@
   \item Zweck: Denial-of-Service-Angriff auf einen individuellen Nutzer
   \item Möglichkeiten: Wiederholtes Absenden des Request mit richtigen Nutzernamen generiert bei jedem Request ein neues temporäres Passwort
   \item Risiko: Mittel
-  \item Gegenmaßnahmen: 
+  \item Gegenmaßnahmen:
   \begin{itemize}
   \item Einbau eines Captchas
   \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den "Passwort ändern"-Prozess anzustoßen
@@ -367,7 +364,6 @@ Die hier aufgelisteten Bedrohungen werden ignoriert, da wir im Rahmen des Projek
 Beispielsweise via Betriebssystem, physikalischer Zugriff auf der Maschine oder HTTPS?
 Oder welche, für die es keine Motivation gibt, ggf. Repudiations
 }
-
 
 \section{HTTP Header}
 
