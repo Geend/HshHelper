@@ -351,13 +351,29 @@ Die hier aufgelisteten Bedrohungen werden ignoriert, da wir im Rahmen des Projek
 \subsubsection{Mögliche Angriffe beim Versand der Passwort-Reset-E-Mail}
 
 \begin{itemize}
-\item E-Mailversand abhören
-  \begin{itemize}
-  \item Zweck:
-  \item Möglichkeiten:
-  \item Risiko:
-  \item Gegenmaßnahmen: SMTPS (Two-Faktor-Authentisierung)?
-  \end{itemize}
+  \item E-Mailversand abhören
+    \begin{itemize}
+    \item Zweck:
+    \item Möglichkeiten:
+    \item Risiko:
+    \item Gegenmaßnahmen: SMTPS (Two-Faktor-Authentisierung)?
+    \end{itemize}
+
+  \item Serverresourcen aufbrauchen
+    \begin{itemize}
+    \item Zweck: Denial-of-Service auf den Server durch Verschwenden seiner Resourcen
+    \item Möglichkeiten: Angreifer nutzt "Passwort zurücksetzen"-Formular als Angriffsvektor zum Versenden vieler Mails
+    \item Risiko: High
+    \item Gegenmaßnahmen: E-Mail nicht beliebig oft senden lassen
+    \end{itemize}
+
+  \item Server zum Warten beim E-Mail-Versand zwingen
+    \begin{itemize}
+    \item Zweck: Denial-of-Service auf den Server
+    \item Möglichkeiten: Angreifer spoofed IP-Adresse des E-Mail-Servers und zwingt Server zum Warten, beispielsweise durch Delay seiner Response
+    \item Risiko: Gering-Mittel
+    \item Gegenmaßnahmen: SMTPS, ggf. Sender Policy Framework
+    \end{itemize}
 \end{itemize}
 
 \textcolor{red}{
