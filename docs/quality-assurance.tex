@@ -31,9 +31,9 @@
 \chapter{Benutzte Methoden}
 \section{Vier-Augen-Prinzip}
 
-Wir haben ausgesprochen, dass grundsätzlich jeder Code mindestens über das Vier-Augen-Prinzip abzusichern ist.
+Wir haben ausgesprochen, dass sicherheitskritischer Code mindestens über das Vier-Augen-Prinzip abzusichern ist.
 Da wir hier ein sichere System entwickeln wollen, versuchen wir dadurch das Risiko zu minimieren.
-Besonders kritische Bereiche oder Entscheidungen wurden als Gruppe, also durch Acht-Augen-Prinzip, in Angriff genommen.
+Besonders kritische Bereiche oder Entscheidungen wurden als Gruppe, also durch \enquote{Acht-Augen-Prinzip}, in Angriff genommen.
 
 \section{Tests}
 
@@ -76,6 +76,9 @@ Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-archit
     \item Ist die Passwortlänge auf das von BCrypt vorgebene Limit gesetzt?
   \end{itemize}
 \end{itemize}
+
+\externaldocument[SecPol-]{security-policies}
+Für die neuen Anforderungen, die der Auflistung in dem Kapitel \ref{SecPol-security-policies:new_policies} des \enquote{Sicherheits\-richt\-linien}-Dokument zu entnehmen sind, wurden ebenfalls Tests formuliert, um deren Gültigkeit garantieren zu können.
 
 Bei den View-spezifischen \enquote{Data Transfer Object}-Klassen sehen wir keinen Bedarf zum Testen.
 Bei diesen handelt es sich nur \enquote{Plain Old Data}-Objekte, die ausser trivialen Zugriffsmethoden (Getter und Setter) keine weitere Methoden besitzen.
