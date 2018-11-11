@@ -73,6 +73,11 @@
 % \KOMAoption{headings}{twolinechapter}
 % \renewcommand*\chapterformat{\thechapter\autodot}
 
+% let URLs break at every special character
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\makeatother
+
 % customize dictum format:
 \setkomafont{dictumtext}{\itshape\small}
 \setkomafont{dictumauthor}{\normalfont}
