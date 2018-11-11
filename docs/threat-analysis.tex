@@ -29,11 +29,12 @@
 \tableofcontents  % Inhaltsverzeichnis
 
 \chapter{Zur Analyse verwendeten Methoden}
-\section{Dataflow Diagram}
+\section{Datenflussdiagramm}
 
 Das folgende \gls{dfd} wurde mithilfe des Programms \enquote{OWASP Threat Dragon} \autocite{OWASP.ThreatDragon} erstellt.
 Dieses Programm erlaubt leider keine Einfärbung in grün zur Kennzeichnung vertrauenswürdiger Prozesse oder Datenflüsse.
 Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betrachten.
+Dieses DFD soll als Übersicht über alle vorhandenen Datenflüsse dienen, ohne dabei jeden Manager oder Controller seperat aufzulisten, da für diese der Datenfluss der selbe wäre.
 
 \begin{figure}[htbp]
   \hspace*{-2.5cm}
@@ -43,6 +44,11 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 \end{figure}
 
 \subsection{Layered Entrypoints}
+
+Die folgende Liste stellt alle vorhandenen Eintrittspunkte unserer Applikation in einer Baumstruktur vor.
+Die Eintrittspunkte wurden für die bessere Übersicht nach \texttt{Controller} gruppiert, der für diesen Eintrittspunkt zuständig ist.
+Zusätzlich werden die Parameter aufgelistet, die wir von dem Nutzer bei dem jeweiligen Eintrittspunkt entgegennehmen.
+Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein Eintrittspunkt übersehen werden kann.
 
 \begin{enumerate}
   \item HTTP (Port 80)
@@ -143,6 +149,8 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 
 \subsection{Globale Bedrohungen}
 
+Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an dem \enquote{OWASP Risk Rating Methodology} angepasst \footnote{Siehe \url{https://www.owasp.org/index.php/OWASP_Risk_Rating_Methodology}}. Wir verwenden die selbe Unterteilung von Auswirkung und Wahrscheinlichkeit in 3 Stufen, und bewerten aber das abschliessende Risiko in 4 Stufen \enquote{Note}, \enquote{Gering}, \enquote{Mittel}, \enquote{Hoch}.
+
 \begin{itemize}
 
   \hypertarget{threat1}{}
@@ -151,7 +159,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Zweck:
   	\begin{itemize}
   		\item Ausspähen von Anmeldedaten der Benutzer
-  		\item Ausspähen von Dateien, die ein Benutzer beim Hsh-Helper hochladen möchte
+  		\item Ausspähen von Dateien, die ein Benutzer beim Hsh-Helfer hochladen möchte
   	\end{itemize}
   \item Möglichkeiten:
   	\begin{itemize}
@@ -159,7 +167,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   		\item DNS manipulieren
   	\end{itemize}
   \item Risiko: Mittel
-  \item Gegenmaßnahmen: Authentifizierung des HshHelper Servers durch Zertifikate (HTTPS mit HSTS)
+  \item Gegenmaßnahmen: Authentifizierung des HsH-Helfer Servers durch Zertifikate (HTTPS mit HSTS)
   \end{itemize}
 
   \hypertarget{threat2}{}
@@ -169,8 +177,8 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   	\begin{itemize}
   		\item Primär Ausspähen von Anmeldedaten der Benutzer
   		\item Grundsätzlich sind allen Daten (Gruppennamen etc.) Ziel
-  		%\item Ausspähen von Dateien, die ein Benutzer bei HshHelper hochlädt
-  		%\item Ausspähen von Dateien, die ein Benutzer bei HshHelper runterlädt
+  		%\item Ausspähen von Dateien, die ein Benutzer bei HsH-Helfer hochlädt
+  		%\item Ausspähen von Dateien, die ein Benutzer bei HsH-Helfer runterlädt
   	\end{itemize}
   \item Möglichkeiten: Man-in-the-Middle-Angriff
   \item Risiko: Mittel
@@ -207,7 +215,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   		\item Spoofing des Servers
   		\item Man-in-the-Middle-Angriffe
    \end{itemize}
-  \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HshHelper Domain ausgestellt werden. Für HshHelper Benutzer ist das nicht sofort einsehbar\footnote{Bereits geschehen durch türkischen Geheimdienst: \url{https://arstechnica.com/information-technology/2013/01/turkish-government-agency-spoofed-google-certificate-accidentally/}}.
+  \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HsH-Helfer Domain ausgestellt werden. Für HsH-Helfer Benutzer ist das nicht sofort einsehbar\footnote{Bereits geschehen durch türkischen Geheimdienst: \url{https://arstechnica.com/information-technology/2013/01/turkish-government-agency-spoofed-google-certificate-accidentally/}}.
   \item Risiko: Gering
   \item Gegenmaßnahmen: HTTP Public Key Pinning (HPKP)
   \end{itemize}
@@ -215,7 +223,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \hypertarget{threat6}{}
   \item \textbf{T6: XSS (Cross Site Scripting)}
   \begin{itemize}
-  \item Zweck: Ausführung von JavaScript im HshHelper Kontext eines Benutzers
+  \item Zweck: Ausführung von JavaScript im HsH-Helfer Kontext eines Benutzers
   \item Möglichkeiten: Eingaben, die ausgegeben werden, ohne Eingabevalidierung oder Ausgabecodierung auszuführen
   \item Risiko: Hoch
   \item Gegenmaßnahmen:
@@ -248,7 +256,11 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Zweck: Durch SQL Injection erbeutete Hashes in Plaintext verwandeln
   \item Möglichkeiten: Rainbowtables
   \item Risiko: Gering
-  \item Gegenmaßnahmen: Passwörter nur gehashed mit Salt speichern
+  \item Gegenmaßnahmen:
+  \begin{itemize}
+    \item Passwörter nur gehashed mit Salt speichern
+    \item Passwörter zusätzlich mit Pepper hashen
+  \end{itemize}
   \end{itemize}
 
   \hypertarget{threat9}{}
@@ -374,7 +386,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen:
   \begin{itemize}
   \item Einbau eines Captchas
-  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den \enquote{Passwort ändern}-Prozess anzustoßen. Der Link muss einen geheimen Token beinhalten, der nur HshHelper und dem Empfänger der E-Mail bekannt ist. Das temporäre Passwort wird erst generiert, sobald auf den Link geklickt wird
+  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den \enquote{Passwort ändern}-Prozess anzustoßen. Der Link muss einen geheimen Token beinhalten, der nur HsH-Helfer und dem Empfänger der E-Mail bekannt ist. Das temporäre Passwort wird erst generiert, sobald auf den Link geklickt wird
   \end{itemize}
 \end{itemize}
 
@@ -425,35 +437,36 @@ Ausweislich der Aufgabenstellung sollen wir eine sichere Verbindung annehmen.
 In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahmen, die wir geplant haben umzusetzen, entnommen werden.
 
 \begin{table*}[hbt!]
-  \captionof{table}{Auflistung aller vorzunehmenden Gegenmaßnahmen mit Referenz auf Angriff, der verhindert/erschwert wird}
+  \captionof{table}{Auflistung aller vorzunehmenden Gegenmaßnahmen mit Referenz auf Angriff, der verhindert/erschwert wird. Status beschreibt bereits durchgeführte Implementation.}
   \label{threat-analysis:mitigation-table}
   \begin{tabularx}{\linewidth}{
-    |>{\hsize=0.8\hsize} X |
+    |>{\hsize=0.7\hsize} X |
     >{\hsize=0.2\hsize} X |
+    >{\hsize=0.1\hsize} X |
   }
   \hline
-  \textbf{Gegenmaßnahme} & \textbf{Angriff} \\ \hline
-    Eingabevalidierung & \linktothreat{threat6}{T6}, \linktothreat{threat7}{T7}, \linktothreat{threat15}{T15} \\ \hline
-    Ausgabecodierung & \linktothreat{threat6}{T6} \\ \hline
-    PreparedStatements & \linktothreat{threat7}{T7} \\ \hline
-    \texttt{ALLOW\_LITERALS=NONE} aktivieren & \linktothreat{threat7}{T7} \\ \hline
-    Salt auf Passwörter anwenden & \linktothreat{threat8}{T8} \\ \hline
-    Hinzufügen von CSRF-Token zu Formularen/Requests & \linktothreat{threat9}{T9} \\ \hline
-    Cookies mit privaten Schlüssel signieren & \linktothreat{threat10}{T10}\\ \hline
-    Session-ID im UUID-Format persistieren & \linktothreat{threat10}{T10}\\ \hline
-    Session an IP-Adresse binden & \linktothreat{threat10}{T10}\\ \hline
-    Session-Lebenszeit stark begrenzen & \linktothreat{threat10}{T10}\\ \hline
-    Aktionen inkl User, IP-Adresse und Zeit loggen & \linktothreat{threat11}{T11}\\ \hline
-    Zwei-Faktor-Authentisierung & \linktothreat{threat13}{T13}, \linktothreat{threat17}{T17}\\ \hline
-    Cloudflare, Akamai Secure Shield, Incapsula verwenden & \linktothreat{threat14}{T14}\\ \hline
-    bcrypt als Hashing-Algorithmus verwenden & \linktothreat{threat15}{T15} \\ \hline
-    Operationen unter konstanter, gleichbleibender Laufzeit - auch bei unterschiedlichen Ausführungssträngen - ausführen & \linktothreat{threat16}{T16}, \linktothreat{threat19}{T19}\\ \hline
-    Verbieten schwacher Passwörter & \linktothreat{threat17}{T17} \\ \hline
-    Captcha zwischenschalten, um Massenrequests entgegenzuwirken & \linktothreat{threat17}{T17}, \linktothreat{threat18}{T18}, \linktothreat{threat20}{T20}\\ \hline
-    IP-Adresse bei auffälligem Verhalten sperren & \linktothreat{threat17}{T17}\\ \hline
-    Aussperrung alter Browserversionen & \linktothreat{threat6}{T6} \\ \hline
-    \enquote{Content Security Policy}-Header nutzen & \linktothreat{threat6}{T6} \\ \hline
-    \enquote{X-XSS-Protection}-Header nutzen & \linktothreat{threat6}{T6} \\ \hline
+  \textbf{Gegenmaßnahme} & \textbf{Angriff} & \textbf{Status}\\ \hline
+    Eingabevalidierung & \linktothreat{threat6}{T6}, \linktothreat{threat7}{T7}, \linktothreat{threat15}{T15} & \greencheckmark \\ \hline
+    Ausgabecodierung & \linktothreat{threat6}{T6}  & \greencheckmark \\ \hline
+    PreparedStatements & \linktothreat{threat7}{T7}  & \greencheckmark \\ \hline
+    \texttt{ALLOW\_LITERALS=NONE} aktivieren & \linktothreat{threat7}{T7}  & \greencheckmark \\ \hline
+    Salt auf Passwörter anwenden & \linktothreat{threat8}{T8}  & \greencheckmark \\ \hline
+    Pepper auf Passwörter anwenden & \linktothreat{threat8}{T8}  & \redxmark \\ \hline
+    Hinzufügen von CSRF-Token zu Formularen/Requests & \linktothreat{threat9}{T9} & \greencheckmark \\ \hline
+    Cookies mit privaten Schlüssel signieren & \linktothreat{threat10}{T10} & \greencheckmark \\ \hline
+    Session-ID im UUID-Format persistieren & \linktothreat{threat10}{T10} & \greencheckmark \\ \hline
+    Session an IP-Adresse binden & \linktothreat{threat10}{T10} & \greencheckmark \\ \hline
+    Session-Lebenszeit stark begrenzen & \linktothreat{threat10}{T10} & \greencheckmark \\ \hline
+    Aktionen inkl. User, IP-Adresse und Zeit loggen & \linktothreat{threat11}{T11} & \redxmark \\ \hline
+    Zwei-Faktor-Authentisierung & \linktothreat{threat13}{T13}, \linktothreat{threat17}{T17} & \redxmark \\ \hline
+    bcrypt als Hashing-Algorithmus verwenden & \linktothreat{threat15}{T15} & \greencheckmark \\ \hline
+    Operationen unter konstanter, gleichbleibender Laufzeit - auch bei unterschiedlichen Ausführungssträngen - ausführen & \linktothreat{threat16}{T16}, \linktothreat{threat19}{T19}  & \greencheckmark \\ \hline
+    Verbieten schwacher Passwörter & \linktothreat{threat17}{T17} & \redxmark \\ \hline
+    Captcha zwischenschalten, um Massenrequests entgegenzuwirken & \linktothreat{threat17}{T17}, \linktothreat{threat18}{T18}, \linktothreat{threat20}{T20} & \greencheckmark \\ \hline
+    IP-Adresse bei auffälligem Verhalten sperren & \linktothreat{threat17}{T17} & \greencheckmark \\ \hline
+    Aussperrung alter Browserversionen & \linktothreat{threat6}{T6} & \redxmark \\ \hline
+    \enquote{Content Security Policy}-Header nutzen & \linktothreat{threat6}{T6} & \greencheckmark \\ \hline
+    \enquote{X-XSS-Protection}-Header nutzen & \linktothreat{threat6}{T6}&  \greencheckmark \\ \hline
   \end{tabularx}
 \end{table*}
 

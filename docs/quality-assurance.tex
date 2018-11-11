@@ -108,7 +108,7 @@ Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationste
 
 Lockt man ein Opfer auf eine Seite mit einer Form kann durch einen Klick beispielsweise ein Nutzer aus einer Gruppe gelöscht werden indem bei der Anfrage das CSRF-Token einfach weggelassen wird.
 
-Ein konkretes Angriffsszenario in dieser Anwendung wäre der Login. Das Opfer muss dazu keinerlei Cookies von der HsH-Helper Seite im Browser haben. Dies kann gegeben sein wenn es seine Cookies gelöscht hat oder den Incognito Modus im Browser verwendet. Ein Angreifer kann nun das Opfer auf eine von ihm präparierte Seite locken, wo durch das Klicken auf einen Link eine Login Form abgeschickt wird. Somit ist das Opfer angemeldet unter einem Benutzeraccount, welcher auch dem Angreifer bekannt ist. Ist das Opfer nun unvorsichtig und verifiziert den aktuellen Benutzeraccount nicht, lädt es Dateien möglicherweise Dateien hoch unter einem Benutzeraccount auf welchen der Angreifer zugriff hat.
+Ein konkretes Angriffsszenario in dieser Anwendung wäre der Login. Das Opfer muss dazu keinerlei Cookies von der HsH-Helfer Seite im Browser haben. Dies kann gegeben sein wenn es seine Cookies gelöscht hat oder den Incognito Modus im Browser verwendet. Ein Angreifer kann nun das Opfer auf eine von ihm präparierte Seite locken, wo durch das Klicken auf einen Link eine Login Form abgeschickt wird. Somit ist das Opfer angemeldet unter einem Benutzeraccount, welcher auch dem Angreifer bekannt ist. Ist das Opfer nun unvorsichtig und verifiziert den aktuellen Benutzeraccount nicht, lädt es Dateien möglicherweise Dateien hoch unter einem Benutzeraccount auf welchen der Angreifer zugriff hat.
 
 \subsubsection{CSRF-Angriff}
 Im Rahmen eines Penetrationstests wurde herausgefunden, dass die von Play generierten CSRF Tokens keine Nonce's darstellen bzw. beliebig oft verwendet werden können. Sie werden mit einem in der Play-Session persistierten Wert abgeglichen und auf Authentizität geprüft. Dieser Vergleichswert wird dann gesetzt, wenn der Nutzer erstmalig eine Seite aufruft, die über ein Form verfügt.
@@ -260,10 +260,10 @@ In der \texttt{Firewall} sowie unseren \texttt{Manager}-Klassen verwenden wir Ko
 Im Falle der \texttt{Manager}s handelt es sich um ähnliche String, die in einer Exception den Fehler genaür beschreiben.
 Bei diesen Strings könnte man sich der \texttt{i18n}-Implementation von Play bedienen, um diese Fehlermeldungen für alle \texttt{Manager}s erreichbar zu machen, aber da Internationalisierung nicht im Umfang dieses Projekts ist, werden sie als statische, finale Variabeln extrahiert.
 
-\section{Quelltextinspektion}
+%\section{Quelltextinspektion}
 
-Haben wir ggf. irgendwelche Checklisten nutzen können?
-Siehe
+%Haben wir ggf. irgendwelche Checklisten nutzen können?
+%Siehe Fraunhoferliste aus Moodlekurs
 
 \chapter{Gefundene Fehler}
 
@@ -333,7 +333,7 @@ db.withConnection(connection -> {
 
 \chapter{FindBugs Report}
 \label{staticanalysis-find-bugs}
-%\input{findbugs_result.pdf}
+\includepdf[pages=1-15]{./resources/findbugs_result.pdf}
 
 \chapter{Unittest Coverage Report}
 \label{unitcover}
