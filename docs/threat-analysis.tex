@@ -386,7 +386,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Risiko: Mittel
   \item Gegenmaßnahmen:
   \begin{itemize}
-    \item \enquote{Passwort zurücksetzen lassen}-Prozess in konstanter Länge ablaufen lassen, ggf. durch Absenden einer E-Mail an eine Dummy-E-Mail-Addresse
+    \item \enquote{Passwort zurücksetzen lassen}-Prozess in konstanter Länge ablaufen lassen, ggf. durch Absenden einer E-Mail an eine Dummy-E-Mail-Adresse
     \item E-Mail-Versand asynchron durchführen
     \end{itemize}
   \end{itemize}
@@ -424,7 +424,7 @@ Ausweislich der Aufgabenstellung sollen wir eine sichere Verbindung annehmen.
 
 In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahmen, die wir geplant haben umzusetzen, entnommen werden.
 
-\begin{table}[tbhp]
+\begin{table*}[hbt!]
   \captionof{table}{Auflistung aller vorzunehmenden Gegenmaßnahmen mit Referenz auf Angriff, der verhindert/erschwert wird}
   \label{threat-analysis:mitigation-table}
   \begin{tabularx}{\linewidth}{
@@ -433,18 +433,29 @@ In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahme
   }
   \hline
   \textbf{Gegenmaßnahme} & \textbf{Angriff} \\ \hline
-   & \\ \hline
-   & \\ \hline
-   & \\ \hline
-   & \\ \hline
-   & \\ \hline
-   & \\ \hline
-   & \\ \hline
-   & \\ \hline
-   & \\ \hline
-   & \\ \hline
+    Eingabevalidierung & \linktothreat{threat6}{T6}, \linktothreat{threat7}{T7}, \linktothreat{threat15}{T15} \\ \hline
+    Ausgabecodierung & \linktothreat{threat6}{T6} \\ \hline
+    PreparedStatements & \linktothreat{threat7}{T7} \\ \hline
+    \texttt{ALLOW\_LITERALS=NONE} aktivieren & \linktothreat{threat7}{T7} \\ \hline
+    Salt auf Passwörter anwenden & \linktothreat{threat8}{T8} \\ \hline
+    Hinzufügen von CSRF-Token zu Formularen/Requests & \linktothreat{threat9}{T9} \\ \hline
+    Cookies mit privaten Schlüssel signieren & \linktothreat{threat10}{T10}\\ \hline
+    Session-ID im UUID-Format persistieren & \linktothreat{threat10}{T10}\\ \hline
+    Session an IP-Adresse binden & \linktothreat{threat10}{T10}\\ \hline
+    Session-Lebenszeit stark begrenzen & \linktothreat{threat10}{T10}\\ \hline
+    Aktionen inkl User, IP-Adresse und Zeit loggen & \linktothreat{threat11}{T11}\\ \hline
+    Zwei-Faktor-Authentisierung & \linktothreat{threat13}{T13}, \linktothreat{threat17}{T17}\\ \hline
+    Cloudflare, Akamai Secure Shield, Incapsula verwenden & \linktothreat{threat14}{T14}\\ \hline
+    bcrypt als Hashing-Algorithmus verwenden & \linktothreat{threat15}{T15} \\ \hline
+    Operationen unter konstanter, gleichbleibender Laufzeit - auch bei unterschiedlichen Ausführungssträngen - ausführen & \linktothreat{threat16}{T16}, \linktothreat{threat19}{T19}\\ \hline
+    Verbieten schwacher Passwörter & \linktothreat{threat17}{T17} \\ \hline
+    Captcha zwischenschalten, um Massenrequests entgegenzuwirken & \linktothreat{threat17}{T17}, \linktothreat{threat18}{T18}, \linktothreat{threat20}{T20}\\ \hline
+    IP-Adresse bei auffälligem Verhalten sperren & \linktothreat{threat17}{T17}\\ \hline
+    Aussperrung alter Browserversionen & \linktothreat{threat6}{T6} \\ \hline
+    \enquote{Content Security Policy}-Header nutzen & \linktothreat{threat6}{T6} \\ \hline
+    \enquote{X-XSS-Protection}-Header nutzen & \linktothreat{threat6}{T6} \\ \hline
   \end{tabularx}
-\end{table}
+\end{table*}
 
 \subsection{HTTP Header}
 
