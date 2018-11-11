@@ -141,34 +141,8 @@ Die verwendete Bibliothek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in d
 
 Auch zur Generierung der initialen (und temporären) Benutzer-Passwörter beim Anlegen eines neuen Benutzerkontos wird SecureRandom als Basis verwendet. Dafür zuständig ist die Klasse \texttt{PasswordGenerator}. Die generierten Passwörter können die Zeichen \texttt{a-z}, \texttt{A-Z}, \texttt{0-9} und die Sonderzeichen \texttt{!\%?\#-\_*+} enthalten.
 
-\subsection{CSRF Tokens}
-Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als CPRNG:
-
-\begin{lstlisting}[caption={Methode zum Generieren von Tokens. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
-  def generateToken: String = {
-    val bytes = new Array[Byte](12)
-    random.nextBytes(bytes)
-    new String(Hex.encodeHex(bytes))
-  }
-\end{lstlisting}
-Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit einer Nonce konkateniert. Das Ergebnis wird anschließend mittels \textcolor{red}{HMAC-SHA1} und einem privatem Schlüssel signiert.
-
-\begin{lstlisting}[caption={Methode zum Signieren von Token. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
-  def signToken(token: String): String = {
-    val nonce = clock.millis()
-    val joined = nonce + "-" + token
-    signer.sign(joined) + "-" + joined
-  }
-\end{lstlisting}
-
-Das Format eines Play CSRF Token ist demnach
-\begin{lstlisting}
-<signature> - <nonce> - <token>
-\end{lstlisting}
-
-Das Token (aus Listing TODO) wird nur ein mal für eine Session generiert. Es bleibt innerhalb der Session immer gleich. Da die Nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt.
-
-Um ein Token zu prüfen wird erneut die Signatur über dem Token und dem Nonce gebildet und mit der empfangenen Signatur verglichen. Das Modifizieren eines CSRF Tokens wird somit erkannt.
+\subsection{CSRF-Tokens}
+Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als CPRNG. Für jede Play Session wird ein Token generiert. Für jeden Request wird aus dem Token und einer Nounce ein mit HMCA-SHA1 signiertes CSRF-Token generiert.
 
 \subsection{Play Cookies}
 Play verwendet ein JWT (Json Web Token) als Session Cookie mit dem Namen \linebreak\textit{PLAY\_SESSION}. Es ist durch eine \textcolor{red}{HMAC-SHA256} Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
@@ -195,7 +169,7 @@ Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 	\item Zugangsdaten für die Datenbank
 \end{itemize}
 
-Die Schlüssel und Zugangsdaten liegen alle in der Datei \textit{application.conf}.
+Diese liegen in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Team Mitglieder und sind nicht in die Versionsverwaltung mit eingecheckt. Die \texttt{application.conf} bindet diese Datei mit dem include Statement ein und somit sind die Schlüssel in der Anwendung verwendet werden. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind aber Anwendungseinstellungen jedoch schon. 
 
 \section{Eingabevalidierung}
 
@@ -217,10 +191,10 @@ Während dieser Ansicht kann der Nutzer einzelne Sessions invalidieren, sofern e
 
 Innerhalb unserer ersten, prototypischen Implementation hatten wir einen Ansatz verfolgt, bei dem unsere \texttt{Controller}-Klassen für das Bearbeiten des Requests, das Validieren des Forms, das Weiterleiten von Fehlern innerhalb eines Formulars, die Autorisierungsprüfung, die Ausführung der domänenspezifischen Operation sowie das Absenden des generierten HTMLs zuständig war.
 Auch wenn uns bewusst war, dass dies nur ein Ansatz für das Prototyping war, ist schnell offensichtlich geworden, dass dieser Ansatz langfristig gesehen uns Probleme bereiten würde.
-Die Testbarkeit solcher Controller-Methoden litt schwer, da es schwer war, für einen einzelnen Unit-Tests alle Klassen zu mocken, die benötigten Voraussetzungen zu erstellen, aber zu prüfen, ob die richtigen Nachbedingungen gelten.
+Die Testbarkeit solcher Controller-Methoden litt schwer, da es kompliziert war, für einen einzelnen Unit-Tests alle Klassen zu mocken, die benötigten Voraussetzungen zu erstellen, aber zu prüfen, ob die richtigen Nachbedingungen gelten.
 Jeder dieser Tests musste entweder gegen eine \texttt{FakeApplication} laufen, oder gegen ein laufenden Testsystem.
 
-Um diese Testbarkeit wieder zu gewinnen, haben wir die Zuständigkeiten feiner aufgeteilt und die \texttt{Manager}-Klassen ins Leben gerufen, die von nun an den domänenspezifische übernehmen.
+Um diese Testbarkeit wieder zu gewinnen, haben wir die Zuständigkeiten feiner aufgeteilt und die \texttt{Manager}-Klassen ins Leben gerufen, die von nun an den domänenspezifischen Operation übernehmen.
 Die \texttt{Controller} beschäftigen sich seither nur noch für das Bearbeiten des Requests, das Weiterleiten von Fehlern innerhalb eines Formulars zum Nutzer sowie dem Absenden des generierten HTMLs.
 
 \section{Sessionkonzept}

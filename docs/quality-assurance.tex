@@ -161,6 +161,38 @@ Der Code zum sicheren Abspeichern eines Nutzerpassworts in der Datenbank wurde d
 
 Aus dem Review ging die Idee hervor, ob bei erfolgreichen Logins durch Messen der für das Hashing benötigten Zeit die Rundenanzahl dynamisch erhöhen wird, um somit für Zukunftssicherheit zu sorgen. Die Idee wurde ins Backlog aufgenommen und das Review damit abgeschlossen.
 
+
+
+\subsection{CSRF-Token Generierung und Prüfung von Play}
+Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als CPRNG:
+
+\begin{lstlisting}[label=csrfGenerateToken, caption={Methode zum Generieren von Tokens. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
+  def generateToken: String = {
+    val bytes = new Array[Byte](12)
+    random.nextBytes(bytes)
+    new String(Hex.encodeHex(bytes))
+  }
+\end{lstlisting}
+Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit einer Nonce konkateniert. Das Ergebnis wird anschließend mittels \textcolor{red}{HMAC-SHA1} und einem privatem Schlüssel signiert.
+
+\begin{lstlisting}[label=csrfSignToken, caption={Methode zum Signieren von Token. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
+  def signToken(token: String): String = {
+    val nonce = clock.millis()
+    val joined = nonce + "-" + token
+    signer.sign(joined) + "-" + joined
+  }
+\end{lstlisting}
+
+Das Format eines Play CSRF Token ist demnach
+\begin{lstlisting}
+<signature> - <nonce> - <token>
+\end{lstlisting}
+
+Das Token (aus Listing \ref{csrfGenerateToken}) wird nur ein mal für eine Session generiert. Es bleibt innerhalb der Session immer gleich. Da die Nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt.
+
+Um CSRF-Token überprüfen zu können, wird das erste CSRF-Token, dass in einer Play Session verwendet wird im Play Sesseion Cookie gespeichert. Durch einen Vergleich des Tokens im ersten CSRF-Token mit dem zu prüfendem Token kann sichergestellt werden, dass das CSRF-Token zu der richtigen Sesseion gehört.
+
+
 \section{Statische Codeanalyse}
 
 Da innerhalb der Gruppe keine Präferenzen bezüglich eines Werkzeugs für die statische Codeanalyse bestand, haben wir verschiedene ausprobiert.
