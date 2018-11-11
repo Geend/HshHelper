@@ -34,6 +34,7 @@
 Das folgende \gls{dfd} wurde mithilfe des Programms \enquote{OWASP Threat Dragon} \autocite{OWASP.ThreatDragon} erstellt.
 Dieses Programm erlaubt leider keine Einfärbung in grün zur Kennzeichnung vertrauenswürdiger Prozesse oder Datenflüsse.
 Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betrachten.
+Dieses DFD soll als Übersicht über alle vorhandenen Datenflüsse dienen, ohne dabei jeden Manager oder Controller seperat aufzulisten, da für diese der Datenfluss der selbe wäre.
 
 \begin{figure}[htbp]
   \hspace*{-2.5cm}
@@ -151,7 +152,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Zweck:
   	\begin{itemize}
   		\item Ausspähen von Anmeldedaten der Benutzer
-  		\item Ausspähen von Dateien, die ein Benutzer beim Hsh-Helper hochladen möchte
+  		\item Ausspähen von Dateien, die ein Benutzer beim Hsh-Helfer hochladen möchte
   	\end{itemize}
   \item Möglichkeiten:
   	\begin{itemize}
@@ -159,7 +160,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   		\item DNS manipulieren
   	\end{itemize}
   \item Risiko: Mittel
-  \item Gegenmaßnahmen: Authentifizierung des HshHelper Servers durch Zertifikate (HTTPS mit HSTS)
+  \item Gegenmaßnahmen: Authentifizierung des HsH-Helfer Servers durch Zertifikate (HTTPS mit HSTS)
   \end{itemize}
 
   \hypertarget{threat2}{}
@@ -169,8 +170,8 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   	\begin{itemize}
   		\item Primär Ausspähen von Anmeldedaten der Benutzer
   		\item Grundsätzlich sind allen Daten (Gruppennamen etc.) Ziel
-  		%\item Ausspähen von Dateien, die ein Benutzer bei HshHelper hochlädt
-  		%\item Ausspähen von Dateien, die ein Benutzer bei HshHelper runterlädt
+  		%\item Ausspähen von Dateien, die ein Benutzer bei HsH-Helfer hochlädt
+  		%\item Ausspähen von Dateien, die ein Benutzer bei HsH-Helfer runterlädt
   	\end{itemize}
   \item Möglichkeiten: Man-in-the-Middle-Angriff
   \item Risiko: Mittel
@@ -207,7 +208,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   		\item Spoofing des Servers
   		\item Man-in-the-Middle-Angriffe
    \end{itemize}
-  \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HshHelper Domain ausgestellt werden. Für HshHelper Benutzer ist das nicht sofort einsehbar\footnote{Bereits geschehen durch türkischen Geheimdienst: \url{https://arstechnica.com/information-technology/2013/01/turkish-government-agency-spoofed-google-certificate-accidentally/}}.
+  \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HsH-Helfer Domain ausgestellt werden. Für HsH-Helfer Benutzer ist das nicht sofort einsehbar\footnote{Bereits geschehen durch türkischen Geheimdienst: \url{https://arstechnica.com/information-technology/2013/01/turkish-government-agency-spoofed-google-certificate-accidentally/}}.
   \item Risiko: Gering
   \item Gegenmaßnahmen: HTTP Public Key Pinning (HPKP)
   \end{itemize}
@@ -215,7 +216,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \hypertarget{threat6}{}
   \item \textbf{T6: XSS (Cross Site Scripting)}
   \begin{itemize}
-  \item Zweck: Ausführung von JavaScript im HshHelper Kontext eines Benutzers
+  \item Zweck: Ausführung von JavaScript im HsH-Helfer Kontext eines Benutzers
   \item Möglichkeiten: Eingaben, die ausgegeben werden, ohne Eingabevalidierung oder Ausgabecodierung auszuführen
   \item Risiko: Hoch
   \item Gegenmaßnahmen:
@@ -374,7 +375,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen:
   \begin{itemize}
   \item Einbau eines Captchas
-  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den \enquote{Passwort ändern}-Prozess anzustoßen. Der Link muss einen geheimen Token beinhalten, der nur HshHelper und dem Empfänger der E-Mail bekannt ist. Das temporäre Passwort wird erst generiert, sobald auf den Link geklickt wird
+  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den \enquote{Passwort ändern}-Prozess anzustoßen. Der Link muss einen geheimen Token beinhalten, der nur HsH-Helfer und dem Empfänger der E-Mail bekannt ist. Das temporäre Passwort wird erst generiert, sobald auf den Link geklickt wird
   \end{itemize}
 \end{itemize}
 

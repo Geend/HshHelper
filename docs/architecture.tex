@@ -83,10 +83,10 @@ Das Klartext-Passwort wird zurückgegeben und dem Administrator angezeigt, um di
 Das Login Sequenzdiagramm zeigt den Fall, dass der Benutzer bereits mehrfach das Passwort falsch eingegeben hat und ein Captcha lösen muss. In der Antwort, die auf die erste GET Anfrage folgt, sind sowohl das CSRF-Token als auch das HTML zum Lösen des Captchas enthalten. In der darauffolgenden POST Anfrage wird die Captcha-Information, sowie der Benutzername und das Passwort als Form input mitgeliefert. Bei beiden Anfragen wird noch sichergestellt, dass der Benutzer nicht bereits eine gültige Session besitzt, um mehrfache Logins zu vermeiden. Die Eingaben werden, wie auch schon bei Create User, zuerst durch Annotations validiert und anschließend an den Login Manager weitergereicht. Diese berechnet unabhängig davon ob der Benutzer existiert oder nicht den Hash des Klartextpassworts vergleicht diesen mit dem Benutzer falls vorhanden. Anschließend wird die LoginFirewall befragt, ob es Unstimmigkeiten für diesen Benutzer oder die anfragende IP-Adresse gibt. In diesem Fall liefert diese Verify zurück, was bedeutet das für diesen Benutzer ein Captcha gelöst werden muss. Deshalb wird überprüft, ob es erfolgreich gelöst wurde und dann beim SessionManager durch den Aufruf von startNewSession eine neue Session erzeugt. Damit wurde der Login erfolgreich abgeschlossen.
 
 \chapter{Kryptografisch relevante Informationen}
-Folgender Abschnitt enthält gesammelte Informationen über die kryptographischen Algorithmen die im HsH-Helper Anwendung finden. Die für die Algorithmen benötigten Geheimnisse und deren Verwaltung wird ebenfalls hier dokumentiert da die Sicherheit maßgeblich von der Geheimhaltung dieser abhängt.
+Folgender Abschnitt enthält gesammelte Informationen über die kryptographischen Algorithmen die im HsH-Helfer Anwendung finden. Die für die Algorithmen benötigten Geheimnisse und deren Verwaltung wird ebenfalls hier dokumentiert da die Sicherheit maßgeblich von der Geheimhaltung dieser abhängt.
 
 \section{Passwörter}
-Die Passwörter, die Benutzer verwenden um sich bei HshHelper zu authentisieren, werden grundsätzlich nur als Hash persistiert. Konkret wird die Hashfunktion bcrypt zum Hashen der Passwörter verwendet.
+Die Passwörter, die Benutzer verwenden um sich bei HsH-Helfer zu authentisieren, werden grundsätzlich nur als Hash persistiert. Konkret wird die Hashfunktion bcrypt zum Hashen der Passwörter verwendet.
 
 Um ein Passwort mit bcrypt zu Hashen muss zunächst ein Salt generiert werden. Neben dem Salt und dem gehashten Passwort wird bei bcrypt außerdem noch die bcyrpt Version und die Anzahl der Runden gespeichert. Über die Anzahl der Runden kann die Laufzeit die bcrypt benötigt um ein Passwort zu hashen beeinflusst werden.
 
@@ -99,7 +99,7 @@ Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als C
 
 \section{Play Cookies}
 \label{play:cookies}
-Play verwendet ein \enquote{\gls{jwt}} als Session Cookie mit dem Namen \linebreak\textit{PLAY\_SESSION}. Es ist durch eine HMAC-SHA256 Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
+Play verwendet ein \enquote{\gls{jwt}} als Session Cookie mit dem Namen \linebreak\textit{PLAY\_SESSION}. Es ist durch eine HMAC-SHA256 Signatur gegen Manipulationen geschützt. Das Cookie wird durch HsH-Helfer für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
 
 
 Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, was allerdings in der aktuellen Iteration keinerlei Anwendung findet. Der Error-Handling-Code verwendet zwar die Flash-Scope um Fehlermeldungen über eine Klassengrenze hinweg verfügbar zu machen, diese Daten werden aber innerhalb einer Anfrage direkt wieder gelesen und landen somit niemals beim Client.
@@ -123,7 +123,7 @@ Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 	\item Zugangsdaten für die Datenbank
 \end{itemize}
 
-Diese liegen in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Team Mitglieder und sind nicht in die Versionsverwaltung mit eingecheckt. Die \texttt{application.conf} bindet diese Datei mit dem include Statement ein und somit sind die Schlüssel in der Anwendung verwendet werden. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind aber Anwendungseinstellungen jedoch schon. 
+Diese liegen in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Team Mitglieder und sind nicht in die Versionsverwaltung mit eingecheckt. Die \texttt{application.conf} bindet diese Datei mit dem include Statement ein und somit sind die Schlüssel in der Anwendung verwendet werden. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind aber Anwendungseinstellungen jedoch schon.
 
 \chapter{Sicherheitsmassnahmen}
 
@@ -171,18 +171,18 @@ Ebenso haben wir uns entschlossen, Browser, die Content Security Policy nicht un
 Für einige Parameter gibt es festgelegte Constraints die in allen entsprechenden Dtos verwendet werden. Das sind:
 
 \begin{itemize}
-	\item username		
+	\item username
 	 \begin{itemize}
 			\item Maximale Länge: 20
 			\item Regex: [a-z][a-z0-9.]+
 		\end{itemize}
 
-	
+
 	\item password
 	\begin{itemize}
 		\item Maximale Länge: 72 (Beschränkung von bcrypt)
 	\end{itemize}
-	
+
 	\item groupname
 	\begin{itemize}
 		\item Minimale Länge: 3
@@ -193,10 +193,10 @@ Für einige Parameter gibt es festgelegte Constraints die in allen entsprechende
 
 
 	\item email
-	\begin{itemize}		
+	\begin{itemize}
 		\item Regex: Siehe Play Implementierung von \texttt{EmailValidator}
 	\end{itemize}
-	
+
 
 \end{itemize}
 
