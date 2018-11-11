@@ -86,32 +86,34 @@
 \begin{itemize}
   \item Netzwerkschnittstellen
   \begin{itemize}
-    \item HTTP (Port 80)  [U-, U+, GM, GO, A]
-    \item SMTP (Port 587) [U-]
+    \item \textbf{EP1:} HTTP (Port 80)  [U-, U+, GM, GO, A]
+    \item \textbf{EP2:} SMTP (Port 587) [U-]
   \end{itemize}
-  \item Eingebettetes Google reCAPTCHA JavaScript
+  \item \textbf{EP3:} Eingebettetes Google reCAPTCHA JavaScript [U-, GR]
 \end{itemize}
+
+Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Durchführen einer Aktion über EP1.
 
 \chapter{Assets}
 
 \begin{itemize}
   \item Benutzeranmeldeinformationen
   \begin{itemize}
-    \item Passworthash [-]
-    \item Session [U+, GM, GO, A]
+    \item \textbf{AS1:} Passworthash [-]
+    \item \textbf{AS2:} Session [U+, GM, GO, A]
   \end{itemize}
-  \item Gruppen [U+, GM, GO, A]
-  \item Nutzerkonto [A]
+  \item \textbf{AS3:} Gruppen [U+, GM, GO, A]
+  \item \textbf{AS4:} Nutzerkonto [A]
 \end{itemize}
 
 \chapter{Aktionen}
 
 \begin{itemize}
-  \item \textbf{AK1:} Einloggen [U-, GR]
+  \item \textbf{AK1:} Einloggen [U-, GR] (Zusätzlich EP3)
   \item \textbf{AK2:} Ausloggen [U+, GM, GO, A]
   \item \textbf{AK3:} Nutzerkonto erstellen [A]
   \item \textbf{AK4:} Nutzerkonto löschen [A]
-  \item \textbf{AK5:} Passwort zurücksetzen lassen [U-, EM]
+  \item \textbf{AK5:} Passwort zurücksetzen lassen [U-, EM, GR] (Zusätzlich EP2 \& EP3)
   \item \textbf{AK6:} Passwort nach Zurücksetzung anpassen [U+, GM, GO, A]
   \item \textbf{AK7:} Aktive Sessions anzeigen lassen [U+, GM, GO, A]
   \item \textbf{AK8:} Aktive Sessions zerstören [U+, GM, GO, A]
@@ -162,6 +164,7 @@
   \item Ein Administrator [A] hat nur schreibenden Zugriff auf ein Nutzerkonto durch das Löschen (AK4). Ihm ist nicht möglich, andere Informationen aus dem Nutzerkonto zu lesen oder zu ändern.
   \item Ein Nutzer [-] muss nur ein reCAPTCHA lösen, wenn er sich mehrmals hintereinander fehlerhaft eingeloggt hat (AK1).
   \item Die E-Mail eines Nutzerkontos ist einzigartig, so dass die Erstellung zweier Nutzerkonten mit der selben E-Mail-Adresse nicht möglich ist (AK3).
+  \item Ein Nutzer [U-] muss zusätzlich ein reCAPTCHA lösen, um sein Passwort zurücksetzen lassen zu können (AK5).
 \end{itemize}
 
 \clearpage
