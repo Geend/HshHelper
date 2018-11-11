@@ -146,13 +146,13 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 \begin{itemize}
   \item \textbf{Spoofing des Servers}
   \begin{itemize}
-  \item Zweck: 
-  	\begin{itemize}  
+  \item Zweck:
+  	\begin{itemize}
   		\item Ausspähen von Anmeldedaten der Benutzer
-  		\item Ausspähen von Dateien, die ein Benutzer bei HshHelper hochladen möchte
+  		\item Ausspähen von Dateien, die ein Benutzer beim Hsh-Helper hochladen möchte
   	\end{itemize}
   \item Möglichkeiten:
-  	\begin{itemize}  
+  	\begin{itemize}
   		\item IP-Spoofing
   		\item DNS manipulieren
   	\end{itemize}
@@ -162,8 +162,8 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 
   \item \textbf{Eavesdropping}
   \begin{itemize}
-  \item Zweck: 
-  	\begin{itemize}  
+  \item Zweck:
+  	\begin{itemize}
   		\item Primär Ausspähen von Anmeldedaten der Benutzer
   		\item Grundsätzlich sind allen Daten (Gruppennamen etc.) Ziel
   		%\item Ausspähen von Dateien, die ein Benutzer bei HshHelper hochlädt
@@ -184,8 +184,8 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 
   \item \textbf{Tampering}
   \begin{itemize}
-  \item Zweck: 
-  	\begin{itemize}  
+  \item Zweck:
+  	\begin{itemize}
   		\item Ausführung von nicht intendierten Aktionen (z.B. Benutzer-Löschen abfangen und Ziel-User-Id manipulieren)
   		\item Server-Response manipulieren (z.B. bösartiges JavaScript einbauen)
 	\end{itemize}
@@ -196,7 +196,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 
   \item \textbf{Verwendung eines gefälschten,von einer anerkannten Zertifizierungsstelle signierten Zertifikates}%Ungültig ausgestelltes Zertifikat (Türkischer Geheimdienst)
   \begin{itemize}
-  \item Zweck: 
+  \item Zweck:
   	\begin{itemize}
   		\item Spoofing des Servers
   		\item Man-in-the-Middle-Angriffe
@@ -222,7 +222,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 		\item Ausgabecodierung
 	\end{itemize}
   \end{itemize}
-      
+
 
   \item \textbf{SQL Injection}
   \begin{itemize}
@@ -236,7 +236,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
     \item Eingabevalidierung
   \end{itemize}
   \end{itemize}
-  
+
   \item \textbf{Offline Password Brute Forcing}
   \begin{itemize}
   \item Zweck: Durch SQL Injection erbeutete Hashes in Plaintext verwandeln
@@ -291,7 +291,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Risiko: Gering
   \item Gegenmaßnahmen: 2-Faktor-Authoritisierung
   \end{itemize}
-  
+
   \item \textbf{DDOS}
   \begin{itemize}
   \item Zweck: Verfügbarkeit der Anwendung beeinträchtigen
@@ -299,7 +299,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Risiko: Mittel
   \item Gegenmaßnahmen: Cloudflare/Incapsula/Akamai Secure Shield verwenden
   \end{itemize}
-  
+
   %\item \textcolor{red}{Elevation of privilege -> Frage an Peine. ?}
 \end{itemize}
 
@@ -435,9 +435,6 @@ Entnommen haben wir diese Empfehlungen verschiedenen Seiten, darunter der \enquo
 \end{sloppypar}
 Mit diesem Header kann gesteuert werden, welche Informationen als \enquote{Referrer} an die nächste besuchte Seite weitergegeben werden. \texttt{strict-origin-when-cross-origin} sorgt dafür, dass innerhalb der Seite die vollständige URL weitergegeben wird. Beim Besuchen einer anderen Seite wird nur die Domain weitergegeben. Wird dabei jedoch von HTTPS auf HTTP gewechselt, ist das Weitergeben jeder Information untersagt.
 
-\textcolor{red}{
-TODO: Explizit in Play nur strict-origin-when-cross-origin machen
-}
 \subsection{X-Frame-Options}
 \begin{sloppypar}
 \texttt{X-Frame-Options: DENY}
