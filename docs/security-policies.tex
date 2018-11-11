@@ -53,7 +53,7 @@
   \item Betriebssystem, Hardware sowie verwendete Bibliotheken enthalten keine sicherheitsrelevanten Fehler.
   \item Hashing-Algorithmus \enquote{bcrypt} macht es einem Angreifer wirtschaftlich unmöglich, evtl. erbeutete Password-Hashes durch Brute-Force oder Rainbow Tables in Plaintext zu verwandeln.
   \item Lösen eines Recaptchas ist für einen Angreifer wirtschaftlich undurchführbar.
-  \item Die von Google-Servern eingebundenen Recaptcha Java-Script Dateien werden niemals zur Code-Injection verwendet / die Google-Server sind sicher.
+  \item Die von Google-Servern eingebundenen Recaptcha Java-Script Dateien werden niemals zur Code-Injection verwendet / Google's reCAPTCHA Server sind grundsätzlich vertrauenswürdig.
   \item Bibliotheksfunktion \texttt{java.security.SecureRandom} \autocite{JavaDocs.SecureRandom} erstellt Zufallszahlen, die kryptografisch sicher sind.
   \item Einstellung \texttt{ALLOW\_LITERALS=NONE} der Datenbank \enquote{h2} verhindert SQL Injections.
   \item \enquote{\gls{jwt}}-Format ist kryptografisch sicher zur Speicherung von Session- sowie Cookie-Daten.
@@ -61,12 +61,11 @@
   \item Applikation kann nur über die definierten Eintrittspunkte verwendet werden.
   \item Benutzer des HsH-Helfers verraten nicht ihr Passwort an andere.
   \item Initialer Benutzer \enquote{admin} ist vertrauenswürdig.
-  \item Autogenerierte IDs der Datenbank \enquote{h2} sind aufsteigend und werden nicht wiederverwendet, sofern eine ID wieder frei wird.
+  \item Autogenerierte IDs der Datenbank \enquote{h2} sind aufsteigend und positiv. Sie werden nicht wiederverwendet, sofern eine ID wieder frei wird.
   \item Angreifer verfügen nur über einen begrenzten Pool an IP-Addressen, die \enquote{Anschaffung} großer Mengen von IP-Adressen für einen Login-Brute-Force ist unwirtschaftlich.
   \item Zertifikate sind grundsätzlich vertrauenswürdig. Certificate Authorities stellen keine Zertifikate für missbräuchliche Zwecke aus.
   \item Die Quelle der kryptografisch-sicheren Zufallszahlen versiegt nicht (\texttt{/dev/random} (Linux), Cryptography API: Next Generation (Windows) \autocite{Windows.SecureRandom}).
-  \item Google's reCAPTCHA Server sind vertrauenswürdig.
-  \item Der gewählte Datentyp \texttt{Long} der Identifikatoren in der \enquote{h2} ist für den Benutzungskontext des HsH-Helfers ausreichend und kann nicht missbräuchlich ausgebracht werden.
+  \item Der gewählte Datentyp \texttt{Long} der Identifikatoren in der \enquote{h2-Datenbank} ist für den Benutzungskontext des HsH-Helfers ausreichend lang.
 \end{itemize}
 
 \chapter{Akteur}
