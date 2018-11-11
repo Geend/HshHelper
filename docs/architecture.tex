@@ -40,16 +40,16 @@
   \caption{\enquote{High-Level}-Klassendiagramm unseres Systems}
 \end{figure}
 
-Das in Abbildung \ref{architecture:class_diagram} zusehene Architekturdiagramm verzichtet zugunsten der Übersicht\-lichkeit auf die Abhängig\-keiten zwischen den Klassen. Es dient lediglich zur Veranschaulichung der Top-Level-Architektur und zur Illustration der wichtigsten Klassen. Wie die, durch Farben abgetrennten logischen Gruppierungen der Klassen im Zusammenhang stehen, wird zusätzlich textuell erklärt.
+Das in Abbildung \ref{architecture:class_diagram} dargestellte Architekturdiagramm verzichtet zugunsten der Übersicht\-lichkeit auf die Abhängig\-keiten zwischen den Klassen. Es dient lediglich zur Veranschaulichung der Top-Level-Architektur und zur Illustration der wichtigsten Klassen. Wie die, durch Farben abgetrennten logischen Gruppierungen der Klassen im Zusammenhang stehen, wird zusätzlich textuell erklärt.
 
 % ggf. explizit Farben nennen?
 Zu jedem Controller gibt es einen Manager in der Domänenlogik.
-Dieser enthält jegliche Logik zur Abarbeitung der Anfrage und liefert auftretende Fehler über eine Exception zurück. Datenbankzugriff erfolgt somit niemals von einem Controller, sondern immer aus dem zugehörigen Manager.
+Dieser enthält jegliche Logik zur Abarbeitung der Anfrage und liefert auftretende Fehler über eine Exception zurück. Ein Datenbankzugriff erfolgt somit niemals von einem Controller, sondern immer aus dem zugehörigen Manager.
 Beim Sessionmanager handelt es sich um einen Spezialfall, da das Session-Konzept ein integraler Bestandteil der Anwendung ist, da die Prüfung auf vorhandene Authentifizierung Grundlage aller Aktionen ist.
 \footnote{Siehe Anforderungsbeschreibung 4.2: Sämtliche Funktionen von HsH-Helfer sind nur angemeldeten Benutzern zugänglich.}
 Das Gleiche gilt für das \texttt{PasswordSecurityModule}, welches beim Einloggen, Erstellen eines Nutzers sowie dem \enquote{Passwort zurücksetzen} benötigt wird, da in ihr alle Passwort-Operationen gekapselt sind.
 Daher wurden diese beiden Klassen unter \enquote{Cross-Cutting-Concerns} zusammengefasst.
-Zugriff auf diese beiden Klassen kann sowohl von Controllern aus erfolgen als auch von Managern in der Domänenlogik. \par
+Zugriffe auf diese Klassen können sowohl von Controllern als auch von Managern in der Domänenlogik aus erfolgen. \par
 Im Folgenden geben Sequenzdiagramme weitere Einsicht in das Zusammenspiel dieser Klassen.
 
 \section{Sequenzdiagram: Benutzer erstellen}
