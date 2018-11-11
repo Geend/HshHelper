@@ -31,9 +31,9 @@
 \chapter{Benutzte Methoden}
 \section{Vier-Augen-Prinzip}
 
-Wir haben ausgesprochen, dass sicherheitskritischer Code mindestens über das Vier-Augen-Prinzip abzusichern ist.
+Wir haben ausgesprochen, dass grundsätzlich jeder Code mindestens über das Vier-Augen-Prinzip abzusichern ist.
 Da wir hier ein sichere System entwickeln wollen, versuchen wir dadurch das Risiko zu minimieren.
-Besonders kritische Bereiche oder Entscheidungen wurden als Gruppe, also durch \enquote{Acht-Augen-Prinzip}, in Angriff genommen.
+Besonders kritische Bereiche oder Entscheidungen wurden als Gruppe, also durch Acht-Augen-Prinzip, in Angriff genommen.
 
 \section{Tests}
 
@@ -76,9 +76,6 @@ Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-archit
     \item Ist die Passwortlänge auf das von BCrypt vorgebene Limit gesetzt?
   \end{itemize}
 \end{itemize}
-
-\externaldocument[SecPol-]{security-policies}
-Für die neuen Anforderungen, die der Auflistung in Kapitel \ref{SecPol-security-policies:new_policies} des \enquote{Sicherheits\-richt\-linien}-Dokument zu entnehmen sind, wurden ebenfalls Tests formuliert, um deren Gültigkeit garantieren zu können.
 
 Bei den View-spezifischen \enquote{Data Transfer Object}-Klassen sehen wir keinen Bedarf zum Testen.
 Bei diesen handelt es sich nur \enquote{Plain Old Data}-Objekte, die ausser trivialen Zugriffsmethoden (Getter und Setter) keine weitere Methoden besitzen.
@@ -154,6 +151,38 @@ Auch wenn dies im vorliegenden Fall aufgrund der Unique-Constraints in der Daten
 Der Code zum sicheren Abspeichern eines Nutzerpassworts in der Datenbank wurde durch eine Person einem Review unterzogen. Die dabei aufgekommene Anregung wurde mit dem ganzen Team diskutiert. Das Passwort wird im Code von lediglich zwei Stellen aus gesetzt. Der \enquote{\texttt{UserManager}} verwendet sie beim Zurücksetzen des Passworts und der \enquote{\texttt{LoginManager}} beim Setzen eines neuen Passworts. In beiden Fällen wird direkt beim Aufruf des Setters der Hash durch die Verwendung des \enquote{\texttt{PasswordSecurityModule}} erzeugt. Somit ist sichergestellt, dass beim aktuellen Codestand keine Klartextpasswörter in der Datenbank abgespeichert werden. BCrypt wird verwendet um den Hash zu generieren und es wurde kurz diskutiert ob man nicht doch auf PBKDF2 wechselt. Da beide aber nicht ohne eine Third-Party-Library auskommen, wurde davon abgesehen. Dem Bcrypt-Code \autocite{BcryptCode} kann entnommen werden, dass das automatisch generierte Salt SecureRandom verwendet und somit ausreichend zufällige Salts für unterschiedliche Passwörter generiert und auch die Rundenanzahl, die explizit festgelegt wurde, ist ausreichend sicher.
 
 Aus dem Review ging die Idee hervor, ob bei erfolgreichen Logins durch Messen der für das Hashing benötigten Zeit die Rundenanzahl dynamisch erhöht wird, um somit für Zukunftssicherheit zu sorgen. Die Idee wurde ins Backlog aufgenommen und das Review damit abgeschlossen.
+
+
+
+\subsection{CSRF-Token Generierung und Prüfung von Play}
+Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als CPRNG:
+
+\begin{lstlisting}[label=csrfGenerateToken, caption={Methode zum Generieren von Tokens. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
+  def generateToken: String = {
+    val bytes = new Array[Byte](12)
+    random.nextBytes(bytes)
+    new String(Hex.encodeHex(bytes))
+  }
+\end{lstlisting}
+Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit einer Nonce konkateniert. Das Ergebnis wird anschließend mittels \textcolor{red}{HMAC-SHA1} und einem privatem Schlüssel signiert.
+
+\begin{lstlisting}[label=csrfSignToken, caption={Methode zum Signieren von Token. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
+  def signToken(token: String): String = {
+    val nonce = clock.millis()
+    val joined = nonce + "-" + token
+    signer.sign(joined) + "-" + joined
+  }
+\end{lstlisting}
+
+Das Format eines Play CSRF Token ist demnach
+\begin{lstlisting}
+<signature> - <nonce> - <token>
+\end{lstlisting}
+
+Das Token (aus Listing \ref{csrfGenerateToken}) wird nur ein mal für eine Session generiert. Es bleibt innerhalb der Session immer gleich. Da die Nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt.
+
+Um CSRF-Token überprüfen zu können, wird das erste CSRF-Token, dass in einer Play Session verwendet wird im Play Sesseion Cookie gespeichert. Durch einen Vergleich des Tokens im ersten CSRF-Token mit dem zu prüfendem Token kann sichergestellt werden, dass das CSRF-Token zu der richtigen Sesseion gehört.
+
 
 \section{Statische Codeanalyse}
 
