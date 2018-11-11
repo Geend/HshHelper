@@ -3,7 +3,7 @@ package policy;
 public class ConstraintValues {
 
     public static final int MAX_USERNAME_LENGTH = 20;
-    public static final int MAX_PASSWORD_LENGTH = 100;
+    public static final int MAX_PASSWORD_LENGTH = 72;
     public static final String USERNAME_REGEX = "[a-z][a-z0-9.]+";
 
 

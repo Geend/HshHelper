@@ -124,13 +124,7 @@ Da unsere Anwendung zum jetzigen Zeitpunkt nur mittelbaren Gebrauch von JavaScri
 Ebenso haben wir uns entschlossen, Browser, die Content Security Policy nicht unterstützen von unserer Anwendung auszuschließen. Hiervon sind nur hinreichend alte Browser betroffen\footnote{Siehe \textquote{Browser compatibility} \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP}}.
 
 \section{Kryptografisch relevanten Informationen}
-
-\textcolor{red}{
-Wie stellen diese sicher, dass Informationen usw nicht geklaut/geknackt/abgehört/entwendet werden können?
-Wie sieht es mit unserer Schlässelverwaltung aus?
-Wie nutzen wir unsere Cookies? Was machen unsere Cookies genau?
-Wann setzen wir sie?
-}
+Folgender Abschnitt enthält gesammelte Informationen über die kryptographischen Algorithmen die im HsH-Helper Anwendung finden. Die für die Algorithmen benötigten Geheimnisse und deren Verwaltung wird ebenfalls hier dokumentiert da die Sicherheit maßgeblich von der Geheimhaltung dieser abhängt.
 
 \subsection{HshHelper Passwörter}
 Die Passwörter, die Benutzer verwenden um sich bei HshHelper zu authentisieren, werden grundsätzlich nur als Hash persistiert. Konkret wird die Hashfunktion bcrypt zum Hashen der Passwörter verwendet.
@@ -145,7 +139,7 @@ Auch zur Generierung der initialen (und temporären) Benutzer-Passwörter beim A
 Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als CPRNG. Für jede Play Session wird ein Token generiert. Für jeden Request wird aus dem Token und einer Nounce ein mit HMCA-SHA1 signiertes CSRF-Token generiert.
 
 \subsection{Play Cookies}
-Play verwendet ein JWT (Json Web Token) als Session Cookie mit dem Namen \linebreak\textit{PLAY\_SESSION}. Es ist durch eine \textcolor{red}{HMAC-SHA256} Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
+Play verwendet ein JWT (Json Web Token) als Session Cookie mit dem Namen \linebreak\textit{PLAY\_SESSION}. Es ist durch eine HMAC-SHA256 Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
 
 
 Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, was allerdings in der aktuellen Iteration keinerlei Anwendung findet. Der Error-Handling-Code verwendet zwar die Flash-Scope um Fehlermeldungen über eine Klassengrenze hinweg verfügbar zu machen, diese Daten werden aber innerhalb einer Anfrage direkt wieder gelesen und landen somit niemals beim Client.
@@ -172,8 +166,48 @@ Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 Diese liegen in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Team Mitglieder und sind nicht in die Versionsverwaltung mit eingecheckt. Die \texttt{application.conf} bindet diese Datei mit dem include Statement ein und somit sind die Schlüssel in der Anwendung verwendet werden. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind aber Anwendungseinstellungen jedoch schon. 
 
 \section{Eingabevalidierung}
+Für einige Parameter gibt es festgelegte Constraints die in allen entsprechenden Dtos verwendet werden. Das sind:
 
-\textcolor{red}{Hier sollten die Regexes hin!}
+\begin{itemize}
+	\item username		
+	 \begin{itemize}
+			\item Maximale Länge: 20
+			\item Regex: [a-z][a-z0-9.]+
+		\end{itemize}
+
+	
+	\item password
+	\begin{itemize}
+		\item Maximale Länge: 72 (Beschränkung von bcrypt)
+	\end{itemize}
+	
+	\item groupname
+	\begin{itemize}
+		\item Minimale Länge: 3
+		\item Maximale Länge: 20
+		\item Regex: [a-z][a-z0-9.]+
+
+	\end{itemize}
+
+
+	\item email
+	\begin{itemize}		
+		\item Regex: Siehe Play Implementierung von \texttt{EmailValidator}
+	\end{itemize}
+	
+
+\end{itemize}
+
+
+
+%    public static final int MAX_USERNAME_LENGTH = 20;
+%    public static final int MAX_PASSWORD_LENGTH = 100;
+%    public static final String USERNAME_REGEX = "[a-z][a-z0-9.]+";
+
+
+ %   public static final int GROUPNAME_MIN_LENGTH = 3;
+ %   public static final int GROUPNAME_MAX_LENGTH = 20;
+ %   public static final String GROUPNAME_REGEX = "[a-z][a-z0-9.]+";
 
 \section{Ggf. architekturielle Gegenmassnahmen gegen bestimmte Angriffe}
 

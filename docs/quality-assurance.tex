@@ -287,18 +287,21 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
 % htbp = HereTopBottomPage (priority of where to place the table in case previous placement fails)
 \begin{table}[ht]
   \captionof{table}{Auflistung der Mängel und Methode, der diese gefunden hat} \label{tab:title}
-  \begin{tabularx}{\textwidth}{| X | r |}
+  \begin{tabularx}{\linewidth}{
+    |>{\hsize=1.6\hsize} X |
+    >{\hsize=1.2\hsize} X |
+    >{\hsize=0.2\hsize} X |
+  }
   \hline
-  \textbf{Fehler} & \textbf{Methode} \\ \hline
-  reCAPTCHA nicht lösbar in Firefox & Selenium-Test sowie Manueller Test \\ \hline
-  \texttt{NullPointerException} beim Validieren des \enquote{Passwort ändern}-Formulars & Funktionaler Test der Controllermethode \\ \hline
-  Löschen eines Nutzers führte nicht zum Löschen seiner Gruppe & Funktionaler Test der Controllermethode \\ \hline
-  Bootstrap-Helper-Methoden zur Erstellung eines Formulars haben Felder nicht mit bestehenden Daten befüllt & Aufgefallen während eines Reviews \\ \hline
-  "Nutzer erstellen"-Prozess konnte von einem \enquote{Nicht-Administrator} ausgeführt werden & Authorizationtests \\ \hline
-  Mögliche Race Conditions während der Validation eines Nutzernamens & Review \\ \hline
-  Mögliche Side-Channel-Attacke beim Loginversuch durch den Login-Firewall & Review \\ \hline
-  Endlosschleife von Redirects beim Login eines Nutzers mit valider Session aber unterschiedlicher IP & Review \\ \hline
-
+  \textbf{Fehler} & \textbf{Methode} & \textbf{Zeit (std.)} \\ \hline
+  reCAPTCHA nicht lösbar in Firefox & Manueller Test & 1 \\ \hline
+  \texttt{NullPointerException} beim Validieren des \enquote{Passwort ändern}-Formulars & Funktionaler Test der Controllermethode & 0.5 \\ \hline
+  Löschen eines Nutzers führte nicht zum Löschen seiner Gruppe & Funktionaler Test der Controllermethode & 0.5 \\ \hline
+  Bootstrap-Helper-Methoden zur Erstellung eines Formulars haben Felder nicht mit bestehenden Daten befüllt & Aufgefallen während eines Reviews & 0.25 \\ \hline
+  "Nutzer erstellen"-Prozess konnte von einem \enquote{Nicht-Administrator} ausgeführt werden & Authorizationtests & 0.5 \\ \hline
+  Mögliche Race Conditions während der Validation eines Nutzernamens & Review & 0.5 \\ \hline
+  Mögliche Side-Channel-Attacke beim Loginversuch durch den Login-Firewall & Review & 0.75 \\ \hline
+  Endlosschleife von Redirects beim Login eines Nutzers mit valider Session aber unterschiedlicher IP & Review & 1.5 \\ \hline
   \end{tabularx}
 \end{table}
 

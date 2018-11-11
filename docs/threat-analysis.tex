@@ -215,6 +215,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen:
 	\begin{itemize}
 		\item Content Security Policy (CSP) des Browsers aktivieren. \textcolor{red}{Alte Browser bzw Browser die CSP nicht können aussperren} %TODO: Das ist nicht implementiert und vllt auch garnicht so einfach. Ggf einfach in Assumptions aufnehmen, dass nur Browser verwendet werden, die CSP unterstützen
+
 		\item Ausgabecodierung
 	\end{itemize}
   \end{itemize}
@@ -269,7 +270,6 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen: Authorization erzwingen und prüfen bei jeder Operation
   \end{itemize}
 
-  \item \textcolor{red}{Captcha lösen lassen von Indern?}
   \item \textcolor{red}{Elevation of privilege -> Frage an Peine. ?}
 \end{itemize}
 
@@ -359,6 +359,20 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
 
 Die hier aufgelisteten Bedrohungen werden ignoriert, da wir im Rahmen des Projekts definiert haben, dass nur Angriffe über den HTTP-Vektor betrachtet werden.
 
+
+
+\subsubsection{Captcha effizient lösen}
+\begin{itemize}
+
+  \item \textbf{Captcha effizient lösen}
+  \begin{itemize}
+  \item Zweck: Schutzmechanismen von HshHelper aushebeln
+  \item Möglichkeiten: %Die Inder...
+  \item Risiko:
+  \item Gegenmaßnahmen: Mittel
+  \end{itemize}
+\end{itemize}
+
 \subsubsection{DDOS}
 \begin{itemize}
 
@@ -404,6 +418,8 @@ Die hier aufgelisteten Bedrohungen werden ignoriert, da wir im Rahmen des Projek
 Beispielsweise via Betriebssystem, physikalischer Zugriff auf der Maschine oder HTTPS?
 Oder welche, für die es keine Motivation gibt, ggf. Repudiations
 }
+
+\textcolor{red}{Offline Brute-forcing (erlangen der DB) => Schwer wegen bcrypt.}
 
 \section{HTTP Header}
 
