@@ -213,6 +213,16 @@ Während dieser Ansicht kann der Nutzer einzelne Sessions invalidieren, sofern e
 
 \chapter{Verworfene Entwürfe}
 
+\section{Trennung der Zuständigkeiten des Controllers}
+
+Innerhalb unserer ersten, prototypischen Implementation hatten wir einen Ansatz verfolgt, bei dem unsere \texttt{Controller}-Klassen für das Bearbeiten des Requests, das Validieren des Forms, das Weiterleiten von Fehlern innerhalb eines Formulars, die Autorisierungsprüfung, die Ausführung der domänenspezifischen Operation sowie das Absenden des generierten HTMLs zuständig war.
+Auch wenn uns bewusst war, dass dies nur ein Ansatz für das Prototyping war, ist schnell offensichtlich geworden, dass dieser Ansatz langfristig gesehen uns Probleme bereiten würde.
+Die Testbarkeit solcher Controller-Methoden litt schwer, da es schwer war, für einen einzelnen Unit-Tests alle Klassen zu mocken, die benötigten Voraussetzungen zu erstellen, aber zu prüfen, ob die richtigen Nachbedingungen gelten.
+Jeder dieser Tests musste entweder gegen eine \texttt{FakeApplication} laufen, oder gegen ein laufenden Testsystem.
+
+Um diese Testbarkeit wieder zu gewinnen, haben wir die Zuständigkeiten feiner aufgeteilt und die \texttt{Manager}-Klassen ins Leben gerufen, die von nun an den domänenspezifische übernehmen.
+Die \texttt{Controller} beschäftigen sich seither nur noch für das Bearbeiten des Requests, das Weiterleiten von Fehlern innerhalb eines Formulars zum Nutzer sowie dem Absenden des generierten HTMLs.
+
 \section{Sessionkonzept}
 Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit einer Session-Verknüpften IP-Addresse im JWT-Cookie selbst forciert. Wir waren der Annahme, die IP Addresse sei ein personenbezogenes Datum und die Speicherung von selbigen in unserer Datenbank zumindest fragwürdig. Die Verlagerung der Speicherung auf den Cookie-Speicher des Client-Browsers wäre eine potentielle Umgehungsstrategie für diese rechtliche Problematik gewesen: Die IP Addresse wird zwangsläufig vom Nutzer bei jedem Request \enquote{übertragen}, eine doppelte Übertragung würde \enquote{den Braten auch nicht mehr fett machen}. Herr Prof. Dr. Peine hat uns jedoch mitgeteilt, dass Datenschutzbedenken für dieses Projekt außer Reichweite sind. Aus diesem Grund wurde diese Idee verworfen, wir speichern die IPs in unserer Datenbank.
 
