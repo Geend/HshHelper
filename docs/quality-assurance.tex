@@ -2,6 +2,7 @@
 
 \usepackage{hshhelper_base}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}    % hier gehts los
   \thispagestyle{empty} % Titelseite
@@ -84,10 +85,7 @@ Darüber hinaus gibt es keine direkten Tests, die verifizieren, ob eine simple R
 % TODO, Iteration 2: Files too
 Eine Ausnahme bilden hier die \texttt{User}-Entitäten, da beim Löschen eines Benutzers ebenfalls alle Gruppen gelöscht werden müssen, dessen Besitzer er ist. Für so eine kaskadierende Löschoperation wurde extra ein Test geschrieben.
 
-\textcolor{red}{
-Vielleicht nicht unbedingt erwähnen, wie viel Coverage wir wirklich haben?
-Idee: Coverage Report im Anhang packen, Zahlen grob anreißen. Alles andere zu genau.
-}
+Im Anhang befindet sich der Unittest Code Coverage Report \ref{unitcover}. Während sicherheitsrelevante Aspekte der Software wie z.B. die Policy oder die Login-Firewall eine sehr hohe Code Coverage aufweisen haben die Dtos eine sehr geringe. Diese Zahlen ergänzen sich mit der Zielsetzung eine sichere und gut funktionierende Software zu haben. Neben sicherheitsrelevanten Funktionen der Software erfahren auch die Manager-Klassen einen hohen Protzentwert. Die Code Coverage ermöglicht eine gute Übersicht über den Teststatus der Software, liefert aber kein detaillierten Einblick welche sicherheitskritischen Aspekte durch diese abgedeckt sind. Diese Tests werden im nächsten Abschnitt im Detail betrachtet.
 
 \subsection{Tests zur Prüfung von sicherheitsrelevanten Funktionen}
 
@@ -173,7 +171,7 @@ Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als C
     new String(Hex.encodeHex(bytes))
   }
 \end{lstlisting}
-Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit einer Nonce konkateniert. Das Ergebnis wird anschließend mittels \textcolor{red}{HMAC-SHA1} und einem privatem Schlüssel signiert.
+Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit einer Nonce konkateniert. Das Ergebnis wird anschließend mittels HMAC-SHA1 und einem privatem Schlüssel signiert.
 
 \begin{lstlisting}[label=csrfSignToken, caption={Methode zum Signieren von Token. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
   def signToken(token: String): String = {
@@ -348,6 +346,10 @@ db.withConnection(connection -> {
 \chapter{FindBugs Report}
 \label{staticanalysis-find-bugs}
 %\input{findbugs_result.pdf}
+
+\chapter{Unittest Coverage Report}
+\label{unitcover}
+\includepdf{./resources/coveragereport.pdf}
 
 \end{appendices}
 
