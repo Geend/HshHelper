@@ -97,11 +97,11 @@ Aus diesem Grund verfügt unsere Anwendung über eine Komponente\footnote{policy
 
 Beim Captcha-Mode handelt es sich um eine Maßnahme, bei der ein Login lediglich möglich ist, wenn zugleich ein Google reCAPTCHA gelöst wird. Eine vollständige Sperrung eines Accounts findet durch unsere Firewall so nicht statt. Es wurde die Annahme getroffen, dass das automatisierte Lösen der reCAPTCHAs zu aufwändig/teuer für einen Angreifer ist. Zugleich ist das \enquote{unnötige} Lösen eines Captchas für das Opfer ein vertretbares Hindernis.
 
-Lediglich IP-Addressen werden als schärfste Maßnahme vollständig von Logins ausgeschlossen. Sofern ein Angreifer nicht die gleiche IP-Adresse wie sein Opfer verwendet, kann er sich höchstens selbst vom Dienst ausschließen. Sollte eine Situation vorliegen, bei der sich eine Vielzahl von Nutzern eine IP-Adresse teilt, besteht die Möglichkeit diese von der vollständigen Sperre auszuschließen.
+Lediglich IP-Addressen werden als schärfste Maßnahme vollständig von Logins ausgeschlossen. Sofern ein Angreifer nicht die gleiche IP-Adresse wie sein Opfer verwendet, kann er sich höchstens selbst vom Dienst ausschließen. Sollte eine Situation vorliegen, bei der sich eine Vielzahl von Nutzern eine IP-Adresse teilt, besteht die Möglichkeit, diese von der vollständigen Sperre auszunehmen.
 
 Die interne Datenstruktur der Login Firewall ist darauf optimiert, möglichst wenig Speicher zu verwenden und nutzt Buckets, um aggregierte Informationen über Login-Versuche zu speichern. Die Buckets bilden ein fixes Zeitinterval ab. Führt ein Angreifer 1 Million fehlerhafte Logins in 10 Minuten durch, werden lediglich zwei Datenbank-Einträge erstellt: Einen mit Bezug auf den betroffenen Nutzer-Account und einen mit Bezug auf die IP des Angreifers. Beide Einträge verfügen über eine Zählvariable, die jeweils die Anzahl der fehlerhaften Logins beinhält.
 
-Der Verweis auf den Nutzer-Account findet über die numerische und eindeutige ID statt, über die jeder Account verfügt. Jener Fallgestaltung, bei der ein Login bei einem nicht-existenten Account erfolgt, wurde ebenfalls Rechnung getragen. Hierbei ist es erforderlich, dass die Firewall exakt so funktioniert, wie bei existierenden Accounts, um ein Informationsleck zu verhindern: Würde die erste Maßnahme nie oder anders greifen als bei tatsächlich existenten Accounts wäre es möglich, zu prüfen ob ein Account bzw. der dazu korrospondierende Benutzername tatsächlich existiert\footnote{Diese Angriffsform nennt man auch \enquote{Side-Channel Attack}}.
+Der Verweis auf den Nutzer-Account findet über die numerische und eindeutige ID statt, über die jeder Account verfügt. Jener Fallgestaltung, bei der ein Login bei einem nicht-existenten Account erfolgt, wurde ebenfalls Rechnung getragen. Hierbei ist es erforderlich, dass die Firewall exakt so funktioniert, wie bei existierenden Accounts, um ein Informationsleck zu verhindern: Würde die erste Maßnahme nie oder anders greifen als bei tatsächlich existenten Accounts, wäre es möglich, zu prüfen ob ein Account bzw. der dazu korrospondierende Benutzername tatsächlich existiert\footnote{Diese Angriffsform nennt man auch \enquote{Side-Channel Attack}}.
 
 Zu diesem Zweck wird bei nicht-existenten Accounts der Benutzername mittels Hashing auf eine \enquote{virtuelle} User-ID gemappt. Die User-ID wird über ein Long repräsentiert, es wird jedoch ausschließlich der positive Zahlenraum verwendet. Vom Username wird der MD5-Hash gebildet, die ersten 8 Byte werden als Long verwendet und ggf. invertiert. Der so resultierende negative Long-Wert wird in diesem Fall als Grundlage für die Protokollierung fehlerhafter Logins verwendet. Dass MD5 kryptografisch bereits längst als geknackt gilt ist irrelevant, wir machen uns lediglich die gute Streuung und hohe Geschwindigkeit von MD5 zu eigen.
 
@@ -110,7 +110,7 @@ Integraler Bestandteil unserer Anwendung ist eine Session-Funktionalität. Theor
 
 Die Annotation bewirkt, dass der korrospondierende Request \underline{vor} Erreichen der dazugehörigen Controller-Methode abgefangen wird und einer Prüfung unterzogen wird, ob der Absender authentifiziert ist. Ist dies nicht der Fall, wird die weitere Ausführung abgebrochen und der Nutzer auf die Login-Seite weitergeleitet. Ansonsten wird der Request an den entsprechenden Controller weitergereicht.
 
-Zur Umsetzung dieser Funktionalität setzen wir auf dem Session-Konzept von Play auf. Wird eine neue Session initialisiert, wird ein dazugehöriger Eintrag in der Datenbank erstellt. Dieser beinhaltet das Initialisierungsdatum, die dazugehörige IP-Adresse und User-ID sowie eine kryptografisch sichere \enquote{\gls{uuid}} als Identifikator. Die UUID wird in der Play-Session persistiert. Ein Angreifer kann aufgrund der JWT-Signatur nicht beliebige UUID an unsere Anwendung schicken.
+Zur Umsetzung dieser Funktionalität setzen wir auf dem Session-Konzept von Play auf. Wird eine neue Session initialisiert, wird ein dazugehöriger Eintrag in der Datenbank erstellt. Dieser beinhaltet das Initialisierungsdatum, die dazugehörige IP-Adresse und User-ID sowie eine kryptografisch sichere \enquote{\gls{uuid}} als Identifikator. Die UUID wird in der Play-Session persistiert. Ein Angreifer kann aufgrund der JWT-Signatur nicht beliebige UUIDs an unsere Anwendung schicken.
 
 Die UUID selbst dient als 2nd Layer of Defense: Sollte die JWT-Signatur geknackt werden, muss der Angreifer noch eine in der Datenbank enthaltene UUID erraten. Selbst, wenn er diese Hürde meistert, muss er noch die dazugehörige IP-Addresse kennen sowie über diese auf unsere Anwendung zugreifen können und dies in einem engen Zeitfenster schaffen, da die Lifetime einer Session begrenzt ist.
 
@@ -137,7 +137,7 @@ Die Passwörter, die Benutzer verwenden um sich bei HshHelper zu authentisieren,
 
 Um ein Passwort mit bcrypt zu Hashen muss zunächst ein Salt generiert werden. Neben dem Salt und dem gehashten Passwort wird bei bcrypt außerdem noch die bcyrpt Version und die Anzahl der Runden gespeichert. Über die Anzahl der Runden kann die Laufzeit die bcrypt benötigt um ein Passwort zu hashen beeinflusst werden.
 
-Die verwendete Bibilithek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in der Version 0.4. Sie verwendet intern die Java Klasse SecureRandom als CPRNG.
+Die verwendete Bibliothek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in der Version 0.4. Sie verwendet intern die Java Klasse SecureRandom als CPRNG.
 
 Auch zur Generierung der initialen (und temporären) Benutzer-Passwörter beim Anlegen eines neuen Benutzerkontos wird SecureRandom als Basis verwendet. Dafür zuständig ist die Klasse \texttt{PasswordGenerator}. Die generierten Passwörter können die Zeichen \texttt{a-z}, \texttt{A-Z}, \texttt{0-9} und die Sonderzeichen \texttt{!\%?\#-\_*+} enthalten.
 
@@ -166,7 +166,7 @@ Das Format eines Play CSRF Token ist demnach
 <signature> - <nonce> - <token>
 \end{lstlisting}
 
-Das Token (aus Listing TODO) wird nur ein mal für eine Session generiert. Es bleibt innerhalb der Session immer gleich. Da das nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt.
+Das Token (aus Listing TODO) wird nur ein mal für eine Session generiert. Es bleibt innerhalb der Session immer gleich. Da die Nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt.
 
 Um ein Token zu prüfen wird erneut die Signatur über dem Token und dem Nonce gebildet und mit der empfangenen Signatur verglichen. Das Modifizieren eines CSRF Tokens wird somit erkannt.
 
