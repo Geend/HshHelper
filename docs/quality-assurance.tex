@@ -1,3 +1,9 @@
+% arara: pdflatex: { shell: true, draft: true }
+% arara: makeglossaries
+% arara: biber
+% arara: pdflatex: { shell: true, synctex: true }
+% arara: pdflatex: { shell: true, synctex: true }
+
 \documentclass[12pt,DIV14,BCOR10mm,a4paper,parskip=half-,headsepline,headinclude,english,ngerman,bibliography=totocnumbered]{scrreprt}
 
 \usepackage{hshhelper_base}
@@ -10,7 +16,7 @@
 
    {  ~ \sffamily
   \vfill
-  {\Huge\bfseries Bericht: Maßnahmen zur Qualitätssicherung}
+  {\Huge\bfseries Bericht: Maßnahmen zur Qualitätssicher\-ung}
   \bigskip
 
   {\Large
@@ -32,20 +38,20 @@
 \chapter{Benutzte Methoden}
 \section{Vier-Augen-Prinzip}
 
-Wir haben ausgesprochen, dass grundsätzlich jeder Code mindestens über das Vier-Augen-Prinzip abzusichern ist.
-Da wir hier ein sichere System entwickeln wollen, versuchen wir dadurch das Risiko zu minimieren.
+Wir haben festgelegt, dass grundsätzlich jeder Code mindestens über das Vier-Augen-Prinzip abzusichern ist.
+Da wir hier ein sicheres System entwickeln wollen, versuchen wir dadurch das Risiko zu minimieren.
 Besonders kritische Bereiche oder Entscheidungen wurden als Gruppe, also durch Acht-Augen-Prinzip, in Angriff genommen.
 
 \section{Tests}
 
 Dadurch, dass wir das Play Framework vor dem Projekt nicht kannten, sowie dass wir einen agilen Entwicklungsprozess nutzen wollten, haben wir abgestimmt, möglichst viel Code durch Tests abzudecken.
-Dadurch wird ein eventuelles Refactoring einfacher und das Vertrauen in unsere Software wird verstärkt.
-Im Anbetracht dessen, dass Änderungen an der Architektur beziehungsweise Implementation durch eine Bedrohungsanalyse respektive gefundene Sicherheitslücken ausgelöst werden können, und wir iterativ Funktionalität zu unserem System hinzufügen wollen, sind \textbf{automatisierbare} Tests unabdingbar.
+Hiermit wird ein eventuelles Refactoring einfacher und das Vertrauen in unsere Software wird verstärkt.
+In Anbetracht dessen, dass Änderungen an der Architektur beziehungsweise Implementation durch eine Bedrohungsanalyse respektive gefundene Sicherheitslücken ausgelöst werden können, und wir iterativ Funktionalität zu unserem System hinzufügen wollen, sind \textbf{automatisierbare} Tests unabdingbar.
 Um dieses Ziel für unsere funktionalen, aber auch nicht-funktionalen Anforderungen zu erreichen, benutzen wir die von Play mitgelieferte JUnit-Bibliothek.
 
 \subsection{Funktionale Tests}
 
-Zur Verifikation der funktionalen Korrektheit unseres System nutzen wir Unit-, seltener Integrations aber auch Systemtests.
+Zur Verifikation der funktionalen Korrektheit unseres System nutzen wir Unit-, seltener Integrations- aber auch Systemtests.
 Hierbei haben wir darauf geachtet, dass es uns durch \enquote{Dependency Injection} möglich ist, die Abhängigkeiten einer Klasse durch \enquote{Mocks} zu ersetzen.
 Dadurch wird garantiert, dass lediglich das Verhalten einer Klasse getestet wird, und dass dieses Verhalten nur auf dem durchs Interface vorgeschriebene Verhalten seiner Abhängigkeiten basiert.
 
@@ -56,20 +62,20 @@ Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-archit
   \item Controller
   \begin{itemize}
     \item Werden die Routen auf die richtigen, internen Methoden abgebildet?
-    \item Sind unsere Routen nur für authentisierten Nutzern erreichbar?
-    \item Kann die Login-Page ausschliesslich ohne valide Session aufgerufen werden?
+    \item Sind unsere Routen nur für authentisierte Nutzer erreichbar?
+    \item Kann die Login-Page ausschließlich ohne valide Session aufgerufen werden?
     \item Geben die Methoden die erwarteten HTTP Status Codes zurück?
   \end{itemize}
 
   \item Domänenlogik
   \begin{itemize}
-    \item Können nur die Nutzer mit passender Authorization die Operationen durchführen?
-    \item Verhalten sich die Methoden richtig, wenn nicht vorhandene Entity-IDs übergeben werden?
+    \item Können nur die Nutzer mit passender Autorisierung die Operationen durch\-führen?
+    \item Verhalten sich die Methoden richtig, wenn nicht vorhandene Entity-IDs über\-geben werden?
     \item Entsprechen die Fehlermeldungen den erwarteten?
     \item Kriege ich den richtigen Rückgabewert zurück?
     \item Werden die reCAPTCHAs nach den richtigen Intervallen (5 pro Account, 50 pro IP-Adresse) angezeigt?
     \item Ist eine IP-Adresse wirklich nach 100 fehlgeschlagenen Logins ausgesperrt?
-    \item Kann das Captcha in verschiedenen Browser gelöst werden?
+    \item Kann das Captcha in verschiedenen Browsern gelöst werden?
   \end{itemize}
 
   \item Cross Cutting Concerns
@@ -79,13 +85,13 @@ Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-archit
 \end{itemize}
 
 Bei den View-spezifischen \enquote{Data Transfer Object}-Klassen sehen wir keinen Bedarf zum Testen.
-Bei diesen handelt es sich nur \enquote{Plain Old Data}-Objekte, die ausser trivialen Zugriffsmethoden (Getter und Setter) keine weitere Methoden besitzen.
+Bei diesen handelt es sich nur um \enquote{Plain Old Data}-Objekte, die außer trivialen Zugriffsmethoden (Getter und Setter) keine weiteren Methoden besitzen.
 Dies gilt für alle trivialen Zugriffsmethoden unserer Klassen. \newline
 Darüber hinaus gibt es keine direkten Tests, die verifizieren, ob eine simple Relation von EBean sachgerecht auf das richtige Objekt abgebildet wird.
 % TODO, Iteration 2: Files too
 Eine Ausnahme bilden hier die \texttt{User}-Entitäten, da beim Löschen eines Benutzers ebenfalls alle Gruppen gelöscht werden müssen, dessen Besitzer er ist. Für so eine kaskadierende Löschoperation wurde extra ein Test geschrieben.
 
-Im Anhang befindet sich der Unittest Code Coverage Report \ref{unitcover}. Während sicherheitsrelevante Aspekte der Software wie z.B. die Policy oder die Login-Firewall eine sehr hohe Code Coverage aufweisen haben die Dtos eine sehr geringe. Diese Zahlen ergänzen sich mit der Zielsetzung eine sichere und gut funktionierende Software zu haben. Neben sicherheitsrelevanten Funktionen der Software erfahren auch die Manager-Klassen einen hohen Protzentwert. Die Code Coverage ermöglicht eine gute Übersicht über den Teststatus der Software, liefert aber kein detaillierten Einblick welche sicherheitskritischen Aspekte durch diese abgedeckt sind. Diese Tests werden im nächsten Abschnitt im Detail betrachtet.
+Im Anhang befindet sich der Unittest Code Coverage Report \ref{unitcover}. Während sicherheitsrelevante Aspekte der Software wie z.B. die Policy oder die Login-Firewall eine sehr hohe Code Coverage aufweisen haben die Dtos eine sehr geringe. Diese Zahlen ergänzen sich mit der Zielsetzung eine sichere und gut funktionierende Software zu haben. Neben sicherheitsrelevanten Funktionen der Software erfahren auch die Manager-Klassen einen hohen Protzentwert. Die Code Coverage ermöglicht eine gute Übersicht über den Teststatus der Software, liefert aber keinen detaillierten Einblick welche sicherheitskritischen Aspekte durch diese abgedeckt sind. Diese Tests werden im nächsten Abschnitt im Detail betrachtet.
 
 \subsection{Tests zur Prüfung von sicherheitsrelevanten Funktionen}
 
@@ -94,57 +100,59 @@ Dazu haben wir 2 Tests geschrieben.
 Einer, der zunächst verifiziert, dass diese Option wirklich SQL Injections verhindert, wenn man sie bei einer beliebigen \enquote{h2}-Datenbank aktiviert.
 Ein weiterer Test prüft dann, ob unsere Applikation diese Option richtig gesetzt hat, damit wir sicher sein können, dass auch im Applikationskontext keine SQL Injections möglich sind.
 
-Um garantieren zu können, dass unsere Authorization funktioniert, haben wir eine Reihe von Tests geschrieben, die mit verschiedenen Nutzer unterschiedlicher Privilegien versucht, die vorhandenen Operationen durchzuführen.
+Um garantieren zu können, dass unsere Autorisierung funktioniert, haben wir eine Reihe von Tests geschrieben, die mit verschiedenen Nutzern unterschiedlicher Privilegien versucht, die vorhandenen Operationen durchzuführen.
 
 \subsection{Penetrationstests}
 
 \subsubsection{Funktionalität der CSRF Tokens}
-Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationstest durchgeführt. Im ersten Schritt wurde dazu einfach das CSRF-Token aus dem HTML der Form gelöscht. Diese Anfrage wird wie erwartet vom Server mit einer von Play vorgefertigten \enquote{\texttt{Unauthorized}} Seite beantwortet. In einem weiteren Schritt wurde mit Curl ein Anfrage erstellt in welcher lediglich der Benutzername und Passwort aber kein CSRF-Token enthalten war. Diese Anfrage wurde vom Server ohne Beanstandung akzeptiert. Der Grund hierfür ist, dass das CSRF-Token weder im Cookie noch als Form-Daten an den Server übermittelt wird. Auch die \texttt{RequireCSRFCheck} Annotation schafft hierfür keine Abhilfe. CSRF Möglichkeit und somit eine Sicherheitslücke liegt vor, wenn folgende Bedingungen gelten:
+Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationstest durchgeführt. Im ersten Schritt wurde dazu einfach das CSRF-Token aus dem HTML der Form gelöscht. Diese Anfrage wird wie erwartet vom Server mit einer von Play vorgefertigten \enquote{\texttt{Unauthorized}} Seite beantwortet. In einem weiteren Schritt wurde mit Curl eine Anfrage erstellt, in welcher lediglich Benutzername und Passwort, aber kein CSRF-Token enthalten war. Diese Anfrage wurde vom Server ohne Beanstandung akzeptiert. Der Grund hierfür ist, dass das CSRF-Token weder im Cookie noch als Form-Daten an den Server übermittelt wird. Auch die \texttt{RequireCSRFCheck}-Annotation schafft hierfür keine Abhilfe. Die Möglichkeit für CSRF-Angriff besteht, wenn folgende Bedingungen gelten:
 
   \begin{itemize}
     \item Das Play-Session-Cookie wird nicht für die Session-Implementierung der Anwendung verwendet.
-    \item Das Play-Session-Cookie ist nicht vorhanden ist.
+    \item Das Play-Session-Cookie ist nicht vorhanden.
   \end{itemize}
 
-Lockt man ein Opfer auf eine Seite mit einer Form kann durch einen Klick beispielsweise ein Nutzer aus einer Gruppe gelöscht werden indem bei der Anfrage das CSRF-Token einfach weggelassen wird.
+Lockt man ein Opfer auf eine Seite, auf welcher sich ein vom Angreifer erstelltes Form befindet, so kann durch einen Klick beispielsweise ein Nutzer aus einer Gruppe gelöscht werden, indem bei der Anfrage das CSRF-Token weggelassen wird.
 
-Ein konkretes Angriffsszenario in dieser Anwendung wäre der Login. Das Opfer muss dazu keinerlei Cookies von der HsH-Helfer Seite im Browser haben. Dies kann gegeben sein wenn es seine Cookies gelöscht hat oder den Incognito Modus im Browser verwendet. Ein Angreifer kann nun das Opfer auf eine von ihm präparierte Seite locken, wo durch das Klicken auf einen Link eine Login Form abgeschickt wird. Somit ist das Opfer angemeldet unter einem Benutzeraccount, welcher auch dem Angreifer bekannt ist. Ist das Opfer nun unvorsichtig und verifiziert den aktuellen Benutzeraccount nicht, lädt es Dateien möglicherweise Dateien hoch unter einem Benutzeraccount auf welchen der Angreifer zugriff hat.
+Ein konkretes Angriffsszenario in dieser Anwendung wäre der Login. Das Opfer muss dazu keinerlei Cookies von der HsH-Helfer Seite im Browser haben. Dies kann gegeben sein, wenn es seine Cookies gelöscht hat oder den \enquote{Incognito}-Modus im Browser verwendet. Ein Angreifer kann nun das Opfer auf eine von ihm präparierte Seite locken, wo durch das Klicken auf einen Link ein Login-Formular abgeschickt wird. Somit ist das Opfer angemeldet unter einem Benutzeraccount, welcher auch dem Angreifer bekannt ist. Ist das Opfer nun unvorsichtig und verifiziert den aktuellen Benutzeraccount nicht, lädt es möglicherweise unter einem Benutzeraccount Dateien hoch, auf welchen der Angreifer Zugriff hat.
 
 \subsubsection{CSRF-Angriff}
-Im Rahmen eines Penetrationstests wurde herausgefunden, dass die von Play generierten CSRF Tokens keine Nonce's darstellen bzw. beliebig oft verwendet werden können. Sie werden mit einem in der Play-Session persistierten Wert abgeglichen und auf Authentizität geprüft. Dieser Vergleichswert wird dann gesetzt, wenn der Nutzer erstmalig eine Seite aufruft, die über ein Form verfügt.
+Im Rahmen eines Penetrationstests wurde herausgefunden, dass die von Play generierten CSRF-Tokens keine Nonces darstellen beziehungsweise beliebig oft verwendet werden können. Sie werden mit einem in der Play-Session persistierten Wert abgeglichen und auf Authentizität geprüft. Dieser Vergleichswert wird dann gesetzt, wenn der Nutzer erstmalig eine Seite aufruft, die über ein Form verfügt.
 
-Es wurde herausgefunden, dass unser Session-Konzept diesen Wert nicht berücksichtigt: Meldet sich ein Nutzer an, wird der CSRF-Vergleichswert beim Login gesetzt, beim Logout jedoch nicht wieder entfernt. Bei einer Situation, bei der sich zwei Nutzer den gleichen physischen Computer bzw. Browser teilen und sich nacheinander anmelden, würden beide Nutzer den gleichen CSRF-Vergleichswert verwenden. In der Folge könnte der erste Nutzer den Zweiten angreifen, da er valide CSRF-Tokens für den Zweiten - basierend auf dem gleichen Vergleichswert - kennt.
+Es wurde herausgefunden, dass unser Session-Konzept diesen Wert nicht berücksichtigt: Meldet sich ein Nutzer an, wird der CSRF-Vergleichswert beim Login gesetzt, beim Logout jedoch nicht wieder entfernt. Bei einer Situation, bei der sich zwei Nutzer den gleichen physischen Computer beziehungsweise Browser teilen und sich nacheinander anmelden, würden beide Nutzer den gleichen CSRF-Vergleichswert verwenden. In der Folge könnte der erste Nutzer den Zweiten angreifen, da er valide CSRF-Tokens des Zweiten - basierend auf dem gleichen Vergleichswert - kennt.
 
-In der Folge wurde das Sessionkonzept so geändert, dass vor Anlegen einer neuen Session alle bisherigen Werte aus der korrospondierenden Play-Session entfernt werden: Bei einem Login ist so garantiert, dass ein neuer CSRF-Vergleichswert erstellt wird.
+In der Folge wurde das Session-Konzept so geändert, dass vor Anlegen einer neuen Session alle bisherigen Werte aus der korrospondierenden Play-Session entfernt werden: Bei einem Login ist so garantiert, dass ein neuer CSRF-Vergleichswert erstellt wird.
 
 %Welche Penetrationstests wurden durchgeführt?
 %Gibt es ggf. automatisierbare Skripts?
 %Wenn ja, für welche Angriffe?
 
 \section{Reviews}
-\subsection{Session Konzept}
-Die erste Version unseres Session Konzepts wurde einem Review unterzogen. Das Review wurde von einer Person durchgeführt und benötigte 2 Stunden. Hierbei wurde insb. ein schlechtes Design bemängelt. Die Session-Funktionalität wurde nicht von einer bzw. wenigen Klassen abgebildet, sondern auf verschiedenste Klassen verteilt: Die Login-Methode im Controller erstellte inline einen Datenbank-Eintrag sowie ein Cookie. Andere Controller-Methoden manipulierten inline die entsprechenden Einträge und entfernten nach Bedarf Cookies. Das Wissen darüber, was überhaupt eine Session darstellt war so nicht an einer zentralen Stelle im Code zu finden und entsprechend schwer zu prüfen.
+\subsection{Session-Konzept}
+Die erste Version unseres Session-Konzepts wurde einem Review unterzogen. Das Review wurde von einer Person innerhalb von 2 Stunden durchgeführt. Hierbei wurde insbesondere ein schlechtes Design bemängelt. Die Session-Funktionalität wurde nicht von einer beziehungsweise wenigen Klassen abgebildet, sondern auf verschiedenste Klassen verteilt: Die Login-Methode im Controller erstellte inline einen Datenbank-Eintrag sowie ein Cookie. Andere Controller-Methoden manipulierten inline die entsprechenden Einträge und entfernten nach Bedarf Cookies. Das Wissen darüber, was überhaupt eine Session darstellt war so nicht an einer zentralen Stelle im Code zu finden und entsprechend schwer zu prüfen.
 
-Ebenfalls wurde ein Bug gefunden, der indirekt eine Folge des mangelhaften Designs war: Eine Endlosschleife von Redirects. Die Prüfung ob, für den aktuellen Benutzer eine \enquote{valide} Session vorliegt wurde von mehreren Klassen eigenständig implementiert, dies fand auf unterschiedliche Art und Weise statt. Änderte sich während der Benutzung die Benutzer-IP, stellte dies für die eine Komponente eine valide Session dar, für die andere Komponente jedoch nicht. Die Controller-Methode leitete den Nutzer mangels \enquote{valider} Session so zur Login Seite, diese stellte jedoch eine \enquote{valide} Session fest und leitete den Nutzer erneut zur Controller-Methode.
+Ebenfalls wurde ein Bug gefunden, der indirekt eine Folge des mangelhaften Designs war: Eine Endlosschleife von Redirects. Die Prüfung, ob für den aktuellen Benutzer eine \enquote{valide} Session vorliegt, wurde von mehreren Klassen eigenständig implementiert, und fand auf unterschiedliche Art und Weise statt. Änderte sich während der Benutzung die Benutzer-IP, stellte dies für die eine Komponente eine valide Session dar, für die andere Komponente jedoch nicht. Die Controller-Methode leitete den Nutzer mangels \enquote{valider} Session so zur Login Seite, diese stellte jedoch eine \enquote{valide} Session fest und leitete den Nutzer erneut zur Controller-Methode.
 
-Es wurde beschlossen, das Session Konzept einem grundsätzlichen Rewrite zu unterziehen. Das Wissen darüber, was eine Session darstellt, sollte gebündelt an einer zentralen Stelle der Architektur liegen, der Rest der Anwendung nur die API dieser \enquote{zentralen Stelle} verwenden und unter keinen Umständen selbst an Cookies oder den entsprechenden Datenbank-Entitäten manipulieren. Um sicherzustellen, dass es nicht erneut zu dem bereits festgestellten Redirect-Bug kommt, wurden diese Fälle durch Unit-Tests abgebildet.
+Es wurde beschlossen, das Session-Konzept einem grundsätzlichen Rewrite zu unterziehen. Das Wissen darüber, was eine Session darstellt, sollte gebündelt an einer zentralen Stelle der Architektur liegen, der Rest der Anwendung nur die API dieser \enquote{zentralen Stelle} verwenden und unter keinen Umständen selbst an Cookies oder den entsprechenden Datenbank-Entitäten manipulieren. Um sicherzustellen, dass es nicht erneut zu dem bereits festgestellten Redirect-Bug kommt, wurden diese Fälle durch Unit-Tests abgebildet.
 
 \subsection{Login Firewall}
-Die aktuelle Version unserer Login Firewall wurde einem Review durch zwei Personen unterzogen, welches zwei Stunden benötigte. Hierbei wurde ein Bug entdeckt, der ein Informationsleck zur Folge hatte: Die Firewall versetzt Benutzeraccounts nach N falschen Logins in einen Captcha-Modus. Login-Versuche auf nicht-existierende Benutzeraccounts, führten nicht zu dieser Account-\enquote{Sperre}. Aufgrund dieser funktional anderen Behandlung wäre es möglich gewesen, feststellen zu können, ob ein Account existiert oder nicht, was ein Brute-Forcing maßgeblich erleichtern würde.
+Die aktuelle Version unserer Login-Firewall wurde einem Review durch zwei Personen unterzogen, welches zwei Stunden benötigte. Hierbei wurde ein Bug entdeckt, der ein Informationsleck zur Folge hatte: Die Firewall versetzt Benutzeraccounts nach N falschen Logins in einen Captcha-Modus. Login-Versuche auf nicht-existierende Benutzeraccounts, führten nicht zu dieser Account-\enquote{Sperre}. Aufgrund dieser funktional anderen Behandlung wäre es möglich gewesen, feststellen zu können, ob ein Account existiert oder nicht, was ein Brute-Forcing maßgeblich erleichtern würde.
 
-Die Login-Firewall wurde angepasst (vgl. [verweis auf das architektur Dokument) und es wurde ein weiteres Review für die finale Version der Anwendung geplant, das Prüfen soll, ob alle möglichen Login-Kombinationen für einen Außenstehenden \enquote{gleich} sind, um ein solches Informationsleck zu verhindern.
+% (vgl. [verweis auf das architektur Dokument)
+Die Login-Firewall wurde angepasst und es wurde ein weiteres Review für die finale Version der Anwendung geplant, in dem geprüft werden soll, ob alle möglichen Login-Kombinationen für einen Außenstehenden \enquote{gleich} sind, um ein solches Informationsleck zu verhindern.
 
 \subsection{Eingabevalidierung von Forms}
-Um Daten aus übermittelten Forms zu empfangen, nutzt unsere Anwendung DTOs, die mit Play-Constraint-Annotations versehen sind. Über diese Annotations wird sichergestellt, dass diese Daten einem bestimmten Format entsprechen, z.B. eine valide E-Mail Adresse darstellen. Diese Validierung wurde durch eine Person einem Review unterzogen, es hat 2 Stunden benötigt.
+Um Daten aus übermittelten Forms zu empfangen, nutzt unsere Anwendung DTOs, die mit Play-Constraint-Annotations versehen sind. Über diese Annotations wird sichergestellt, dass diese Daten einem bestimmten Format entsprechen, z.B. eine valide E-Mail Adresse darstellen. Diese Validierung wurde durch eine Person einem zweistündigen Review unterzogen.
 
 Im Zuge des Reviews wurde festgestellt, dass das vorhandene Design Race Condition begünstigt. Die Validierungen im DTO waren nicht ausdrücklich auf \enquote{statische} Tests begrenzt. Es wurden teilweise Validierungen vorgenommen, die Datenbankzugriffe beinhaltet haben, beispielsweise die Prüfung der Existenz eines Benutzernames. Wird im Controller die Form-Validierung\footnote{boundForm.hasErrors()} aufgerufen, ist die im DTO vorgenommene Validierung sowie der Controller-Code nicht Teil einer Transaktion. D.h. wenn die Form-Validation meldet, dass der Nutzername noch nicht existiert, ist dieser Zustand nicht mehr garantiert, wenn der Benutzer tatsächlich angelegt wird.
 
-Auch wenn dies im vorliegenden Fall aufgrund der Unique-Constraints in der Datenbank kein Sicherheitsproblem darstellt, haben wir uns dazu entschlossen, von einem solchen Design abzusehen. Ein Design was in derartiger Weise Race Conditions begünstigt, ist objektiv schlecht. In den DTOs finden inzwischen nur noch \enquote{statische} Tests statt. Diese Entscheidung hat zur Entstehung der Manager-Klassen geführt. Diese bieten Methoden, die Transaktionssicher sind und werfen bsp. eine Exception, wenn der Nutzer bereits existiert (vgl. [TODO: Verweis zu der Erklärung wie wir von Controller macht alles zu den Manager Klassen gelangt sind]).
+Auch wenn dies im vorliegenden Fall aufgrund der Unique-Constraints in der Datenbank kein Sicherheitsproblem darstellt, haben wir uns dazu entschlossen, von einem solchen Design abzusehen. Ein Design, was in derartiger Weise Race Conditions begünstigt, ist objektiv schlecht. In den DTOs finden inzwischen nur noch \enquote{statische} Tests statt. Diese Entscheidung hat zur Entstehung der Manager-Klassen geführt. Diese bieten Methoden, die transaktionssicher sind und werfen beispielsweise eine Exception, wenn der Nutzer bereits existiert.
+% (vgl. [TODO: Verweis zu der Erklärung wie wir von Controller macht alles zu den Manager Klassen gelangt sind])
 
 \subsection{Bcrypt Password Hashing}
 Der Code zum sicheren Abspeichern eines Nutzerpassworts in der Datenbank wurde durch eine Person einem Review unterzogen. Die dabei aufgekommene Anregung wurde mit dem ganzen Team diskutiert. Das Passwort wird im Code von lediglich zwei Stellen aus gesetzt. Der \enquote{\texttt{UserManager}} verwendet sie beim Zurücksetzen des Passworts und der \enquote{\texttt{LoginManager}} beim Setzen eines neuen Passworts. In beiden Fällen wird direkt beim Aufruf des Setters der Hash durch die Verwendung des \enquote{\texttt{PasswordSecurityModule}} erzeugt. Somit ist sichergestellt, dass beim aktuellen Codestand keine Klartextpasswörter in der Datenbank abgespeichert werden. BCrypt wird verwendet um den Hash zu generieren und es wurde kurz diskutiert ob man nicht doch auf PBKDF2 wechselt. Da beide aber nicht ohne eine Third-Party-Library auskommen, wurde davon abgesehen. Dem Bcrypt-Code \autocite{BcryptCode} kann entnommen werden, dass das automatisch generierte Salt SecureRandom verwendet und somit ausreichend zufällige Salts für unterschiedliche Passwörter generiert und auch die Rundenanzahl, die explizit festgelegt wurde, ist ausreichend sicher.
 
-Aus dem Review ging die Idee hervor, ob bei erfolgreichen Logins durch Messen der für das Hashing benötigten Zeit die Rundenanzahl dynamisch erhöhen wird, um somit für Zukunftssicherheit zu sorgen. Die Idee wurde ins Backlog aufgenommen und das Review damit abgeschlossen.
+Aus dem Review ging die Idee hervor, bei erfolgreichen Logins durch Messen der für das Hashing benötigten Zeit die Rundenanzahl dynamisch zu erhöhen, um somit für Zukunftssicherheit zu sorgen. Die Idee wurde ins Backlog aufgenommen und das Review damit abgeschlossen.
 
 
 
@@ -158,7 +166,7 @@ Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als C
     new String(Hex.encodeHex(bytes))
   }
 \end{lstlisting}
-Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit einer Nonce konkateniert. Das Ergebnis wird anschließend mittels HMAC-SHA1 und einem privatem Schlüssel signiert.
+Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit einer Nonce konkateniert. Das Ergebnis wird anschließend mittels HMAC-SHA1 und einem privaten Schlüssel signiert.
 
 \begin{lstlisting}[label=csrfSignToken, caption={Methode zum Signieren von Token. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
   def signToken(token: String): String = {
@@ -173,15 +181,15 @@ Das Format eines Play CSRF Token ist demnach
 <signature> - <nonce> - <token>
 \end{lstlisting}
 
-Das Token (aus Listing \ref{csrfGenerateToken}) wird nur ein mal für eine Session generiert. Es bleibt innerhalb der Session immer gleich. Da die Nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt.
+Für eine Session wird nur ein Token generiert (aus Listing \ref{csrfGenerateToken}). Dieses bleibt innerhalb der Session immer gleich. Da die Nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt.
 
-Um CSRF-Token überprüfen zu können, wird das erste CSRF-Token, dass in einer Play Session verwendet wird im Play Sesseion Cookie gespeichert. Durch einen Vergleich des Tokens im ersten CSRF-Token mit dem zu prüfendem Token kann sichergestellt werden, dass das CSRF-Token zu der richtigen Sesseion gehört.
+Um CSRF-Token überprüfen zu können, wird das erste CSRF-Token, dass in einer Play Session verwendet wird im Play-Session-Cookie gespeichert. Durch einen Vergleich des Tokens im ersten CSRF-Token mit dem zu prüfenden Token kann sichergestellt werden, dass das CSRF-Token zu der richtigen Session gehört.
 
 
 \section{Statische Codeanalyse}
 
 Da innerhalb der Gruppe keine Präferenzen bezüglich eines Werkzeugs für die statische Codeanalyse bestand, haben wir verschiedene ausprobiert.
-Die Erfahrung aus anderen Sprachökosystemen (bspw. C++) zeigt, dass es dennoch ratsam ist, unterschiedliche Werkzeuge zu verwenden, um eine breitere Menge abzudecken und ggf. \enquote{False Positives} auszuschliessen.
+Die Erfahrung aus anderen Sprachökosystemen (beispielsweise C++) zeigt, dass es dennoch ratsam ist, unterschiedliche Werkzeuge zu verwenden, um eine breitere Menge abzudecken und gegebenfalls \enquote{False Positives} auszuschließen.
 
 Die Werkzeuge, die wir nach einer kurzen Evaluation ausgesucht haben, sind:
 
@@ -191,7 +199,7 @@ Die Werkzeuge, die wir nach einer kurzen Evaluation ausgesucht haben, sind:
   \item SonarLint (ehemalig Sonarqube) \autocite{SonarLint}
 \end{itemize}
 
-Allerdings stossen diese Werkzeuge hier an ihre Grenzen, da sie den autogenerierten Code des Play Frameworks, Play-spezifischen Code sowie Scala nicht korrekt analysieren konnten.
+Allerdings stoßen diese Werkzeuge hier an ihre Grenzen, da sie den autogenerierten Code des Play Frameworks, Play-spezifischen Code sowie Scala nicht korrekt analysieren konnten.
 
 \subsection{FindBugs}
 
@@ -206,15 +214,15 @@ Verwendete Einstellungen:
   \item Alle Fehlerkategorien, Filter wurden aktiviert
 \end{itemize}
 
-Da ein Grossteil der Fehler, die \enquote{FindBugs} gefunden hat, sich in den Tests, im autogenerierten Code oder den Templates vom Play Framework befindet, war es schwer, die \enquote{False Positives} herauszufiltern.
+Da ein Großteil der Fehler, die \enquote{FindBugs} gefunden hat, sich in den Tests, im autogenerierten Code oder den Templates vom Play Framework befindet, war es schwer, die \enquote{False Positives} herauszufiltern.
 Eine gesamte Auflistung aller gefundenen Fehler kann im Anhang \ref{staticanalysis-find-bugs} eingesehen werden.
 Gefunden wurden Fehler in den Kategorien \enquote{Bad Practice}, \enquote{Richtigkeit}, \enquote{Performance}, \enquote{Dodgy Code} sowie \enquote{Sicherheitsanfälligkeit durch bösartigen Code}.
 In unserem eigentlichen Applikationscode wurden nur Fehler der Kategorie \enquote{Sicherheitsanfälligkeit durch bösartigen Code} gefunden, die darauf hinweisen, dass einige Variablen mit \enquote{final} deklariert werden sollten.
 
 \subsection{Synopsis SecureAssist}
 
-Wir haben die Version 3.3.0 verwendet, welche im am 2018-01-29 veröffentlicht wurde.
-Da dieses Werkzeug im Betracht auf Sicherheitslücken von berühmten Sicherheitsexperten wie Gary McGraw entwickelt wurde, hoffen wir, dass dieses Werkzeug Lücken findet, die den anderen Werkzeugen nicht auffallen.
+Wir haben die Version 3.3.0 verwendet, welche am 2018-01-29 veröffentlicht wurde.
+Da dieses Werkzeug in Betracht auf Sicherheitslücken von berühmten Sicherheitsexperten wie Gary McGraw entwickelt wurde, hoffen wir, dass dieses Werkzeug Lücken findet, die den anderen Werkzeugen nicht auffallen.
 
 \subsubsection{Hardkodierte Passwörter}
 
@@ -230,8 +238,8 @@ Die Statements in dieser Klasse können nicht von einem Nutzer durch Parameter a
 
 \subsubsection{Informationsleck}
 
-Das Ausgeben des Stacktrace im Falle einer Exception sieht das Werkzeug bereits Verletzung der Vertraulichkeit, welchem wir zustimmen.
-Glücklicherweise schützt Play einem in diesem Fall und gibt keine Stacktraces an einen Benutzer weiter, sofern die Applikation im \enquote{Production Mode} ausgeführt wird.
+Das Ausgeben des Stacktrace im Falle einer Exception sieht das Werkzeug bereits als Verletzung der Vertraulichkeit, welchem wir zustimmen.
+Glücklicherweise schützt Play uns in diesem Fall und gibt keine Stacktraces an einen Benutzer weiter, sofern die Applikation im \enquote{Production Mode} ausgeführt wird.
 In diesem Fall wird die Exception mit einer ID ausgezeichnet, die ID wird dem Benutzer angezeigt und der Stacktrace wird in das Applikationslog geschrieben.
 
 \subsection{SonarLint}
@@ -257,7 +265,7 @@ Es bietet sich also an, einen \texttt{private}-Konstruktor für diese Klassen zu
 \subsubsection{Extrahieren von Konstanten in \texttt{final}-Variabeln}
 
 In der \texttt{Firewall} sowie unseren \texttt{Manager}-Klassen verwenden wir Konstanten, die an mehreren Stellen verwendet werden.
-Im Falle der \texttt{Manager}s handelt es sich um ähnliche String, die in einer Exception den Fehler genaür beschreiben.
+Im Falle der \texttt{Manager}s handelt es sich um ähnliche String, die in einer Exception den Fehler genauer beschreiben.
 Bei diesen Strings könnte man sich der \texttt{i18n}-Implementation von Play bedienen, um diese Fehlermeldungen für alle \texttt{Manager}s erreichbar zu machen, aber da Internationalisierung nicht im Umfang dieses Projekts ist, werden sie als statische, finale Variabeln extrahiert.
 
 %\section{Quelltextinspektion}
@@ -271,7 +279,7 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
 
 % htbp = HereTopBottomPage (priority of where to place the table in case previous placement fails)
 \begin{table}[ht]
-  \captionof{table}{Auflistung der Fehler und Methode, der diese gefunden hat}
+  \captionof{table}{Auflistung der Fehler und Methode, die diese gefunden hat}
   \label{quality-assurance:error-table}
   \begin{tabularx}{\linewidth}{
     |>{\hsize=1.6\hsize} X |
@@ -284,7 +292,7 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
   \texttt{NullPointerException} beim Validieren des \enquote{Passwort ändern}-Formulars & Funktionaler Test der Controllermethode & 0.5 \\ \hline
   Löschen eines Nutzers führte nicht zum Löschen seiner Gruppe & Funktionaler Test der Controllermethode & 0.5 \\ \hline
   Bootstrap-Helper-Methoden zur Erstellung eines Formulars haben Felder nicht mit bestehenden Daten befüllt & Aufgefallen während eines Reviews & 0.25 \\ \hline
-  \enquote{Nutzer erstellen}-Prozess konnte von einem \enquote{Nicht-Administrator} ausgeführt werden & Authorizationtests & 0.5 \\ \hline
+  \enquote{Nutzer erstellen}-Prozess konnte von einem \enquote{Nicht-Administrator} ausgeführt werden & Autorisierungstests & 0.5 \\ \hline
   Mögliche Race Conditions während der Validation eines Nutzernamens & Review & 0.5 \\ \hline
   Mögliche Side-Channel-Attacke beim Loginversuch durch den Login-Firewall & Review & 0.75 \\ \hline
   Endlosschleife von Redirects beim Login eines Nutzers mit valider Session aber unterschiedlicher IP & Review & 1.5 \\ \hline
@@ -298,7 +306,7 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
 %\deftranslation{to=German}{Acronyms}{Abkürzungsverzeichnis}
 %\deftranslation{to=German}{Glossary}{Glossar}
 \printacronyms[title=Abkürzungsverzeichnis,toctitle=Abkürzungsverzeichnis]
-\printglossary[type=main]
+\printglossary[title=Glossar,toctitle=Glossar,type=main]
 
 %\addcontentsline{toc}{chapter}{\listfigurename}
 \listoffigures      % Abbildungsverzeichnis
