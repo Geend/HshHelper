@@ -217,10 +217,10 @@ Während dieser Ansicht kann der Nutzer einzelne Sessions invalidieren, sofern e
 
 Innerhalb unserer ersten, prototypischen Implementation hatten wir einen Ansatz verfolgt, bei dem unsere \texttt{Controller}-Klassen für das Bearbeiten des Requests, das Validieren des Forms, das Weiterleiten von Fehlern innerhalb eines Formulars, die Autorisierungsprüfung, die Ausführung der domänenspezifischen Operation sowie das Absenden des generierten HTMLs zuständig war.
 Auch wenn uns bewusst war, dass dies nur ein Ansatz für das Prototyping war, ist schnell offensichtlich geworden, dass dieser Ansatz langfristig gesehen uns Probleme bereiten würde.
-Die Testbarkeit solcher Controller-Methoden litt schwer, da es schwer war, für einen einzelnen Unit-Tests alle Klassen zu mocken, die benötigten Voraussetzungen zu erstellen, aber zu prüfen, ob die richtigen Nachbedingungen gelten.
+Die Testbarkeit solcher Controller-Methoden litt schwer, da es kompliziert war, für einen einzelnen Unit-Tests alle Klassen zu mocken, die benötigten Voraussetzungen zu erstellen, aber zu prüfen, ob die richtigen Nachbedingungen gelten.
 Jeder dieser Tests musste entweder gegen eine \texttt{FakeApplication} laufen, oder gegen ein laufenden Testsystem.
 
-Um diese Testbarkeit wieder zu gewinnen, haben wir die Zuständigkeiten feiner aufgeteilt und die \texttt{Manager}-Klassen ins Leben gerufen, die von nun an den domänenspezifische übernehmen.
+Um diese Testbarkeit wieder zu gewinnen, haben wir die Zuständigkeiten feiner aufgeteilt und die \texttt{Manager}-Klassen ins Leben gerufen, die von nun an den domänenspezifischen Operation übernehmen.
 Die \texttt{Controller} beschäftigen sich seither nur noch für das Bearbeiten des Requests, das Weiterleiten von Fehlern innerhalb eines Formulars zum Nutzer sowie dem Absenden des generierten HTMLs.
 
 \section{Sessionkonzept}
