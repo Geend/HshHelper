@@ -144,7 +144,9 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 \subsection{Globale Bedrohungen}
 
 \begin{itemize}
-  \item \textbf{Spoofing des Servers}
+
+  \hypertarget{threat1}{}
+  \item \textbf{T1: Spoofing des Servers}
   \begin{itemize}
   \item Zweck:
   	\begin{itemize}
@@ -160,7 +162,8 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen: Authentifizierung des HshHelper Servers durch Zertifikate (HTTPS mit HSTS)
   \end{itemize}
 
-  \item \textbf{Eavesdropping}
+  \hypertarget{threat2}{}
+  \item \textbf{T2: Eavesdropping}
   \begin{itemize}
   \item Zweck:
   	\begin{itemize}
@@ -174,7 +177,8 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen: Verschlüsselung durch HTTPS mit HSTS oder SecureCookie
   \end{itemize}
 
-  \item \textbf{Replayattacken}
+  \hypertarget{threat3}{}
+  \item \textbf{T3: Replayattacken}
   \begin{itemize}
   \item Zweck: Mehrfach-Ausführung geschützter Aktionen
   \item Möglichkeiten (Bezogen auf unsere Anwendung): Keine
@@ -182,7 +186,8 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen: HTTPS %/ CSRF-Token
   \end{itemize}
 
-  \item \textbf{Tampering}
+  \hypertarget{threat4}{}
+  \item \textbf{T4: Tampering}
   \begin{itemize}
   \item Zweck:
   	\begin{itemize}
@@ -194,23 +199,24 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen: HTTPS
   \end{itemize}
 
-  \item \textbf{Verwendung eines gefälschten,von einer anerkannten Zertifizierungsstelle signierten Zertifikates}%Ungültig ausgestelltes Zertifikat (Türkischer Geheimdienst)
+  \hypertarget{threat5}{}
+  \item \textbf{T5: Verwendung eines gefälschten,von einer anerkannten Zertifizierungsstelle signierten Zertifikates}
   \begin{itemize}
   \item Zweck:
   	\begin{itemize}
   		\item Spoofing des Servers
   		\item Man-in-the-Middle-Angriffe
    \end{itemize}
-  \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HshHelper Domain ausgestellt werden. Für HshHelper Benutzer ist das nicht sofort einsehbar\footnote{Bereits geschehen/Türkischer Geheimdienst: \url{https://arstechnica.com/information-technology/2013/01/turkish-government-agency-spoofed-google-certificate-accidentally/}}.
+  \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HshHelper Domain ausgestellt werden. Für HshHelper Benutzer ist das nicht sofort einsehbar\footnote{Bereits geschehen durch türkischen Geheimdienst: \url{https://arstechnica.com/information-technology/2013/01/turkish-government-agency-spoofed-google-certificate-accidentally/}}.
   \item Risiko: Gering
   \item Gegenmaßnahmen: HTTP Public Key Pinning (HPKP)
   \end{itemize}
 
-
-  \item \textbf{XSS (Cross Site Scripting)}
+  \hypertarget{threat6}{}
+  \item \textbf{T6: XSS (Cross Site Scripting)}
   \begin{itemize}
   \item Zweck: Ausführung von JavaScript im HshHelper Kontext eines Benutzers
-  \item Möglichkeiten: Eingaben, die ausgegeben werden, ohne Eingabevalidierung oder Ausgabecodierung auszuführen.
+  \item Möglichkeiten: Eingaben, die ausgegeben werden, ohne Eingabevalidierung oder Ausgabecodierung auszuführen
   \item Risiko: Hoch
   \item Gegenmaßnahmen:
 	\begin{itemize}
@@ -218,16 +224,15 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 		\item X-XSS-Protection (vgl. \ref{x:xss:protection})
 		\item Content Security Policy (CSP) des Browsers aktivieren
 		\item Alte Browser bzw Browser die CSP nicht können aussperren (s. Zusatzfrage) %TODO: Das ist nicht implementiert und vllt auch garnicht so einfach. Ggf einfach in Assumptions aufnehmen, dass nur Browser verwendet werden, die CSP unterstützen
-
 		\item Ausgabecodierung
 	\end{itemize}
   \end{itemize}
 
-
-  \item \textbf{SQL Injection}
+  \hypertarget{threat7}{}
+  \item \textbf{T7: SQL Injection}
   \begin{itemize}
   \item Zweck: Unzulässiges Lesen und Schreiben von Datenbankinhalten
-  \item Möglichkeiten: Inline-SQL Queries ohne Seperation of Data and Code.
+  \item Möglichkeiten: Inline-SQL Queries ohne Seperation of Data and Code
   \item Risiko: Hoch
   \item Gegenmaßnahmen:
   \begin{itemize}
@@ -237,20 +242,19 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \end{itemize}
   \end{itemize}
 
-  \item \textbf{Offline Password Brute Forcing}
+  \hypertarget{threat8}{}
+  \item \textbf{T8: Offline Password Brute Forcing}
   \begin{itemize}
   \item Zweck: Durch SQL Injection erbeutete Hashes in Plaintext verwandeln
   \item Möglichkeiten: Rainbowtables
   \item Risiko: Gering
-  \item Gegenmaßnahmen:
-  \begin{itemize}
-    \item Passwörter nur gehashed mit Salt speichern
-  \end{itemize}
+  \item Gegenmaßnahmen: Passwörter nur gehashed mit Salt speichern
   \end{itemize}
 
-  \item \textbf{CSRF (Cross-Site-Request-Forgery)}
+  \hypertarget{threat9}{}
+  \item \textbf{T9: Cross-Site-Request-Forgery (CSRF)}
   \begin{itemize}
-  \item Zweck: Benutzer dazu bringen Aktionen auszuführen, die sie nicht intendiert haben.
+  \item Zweck: Benutzer dazu bringen Aktionen auszuführen, die sie nicht intendiert haben
   \item Möglichkeiten:
   \begin{itemize}
           \item Einen fremden Benutzer dazu bringen, sich selbst auszuloggen
@@ -260,15 +264,23 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen: CSRF-Tokens bei Requests prüfen
   \end{itemize}
 
-  \item \textbf{Session fälschen (Bestimmte oder Irgendeine)}
+  \hypertarget{threat10}{}
+  \item \textbf{T10: Session fälschen (Bestimmte oder Irgendeine)}
   \begin{itemize}
-  \item Zweck: Client spoofen um Aktionen auszuführen, für die der gespoofte Client autorisiert ist.
+  \item Zweck: Client spoofen um Aktionen auszuführen, für die der gespoofte Client autorisiert ist
   \item Möglichkeiten: Cookie fälschen
   \item Risiko: Hoch
-  \item Gegenmaßnahmen: Signieren des Cookies durch PrivateKey und Verwendung von UUID, Bindung an IP-Adresse, Begrenzung der Lebenszeiten
+  \item Gegenmaßnahmen:
+  \begin{itemize}
+    \item Signieren des Cookies durch privaten Schlüssel,
+    \item Verwendung von UUID,
+    \item Bindung der Session an IP-Adresse,
+    \item Begrenzung der Lebenszeiten
+  \end{itemize}
   \end{itemize}
 
-  \item \textbf{Abstreitbarkeit illegaler Handlungen}
+  \hypertarget{threat11}{}
+  \item \textbf{T11: Abstreitbarkeit illegaler Handlungen}
   \begin{itemize}
   \item Zweck: Anderen Nutzer in rechtliche Schwierigkeiten bringen
   \item Möglichkeiten: Eintragen illegaler Namen bei Benutzernamen oder Gruppenmane
@@ -276,7 +288,8 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen: Logging von IP + Zeit, Action, User
   \end{itemize}
 
-  \item \textbf{Nutzer kann eine ihm unerlaubte Operation durchführen}
+  \hypertarget{threat12}{}
+  \item \textbf{T12: Nutzer kann eine ihm unerlaubte Operation durchführen}
   \begin{itemize}
   \item Zweck: Beispielsweise um einen Denial-of-Service-Angriff auf einen Nutzer durchzuführen
   \item Möglichkeiten: Beispielsweise Nutzer löscht andere Nutzer
@@ -284,15 +297,17 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen: Authorization erzwingen und prüfen bei jeder Operation
   \end{itemize}
 
-  \item \textbf{Captchas durch menschliche Akteure lösen lassen}
+  \hypertarget{threat13}{}
+  \item \textbf{T13: Captchas durch menschliche Akteure lösen lassen}
   \begin{itemize}
   \item Zweck: Brute-Forcing ermöglichen
-  \item Möglichkeiten: 2captcha.com bietet diesen Service für 2.99\$ für 1000 reCAPTCHAs.
+  \item Möglichkeiten: 2captcha.com bietet diesen Service für 2.99\$ für 1000 reCAPTCHAs
   \item Risiko: Gering
   \item Gegenmaßnahmen: 2-Faktor-Authoritisierung
   \end{itemize}
 
-  \item \textbf{DDOS}
+  \hypertarget{threat14}{}
+  \item \textbf{T14: DDOS}
   \begin{itemize}
   \item Zweck: Verfügbarkeit der Anwendung beeinträchtigen
   \item Möglichkeiten: Botnetzwerk oder Booter-Service verwenden
@@ -303,12 +318,14 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   %\item \textcolor{red}{Elevation of privilege -> Frage an Peine. ?}
 \end{itemize}
 
-\subsection{HTTP-Endpoint-spezifische Bedrohungen}
+\subsection{Domänenspezifische Bedrohungen}
 
 \subsubsection{Mögliche Angriffe auf den Loginprozess}
 
 \begin{itemize}
-  \item \textbf{Überlanges PW beim Login eingeben}
+
+  \hypertarget{threat15}{}
+  \item \textbf{T15: Überlanges PW beim Login eingeben}
   \begin{itemize}
   \item Zweck: DOS der Applikation
   \item Möglichkeiten: Durch überlange Passwörter eine ressourcenintensive Hash-Operation in Gang setzen
@@ -316,11 +333,12 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen:
   \begin{itemize}
   \item Passwort-Länge mittels Eingabevalidierung beschränken
-  \item Verwendung von bcrypt (lässt nur 72 Zeichen lange Passwörter zu, Lauzeit ist für alle Längen von Eingaben konstant)
+  \item Verwendung von bcrypt (lässt nur 72 Zeichen lange Passwörter zu, Laufzeit ist für alle Längen von Eingaben konstant)
   \end{itemize}
 \end{itemize}
 
-  \item \textbf{Timing-Angriff auf Loginverhalten}
+  \hypertarget{threat16}{}
+  \item \textbf{T16: Timing-Angriff auf Loginverhalten}
   \begin{itemize}
   \item Zweck: Herausfinden, ob ein Benutzer mit einem bestimmten Username existiert
   \item Möglichkeiten: Durch Messen der Antwortszeiten des Servers können Rückschlüsse darüber gezogen werden, welcher Code ausgeführt wurde (zB Hashing/DB-Zugriff)
@@ -328,17 +346,18 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen: Loginprozess für jeden Fall gleich ablaufen lassen
   \end{itemize}
 
-  \item \textbf{Online Brute-forcing}
+  \hypertarget{threat17}{}
+  \item \textbf{T17: Online Brute-Forcing}
   \begin{itemize}
   \item Zweck: Unautorisierter Zugriff auf ein fremdes Benutzerkonto
   \item Möglichkeiten: Beispielsweise durch Wörterbuchattacken
   \item Risiko: Hoch
   \item Gegenmaßnahmen:
   \begin{itemize}
-      \item Login nur möglich, wenn Captcha gelöst wird.
-      \item IP Sperre bei auffälligem Verhalten.
-      \item Schwache Passworter verbieten.
-      \item Zwei-Factor-Authentication. % TODO: Ist nicht implementiert und ggf auch nicht mal eben so gemacht
+      \item Login nur möglich, wenn Captcha gelöst wird
+      \item IP Sperre bei auffälligem Verhalten
+      \item Schwache Passworter verbieten
+      \item Zwei-Factor-Authentication % TODO: Ist nicht implementiert und ggf auch nicht mal eben so gemacht
     \end{itemize}
   \end{itemize}
 \end{itemize}
@@ -346,7 +365,8 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 \subsubsection{Mögliche Angriffe auf den \enquote{Passwort zurücksetzen lassen}-Prozess}
 
 \begin{itemize}
-  \item \textbf{Nutzer permanent aus der Applikation ausschliessen}
+  \hypertarget{threat18}{}
+  \item \textbf{T18: Nutzer permanent aus der Applikation ausschliessen}
   \begin{itemize}
   \item Zweck: Denial-of-Service-Angriff auf einen individuellen Nutzer
   \item Möglichkeiten: Wiederholtes Absenden des Request mit richtigen Nutzernamen generiert bei jedem Request ein neues temporäres Passwort. Selbst wenn der Benutzer das temporäre Passwort ändert, wird er es nicht schaffen sich anzumelden, da dann bereits die Generierung ein neues temporäres Passwort vom Angreifer erzwungen wurde.
@@ -358,19 +378,21 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \end{itemize}
 \end{itemize}
 
-  \item \textbf{Timing-Angriff auf Verhalten des Requests}
+  \hypertarget{threat19}{}
+  \item \textbf{T19: Timing-Angriff auf Verhalten des Requests}
   \begin{itemize}
   \item Zweck: Herausfinden, ob ein Benutzer mit einem bestimmten Username existiert
   \item Möglichkeiten: Durch Messen der Antwortszeiten des Servers können Rückschlüsse darüber gezogen werden, welcher Code ausgeführt wurde (E-Mail-Versand)
   \item Risiko: Mittel
   \item Gegenmaßnahmen:
   \begin{itemize}
-    \item \enquote{Passwort zurücksetzen lassen}-Prozess in konstanter Länge ablaufen lassen. Ggf. E-Mail an fakeaddresse beim falschen Nutzername
+    \item \enquote{Passwort zurücksetzen lassen}-Prozess in konstanter Länge ablaufen lassen, ggf. durch Absenden einer E-Mail an eine Dummy-E-Mail-Addresse
     \item E-Mail-Versand asynchron durchführen
     \end{itemize}
   \end{itemize}
 
-  \item \textbf{E-Mail Postfach des Nutzers fluten}
+  \hypertarget{threat20}{}
+  \item \textbf{T20: E-Mail Postfach des Nutzers fluten}
   \begin{itemize}
   \item Zweck: Verbrauch der vorhandenen Resourcen seines E-Mail-Kontos
   \item Möglichkeiten: Wiederholtes Absenden des Forms durch Angabe seines Nutzernamens
@@ -388,18 +410,19 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
 \subsubsection{Mögliche Angriffe beim Versand von E-Mails}
 Der Angriffsvektor SMTP sollte ausweislich der Aufgabenstellung nicht betrachtet werden. Wir listen aus diesem Grund keine diesbezüglichen Bedrohungen.
 
+\newcommand{\linktothreat}[2]{\texorpdfstring{\protect\hyperlink{#1}{#2}}{}}%
+
 \section{Ignorierte Bedrohungen}
 \subsection{Captchas durch menschliche Akteure lösen lassen}
 Die Kosten für diese Dienstleistung machen sie unwirtschaftlich in Anbetracht unseres Applikationskontexts.
 
 \subsection{HTTP bezogene Bedrohungen}
-Die Bedrohungen (....) werden ignoriert. Ausweislich der Aufgabenstellung sollen wir eine sichere Verbindung annehmen.
+Die Bedrohungen \linktothreat{threat1}{T1}, \linktothreat{threat2}{T2}, \linktothreat{threat3}{T3}, \linktothreat{threat4}{T4}, \linktothreat{threat5}{T5} werden ignoriert.
+Ausweislich der Aufgabenstellung sollen wir eine sichere Verbindung annehmen.
 
 \section{Vorzunehmende Gegenmaßnahmen}
 
 In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahmen, die wir geplant haben umzusetzen, entnommen werden.
-
-\newcommand{\linktothreat}[2]{\texorpdfstring{\protect\hyperlink{#1}{#2}}{}}%
 
 \begin{table}[tbhp]
   \captionof{table}{Auflistung aller vorzunehmenden Gegenmaßnahmen mit Referenz auf Angriff, der verhindert/erschwert wird}
