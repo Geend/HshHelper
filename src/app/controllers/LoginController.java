@@ -27,6 +27,7 @@ public class LoginController extends Controller {
         this.loginManager = loginManager;
     }
 
+    // Not allowed wichtig, kann sonst zum DOS verwendet werden!
     @Authentication.NotAllowed
     public Result showLoginForm() {
         return ok(views.html.Login.render(loginForm, false));
@@ -64,6 +65,7 @@ public class LoginController extends Controller {
         return redirect(routes.HomeController.index());
     }
 
+    // NotAllowed wichtig, kann sonst für DOS verwendet werden!
     @Authentication.NotAllowed
     public Result showChangePasswordAfterResetForm() {
         return ok(views.html.ChangePasswordAfterReset.render(this.changePasswordForm, false));

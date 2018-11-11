@@ -35,6 +35,7 @@ public class SessionManager {
         dbs.setUser(user);
         dbs.save();
 
+        ctx.session().clear();
         ctx.session().put(CookieSessionName, dbs.getSessionKey().toString());
         ctx.args.remove(CtxCurrentSession);
     }
