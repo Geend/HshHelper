@@ -131,9 +131,9 @@ Ebenfalls wurde ein Bug gefunden, der indirekt eine Folge des mangelhaften Desig
 Es wurde beschlossen, das Session Konzept einem grundsätzlichen Rewrite zu unterziehen. Das Wissen darüber, was eine Session darstellt, sollte gebündelt an einer zentralen Stelle der Architektur liegen, der Rest der Anwendung nur die API dieser \enquote{zentralen Stelle} verwenden und unter keinen Umständen selbst an Cookies oder den entsprechenden Datenbank-Entitäten manipulieren. Um sicherzustellen, dass es nicht erneut zu dem bereits festgestellten Redirect-Bug kommt, wurden diese Fälle durch Unit-Tests abgebildet.
 
 \subsection{Login Firewall}
-Die aktuelle Version unserer Login Firewall wurde einem Review durch zwei Personen unterzogen, welches zwei Stunden benötigte. Hierbei wurde ein Bug entdeckt, der ein Information Leakage zur Folge hatte: Die Firewall versetzt Benutzeraccounts nach N falschen Logins in einen Captcha-Modus. Login-Versuche auf nicht-existierende Benutzeraccounts, führten nicht zu dieser Account-\enquote{Sperre}. Aufgrund dieser funktional anderen Behandlung wäre es möglich gewesen, feststellen zu können, ob ein Account existiert oder nicht, was ein Brute-Forcing maßgeblich erleichtern würde.
+Die aktuelle Version unserer Login Firewall wurde einem Review durch zwei Personen unterzogen, welches zwei Stunden benötigte. Hierbei wurde ein Bug entdeckt, der ein Informationsleck zur Folge hatte: Die Firewall versetzt Benutzeraccounts nach N falschen Logins in einen Captcha-Modus. Login-Versuche auf nicht-existierende Benutzeraccounts, führten nicht zu dieser Account-\enquote{Sperre}. Aufgrund dieser funktional anderen Behandlung wäre es möglich gewesen, feststellen zu können, ob ein Account existiert oder nicht, was ein Brute-Forcing maßgeblich erleichtern würde.
 
-Die Login-Firewall wurde angepasst (vgl. [verweis auf das architektur Dokument) und es wurde ein weiteres Review für die finale Version der Anwendung geplant, das Prüfen soll, ob alle möglichen Login-Kombinationen für einen Außenstehenden \enquote{gleich} sind, um ein solches Information-Leakage zu verhindern.
+Die Login-Firewall wurde angepasst (vgl. [verweis auf das architektur Dokument) und es wurde ein weiteres Review für die finale Version der Anwendung geplant, das Prüfen soll, ob alle möglichen Login-Kombinationen für einen Außenstehenden \enquote{gleich} sind, um ein solches Informationsleck zu verhindern.
 
 \subsection{Eingabevalidierung von Forms}
 Um Daten aus übermittelten Forms zu empfangen, nutzt unsere Anwendung DTOs, die mit Play-Constraint-Annotations versehen sind. Über diese Annotations wird sichergestellt, dass diese Daten einem bestimmten Format entsprechen, z.B. eine valide E-Mail Adresse darstellen. Diese Validierung wurde durch eine Person einem Review unterzogen, es hat 2 Stunden benötigt.
@@ -197,7 +197,7 @@ Leider überprüft es nicht, ob das als String angegebene SQL Statement überhau
 Das Werkzeug hat daher ein \enquote{False Positive} in unserer \texttt{Database\-Initialization}-Klasse gefunden, siehe Quellcode \ref{lst:staticanalysis-query-injection}.
 Die Statements in dieser Klasse können nicht von einem Nutzer durch Parameter angereichert werden. Daher ignorieren wir diesen Mangel.
 
-\subsubsection{Information Leakage}
+\subsubsection{Informationsleck}
 
 Das Ausgeben des Stacktrace im Falle einer Exception sieht das Werkzeug bereits Verletzung der Vertraulichkeit, welchem wir zustimmen.
 Glücklicherweise schützt Play einem in diesem Fall und gibt keine Stacktraces an einen Benutzer weiter, sofern die Applikation im \enquote{Production Mode} ausgeführt wird.

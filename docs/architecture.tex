@@ -2,6 +2,8 @@
 
 \usepackage{hshhelper_base}
 
+\usepackage[section]{placeins}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}    % hier gehts los
   \thispagestyle{empty} % Titelseite
@@ -30,21 +32,53 @@
 
 \chapter{Architekturaufbau}
 \section{Klassendiagramm}
-Dieses Architekturdiagramm verzichtet zugunsten der Übersichtlichkeit auf die Abhängigkeiten zwischen den Klassen. Es dient lediglich zur Veranschaulichung der Top-Level-Architektur und zur Illustration der wichtigsten Klassen. Wie die, durch Farben abgetrennten logischen Gruppierungen der Klassen im Zusammenhang stehen, wird unter der Abbildung textuell erklärt.
 
-\includegraphics[width=0.73\paperwidth]{resources/class_diagram.png}
-\label{architecture:class_diagram}
+\begin{figure}[!htb]
+  \hspace*{-2.5cm}
+  \includegraphics[width=0.93\paperwidth]{resources/class_diagram.png}
+  \label{architecture:class_diagram}
+  \caption{\enquote{High-Level}-Klassendiagramm unseres Systems}
+\end{figure}
 
-Zu jedem Controller gibt es einen Manager in der Domain Logik. Dieser enthält jegliche Logik zur Abarbeitung der Anfrage und liefert auftretende Fehler über eine Exception zurück. Datenbankzugriff erfolgt somit niemals von einem Controller, sondern immer aus dem zugehörigen Manager. Beim Sessionmanager handelt es sich um einen Spezialfall, da das Session Konzept ein integraler Bestandteil der Anwendung ist und somit von sehr vielen stellen aus Verwendung findet. Das Gleiche gilt für das PasswordSecurityModule, was beispielsweise beim Einloggen, Erstellen, oder Passwortreset Benutzers benötigt wird. Daher wurden diese beiden Klassen unter Cross-Cutting-Concerns zusammengefasst. Zugriff auf diese beiden Klassen kann sowohl von Controllern aus erfolgen als auch von Managern in der Domain Logik. Die folgenden Sequenzdiagramme geben weitere Einsicht in das Zusammenspiel der Klassen untereinander.
+Das in Abbildung \ref{architecture:class_diagram} zusehene Architekturdiagramm verzichtet zugunsten der Übersicht\-lichkeit auf die Abhängig\-keiten zwischen den Klassen. Es dient lediglich zur Veranschaulichung der Top-Level-Architektur und zur Illustration der wichtigsten Klassen. Wie die, durch Farben abgetrennten logischen Gruppierungen der Klassen im Zusammenhang stehen, wird zusätzlich textuell erklärt.
 
-\section{Benutzer erstellen Sequenzdiagram}
+% ggf. explizit Farben nennen?
+Zu jedem Controller gibt es einen Manager in der Domänenlogik.
+Dieser enthält jegliche Logik zur Abarbeitung der Anfrage und liefert auftretende Fehler über eine Exception zurück. Datenbankzugriff erfolgt somit niemals von einem Controller, sondern immer aus dem zugehörigen Manager.
+Beim Sessionmanager handelt es sich um einen Spezialfall, da das Session-Konzept ein integraler Bestandteil der Anwendung ist, da die Prüfung auf vorhandene Authentifizierung Grundlage aller Aktionen ist.
+\footnote{Siehe Anforderungsbeschreibung 4.2: Sämtliche Funktionen von HsH-Helfer sind nur angemeldeten Benutzern zugänglich.}
+Das Gleiche gilt für das \texttt{PasswordSecurityModule}, welches beim Einloggen, Erstellen eines Nutzers sowie dem \enquote{Passwort zurücksetzen} benötigt wird, da in ihr alle Passwort-Operationen gekapselt sind.
+Daher wurden diese beiden Klassen unter \enquote{Cross-Cutting-Concerns} zusammengefasst.
+Zugriff auf diese beiden Klassen kann sowohl von Controllern aus erfolgen als auch von Managern in der Domänenlogik. \par
+Im Folgenden geben Sequenzdiagramme weitere Einsicht in das Zusammenspiel dieser Klassen.
 
-\includegraphics[width=0.7\paperwidth]{resources/createuserseq_diagram.png}
+\section{Sequenzdiagram: Benutzer erstellen}
 
-Beim Anlegen eines neuen Benutzers wird zuerst durch ein HTTP GET die Form angefragt. Dies ist notwendig um ein gültiges CSRF-Token zu erhalten, welches beim anschließenden HTTP POST mitgeliefert werden muss. Auch hier wird bereits, wie aus dem Sequenzdiagramm ersichtlich, überprüft ob der anfragende User authentisiert ist. Ist das der Fall, wird eine HTML Form zurückgeliefert, die ausgefüllt und durch einen weiteren Anfrage wieder an den Server geschickt wird. Hier wird zuerst über die in Play integrierte Möglichkeit mit Annotations eine erste Validierung der Eingaben vorgenommen. Somit werden bereits zu einem frühen Zeitpunkt Eingaben mit nicht unterstützten Zeichen oder ungültiger Länge herausgefiltert und dem Benutzer durch Anzeigen von Fehlermeldungen direkt am Eingabefeld mitgeteilt. Sind alle Eingaben korrekt, wird der Aufruf weiter an den Manager geleitet. Dieser befragt zuerst die Policy ob der authentisierte Benutzer autorisiert ist einen neuen Benutzer anzulegen, generiert ein neues Passwort, Hashed es und legt in einer Transaktion einen neuen Benutzer an. Das Klartext Passwort wird zurückgegeben und dem Administrator angezeigt um dies dem neuen Benutzer zukommen zu lassen.
+\begin{figure}[H]
+\hspace*{-1cm}
+\includegraphics[width=0.83\paperwidth]{resources/createuserseq_diagram.png}
+\label{architecture:createuserseq_diagram}
+\caption{Sequenzdiagramm für \enquote{Benutzer erstellen}-Prozess}
+\end{figure}
 
-\section{Login Sequenzdiagram}
-\includegraphics[width=0.70\paperwidth]{resources/loginseq_diagram.png}
+Beim Anlegen eines neuen Benutzers wird zuerst durch ein HTTP GET die Form angefragt.
+Dies ist notwendig um ein gültiges CSRF-Token zu erhalten, welches beim anschließenden HTTP POST mitgeliefert werden muss. Auch hier wird bereits, wie aus dem Sequenzdiagramm ersichtlich, überprüft ob der anfragende User authentisiert ist.
+Ist das der Fall, wird eine HTML Form zurückgeliefert, die ausgefüllt und durch einen weiteren Anfrage wieder an den Server geschickt wird.
+Hier wird zuerst über die in Play integrierte Möglichkeit der Annotations eine erste Validierung der Eingaben vorgenommen.
+Somit werden Eingaben mit nicht unterstützten Zeichen oder ungültiger Länge früh herausgefiltert und dem Benutzer durch Anzeigen von Fehlermeldungen direkt am Eingabefeld mitgeteilt.
+Sind alle Eingaben korrekt, wird der Aufruf weiter an den Manager geleitet.
+Dieser befragt zuerst die Policy, ob der authentisierte Benutzer autorisiert ist, einen neuen Benutzer anzulegen.
+Nach erfolgreicher Prüfung er generiert ein neues Passwort, hashed es und legt in einer Transaktion einen neuen Benutzer an.
+Das Klartext-Passwort wird zurückgegeben und dem Administrator angezeigt, um dies dem neuen Benutzer zukommen zu lassen.
+
+\section{Sequenzdiagram: Login}
+
+\begin{figure}[!htb]
+\hspace*{-1cm}
+\includegraphics[width=0.83\paperwidth]{resources/loginseq_diagram.png}
+\label{architecture:loginseq_diagram}
+\caption{Sequenzdiagramm für \enquote{Login}-Prozess}
+\end{figure}
 
 Das Login Sequenzdiagramm zeigt den Fall, dass der Benutzer bereits mehrfach das Passwort falsch eingegeben hat und ein Captcha lösen muss. In der Antwort, die auf die erste GET Anfrage folgt, sind sowohl das CSRF-Token als auch das HTML zum Lösen des Captchas enthalten. In der darauffolgenden POST Anfrage wird die Captcha-Information, sowie der Benutzername und das Passwort als Form input mitgeliefert. Bei beiden Anfragen wird noch sichergestellt, dass der Benutzer nicht bereits eine gültige Session besitzt, um mehrfache Logins zu vermeiden. Die Eingaben werden, wie auch schon bei Create User, zuerst durch Annotations validiert und anschließend an den Login Manager weitergereicht. Diese berechnet unabhängig davon ob der Benutzer existiert oder nicht den Hash des Klartextpassworts vergleicht diesen mit dem Benutzer falls vorhanden. Anschließend wird die LoginFirewall befragt, ob es Unstimmigkeiten für diesen Benutzer oder die anfragende IP-Adresse gibt. In diesem Fall liefert diese Verify zurück, was bedeutet das für diesen Benutzer ein Captcha gelöst werden muss. Deshalb wird überprüft, ob es erfolgreich gelöst wurde und dann beim SessionManager durch den Aufruf von startNewSession eine neue Session erzeugt. Damit wurde der Login erfolgreich abgeschlossen.
 
@@ -61,22 +95,22 @@ Aus diesem Grund verfügt unsere Anwendung über eine Komponente\footnote{policy
 \item Spezifische IP-Addresse von Logins ausschließen
 \end{itemize}
 
-Beim Captcha-Mode handelt es sich um eine Maßnahme, bei der ein Login lediglich möglich ist, wenn zugleich ein Google Recaptcha gelöst wird. Eine vollständige Sperrung eines Accounts findet durch unsere Firewall so nicht statt. Es wurde die Annahme getroffen, dass das automatisierte Lösen der Recaptchas zu aufwändig/teuer für einen Angreifer ist. Zugleich ist das \enquote{unnötige} Lösen eines Captchas für das Opfer ein vertretbares Hindernis.
+Beim Captcha-Mode handelt es sich um eine Maßnahme, bei der ein Login lediglich möglich ist, wenn zugleich ein Google reCAPTCHA gelöst wird. Eine vollständige Sperrung eines Accounts findet durch unsere Firewall so nicht statt. Es wurde die Annahme getroffen, dass das automatisierte Lösen der reCAPTCHAs zu aufwändig/teuer für einen Angreifer ist. Zugleich ist das \enquote{unnötige} Lösen eines Captchas für das Opfer ein vertretbares Hindernis.
 
-Lediglich IP-Addressen werden als schärfste Maßnahme vollständig von Logins ausgeschlossen. Sofern ein Angreifer nicht die gleiche IP-Adresse wie sein Opfer verwendet, kann er sich höchstens selbst vom Dienst ausschließen. Sollte eine Sitation vorliegen, bei der sich eine Vielzahl von Nutzern eine IP-Adresse teilt, besteht die Möglichkeit diese von der vollständigen Sperre auszuschließen.
+Lediglich IP-Addressen werden als schärfste Maßnahme vollständig von Logins ausgeschlossen. Sofern ein Angreifer nicht die gleiche IP-Adresse wie sein Opfer verwendet, kann er sich höchstens selbst vom Dienst ausschließen. Sollte eine Situation vorliegen, bei der sich eine Vielzahl von Nutzern eine IP-Adresse teilt, besteht die Möglichkeit diese von der vollständigen Sperre auszuschließen.
 
-Die interne Datenstruktur der Login Firewall ist darauf optimiert, möglichst wenig Speicher zu verwenden und nutzt quasi Buckets, um aggregierte Informationen über Login-Versuche zu speichern. Die Buckets bilden ein fixes Zeitinterval ab. Führt ein Angreifer 1 Million fehlerhafte Logins in 10 Minuten durch, werden lediglich zwei Datenbank-Einträge erstellt: Einen mit Bezug auf den betroffenen Nutzer-Account und einen mit Bezug auf die IP des Angreifers. Beide Einträge verfügen über eine Zählvariable, die jeweils die Anzahl der fehlerhaften Logins beinhält.
+Die interne Datenstruktur der Login Firewall ist darauf optimiert, möglichst wenig Speicher zu verwenden und nutzt Buckets, um aggregierte Informationen über Login-Versuche zu speichern. Die Buckets bilden ein fixes Zeitinterval ab. Führt ein Angreifer 1 Million fehlerhafte Logins in 10 Minuten durch, werden lediglich zwei Datenbank-Einträge erstellt: Einen mit Bezug auf den betroffenen Nutzer-Account und einen mit Bezug auf die IP des Angreifers. Beide Einträge verfügen über eine Zählvariable, die jeweils die Anzahl der fehlerhaften Logins beinhält.
 
-Der Verweis auf den Nutzer-Account findet über die numerische und eindeutige ID statt, über die jeder Account verfügt. Jener Fallgestaltung, bei der ein Login bei einem nicht-existenten Account erfolgt, wurde ebenfalls Rechnung getragen. Hierbei ist es erforderlich, dass die Firewall exakt so funktioniert, wie bei existierenden Accounts, um ein Information-Leakage zu verhindern: Würde die erste Maßnahme nie oder anders greifen als bei tatsächlich existenten Accounts wäre es möglich, zu prüfen ob ein Account bzw. der dazu korrospondierende Benutzername tatsächlich existiert.
+Der Verweis auf den Nutzer-Account findet über die numerische und eindeutige ID statt, über die jeder Account verfügt. Jener Fallgestaltung, bei der ein Login bei einem nicht-existenten Account erfolgt, wurde ebenfalls Rechnung getragen. Hierbei ist es erforderlich, dass die Firewall exakt so funktioniert, wie bei existierenden Accounts, um ein Informationsleck zu verhindern: Würde die erste Maßnahme nie oder anders greifen als bei tatsächlich existenten Accounts wäre es möglich, zu prüfen ob ein Account bzw. der dazu korrospondierende Benutzername tatsächlich existiert\footnote{Diese Angriffsform nennt man auch \enquote{Side-Channel Attack}}.
 
-Zu diesem Zweck wird bei nicht-existenten Accounts der Benutzername mittels Hashing auf eine \enquote{virtuelle} User-ID gemappt. Die User-ID wird über ein Long repräsentiert, es wird jedoch ausschließlich der positive Zahlenraum verwendet. Vom Username wird der md5-Hash gebildet, die ersten 8 Byte werden als Long verwendet und ggf. invertiert. Der so resultierende negative Long-Wert wird in diesem Fall als Grundlage für die Protokollierung fehlerhafter Logins verwendet. Dass md5 kryptografisch bereits längst als geknackt gilt ist irrelevant, wir machen uns lediglich die gute Streuung und hohe Geschwindigkeit von md5 zu eigen.
+Zu diesem Zweck wird bei nicht-existenten Accounts der Benutzername mittels Hashing auf eine \enquote{virtuelle} User-ID gemappt. Die User-ID wird über ein Long repräsentiert, es wird jedoch ausschließlich der positive Zahlenraum verwendet. Vom Username wird der MD5-Hash gebildet, die ersten 8 Byte werden als Long verwendet und ggf. invertiert. Der so resultierende negative Long-Wert wird in diesem Fall als Grundlage für die Protokollierung fehlerhafter Logins verwendet. Dass MD5 kryptografisch bereits längst als geknackt gilt ist irrelevant, wir machen uns lediglich die gute Streuung und hohe Geschwindigkeit von MD5 zu eigen.
 
 \section{Sessionkonzept}
-Integraler Bestandteil unserer Anwendung ist eine Session-Funktionalität. Theoretisch bietet Play bereits eine Implementierung unter Verwendung von JWT\footnote{\url{https://jwt.io/}} mit der es möglich ist, unter Verwendung von signierten Cookies Daten im Client-Browser zu speichern. Die Sicherstellung der Authentifizierung ist jedoch für nahezu jede Funktionalität unserer Anwendung von Bedeutung. Aus diesem Grund wurde das Session Konzept soweit abstrahiert, dass eine Java-Annotation über einer Controller-Klasse oder einzelnen Controller-Methoden ausreicht, um zu garantieren, dass ausschließlich authentifizierte Nutzer auf selbige zugreifen können.
+Integraler Bestandteil unserer Anwendung ist eine Session-Funktionalität. Theoretisch bietet Play bereits eine Implementierung unter Verwendung von \enquote{\gls{jwt}} mit der es möglich ist, in Form von signierten Cookies Daten im Client-Browser zu speichern. Die Sicherstellung der Authentifizierung ist jedoch für nahezu jede Funktionalität unserer Anwendung von Bedeutung. Aus diesem Grund wurde das Session-Konzept soweit abstrahiert, dass eine Java-Annotation über einer Controller-Klasse oder einzelnen Controller-Methoden ausreicht, um zu garantieren, dass ausschließlich authentifizierte Nutzer auf selbige zugreifen können.
 
-Die Annotation bewirkt, dass der korrospondierende Request \underline{vor} Errichen der dazugehörigen Controller Methode abgefangen wird und eine Prüfung durchgeführt wird, ob der Absender authentifiziert ist. Ist dies nicht der Fall, wird die weitere Ausführung abgebrochen und der Nutzer auf die Login-Seite weitergeleitet. Ansonsten wird der Request an den entsprechenden Controller weitergereicht.
+Die Annotation bewirkt, dass der korrospondierende Request \underline{vor} Erreichen der dazugehörigen Controller-Methode abgefangen wird und einer Prüfung unterzogen wird, ob der Absender authentifiziert ist. Ist dies nicht der Fall, wird die weitere Ausführung abgebrochen und der Nutzer auf die Login-Seite weitergeleitet. Ansonsten wird der Request an den entsprechenden Controller weitergereicht.
 
-Zur Umsetzung dieser Funktionalität setzen wir auf dem Session-Konzept von Play auf. Wird eine neue Session initialisiert, wird ein dazugehöriger Eintrag in der Datenbank erstellt. Dieser beinhaltet das Initialierungsdatum, die dazugehörige IP und User-ID sowie eine kryptografisch sichere UUID als Identifikator. Die UUID wird in der Play-Session persistiert. Ein Angreifer kann aufgrund der JWT-Signatur nicht beliebige UUIDs an unsere Anwendung schicken.
+Zur Umsetzung dieser Funktionalität setzen wir auf dem Session-Konzept von Play auf. Wird eine neue Session initialisiert, wird ein dazugehöriger Eintrag in der Datenbank erstellt. Dieser beinhaltet das Initialisierungsdatum, die dazugehörige IP-Adresse und User-ID sowie eine kryptografisch sichere \enquote{\gls{uuid}} als Identifikator. Die UUID wird in der Play-Session persistiert. Ein Angreifer kann aufgrund der JWT-Signatur nicht beliebige UUID an unsere Anwendung schicken.
 
 Die UUID selbst dient als 2nd Layer of Defense: Sollte die JWT-Signatur geknackt werden, muss der Angreifer noch eine in der Datenbank enthaltene UUID erraten. Selbst, wenn er diese Hürde meistert, muss er noch die dazugehörige IP-Addresse kennen sowie über diese auf unsere Anwendung zugreifen können und dies in einem engen Zeitfenster schaffen, da die Lifetime einer Session begrenzt ist.
 
@@ -85,7 +119,7 @@ Die Anwendung verfügt über eine Sicht, die dem Nutzer sämtliche \enquote{akti
 \section{Content Security Policy}
 Play verwendet standardmäßig eine sehr restriktive Content-Security-Policy, die XSS-Angriffe maßgeblich erschwert: Inline-Javascript wird vom Client-Browser grundsätzlich blockiert, es ist lediglich möglich, ein externes Script in eine HTML-Seite einzubinden, das jedoch von der gleichen Top-Level-Domain stammen muss. Zugleich muss dieses Script explizit Javascript als Content-Type im HTTP-Header benennen.
 
-Da unsere Anwendung zum jetzigen Zeitpunkt nur mittelbaren Gebrauch von JavaScript macht, haben wir uns dazu entschlossen die Content-Security-Policy zu verschärfen: JavaScript wird grundsätzlich nicht mehr ausgeführt, es sei denn, es handelt sich um die JavaScript-Libraries von Recaptcha. Zu diesem Zweck haben wir die entsprechenden Quell-Urls auf die Whitelist gesetzt und somit gleichzeitig die Annahme getroffen, dass wir Google als Host-Provider der Libraries vertrauen\footnote{Erforderliche Urls für die CSP Whitelist: \url{https://developers.google.com/recaptcha/docs/faq}}.
+Da unsere Anwendung zum jetzigen Zeitpunkt nur mittelbaren Gebrauch von JavaScript macht, haben wir uns dazu entschlossen die Content-Security-Policy zu verschärfen: JavaScript wird grundsätzlich nicht mehr ausgeführt, es sei denn, es handelt sich um die JavaScript-Libraries von reCAPTCHA. Zu diesem Zweck haben wir die entsprechenden Quell-Urls auf die Whitelist gesetzt und somit gleichzeitig die Annahme getroffen, dass wir Google als Host-Provider der Libraries vertrauen\footnote{Erforderliche Urls für die CSP Whitelist: \url{https://developers.google.com/recaptcha/docs/faq}}.
 
 Ebenso haben wir uns entschlossen, Browser, die Content Security Policy nicht unterstützen von unserer Anwendung auszuschließen. Hiervon sind nur hinreichend alte Browser betroffen\footnote{Siehe \textquote{Browser compatibility} \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP}}.
 
@@ -105,10 +139,10 @@ Um ein Passwort mit bcrypt zu Hashen muss zunächst ein Salt generiert werden. N
 
 Die verwendete Bibilithek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in der Version 0.4. Sie verwendet intern die Java Klasse SecureRandom als CPRNG.
 
-Auch zur Generierung der initalen (und temporären) Benutzer Passwörter beim Anlegen von Benutzer werden wird SecureRandom als Basis verwendet. Dafür zuständig ist die Klasse \textit{PasswordGenerator}. Die generierten Passwörter können die Zeichen a-z, A-Z, 0-9 und die Sonderzeichen \textit{!\%?\#-\_*+} enthalten.
+Auch zur Generierung der initialen (und temporären) Benutzer-Passwörter beim Anlegen eines neuen Benutzerkontos wird SecureRandom als Basis verwendet. Dafür zuständig ist die Klasse \texttt{PasswordGenerator}. Die generierten Passwörter können die Zeichen \texttt{a-z}, \texttt{A-Z}, \texttt{0-9} und die Sonderzeichen \texttt{!\%?\#-\_*+} enthalten.
 
 \subsection{CSRF Tokens}
-Play verwendet zum Generieren von CSRF Tokens die Java Klasse SecureRandom als CPRNG:
+Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als CPRNG:
 
 \begin{lstlisting}[caption={Methode zum Generieren von Tokens. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
   def generateToken: String = {
@@ -117,7 +151,7 @@ Play verwendet zum Generieren von CSRF Tokens die Java Klasse SecureRandom als C
     new String(Hex.encodeHex(bytes))
   }
 \end{lstlisting}
-Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit einer nonce Konkateniert. Das Ergebniss wird anschließend mittels HMAC-SHA1 und einem privatem Schlüssel signiert.
+Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit einer Nonce konkateniert. Das Ergebnis wird anschließend mittels \textcolor{red}{HMAC-SHA1} und einem privatem Schlüssel signiert.
 
 \begin{lstlisting}[caption={Methode zum Signieren von Token. Aus DefaultCSRFTokenSigner, Play 2.6.20},captionpos=b]
   def signToken(token: String): String = {
@@ -127,21 +161,17 @@ Dieser Token wird allerdings nicht direkt verwendet. Stattdessen wird er mit ein
   }
 \end{lstlisting}
 
-
 Das Format eines Play CSRF Token ist demnach
 \begin{lstlisting}
 <signature> - <nonce> - <token>
 \end{lstlisting}
 
-
 Das Token (aus Listing TODO) wird nur ein mal für eine Session generiert. Es bleibt innerhalb der Session immer gleich. Da das nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt.
 
-Um ein Token zu prüfen wird erneut die Signatur über dem Token und dem Nounce gebildet und mit der empfangenen Signatur verglichen. Das modifizieren eines CSRF Tokens wird somit erkannt.
-
-
+Um ein Token zu prüfen wird erneut die Signatur über dem Token und dem Nonce gebildet und mit der empfangenen Signatur verglichen. Das Modifizieren eines CSRF Tokens wird somit erkannt.
 
 \subsection{Play Cookies}
-Play verwendet ein JWT (Json Web Token) als Session Cookie mit dem Namen \linebreak\textit{PLAY\_SESSION}. Es ist durch eine HMAC-SHA256 Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
+Play verwendet ein JWT (Json Web Token) als Session Cookie mit dem Namen \linebreak\textit{PLAY\_SESSION}. Es ist durch eine \textcolor{red}{HMAC-SHA256} Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
 
 
 Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, was allerdings in der aktuellen Iteration keinerlei Anwendung findet. Der Error-Handling-Code verwendet zwar die Flash-Scope um Fehlermeldungen über eine Klassengrenze hinweg verfügbar zu machen, diese Daten werden aber innerhalb einer Anfrage direkt wieder gelesen und landen somit niemals beim Client.
@@ -159,10 +189,10 @@ Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 
 \begin{itemize}
 	\item Der private Schlüssel zum signieren der Play Cookies
-	\item Der private Schlüssel für reCaptcha
-	\item Der öffentlicht Schlüssel für reCaptcha
-	\item Login Credentials für den E-Mail Server
-	\item Login Credentials für die Datenbank
+	\item Der private Schlüssel für reCAPTCHA
+	\item Der öffentliche Schlüssel für reCAPTCHA
+	\item Zugangsdaten für den E-Mail Server
+	\item Zugangsdaten für die Datenbank
 \end{itemize}
 
 Die Schlüssel und Zugangsdaten liegen alle in der Datei \textit{application.conf}.
