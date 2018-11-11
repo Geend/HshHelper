@@ -200,7 +200,7 @@ public class GroupManager {
         User currentUser = currentUserOptional.get();
         User toBeAddedUser = tobeAddedUserOptional.get();
 
-        if (!policy.Specification.instance.CanAddGroupMember(currentUser, g, toBeAddedUser)) {
+        if (!policy.Specification.instance.CanAddSpecificGroupMember(currentUser, g, toBeAddedUser)) {
             throw new UnauthorizedException("Du bist nicht authorisiert, einen Member zu dieser Gruppe hinzu zu fuegen.");
         }
 

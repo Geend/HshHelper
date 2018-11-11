@@ -24,7 +24,7 @@
 }
 
 @addMemberButton() = {
-    @if(policy.Specification.instance.isAllowedToAddGroupMember(SessionInstance().currentUser(), group)) {
+    @if(policy.Specification.instance.CanGenerallyAddGroupMember(SessionInstance().currentUser(), group)) {
         @bootstrapHelper.form(
             routes.GroupController.addGroupMember(group.getGroupId()),
             addUserForm,
