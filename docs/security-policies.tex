@@ -66,6 +66,7 @@
   \item Zertifikate sind grundsätzlich vertrauenswürdig. Certificate Authorities stellen keine Zertifikate für missbräuchliche Zwecke aus.
   \item Die Quelle der kryptografisch-sicheren Zufallszahlen versiegt nicht (\texttt{/dev/random} (Linux), Cryptography API: Next Generation (Windows) \autocite{Windows.SecureRandom}).
   \item Google's reCAPTCHA Server sind vertrauenswürdig.
+  \item Der gewählte Datentyp \texttt{Long} der Identifikatoren in der \enquote{h2} ist für den Benutzungskontext des HsH-Helfers ausreichend und kann nicht missbräuchlich ausgebracht werden.
 \end{itemize}
 
 \chapter{Akteur}
@@ -123,7 +124,6 @@
 \end{itemize}
 
 \chapter{Richtlinien}
-
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
 
 % htbp = HereTopBottomPage (priority of where to place the table in case previous placement fails)
@@ -148,6 +148,7 @@
   \end{tabularx}
 \end{table}
 
+\label{security-policies:new_policies}
 \begin{itemize}
   \item Nutzer können nur mit dem System interagieren, wenn sie authentisiert sind.
   \item Nutzer können nur Gruppen sehen, dessen Mitglied sie sind.
