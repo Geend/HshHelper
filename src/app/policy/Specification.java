@@ -76,17 +76,6 @@ public class Specification {
         return false;
     }
 
-    public boolean CanChangePassword(User currentUser, User toBeUpdated) {
-        if(currentUser == null) {
-            return false;
-        }
-
-        if(currentUser.equals(toBeUpdated)) {
-            return true;
-        }
-
-        return false;
-    }
 
     public boolean CanResetPassword(User currentUser) {
         if(currentUser == null) {
