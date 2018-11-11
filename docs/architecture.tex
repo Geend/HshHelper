@@ -82,6 +82,49 @@ Das Klartext-Passwort wird zurückgegeben und dem Administrator angezeigt, um di
 
 Das Login Sequenzdiagramm zeigt den Fall, dass der Benutzer bereits mehrfach das Passwort falsch eingegeben hat und ein Captcha lösen muss. In der Antwort, die auf die erste GET Anfrage folgt, sind sowohl das CSRF-Token als auch das HTML zum Lösen des Captchas enthalten. In der darauffolgenden POST Anfrage wird die Captcha-Information, sowie der Benutzername und das Passwort als Form input mitgeliefert. Bei beiden Anfragen wird noch sichergestellt, dass der Benutzer nicht bereits eine gültige Session besitzt, um mehrfache Logins zu vermeiden. Die Eingaben werden, wie auch schon bei Create User, zuerst durch Annotations validiert und anschließend an den Login Manager weitergereicht. Diese berechnet unabhängig davon ob der Benutzer existiert oder nicht den Hash des Klartextpassworts vergleicht diesen mit dem Benutzer falls vorhanden. Anschließend wird die LoginFirewall befragt, ob es Unstimmigkeiten für diesen Benutzer oder die anfragende IP-Adresse gibt. In diesem Fall liefert diese Verify zurück, was bedeutet das für diesen Benutzer ein Captcha gelöst werden muss. Deshalb wird überprüft, ob es erfolgreich gelöst wurde und dann beim SessionManager durch den Aufruf von startNewSession eine neue Session erzeugt. Damit wurde der Login erfolgreich abgeschlossen.
 
+\chapter{Kryptografisch relevante Informationen}
+Folgender Abschnitt enthält gesammelte Informationen über die kryptographischen Algorithmen die im HsH-Helper Anwendung finden. Die für die Algorithmen benötigten Geheimnisse und deren Verwaltung wird ebenfalls hier dokumentiert da die Sicherheit maßgeblich von der Geheimhaltung dieser abhängt.
+
+\section{Passwörter}
+Die Passwörter, die Benutzer verwenden um sich bei HshHelper zu authentisieren, werden grundsätzlich nur als Hash persistiert. Konkret wird die Hashfunktion bcrypt zum Hashen der Passwörter verwendet.
+
+Um ein Passwort mit bcrypt zu Hashen muss zunächst ein Salt generiert werden. Neben dem Salt und dem gehashten Passwort wird bei bcrypt außerdem noch die bcyrpt Version und die Anzahl der Runden gespeichert. Über die Anzahl der Runden kann die Laufzeit die bcrypt benötigt um ein Passwort zu hashen beeinflusst werden.
+
+Die verwendete Bibliothek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in der Version 0.4. Sie verwendet intern die Java Klasse SecureRandom als CPRNG.
+
+Auch zur Generierung der initialen (und temporären) Benutzer-Passwörter beim Anlegen eines neuen Benutzerkontos wird SecureRandom als Basis verwendet. Dafür zuständig ist die Klasse \texttt{PasswordGenerator}. Die generierten Passwörter können die Zeichen \texttt{a-z}, \texttt{A-Z}, \texttt{0-9} und die Sonderzeichen \texttt{!\%?\#-\_*+} enthalten.
+
+\section{CSRF-Tokens}
+Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als CPRNG. Für jede Play Session wird ein Token generiert. Für jeden Request wird aus dem Token und einer Nounce ein mit HMCA-SHA1 signiertes CSRF-Token generiert.
+
+\section{Play Cookies}
+\label{play:cookies}
+Play verwendet ein \enquote{\gls{jwt}} als Session Cookie mit dem Namen \linebreak\textit{PLAY\_SESSION}. Es ist durch eine HMAC-SHA256 Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
+
+
+Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, was allerdings in der aktuellen Iteration keinerlei Anwendung findet. Der Error-Handling-Code verwendet zwar die Flash-Scope um Fehlermeldungen über eine Klassengrenze hinweg verfügbar zu machen, diese Daten werden aber innerhalb einer Anfrage direkt wieder gelesen und landen somit niemals beim Client.
+
+Die Dokumentation von Play vermerkt, dass das Flash Cookie nicht signiert wird. \autocite{JavaPlayFlashDocu}
+\blockquote{
+The Flash scope works exactly like the Session, but with two differences: \\
+\textbf{-} data are kept for only one request, \\
+\textbf{-} the Flash cookie is not signed, making it possible for the user to modify it.
+}
+Dies hat sich allerdings bei einem Test als falsch herausgestellt. Sowohl wird das Flash Cookie in unserer Anwendung signiert als auch validiert, wenn es vom Client bei einer weiteren Anfrage wieder an den Server geschickt wird.
+
+\section{Schlüsselmanagement}
+Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
+
+\begin{itemize}
+	\item Der private Schlüssel zum signieren der Play Cookies
+	\item Der private Schlüssel für reCAPTCHA
+	\item Der öffentliche Schlüssel für reCAPTCHA
+	\item Zugangsdaten für den E-Mail Server
+	\item Zugangsdaten für die Datenbank
+\end{itemize}
+
+Diese liegen in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Team Mitglieder und sind nicht in die Versionsverwaltung mit eingecheckt. Die \texttt{application.conf} bindet diese Datei mit dem include Statement ein und somit sind die Schlüssel in der Anwendung verwendet werden. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind aber Anwendungseinstellungen jedoch schon. 
+
 \chapter{Sicherheitsmassnahmen}
 
 \section{Login Firewall}
@@ -106,7 +149,8 @@ Der Verweis auf den Nutzer-Account findet über die numerische und eindeutige ID
 Zu diesem Zweck wird bei nicht-existenten Accounts der Benutzername mittels Hashing auf eine \enquote{virtuelle} User-ID gemappt. Die User-ID wird über ein Long repräsentiert, es wird jedoch ausschließlich der positive Zahlenraum verwendet. Vom Username wird der MD5-Hash gebildet, die ersten 8 Byte werden als Long verwendet und ggf. invertiert. Der so resultierende negative Long-Wert wird in diesem Fall als Grundlage für die Protokollierung fehlerhafter Logins verwendet. Dass MD5 kryptografisch bereits längst als geknackt gilt ist irrelevant, wir machen uns lediglich die gute Streuung und hohe Geschwindigkeit von MD5 zu eigen.
 
 \section{Sessionkonzept}
-Integraler Bestandteil unserer Anwendung ist eine Session-Funktionalität. Theoretisch bietet Play bereits eine Implementierung unter Verwendung von \enquote{\gls{jwt}} mit der es möglich ist, in Form von signierten Cookies Daten im Client-Browser zu speichern. Die Sicherstellung der Authentifizierung ist jedoch für nahezu jede Funktionalität unserer Anwendung von Bedeutung. Aus diesem Grund wurde das Session-Konzept soweit abstrahiert, dass eine Java-Annotation über einer Controller-Klasse oder einzelnen Controller-Methoden ausreicht, um zu garantieren, dass ausschließlich authentifizierte Nutzer auf selbige zugreifen können.
+\label{sessionkonzept}
+Integraler Bestandteil unserer Anwendung ist eine Session-Funktionalität. Theoretisch bietet Play bereits eine Implementierung unter Verwendung von JWT mit der es möglich ist, in Form von signierten Cookies Daten im Client-Browser zu speichern (vgl. \ref{play:cookies}). Die Sicherstellung der Authentifizierung ist jedoch für nahezu jede Funktionalität unserer Anwendung von Bedeutung. Aus diesem Grund wurde das Session-Konzept soweit abstrahiert, dass eine Java-Annotation über einer Controller-Klasse oder einzelnen Controller-Methoden ausreicht, um zu garantieren, dass ausschließlich authentifizierte Nutzer auf selbige zugreifen können.
 
 Die Annotation bewirkt, dass der korrospondierende Request \underline{vor} Erreichen der dazugehörigen Controller-Methode abgefangen wird und einer Prüfung unterzogen wird, ob der Absender authentifiziert ist. Ist dies nicht der Fall, wird die weitere Ausführung abgebrochen und der Nutzer auf die Login-Seite weitergeleitet. Ansonsten wird der Request an den entsprechenden Controller weitergereicht.
 
@@ -122,48 +166,6 @@ Play verwendet standardmäßig eine sehr restriktive Content-Security-Policy, di
 Da unsere Anwendung zum jetzigen Zeitpunkt nur mittelbaren Gebrauch von JavaScript macht, haben wir uns dazu entschlossen die Content-Security-Policy zu verschärfen: JavaScript wird grundsätzlich nicht mehr ausgeführt, es sei denn, es handelt sich um die JavaScript-Libraries von reCAPTCHA. Zu diesem Zweck haben wir die entsprechenden Quell-Urls auf die Whitelist gesetzt und somit gleichzeitig die Annahme getroffen, dass wir Google als Host-Provider der Libraries vertrauen\footnote{Erforderliche Urls für die CSP Whitelist: \url{https://developers.google.com/recaptcha/docs/faq}}.
 
 Ebenso haben wir uns entschlossen, Browser, die Content Security Policy nicht unterstützen von unserer Anwendung auszuschließen. Hiervon sind nur hinreichend alte Browser betroffen\footnote{Siehe \textquote{Browser compatibility} \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP}}.
-
-\section{Kryptografisch relevanten Informationen}
-Folgender Abschnitt enthält gesammelte Informationen über die kryptographischen Algorithmen die im HsH-Helper Anwendung finden. Die für die Algorithmen benötigten Geheimnisse und deren Verwaltung wird ebenfalls hier dokumentiert da die Sicherheit maßgeblich von der Geheimhaltung dieser abhängt.
-
-\subsection{HshHelper Passwörter}
-Die Passwörter, die Benutzer verwenden um sich bei HshHelper zu authentisieren, werden grundsätzlich nur als Hash persistiert. Konkret wird die Hashfunktion bcrypt zum Hashen der Passwörter verwendet.
-
-Um ein Passwort mit bcrypt zu Hashen muss zunächst ein Salt generiert werden. Neben dem Salt und dem gehashten Passwort wird bei bcrypt außerdem noch die bcyrpt Version und die Anzahl der Runden gespeichert. Über die Anzahl der Runden kann die Laufzeit die bcrypt benötigt um ein Passwort zu hashen beeinflusst werden.
-
-Die verwendete Bibliothek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in der Version 0.4. Sie verwendet intern die Java Klasse SecureRandom als CPRNG.
-
-Auch zur Generierung der initialen (und temporären) Benutzer-Passwörter beim Anlegen eines neuen Benutzerkontos wird SecureRandom als Basis verwendet. Dafür zuständig ist die Klasse \texttt{PasswordGenerator}. Die generierten Passwörter können die Zeichen \texttt{a-z}, \texttt{A-Z}, \texttt{0-9} und die Sonderzeichen \texttt{!\%?\#-\_*+} enthalten.
-
-\subsection{CSRF-Tokens}
-Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als CPRNG. Für jede Play Session wird ein Token generiert. Für jeden Request wird aus dem Token und einer Nounce ein mit HMCA-SHA1 signiertes CSRF-Token generiert.
-
-\subsection{Play Cookies}
-Play verwendet ein JWT (Json Web Token) als Session Cookie mit dem Namen \linebreak\textit{PLAY\_SESSION}. Es ist durch eine HMAC-SHA256 Signatur gegen Manipulationen geschützt. Das Cookie wird durch HshHelper für die Implementierung des Sessionkonzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
-
-
-Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, was allerdings in der aktuellen Iteration keinerlei Anwendung findet. Der Error-Handling-Code verwendet zwar die Flash-Scope um Fehlermeldungen über eine Klassengrenze hinweg verfügbar zu machen, diese Daten werden aber innerhalb einer Anfrage direkt wieder gelesen und landen somit niemals beim Client.
-
-Die Dokumentation von Play vermerkt, dass das Flash Cookie nicht signiert wird. \autocite{JavaPlayFlashDocu}
-\blockquote{
-The Flash scope works exactly like the Session, but with two differences: \\
-\textbf{-} data are kept for only one request, \\
-\textbf{-} the Flash cookie is not signed, making it possible for the user to modify it.
-}
-Dies hat sich allerdings bei einem Test als falsch herausgestellt. Sowohl wird das Flash Cookie in unserer Anwendung signiert als auch validiert, wenn es vom Client bei einer weiteren Anfrage wieder an den Server geschickt wird.
-
-\subsection{Schlüsselmanagement}
-Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
-
-\begin{itemize}
-	\item Der private Schlüssel zum signieren der Play Cookies
-	\item Der private Schlüssel für reCAPTCHA
-	\item Der öffentliche Schlüssel für reCAPTCHA
-	\item Zugangsdaten für den E-Mail Server
-	\item Zugangsdaten für die Datenbank
-\end{itemize}
-
-Diese liegen in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Team Mitglieder und sind nicht in die Versionsverwaltung mit eingecheckt. Die \texttt{application.conf} bindet diese Datei mit dem include Statement ein und somit sind die Schlüssel in der Anwendung verwendet werden. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind aber Anwendungseinstellungen jedoch schon. 
 
 \section{Eingabevalidierung}
 Für einige Parameter gibt es festgelegte Constraints die in allen entsprechenden Dtos verwendet werden. Das sind:
@@ -234,7 +236,7 @@ Die \texttt{Controller} beschäftigen sich seither nur noch für das Bearbeiten 
 \section{Sessionkonzept}
 Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit einer Session-Verknüpften IP-Addresse im JWT-Cookie selbst forciert. Wir waren der Annahme, die IP Addresse sei ein personenbezogenes Datum und die Speicherung von selbigen in unserer Datenbank zumindest fragwürdig. Die Verlagerung der Speicherung auf den Cookie-Speicher des Client-Browsers wäre eine potentielle Umgehungsstrategie für diese rechtliche Problematik gewesen: Die IP Addresse wird zwangsläufig vom Nutzer bei jedem Request \enquote{übertragen}, eine doppelte Übertragung würde \enquote{den Braten auch nicht mehr fett machen}. Herr Prof. Dr. Peine hat uns jedoch mitgeteilt, dass Datenschutzbedenken für dieses Projekt nicht von Bedeutung sind. Aus diesem Grund wurde diese Idee verworfen, wir speichern die IPs in unserer Datenbank.
 
-Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine numerische ID, die inkrementell aufsteigend war. Das JWT-Token beinhaltet den Schlüssel der korrospondierenden Session-Entität in der Datenbank. Würde ein Angreifer die JWT Signatur knacken, könnte er leicht passende IDs erraten: Er müsste sich anmelden, wüsste dann, welche ID \enquote{aktuell} ist und könnte anhand dieser Information passende IDs ausprobieren. Wir haben diese Implementierung zugunsten von kryptografisch sicheren UUIDs verworfen, die ein 2nd Layer of Defense darstellen (vgl. [verweis auf session-konzept einfügen]).
+Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine numerische ID, die inkrementell aufsteigend war. Das JWT-Token beinhaltet den Schlüssel der korrospondierenden Session-Entität in der Datenbank. Würde ein Angreifer die JWT Signatur knacken, könnte er leicht passende IDs erraten: Er müsste sich anmelden, wüsste dann, welche ID \enquote{aktuell} ist und könnte anhand dieser Information passende IDs ausprobieren. Wir haben diese Implementierung zugunsten von kryptografisch sicheren UUIDs verworfen, die ein 2nd Layer of Defense darstellen (vgl. \ref{sessionkonzept}).
 
 \printbibliography
 
