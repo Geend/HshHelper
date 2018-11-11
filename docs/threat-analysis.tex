@@ -146,18 +146,32 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 \begin{itemize}
   \item \textbf{Spoofing des Servers}
   \begin{itemize}
-  \item Zweck: Damit der Nutzer einem die Daten darlegt
-  \item Möglichkeiten:
+  \item Zweck: 
+  	\begin{itemize}  
+  		\item Ausspähen von Anmeldedaten der Benutzer
+  		\item Ausspähen von Dateien, die ein Benutzer bei HshHelper hochladen möchte
+  	\end{itemize}
+  \item Möglichkeiten: \textcolor{red}{IP-Spoofing, DNS manipulieren,...}
+  	\begin{itemize}  
+  		\item Ausspähen von Anmeldedaten der Benutzer
+  		\item Ausspähen von Dateien, die ein Benutzer bei HshHelper hochladen möchte
+  	\end{itemize}
   \item Risiko: Mittelmäßig
-  \item Gegenmaßnahmen: Authentication des Servers via Certificate (HTTPS/TLS), HSTS
+  \item Gegenmaßnahmen: Authentifizierung des HshHelper Servers durch Zertifikate (HTTPS mit HSTS)
   \end{itemize}
 
   \item \textbf{Eavesdropping}
   \begin{itemize}
-  \item Zweck: Login-Credentials von Benutzern erlangen
+  \item Zweck: 
+  	\begin{itemize}  
+  		\item Ausspähen von Anmeldedaten der Benutzer
+  		\item Ausspähen von  \textcolor{red}{eigentlich allen Daten}
+  		\item Ausspähen von Dateien, die ein Benutzer bei HshHelper hochlädt
+  		\item Ausspähen von Dateien, die ein Benutzer bei HshHelper runterlädt
+  	\end{itemize}
   \item Möglichkeiten: Man-in-the-Middle-Angriff
   \item Risiko: Mittelmäßig
-  \item Gegenmaßnahmen: HTTPS mit HSTS oder SecureCookie
+  \item Gegenmaßnahmen: Verschlüsselung durch HTTPS mit HSTS oder SecureCookie
   \end{itemize}
 
   \item \textbf{Replayattacken}
@@ -165,7 +179,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Zweck:
   \item Möglichkeiten:
   \item Risiko: Mittelmäßig
-  \item Gegenmaßnahmen: HTTPS / CSRF
+  \item Gegenmaßnahmen: HTTPS / CSRF-Token
   \end{itemize}
 
   \item \textbf{Tampering}
@@ -173,24 +187,21 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Zweck:
   \item Möglichkeiten:
   \item Risiko: Mittelmäßig
-  \item Gegenmaßnahmen: HTTPS/TLS
+  \item Gegenmaßnahmen: HTTPS
   \end{itemize}
 
-  \item \textbf{Ungültig ausgestelltes Zertifikat (Türkischer Geheimdienst)}
+  \item \textbf{Verwendung eines gefälschten,von einer anerkannten Zertifizierungsstelle signierten Zertifikates}%Ungültig ausgestelltes Zertifikat (Türkischer Geheimdienst)
   \begin{itemize}
-  \item Zweck:
-  \item Möglichkeiten:
+  \item Zweck: 
+  	\begin{itemize}
+  		\item Spoofing des Servers
+  		\item Man-in-the-Middle-Angriffe
+   \end{itemize}
+  \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HshHelper Domain ausgestellt werden. Für HshHelper Benutzer ist das nicht sofort einsehbar.
   \item Risiko: Gering
-  \item Gegenmaßnahmen: Cert Pinning
+  \item Gegenmaßnahmen: HTTP Public Key Pinning (HPKP)
   \end{itemize}
 
-  \item \textbf{DDOS (Out of scope)}
-  \begin{itemize}
-  \item Zweck: standard Zweck
-  \item Möglichkeiten: standard means
-  \item Risiko:
-  \item Gegenmaßnahmen: None, or standard IDS
-  \end{itemize}
 
   \item \textbf{XSS (Cross Site Scripting)}
   \begin{itemize}
@@ -212,7 +223,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item \textbf{SQL Injection}
   \begin{itemize}
   \item Zweck: Ungültige Manipulation von Datenbankeinträgen
-  \item Möglichkeiten:
+  \item Möglichkeiten: Lesen und schreiben von Datenbankinhalten
   \item Risiko: Hoch
   \item Gegenmaßnahmen:
   \begin{itemize}
@@ -229,7 +240,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \begin{itemize}
           \item Einen fremden Benutzer ausloggen
           \item Einem Administrator einen Request unterjubeln, durch welchen er einen Nutzer erstellt
-      \end{itemize}
+  \end{itemize}
   \item Risiko: Hoch
   \item Gegenmaßnahmen: CSRF-Tokens bei Requests checken
   \end{itemize}
@@ -260,7 +271,6 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 
   \item \textcolor{red}{Captcha lösen lassen von Indern?}
   \item \textcolor{red}{Elevation of privilege -> Frage an Peine. ?}
-  \item \textcolor{red}{Security Header auflisten, warum welcher, wofür}
 \end{itemize}
 
 \subsection{HTTP-Endpoint-spezifische Bedrohungen}
@@ -303,24 +313,24 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \end{itemize}
 \end{itemize}
 
-\subsubsection{Mögliche Angriffe auf den "Passwort zurücksetzen lassen"-Prozess}
+\subsubsection{Mögliche Angriffe auf den \enquote{Passwort zurücksetzen lassen}-Prozess}
 
 \begin{itemize}
   \item \textbf{Nutzer permanent aus der Applikation ausschliessen}
   \begin{itemize}
   \item Zweck: Denial-of-Service-Angriff auf einen individuellen Nutzer
-  \item Möglichkeiten: Wiederholtes Absenden des Request mit richtigen Nutzernamen generiert bei jedem Request ein neues temporäres Passwort
+  \item Möglichkeiten: Wiederholtes Absenden des Request mit richtigen Nutzernamen generiert bei jedem Request ein neues temporäres Passwort. Selbst wenn der Benutzer das temporäre Passwort ändert, wird er es nicht schaffen sich anzumelden, da dann bereits die Generierung ein neues temporäres Passwort vom Angreifer erzwungen wurde.
   \item Risiko: Mittel
   \item Gegenmaßnahmen:
   \begin{itemize}
   \item Einbau eines Captchas
-  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den "Passwort ändern"-Prozess anzustoßen
+  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den \enquote{Passwort ändern}-Prozess anzustoßen. Der Link muss einen geheimen Token beinhalten, der nur HshHelper und dem Empfänger der E-Mail bekannt ist. Das temporäre Passwort wird erst generiert, sobald auf den Link geklickt wird
   \end{itemize}
 \end{itemize}
 
-  \item \textbf{Timing/Side-Channel auf Verhalten des Requests}
+  \item \textbf{Timing-Angriff auf Verhalten des Requests}
   \begin{itemize}
-  \item Zweck: Herausfinden, ob Username existiert
+  \item Zweck: Herausfinden, ob ein Benutzer mit einem bestimmten Username existiert
   \item Möglichkeiten: Durch Messen der Antwortszeiten des Servers können Rückschlüsse darüber gezogen werden, welcher Code ausgeführt wurde (E-Mail-Versand)
   \item Risiko: Mittelmäßig-Hoch
   \item Gegenmaßnahmen:
@@ -348,6 +358,19 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
 \section{Ignorierte Bedrohungen}
 
 Die hier aufgelisteten Bedrohungen werden ignoriert, da wir im Rahmen des Projekts definiert haben, dass nur Angriffe über den HTTP-Vektor betrachtet werden.
+
+\subsubsection{DDOS}
+\begin{itemize}
+
+  \item \textbf{DDOS (Out of scope)}
+  \begin{itemize}
+  \item Zweck: standard Zweck
+  \item Möglichkeiten: standard means
+  \item Risiko:
+  \item Gegenmaßnahmen: None, or standard IDS
+  \end{itemize}
+\end{itemize}
+
 
 \subsubsection{Mögliche Angriffe beim Versand der Passwort-Reset-E-Mail}
 
