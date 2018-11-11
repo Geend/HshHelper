@@ -1,4 +1,5 @@
 # ignore files LaTeX creates during compilation
+*.tex.swp
 *.acn
 *.acr
 *.alg

@@ -112,6 +112,8 @@ Setzen wir alle richtigen Security-Header? \\
 }
 
 \subsection{Penetrationstests}
+
+\subsubsection{Funktionalität der CSRF Tokens}
 Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationstest durchgeführt. Im ersten Schritt wurde dazu einfach das CSRF-Token aus dem HTML der Form gelöscht. Diese Anfrage wird wie erwartet vom Server mit einer von Play vorgefertigten \enquote{\texttt{Unauthorized}} Seite beantwortet. In einem weiteren Schritt wurde mit Curl ein Anfrage erstellt in welcher lediglich der Benutzername und Passwort aber kein CSRF-Token enthalten war. Diese Anfrage wurde vom Server ohne Beanstandung akzeptiert. Der Grund hierfür ist, dass das CSRF-Token weder im Cookie noch als Form-Daten an den Server übermittelt wird. Auch die \texttt{RequireCSRFCheck} Annotation schafft hierfür keine Abhilfe. CSRF Möglichkeit und somit eine Sicherheitslücke liegt vor, wenn folgende Bedingungen gelten:
 
   \begin{itemize}
@@ -122,6 +124,13 @@ Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationste
 Lockt man ein Opfer auf eine Seite mit einer Form kann durch einen Klick beispielsweise ein Nutzer aus einer Gruppe gelöscht werden indem bei der Anfrage das CSRF-Token einfach weggelassen wird.
 
 Ein konkretes Angriffsszenario in dieser Anwendung wäre der Login. Das Opfer muss dazu keinerlei Cookies von der HsH-Helper Seite im Browser haben. Dies kann gegeben sein wenn es seine Cookies gelöscht hat oder den Incognito Modus im Browser verwendet. Ein Angreifer kann nun das Opfer auf eine von ihm präparierte Seite locken, wo durch das Klicken auf einen Link eine Login Form abgeschickt wird. Somit ist das Opfer angemeldet unter einem Benutzeraccount, welcher auch dem Angreifer bekannt ist. Ist das Opfer nun unvorsichtig und verifiziert den aktuellen Benutzeraccount nicht, lädt es Dateien möglicherweise Dateien hoch unter einem Benutzeraccount auf welchen der Angreifer zugriff hat.
+
+\subsubsection{CSRF-Angriff}
+Im Rahmen eines Penetrationstests wurde herausgefunden, dass die von Play generierten CSRF Tokens keine Nonce's darstellen bzw. beliebig oft verwendet werden können. Sie werden mit einem in der Play-Session persistierten Wert abgeglichen und auf Authentizität geprüft. Dieser Vergleichswert wird dann gesetzt, wenn der Nutzer erstmalig eine Seite aufruft, die über ein Form verfügt.
+
+Es wurde herausgefunden, dass unser Session-Konzept diesen Wert nicht berücksichtigt: Meldet sich ein Nutzer an, wird der CSRF-Vergleichswert beim Login gesetzt, beim Logout jedoch nicht wieder entfernt. Bei einer Situation, bei der sich zwei Nutzer den gleichen physischen Computer bzw. Browser teilen und sich nacheinander anmelden, würden beide Nutzer den gleichen CSRF-Vergleichswert verwenden. In der Folge könnte der erste Nutzer den Zweiten angreifen, da er valide CSRF-Tokens für den Zweiten - basierend auf dem gleichen Vergleichswert - kennt.
+
+In der Folge wurde das Sessionkonzept so geändert, dass vor Anlegen einer neuen Session alle bisherigen Werte aus der korrospondierenden Play-Session entfernt werden: Bei einem Login ist so garantiert, dass ein neuer CSRF-Vergleichswert erstellt wird.
 
 %Welche Penetrationstests wurden durchgeführt?
 %Gibt es ggf. automatisierbare Skripts?
@@ -150,7 +159,7 @@ Auch wenn dies im vorliegenden Fall aufgrund der Unique-Constraints in der Daten
 \subsection{Bcrypt Password Hashing}
 Der Code zum sicheren Abspeichern eines Nutzerpassworts in der Datenbank wurde durch eine Person einem Review unterzogen. Die dabei aufgekommene Anregung wurde mit dem ganzen Team diskutiert. Das Passwort wird im Code von lediglich zwei Stellen aus gesetzt. Der \enquote{\texttt{UserManager}} verwendet sie beim Zurücksetzen des Passworts und der \enquote{\texttt{LoginManager}} beim Setzen eines neuen Passworts. In beiden Fällen wird direkt beim Aufruf des Setters der Hash durch die Verwendung des \enquote{\texttt{PasswordSecurityModule}} erzeugt. Somit ist sichergestellt, dass beim aktuellen Codestand keine Klartextpasswörter in der Datenbank abgespeichert werden. BCrypt wird verwendet um den Hash zu generieren und es wurde kurz diskutiert ob man nicht doch auf PBKDF2 wechselt. Da beide aber nicht ohne eine Third-Party-Library auskommen, wurde davon abgesehen. Dem Bcrypt-Code \autocite{BcryptCode} kann entnommen werden, dass das automatisch generierte Salt SecureRandom verwendet und somit ausreichend zufällige Salts für unterschiedliche Passwörter generiert und auch die Rundenanzahl, die explizit festgelegt wurde, ist ausreichend sicher.
 
-Aus dem Review ging die Idee hervor, ob bei erfolgreichen Logins durch Messen der für das Hashing benötigten Zeit die Rundenanzahl dynamisch erhöht wird, um somit für Zukunftssicherheit zu sorgen. Die Idee wurde ins Backlog aufgenommen und das Review damit abgeschlossen.
+Aus dem Review ging die Idee hervor, ob bei erfolgreichen Logins durch Messen der für das Hashing benötigten Zeit die Rundenanzahl dynamisch erhöhen wird, um somit für Zukunftssicherheit zu sorgen. Die Idee wurde ins Backlog aufgenommen und das Review damit abgeschlossen.
 
 
 
