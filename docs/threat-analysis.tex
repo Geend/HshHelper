@@ -256,7 +256,11 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an dem 
   \item Zweck: Durch SQL Injection erbeutete Hashes in Plaintext verwandeln
   \item Möglichkeiten: Rainbowtables
   \item Risiko: Gering
-  \item Gegenmaßnahmen: Passwörter nur gehashed mit Salt speichern
+  \item Gegenmaßnahmen:
+  \begin{itemize}
+    \item Passwörter nur gehashed mit Salt speichern
+    \item Passwörter zusätzlich mit Pepper hashen
+  \end{itemize}
   \end{itemize}
 
   \hypertarget{threat9}{}
