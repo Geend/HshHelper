@@ -166,8 +166,48 @@ Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 Diese liegen in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Team Mitglieder und sind nicht in die Versionsverwaltung mit eingecheckt. Die \texttt{application.conf} bindet diese Datei mit dem include Statement ein und somit sind die Schlüssel in der Anwendung verwendet werden. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind aber Anwendungseinstellungen jedoch schon. 
 
 \section{Eingabevalidierung}
+Für einige Parameter gibt es festgelegte Constraints die in allen entsprechenden Dtos verwendet werden. Das sind:
 
-\textcolor{red}{Hier sollten die Regexes hin!}
+\begin{itemize}
+	\item username		
+	 \begin{itemize}
+			\item Maximale Länge: 20
+			\item Regex: [a-z][a-z0-9.]+
+		\end{itemize}
+
+	
+	\item password
+	\begin{itemize}
+		\item Maximale Länge: 72 (Beschränkung von bcrypt)
+	\end{itemize}
+	
+	\item groupname
+	\begin{itemize}
+		\item Minimale Länge: 3
+		\item Maximale Länge: 20
+		\item Regex: [a-z][a-z0-9.]+
+
+	\end{itemize}
+
+
+	\item email
+	\begin{itemize}		
+		\item Regex: Siehe Play Implementierung von \texttt{EmailValidator}
+	\end{itemize}
+	
+
+\end{itemize}
+
+
+
+%    public static final int MAX_USERNAME_LENGTH = 20;
+%    public static final int MAX_PASSWORD_LENGTH = 100;
+%    public static final String USERNAME_REGEX = "[a-z][a-z0-9.]+";
+
+
+ %   public static final int GROUPNAME_MIN_LENGTH = 3;
+ %   public static final int GROUPNAME_MAX_LENGTH = 20;
+ %   public static final String GROUPNAME_REGEX = "[a-z][a-z0-9.]+";
 
 \section{Ggf. architekturielle Gegenmassnahmen gegen bestimmte Angriffe}
 
