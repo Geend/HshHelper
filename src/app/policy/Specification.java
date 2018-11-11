@@ -129,7 +129,7 @@ public class Specification {
         return false;
     }
 
-    public boolean isAllowedToAddGroupMember(User currentUser, Group group) {
+    public boolean CanGenerallyAddGroupMember(User currentUser, Group group) {
         if(currentUser.isAdmin()) {
             return true;
         }
@@ -141,7 +141,7 @@ public class Specification {
         return false;
     }
 
-    public boolean CanAddGroupMember(User currentUser, Group group, User toBeAdded) {
+    public boolean CanAddSpecificGroupMember(User currentUser, Group group, User toBeAdded) {
         if(currentUser == null) {
             return false;
         }

@@ -207,59 +207,92 @@ public class GroupMemberPolicyTests {
     }
 
     /*
+        Generally adding a user to a Group
+     */
+    @Test
+    public void ownerCanGenerallyAddGroupMember() {
+        boolean actual = Specification.instance.CanGenerallyAddGroupMember(peter, petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void adminMemberCanGenerallyAddGroupMember() {
+        boolean actual = Specification.instance.CanGenerallyAddGroupMember(adminTwo, petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void adminNonMemberCanGenerallyAddGroupMember() {
+        boolean actual = Specification.instance.CanGenerallyAddGroupMember(admin, petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void memberCannotGenerallyAddGroupMember() {
+        boolean actual = Specification.instance.CanGenerallyAddGroupMember(klaus, petersGroup);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonMemberCannotGenerallyAddGroupMember() {
+        boolean actual = Specification.instance.CanGenerallyAddGroupMember(rudi, petersGroup);
+        assertThat(actual).isFalse();
+    }
+
+    /*
         Add User to Group
      */
     @Test
     public void ownerCanAddGroupMember() {
-        boolean actual = Specification.instance.CanAddGroupMember(peter, petersGroup, admin);
+        boolean actual = Specification.instance.CanAddSpecificGroupMember(peter, petersGroup, admin);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void foreignAdminCanAddGroupMember() {
-        boolean actual = Specification.instance.CanAddGroupMember(admin, petersGroup, horst);
+        boolean actual = Specification.instance.CanAddSpecificGroupMember(admin, petersGroup, horst);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminGroupMemberCanAddGroupMember() {
-        boolean actual = Specification.instance.CanAddGroupMember(adminTwo, petersGroup, horst);
+        boolean actual = Specification.instance.CanAddSpecificGroupMember(adminTwo, petersGroup, horst);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void ownerCannotAddMemberTwice() {
-        boolean actual = Specification.instance.CanAddGroupMember(peter, petersGroup, klaus);
+        boolean actual = Specification.instance.CanAddSpecificGroupMember(peter, petersGroup, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void foreignAdminCannotAddGroupMemberTwice() {
-        boolean actual = Specification.instance.CanAddGroupMember(admin, petersGroup, klaus);
+        boolean actual = Specification.instance.CanAddSpecificGroupMember(admin, petersGroup, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void adminGroupMemberCannotAddGroupMemberTwice() {
-        boolean actual = Specification.instance.CanAddGroupMember(adminTwo, petersGroup, klaus);
+        boolean actual = Specification.instance.CanAddSpecificGroupMember(adminTwo, petersGroup, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void groupMemberCannotAddOtherGroupMember() {
-        boolean actual = Specification.instance.CanAddGroupMember(klaus, petersGroup, horst);
+        boolean actual = Specification.instance.CanAddSpecificGroupMember(klaus, petersGroup, horst);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonGroupMemberCannotAddOtherGroupMember() {
-        boolean actual = Specification.instance.CanAddGroupMember(horst, petersGroup, rudi);
+        boolean actual = Specification.instance.CanAddSpecificGroupMember(horst, petersGroup, rudi);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAuthorizedUserCannotAddOtherGroupMember() {
-        boolean actual = Specification.instance.CanAddGroupMember(null, petersGroup, rudi);
+        boolean actual = Specification.instance.CanAddSpecificGroupMember(null, petersGroup, rudi);
         assertThat(actual).isFalse();
     }
 
