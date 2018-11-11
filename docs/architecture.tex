@@ -233,9 +233,10 @@ Jeder dieser Tests musste entweder gegen eine \texttt{FakeApplication} laufen, o
 Um diese Testbarkeit wieder zu gewinnen, haben wir die Zuständigkeiten feiner aufgeteilt und die \texttt{Manager}-Klassen ins Leben gerufen, die von nun an den domänenspezifischen Operation übernehmen.
 Die \texttt{Controller} beschäftigen sich seither nur noch für das Bearbeiten des Requests, das Weiterleiten von Fehlern innerhalb eines Formulars zum Nutzer sowie dem Absenden des generierten HTMLs.
 
-\section{Sessionkonzept}
+\section{Sessionkonzept / Datenschutz}
 Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit einer Session-Verknüpften IP-Addresse im JWT-Cookie selbst forciert. Wir waren der Annahme, die IP Addresse sei ein personenbezogenes Datum und die Speicherung von selbigen in unserer Datenbank zumindest fragwürdig. Die Verlagerung der Speicherung auf den Cookie-Speicher des Client-Browsers wäre eine potentielle Umgehungsstrategie für diese rechtliche Problematik gewesen: Die IP Addresse wird zwangsläufig vom Nutzer bei jedem Request \enquote{übertragen}, eine doppelte Übertragung würde \enquote{den Braten auch nicht mehr fett machen}. Herr Prof. Dr. Peine hat uns jedoch mitgeteilt, dass Datenschutzbedenken für dieses Projekt nicht von Bedeutung sind. Aus diesem Grund wurde diese Idee verworfen, wir speichern die IPs in unserer Datenbank.
 
+\section{Sessionkonzept / Numeric IDs}
 Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine numerische ID, die inkrementell aufsteigend war. Das JWT-Token beinhaltet den Schlüssel der korrospondierenden Session-Entität in der Datenbank. Würde ein Angreifer die JWT Signatur knacken, könnte er leicht passende IDs erraten: Er müsste sich anmelden, wüsste dann, welche ID \enquote{aktuell} ist und könnte anhand dieser Information passende IDs ausprobieren. Wir haben diese Implementierung zugunsten von kryptografisch sicheren UUIDs verworfen, die ein 2nd Layer of Defense darstellen (vgl. \ref{sessionkonzept}).
 
 \printbibliography
