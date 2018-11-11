@@ -195,7 +195,7 @@ Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 	\item Zugangsdaten für die Datenbank
 \end{itemize}
 
-Die Schlüssel und Zugangsdaten liegen alle in der Datei \textit{application.conf}.
+Diese liegen in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Team Mitglieder und sind nicht in die Versionsverwaltung mit eingecheckt. Die \texttt{application.conf} bindet diese Datei mit dem include Statement ein und somit sind die Schlüssel in der Anwendung verwendet werden. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind aber Anwendungseinstellungen jedoch schon. 
 
 \section{Eingabevalidierung}
 
