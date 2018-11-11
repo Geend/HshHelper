@@ -151,12 +151,12 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   		\item Ausspähen von Anmeldedaten der Benutzer
   		\item Ausspähen von Dateien, die ein Benutzer bei HshHelper hochladen möchte
   	\end{itemize}
-  \item Möglichkeiten: \textcolor{red}{IP-Spoofing, DNS manipulieren,...}
+  \item Möglichkeiten:
   	\begin{itemize}  
-  		\item Ausspähen von Anmeldedaten der Benutzer
-  		\item Ausspähen von Dateien, die ein Benutzer bei HshHelper hochladen möchte
+  		\item IP-Spoofing
+  		\item DNS manipulieren
   	\end{itemize}
-  \item Risiko: Mittelmäßig
+  \item Risiko: Mittel
   \item Gegenmaßnahmen: Authentifizierung des HshHelper Servers durch Zertifikate (HTTPS mit HSTS)
   \end{itemize}
 
@@ -164,29 +164,33 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \begin{itemize}
   \item Zweck: 
   	\begin{itemize}  
-  		\item Ausspähen von Anmeldedaten der Benutzer
-  		\item Ausspähen von  \textcolor{red}{eigentlich allen Daten}
-  		\item Ausspähen von Dateien, die ein Benutzer bei HshHelper hochlädt
-  		\item Ausspähen von Dateien, die ein Benutzer bei HshHelper runterlädt
+  		\item Primär Ausspähen von Anmeldedaten der Benutzer
+  		\item Grundsätzlich sind allen Daten (Gruppennamen etc.) Ziel
+  		%\item Ausspähen von Dateien, die ein Benutzer bei HshHelper hochlädt
+  		%\item Ausspähen von Dateien, die ein Benutzer bei HshHelper runterlädt
   	\end{itemize}
   \item Möglichkeiten: Man-in-the-Middle-Angriff
-  \item Risiko: Mittelmäßig
+  \item Risiko: Mittel
   \item Gegenmaßnahmen: Verschlüsselung durch HTTPS mit HSTS oder SecureCookie
   \end{itemize}
 
   \item \textbf{Replayattacken}
   \begin{itemize}
-  \item Zweck:
-  \item Möglichkeiten:
-  \item Risiko: Mittelmäßig
-  \item Gegenmaßnahmen: HTTPS / CSRF-Token
+  \item Zweck: Mehrfach-Ausführung geschützter Aktionen
+  \item Möglichkeiten (Bezogen auf unsere Anwendung): Keine
+  \item Risiko: Note
+  \item Gegenmaßnahmen: HTTPS %/ CSRF-Token
   \end{itemize}
 
   \item \textbf{Tampering}
   \begin{itemize}
-  \item Zweck:
-  \item Möglichkeiten:
-  \item Risiko: Mittelmäßig
+  \item Zweck: 
+  	\begin{itemize}  
+  		\item Ausführung von nicht intendierten Aktionen (z.B. Benutzer-Löschen abfangen und Ziel-User-Id manipulieren)
+  		\item Server-Response manipulieren (z.B. bösartiges JavaScript einbauen)
+	\end{itemize}
+  \item Möglichkeiten: Leitung splicen und Man-In-The-Middle durchführen
+  \item Risiko: Mittel
   \item Gegenmaßnahmen: HTTPS
   \end{itemize}
 
@@ -197,7 +201,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   		\item Spoofing des Servers
   		\item Man-in-the-Middle-Angriffe
    \end{itemize}
-  \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HshHelper Domain ausgestellt werden. Für HshHelper Benutzer ist das nicht sofort einsehbar.
+  \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HshHelper Domain ausgestellt werden. Für HshHelper Benutzer ist das nicht sofort einsehbar\footnote{Bereits geschehen/Türkischer Geheimdienst: \url{https://arstechnica.com/information-technology/2013/01/turkish-government-agency-spoofed-google-certificate-accidentally/}}.
   \item Risiko: Gering
   \item Gegenmaßnahmen: HTTP Public Key Pinning (HPKP)
   \end{itemize}
@@ -206,25 +210,24 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item \textbf{XSS (Cross Site Scripting)}
   \begin{itemize}
   \item Zweck: Ausführung von JavaScript im HshHelper Kontext eines Benutzers
-  \item Möglichkeiten:
-  	\begin{itemize}
-          \item Skript einbetten in Benutzername bei der Erstellung eines Nutzers
-          \item Skript einbetten in Gruppennamen bei der Erstellung einer Gruppe
-      \end{itemize}
+  \item Möglichkeiten: Eingaben, die ausgegeben werden, ohne Eingabevalidierung oder Ausgabecodierung auszuführen.
   \item Risiko: Hoch
   \item Gegenmaßnahmen:
 	\begin{itemize}
-		\item Content Security Policy (CSP) des Browsers aktivieren. \textcolor{red}{Alte Browser bzw Browser die CSP nicht können aussperren} %TODO: Das ist nicht implementiert und vllt auch garnicht so einfach. Ggf einfach in Assumptions aufnehmen, dass nur Browser verwendet werden, die CSP unterstützen
+		\item Eingabevalidierung (Kleinbuchstaben und Zahlen, valide E-Mail-Adressen)
+		\item X-XSS-Protection (vgl. \ref{x:xss:protection})
+		\item Content Security Policy (CSP) des Browsers aktivieren
+		\item Alte Browser bzw Browser die CSP nicht können aussperren (s. Zusatzfrage) %TODO: Das ist nicht implementiert und vllt auch garnicht so einfach. Ggf einfach in Assumptions aufnehmen, dass nur Browser verwendet werden, die CSP unterstützen
 
 		\item Ausgabecodierung
 	\end{itemize}
   \end{itemize}
-      Eingabevalidierung (Kleinbuchstaben und Zahlen, valide E-Mail-Adressen)
+      
 
   \item \textbf{SQL Injection}
   \begin{itemize}
-  \item Zweck: Ungültige Manipulation von Datenbankeinträgen
-  \item Möglichkeiten: Lesen und schreiben von Datenbankinhalten
+  \item Zweck: Unzulässiges Lesen und Schreiben von Datenbankinhalten
+  \item Möglichkeiten: Inline-SQL Queries ohne Seperation of Data and Code.
   \item Risiko: Hoch
   \item Gegenmaßnahmen:
   \begin{itemize}
@@ -233,30 +236,41 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
     \item Eingabevalidierung
   \end{itemize}
   \end{itemize}
+  
+  \item \textbf{Offline Password Brute Forcing}
+  \begin{itemize}
+  \item Zweck: Durch SQL Injection erbeutete Hashes in Plaintext verwandeln
+  \item Möglichkeiten: Rainbowtables
+  \item Risiko: Gering
+  \item Gegenmaßnahmen:
+  \begin{itemize}
+    \item Passwörter nur gehashed mit Salt speichern
+  \end{itemize}
+  \end{itemize}
 
   \item \textbf{CSRF (Cross-Site-Request-Forgery)}
   \begin{itemize}
-  \item Zweck:
+  \item Zweck: Benutzer dazu bringen Aktionen auszuführen, die sie nicht intendiert haben.
   \item Möglichkeiten:
   \begin{itemize}
-          \item Einen fremden Benutzer ausloggen
+          \item Einen fremden Benutzer dazu bringen, sich selbst auszuloggen
           \item Einem Administrator einen Request unterjubeln, durch welchen er einen Nutzer erstellt
   \end{itemize}
   \item Risiko: Hoch
-  \item Gegenmaßnahmen: CSRF-Tokens bei Requests checken
+  \item Gegenmaßnahmen: CSRF-Tokens bei Requests prüfen
   \end{itemize}
 
-  \item \textbf{Session fälschen (eine bestimmte oder irgendeine?)}
+  \item \textbf{Session fälschen (Bestimmte oder Irgendeine)}
   \begin{itemize}
-  \item Zweck: Client spoofen
-  \item Möglichkeiten:
+  \item Zweck: Client spoofen um Aktionen auszuführen, für die der gespoofte Client autorisiert ist.
+  \item Möglichkeiten: Cookie fälschen
   \item Risiko: Hoch
-  \item Gegenmaßnahmen: Signieren des Cookies durch PrivateKey und Verwendung von UUID, Bindung an IP-Adresse, Begrenzung der Lebenszeiten(?)
+  \item Gegenmaßnahmen: Signieren des Cookies durch PrivateKey und Verwendung von UUID, Bindung an IP-Adresse, Begrenzung der Lebenszeiten
   \end{itemize}
 
   \item \textbf{Abstreitbarkeit illegaler Handlungen}
   \begin{itemize}
-  \item Zweck:
+  \item Zweck: Anderen Nutzer in rechtliche Schwierigkeiten bringen
   \item Möglichkeiten: Eintragen illegaler Namen bei Benutzernamen oder Gruppenmane
   \item Risiko: Gering
   \item Gegenmaßnahmen: Logging von IP + Zeit, Action, User
@@ -270,7 +284,23 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \item Gegenmaßnahmen: Authorization erzwingen und prüfen bei jeder Operation
   \end{itemize}
 
-  \item \textcolor{red}{Elevation of privilege -> Frage an Peine. ?}
+  \item \textbf{Captchas durch menschliche Akteure lösen lassen}
+  \begin{itemize}
+  \item Zweck: Brute-Forcing ermöglichen
+  \item Möglichkeiten: 2captcha.com bietet diesen Service für 2.99\$ für 1000 reCAPTCHAs.
+  \item Risiko: Gering
+  \item Gegenmaßnahmen: 2-Faktor-Authoritisierung
+  \end{itemize}
+  
+  \item \textbf{DDOS}
+  \begin{itemize}
+  \item Zweck: Verfügbarkeit der Anwendung beeinträchtigen
+  \item Möglichkeiten: Botnetzwerk oder Booter-Service verwenden
+  \item Risiko: Mittel
+  \item Gegenmaßnahmen: Cloudflare/Incapsula/Akamai Secure Shield verwenden
+  \end{itemize}
+  
+  %\item \textcolor{red}{Elevation of privilege -> Frage an Peine. ?}
 \end{itemize}
 
 \subsection{HTTP-Endpoint-spezifische Bedrohungen}
@@ -280,9 +310,9 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 \begin{itemize}
   \item \textbf{Überlanges PW beim Login eingeben}
   \begin{itemize}
-  \item Zweck: Zum DDOSn der Applikation
-  \item Möglichkeiten: Durch Eingabe eines überlangen Passworts braucht der Hashing-Algorithmus sehr lange
-  \item Risiko: Gering
+  \item Zweck: DOS der Applikation
+  \item Möglichkeiten: Durch überlange Passwörter eine ressourcenintensive Hash-Operation in Gang setzen
+  \item Risiko: Hoch
   \item Gegenmaßnahmen:
   \begin{itemize}
   \item Passwort-Länge mittels Eingabevalidierung beschränken
@@ -294,21 +324,21 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \begin{itemize}
   \item Zweck: Herausfinden, ob ein Benutzer mit einem bestimmten Username existiert
   \item Möglichkeiten: Durch Messen der Antwortszeiten des Servers können Rückschlüsse darüber gezogen werden, welcher Code ausgeführt wurde (zB Hashing/DB-Zugriff)
-  \item Risiko: Mittelmäßig-Hoch
+  \item Risiko: Mittel
   \item Gegenmaßnahmen: Loginprozess für jeden Fall gleich ablaufen lassen
   \end{itemize}
 
   \item \textbf{Online Brute-forcing}
   \begin{itemize}
-  \item Zweck: Zum Knacken eines Benutzeraccounts
+  \item Zweck: Unautorisierter Zugriff auf ein fremdes Benutzerkonto
   \item Möglichkeiten: Beispielsweise durch Wörterbuchattacken
   \item Risiko: Hoch
   \item Gegenmaßnahmen:
   \begin{itemize}
-      \item Captcha Mode = Login nur möglich, wenn Captcha gelöst wird.
-      \item Accounts müssen nach x falschen Logins, einen Captcha lösen, sowie IP-Adressen sperren nach Y falschen Logins
-      \item Schwache Passworter verbieten
-      \item \textcolor{red}{Zwei-Factor-Authentication} % TODO: Ist nicht implementiert und ggf auch nicht mal eben so gemacht
+      \item Login nur möglich, wenn Captcha gelöst wird.
+      \item IP Sperre bei auffälligem Verhalten.
+      \item Schwache Passworter verbieten.
+      \item Zwei-Factor-Authentication. % TODO: Ist nicht implementiert und ggf auch nicht mal eben so gemacht
     \end{itemize}
   \end{itemize}
 \end{itemize}
@@ -320,7 +350,7 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \begin{itemize}
   \item Zweck: Denial-of-Service-Angriff auf einen individuellen Nutzer
   \item Möglichkeiten: Wiederholtes Absenden des Request mit richtigen Nutzernamen generiert bei jedem Request ein neues temporäres Passwort. Selbst wenn der Benutzer das temporäre Passwort ändert, wird er es nicht schaffen sich anzumelden, da dann bereits die Generierung ein neues temporäres Passwort vom Angreifer erzwungen wurde.
-  \item Risiko: Mittel
+  \item Risiko: Hoch
   \item Gegenmaßnahmen:
   \begin{itemize}
   \item Einbau eines Captchas
@@ -332,15 +362,15 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
   \begin{itemize}
   \item Zweck: Herausfinden, ob ein Benutzer mit einem bestimmten Username existiert
   \item Möglichkeiten: Durch Messen der Antwortszeiten des Servers können Rückschlüsse darüber gezogen werden, welcher Code ausgeführt wurde (E-Mail-Versand)
-  \item Risiko: Mittelmäßig-Hoch
+  \item Risiko: Mittel
   \item Gegenmaßnahmen:
   \begin{itemize}
-    \item \enquote{Passwort zurücksetzen lassen}-Prozess in konstanter Länge ablaufen lassen \textcolor{red}{Ggf. E-Mail an fakeaddresse beim falschen Nutzername}
+    \item \enquote{Passwort zurücksetzen lassen}-Prozess in konstanter Länge ablaufen lassen. Ggf. E-Mail an fakeaddresse beim falschen Nutzername
     \item E-Mail-Versand asynchron durchführen
     \end{itemize}
   \end{itemize}
 
-  \item \textbf{E-Mail Postfach des Nutzers spammen}
+  \item \textbf{E-Mail Postfach des Nutzers fluten}
   \begin{itemize}
   \item Zweck: Verbrauch der vorhandenen Resourcen seines E-Mail-Kontos
   \item Möglichkeiten: Wiederholtes Absenden des Forms durch Angabe seines Nutzernamens
@@ -355,71 +385,15 @@ Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betra
 Da dieser Prozess dem Loginprozess gleich ist, treten hier die selben Lücken auf.
 Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
 
+\subsubsection{Mögliche Angriffe beim Versand von E-Mails}
+Der Angriffsvektor SMTP sollte ausweislich der Aufgabenstellung nicht betrachtet werden. Wir listen aus diesem Grund keine diesbezüglichen Bedrohungen.
+
 \section{Ignorierte Bedrohungen}
+\subsection{Captchas durch menschliche Akteure lösen lassen}
+Die Kosten für diese Dienstleistung machen sie unwirtschaftlich in Anbetracht unseres Applikationskontexts.
 
-Die hier aufgelisteten Bedrohungen werden ignoriert, da wir im Rahmen des Projekts definiert haben, dass nur Angriffe über den HTTP-Vektor betrachtet werden.
-
-
-
-\subsubsection{Captcha effizient lösen}
-\begin{itemize}
-
-  \item \textbf{Captcha effizient lösen}
-  \begin{itemize}
-  \item Zweck: Schutzmechanismen von HshHelper aushebeln
-  \item Möglichkeiten: %Die Inder...
-  \item Risiko:
-  \item Gegenmaßnahmen: Mittel
-  \end{itemize}
-\end{itemize}
-
-\subsubsection{DDOS}
-\begin{itemize}
-
-  \item \textbf{DDOS (Out of scope)}
-  \begin{itemize}
-  \item Zweck: standard Zweck
-  \item Möglichkeiten: standard means
-  \item Risiko:
-  \item Gegenmaßnahmen: None, or standard IDS
-  \end{itemize}
-\end{itemize}
-
-
-\subsubsection{Mögliche Angriffe beim Versand der Passwort-Reset-E-Mail}
-
-\begin{itemize}
-  \item E-Mailversand abhören
-    \begin{itemize}
-    \item Zweck:
-    \item Möglichkeiten:
-    \item Risiko:
-    \item Gegenmaßnahmen: SMTPS (Two-Faktor-Authentisierung)?
-    \end{itemize}
-
-  \item Serverresourcen aufbrauchen
-    \begin{itemize}
-    \item Zweck: Denial-of-Service auf den Server durch Verschwenden seiner Resourcen
-    \item Möglichkeiten: Angreifer nutzt "Passwort zurücksetzen"-Formular als Angriffsvektor zum Versenden vieler Mails
-    \item Risiko: High
-    \item Gegenmaßnahmen: E-Mail nicht beliebig oft senden lassen
-    \end{itemize}
-
-  \item Server zum Warten beim E-Mail-Versand zwingen
-    \begin{itemize}
-    \item Zweck: Denial-of-Service auf den Server
-    \item Möglichkeiten: Angreifer spoofed IP-Adresse des E-Mail-Servers und zwingt Server zum Warten, beispielsweise durch Delay seiner Response
-    \item Risiko: Gering-Mittel
-    \item Gegenmaßnahmen: SMTPS, ggf. Sender Policy Framework
-    \end{itemize}
-\end{itemize}
-
-\textcolor{red}{
-Beispielsweise via Betriebssystem, physikalischer Zugriff auf der Maschine oder HTTPS?
-Oder welche, für die es keine Motivation gibt, ggf. Repudiations
-}
-
-\textcolor{red}{Offline Brute-forcing (erlangen der DB) => Schwer wegen bcrypt.}
+\subsection{HTTP bezogene Bedrohungen}
+Die Bedrohungen (....) werden ignoriert. Ausweislich der Aufgabenstellung sollen wir eine sichere Verbindung annehmen.
 
 \section{HTTP Header}
 
@@ -440,9 +414,10 @@ TODO: Explizit in Play nur strict-origin-when-cross-origin machen
 \begin{sloppypar}
 \texttt{X-Frame-Options: DENY}
 \end{sloppypar}
-Um zu verhindern, dass unsere Seite in einem \texttt{<frame>}, \texttt{<iframe>} oder \texttt{<object>} Element auf einer anderen Seite eingebettet wird, kann der Header \texttt{X-Frame-Options} verwendet werden. So können \enquote{Clickjacking} sowie \texttt{<iframe>}-basierte CSRF-Angriffe verhindert werden.
+Um zu verhindern, dass unsere Seite in einem \texttt{<frame>}, \texttt{<iframe>} oder \texttt{<object>} Element auf einer anderen Seite eingebettet wird, kann der Header \texttt{X-Frame-Options} verwendet werden. So kann Clickjacking verhindert werden. %So können \enquote{Clickjacking} sowie \texttt{<iframe>}-basierte CSRF-Angriffe verhindert werden.
 
 \subsection{X-XSS-Protection}
+\label{x:xss:protection}
 \begin{sloppypar}
 \texttt{X-XSS-Protection: 1; mode=block}
 \end{sloppypar}
@@ -462,10 +437,10 @@ Innerhalb diesem Header ist es möglich Richtlinien zu definieren, die den Zugri
 Dadurch kann verhindert werden, dass JavaScript nicht von jeder URL geladen und ausgeführt werden darf, von welchen Quellen Bilder geladen werden dürfen, oder welches CSS eingebunden werden darf.
 Dieser Header ist dem \enquote{X-XSS-Protection}-Header vorzuziehen.
 
-\subsection{X-Permitted-Cross-Domain-Policies}
-\begin{sloppypar}
-\texttt{X-Permitted-Cross-Domain-Policies: master-only}
-\end{sloppypar}
+%\subsection{X-Permitted-Cross-Domain-Policies}
+%\begin{sloppypar}
+%\texttt{X-Permitted-Cross-Domain-Policies: master-only}
+%\end{sloppypar}
 
 \printbibliography
 
