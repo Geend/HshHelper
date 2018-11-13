@@ -2,6 +2,7 @@ package controllers;
 
 import domainlogic.filemanager.FileManager;
 import play.mvc.Controller;
+import play.mvc.Result;
 import policy.session.Authentication;
 import policy.session.SessionManager;
 
@@ -20,4 +21,8 @@ public class FileController extends Controller {
         this.fileManager = fileManager;
     }
 
+    public Result changePermissionsForFile()
+    {
+        return ok("test");
+    }
 }
