@@ -1,8 +1,7 @@
 import javax.inject.*;
 
 import extension.HashHelper;
-import models.Group;
-import models.User;
+import models.*;
 import play.Logger;
 import play.db.Database;
 
@@ -28,6 +27,9 @@ public class DatabaseInitialization {
             stmt.execute("TRUNCATE TABLE groupmembers");
             stmt.execute("TRUNCATE TABLE users");
             stmt.execute("TRUNCATE TABLE groups");
+            stmt.execute("TRUNCATE TABLE files");
+            stmt.execute("TRUNCATE TABLE group_permissions");
+            stmt.execute("TRUNCATE TABLE user_permissions");
             stmt.execute("TRUNCATE TABLE internal_session");
             stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
             stmt.execute("SET ALLOW_LITERALS NONE");
@@ -59,6 +61,45 @@ public class DatabaseInitialization {
         g1.save();
         g2.save();
         g3.save();
+
+
+        File f1 = new File();
+        f1.setName("admin.txt");
+        f1.setComment("blablabla");
+        f1.setOwner(u1);
+        f1.setData(new byte[]{1,2,1,2});
+        f1.save();
+
+        File f2 = new File();
+        f2.setName("peter.txt");
+        f2.setComment("blabasdasdlabla");
+        f2.setOwner(u2);
+        f2.setData(new byte[]{1,2,1,2});
+        f2.save();
+
+        File f3 = new File();
+        f3.setName("klaus.txt");
+        f3.setComment("xaxax");
+        f3.setOwner(u1);
+        f3.setData(new byte[]{1,2,1,2});
+        f3.save();
+
+
+        UserPermission up1 = new UserPermission();
+        up1.setUser(u2);
+        up1.setFile(f3);
+        up1.setCanRead(true);
+        up1.setCanWrite(true);
+        up1.save();
+
+        GroupPermission gp1 = new GroupPermission();
+        gp1.setGroup(g1);
+        gp1.setFile(f1);
+        gp1.setCanRead(true);
+        gp1.setCanWrite(true);
+        gp1.save();
+
+
         Logger.info("DatabaseInitialization - Prepare DB; Done adding new users and groups");
     }
 }
