@@ -16,7 +16,7 @@ public class File extends Model {
     private byte[] data;
 
     @ManyToOne
-    @JoinColumn(name = "owner", referencedColumnName = "user_id")
+    @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
     private User owner;
 
     public Long getFileId() {
