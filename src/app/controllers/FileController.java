@@ -26,7 +26,7 @@ public class FileController extends Controller {
 
     public Result changePermissionsForFile()
     {
-        return ok("test");
+        return ok(views.html.ChangeFilePermissions.render());
     }
 
 
