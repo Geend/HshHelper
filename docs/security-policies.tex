@@ -4,7 +4,7 @@
 % arara: pdflatex: { shell: true, synctex: true }
 % arara: pdflatex: { shell: true, synctex: true }
 
-\documentclass[fontsize=12pt,DIV=14,BCOR=10mm,a4paper,parskip=half-,ngerman,english,bibliography=totocnumbered]{scrreprt}
+\documentclass[fontsize=12pt,DIV=14,BCOR=10mm,a4paper,parskip=half-,english,ngerman,bibliography=totocnumbered]{scrreprt}
 
 \usepackage{hshhelper_base}
 
@@ -40,6 +40,8 @@
 
 \vspace*{-3cm}
 
+\addto{\captionsgerman}{\renewcommand{\refname}{Literaturverzeichnis}}
+
 \clearpage
 
 \tableofcontents  % Inhaltsverzeichnis
@@ -53,7 +55,7 @@
   \item Betriebssystem, Hardware sowie verwendete Bibliotheken enthalten keine sicherheitsrelevanten Fehler.
   \item Hashing-Algorithmus \enquote{bcrypt} macht es einem Angreifer wirtschaftlich unmöglich, evtl. erbeutete Password-Hashes durch Brute-Force oder Rainbow Tables in Plaintext zu verwandeln.
   \item Lösen eines Recaptchas ist für einen Angreifer wirtschaftlich undurchführbar.
-  \item Die von Google-Servern eingebundenen Recaptcha Java-Script Dateien werden niemals zur Code-Injection verwendet / Google's reCAPTCHA Server sind grundsätzlich vertrauenswürdig.
+  \item Die von Google-Servern eingebundenen Recaptcha Java-Script Dateien werden niemals zur Code-Injection verwendet / Google's reCAPTCHA Server sind grund\-sätzlich vertrauenswürdig.
   \item Bibliotheksfunktion \texttt{java.security.SecureRandom} \autocite{JavaDocs.SecureRandom} erstellt Zufallszahlen, die kryptografisch sicher sind.
   \item Einstellung \texttt{ALLOW\_LITERALS=NONE} der Datenbank \enquote{h2} verhindert SQL Injections.
   \item \enquote{\gls{jwt}}-Format ist kryptografisch sicher zur Speicherung von Session- sowie Cookie-Daten.
@@ -68,7 +70,7 @@
   \item Der gewählte Datentyp \texttt{Long} der Identifikatoren in der \enquote{h2-Datenbank} ist für den Benutzungskontext des HsH-Helfers ausreichend lang.
 \end{itemize}
 
-\chapter{Akteur}
+\chapter{Akteure}
 
 \begin{itemize}
   \item Administratoren (A)
@@ -174,7 +176,7 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
 %\deftranslation{to=German}{Acronyms}{Abkürzungsverzeichnis}
 %\deftranslation{to=German}{Glossary}{Glossar}
 \printacronyms[title=Abkürzungsverzeichnis,toctitle=Abkürzungsverzeichnis]
-\printglossary[type=main]
+\printglossary[title=Glossar,toctitle=Glossar,type=main]
 
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis
