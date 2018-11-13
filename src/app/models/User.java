@@ -45,6 +45,19 @@ public class User extends Model {
     )
     private Set<Group> groups = new HashSet<>();
 
+
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.REMOVE,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "user_permissions",
+            joinColumns = @JoinColumn(name = "fk_user_id", referencedColumnName = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_user_permission_id", referencedColumnName = "user_permission_id")
+    )
+    private Set<UserPermission> userPermissions = new HashSet<>();
+
+
     public User(
             String username,
             String email,
@@ -126,6 +139,14 @@ public class User extends Model {
         this.groups = groups;
     }
 
+    public Set<UserPermission> getUserPermissions() {
+        return userPermissions;
+    }
+
+    public void setUserPermissions(Set<UserPermission> userPermissions) {
+        this.userPermissions = userPermissions;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -144,4 +165,6 @@ public class User extends Model {
     public int hashCode() {
         return Objects.hash(userId, username);
     }
+
+
 }

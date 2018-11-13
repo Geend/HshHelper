@@ -1,8 +1,10 @@
 package policy;
 
-import models.Group;
-import models.User;
+import models.*;
 import policy.session.Session;
+
+
+import java.util.Optional;
 
 public class Specification {
     public static Specification instance = new Specification();
@@ -201,6 +203,42 @@ public class Specification {
         if(currentUser.isAdmin()) {
             return true;
         }
+
+        return false;
+    }
+
+
+
+    public boolean CanReadFile(User user, File file){
+        if(user == null || file == null)
+            return false;
+
+        if(file.getOwner().equals(user))
+            return true;
+
+        if(user.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanRead))
+            return true;
+
+        if(user.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanRead)))
+            return true;
+
+
+        return false;
+
+    }
+
+    public boolean CanWriteFile(User user, File file){
+        if(user == null || file == null)
+            return false;
+
+        if(file.getOwner().equals(user))
+            return true;
+
+        if(user.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanWrite))
+            return true;
+
+        if(user.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanWrite)))
+            return true;
 
         return false;
     }

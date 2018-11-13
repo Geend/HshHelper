@@ -26,6 +26,24 @@ public class Group extends Model {
     }, mappedBy = "groups")
     private Set<User> members = new HashSet<>();
 
+
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.REMOVE,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "group_permissions",
+            joinColumns = @JoinColumn(name = "fk_group_id", referencedColumnName = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_group_permission_id", referencedColumnName = "group_permission_id")
+    )
+    private Set<GroupPermission> groupPermissions = new HashSet<>();
+
+
+
+
+
+
+
     public Group(Long id, String name, User owner, boolean isAdminGroup) {
         this.groupId = id;
         this.name = name;
@@ -85,6 +103,14 @@ public class Group extends Model {
 
     public void setMembers(Set<User> members) {
         this.members = members;
+    }
+
+    public Set<GroupPermission> getGroupPermissions() {
+        return groupPermissions;
+    }
+
+    public void setGroupPermissions(Set<GroupPermission> groupPermissions) {
+        this.groupPermissions = groupPermissions;
     }
 
     @Override

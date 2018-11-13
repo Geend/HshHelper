@@ -1,5 +1,4 @@
-import models.Group;
-import models.User;
+import models.*;
 import org.junit.Before;
 import policy.session.Session;
 import org.junit.BeforeClass;
@@ -24,7 +23,18 @@ public class GroupMemberPolicyTests {
     private static Group allGroup;
     private static Group adminGroup;
     private static Group petersGroup;
+    private static Group klausGroup;
     private static Session petersSession;
+
+    private static File klausFile;
+    private static UserPermission klausFilePeterUserPermission;
+    private static GroupPermission klausFileKlausGroupPermission;
+
+    private static File petersGroupFile;
+    private static GroupPermission petersGroupFilePetersGroupPermission;
+    private static GroupPermission petersGroupFileAdminGroupPermission;
+
+
     /*
         adminGroup:
             admin, adminTwo
@@ -55,12 +65,35 @@ public class GroupMemberPolicyTests {
         petersGroup = new Group("Peters Group", peter);
         petersGroup.setMembers(Stream.of(peter, klaus, adminTwo).collect(Collectors.toSet()));
 
+        klausGroup = new Group("Klaus Group", klaus);
+        klausGroup.setMembers(Stream.of(klaus, rudi).collect(Collectors.toSet()));
+
         admin.setGroups(Stream.of(adminGroup, allGroup).collect(Collectors.toSet()));
         adminTwo.setGroups(Stream.of(adminGroup, petersGroup, allGroup).collect(Collectors.toSet()));
         peter.setGroups(Stream.of(petersGroup, allGroup).collect(Collectors.toSet()));
         klaus.setGroups(Stream.of(petersGroup, allGroup).collect(Collectors.toSet()));
         horst.setGroups(Stream.of(allGroup).collect(Collectors.toSet()));
         rudi.setGroups(Stream.of(allGroup).collect(Collectors.toSet()));
+
+        byte[] data = {0x42};
+        klausFile = new File("klausFile", "Klaus Comment",data,klaus);
+        klausFilePeterUserPermission = new UserPermission(klausFile, peter, true, true);
+
+        peter.getUserPermissions().add(klausFilePeterUserPermission);
+
+
+
+        petersGroupFile = new File("petersGroupFile", "Peters Group File", data, peter);
+        petersGroupFilePetersGroupPermission = new GroupPermission(petersGroupFile,petersGroup, true,true);
+        petersGroup.getGroupPermissions().add(petersGroupFilePetersGroupPermission);
+
+        petersGroupFileAdminGroupPermission = new GroupPermission(petersGroupFile, adminGroup, false, false);
+        adminGroup.getGroupPermissions().add(petersGroupFileAdminGroupPermission);
+
+
+        klausFileKlausGroupPermission = new GroupPermission(petersGroupFile, adminGroup, true, false);
+        klausGroup.getGroupPermissions().add(klausFileKlausGroupPermission);
+
     }
 
     @Before
@@ -550,5 +583,76 @@ public class GroupMemberPolicyTests {
     public void userCanDeleteOwnSession() {
         boolean actual = Specification.instance.CanDeleteSession(peter, petersSession);
         assertThat(actual).isTrue();
+    }
+
+
+    /*
+        File Read PersmissionTest
+     */
+    @Test
+    public void ownerCanReadFile(){
+        boolean actual = Specification.instance.CanReadFile(klaus, klausFile);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void userWithUserPermissionCanReadFile(){
+        boolean actual = Specification.instance.CanReadFile(peter, klausFile);
+        assertThat(actual).isTrue();
+    }
+    @Test
+    public void userWithGroupPermissionCanReadFile(){
+        boolean actual = Specification.instance.CanReadFile(klaus, petersGroupFile);
+        assertThat(actual).isTrue();
+
+    }
+    @Test
+    public void userWithGroupPermissionWithoutReadTrueCantReadFile(){
+        boolean actual = Specification.instance.CanReadFile(admin, petersGroupFile);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void normalUserCantReadFile(){
+        boolean actual = Specification.instance.CanReadFile(horst, klausFile);
+        assertThat(actual).isFalse();
+    }
+
+    /*
+     File Write PersmissionTest
+  */
+    @Test
+    public void ownerCanWriteFile(){
+        boolean actual = Specification.instance.CanWriteFile(klaus, klausFile);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void userWithUserPermissionCanWriteFile(){
+        boolean actual = Specification.instance.CanWriteFile(peter, klausFile);
+        assertThat(actual).isTrue();
+    }
+    @Test
+    public void userWithGroupPermissionCanWriteFile(){
+        boolean actual = Specification.instance.CanWriteFile(klaus, petersGroupFile);
+        assertThat(actual).isTrue();
+
+    }
+    @Test
+    public void userWithGroupPermissionWithoutWriteTrueCantWriteFile(){
+        boolean actual = Specification.instance.CanWriteFile(rudi, petersGroupFile);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void groupPermissionWithReadTrueWithoutWriteTrueCantWriteFile(){
+        boolean actual = Specification.instance.CanWriteFile(rudi, klausFile);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void normalUserCantWriteFile(){
+        boolean actual = Specification.instance.CanWriteFile(horst, klausFile);
+        assertThat(actual).isFalse();
     }
 }

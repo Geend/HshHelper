@@ -21,6 +21,17 @@ public class GroupPermission extends Model {
     private Boolean canRead;
     private Boolean canWrite;
 
+
+    public GroupPermission() {
+    }
+
+    public GroupPermission(File file, Group group, Boolean canRead, Boolean canWrite) {
+        this.file = file;
+        this.group = group;
+        this.canRead = canRead;
+        this.canWrite = canWrite;
+    }
+
     public Long getGroupPermissionId() {
         return groupPermissionId;
     }

@@ -19,6 +19,17 @@ public class File extends Model {
     @JoinColumn(name = "owner", referencedColumnName = "user_id")
     private User owner;
 
+
+    public File() {
+    }
+
+    public File(String name, String comment, byte[] data, User owner) {
+        this.name = name;
+        this.comment = comment;
+        this.data = data;
+        this.owner = owner;
+    }
+
     public Long getFileId() {
         return fileId;
     }

@@ -21,6 +21,17 @@ public class UserPermission extends Model {
     private Boolean canRead;
     private Boolean canWrite;
 
+
+    public UserPermission() {
+    }
+
+    public UserPermission(File file, User user, Boolean canRead, Boolean canWrite) {
+        this.file = file;
+        this.user = user;
+        this.canRead = canRead;
+        this.canWrite = canWrite;
+    }
+
     public Long getUserPermissionId() {
         return userPermissionId;
     }
