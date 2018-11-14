@@ -1,17 +1,17 @@
 package domainlogic.filemanager;
 
 import domainlogic.groupmanager.GroupNameAlreadyExistsException;
-import io.ebean.EbeanServer;
-import io.ebean.Transaction;
+import io.ebean.*;
 import io.ebean.annotation.TxIsolation;
-import models.File;
-import models.Group;
-import models.User;
+import models.*;
 import models.finders.FileFinder;
 import models.finders.UserFinder;
 import models.finders.UserQuota;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 public class FileManager {
@@ -56,5 +56,36 @@ public class FileManager {
 
             return file;
         }
+    }
+
+    public List<File> ownedFiles(Long userId) {
+        return fileFinder.getFilesByOwner(userId);
+    }
+
+    public List<File> accessibleFiles(Long userId) {
+        return fileFinder.query()
+                //.fetch("userPermissions")
+                .fetch("userPermissions.user")
+                .where()
+                .or()
+                    .eq("owner.userId", userId)
+                    .and()
+                        .eq("userPermissions.user.userId", userId)
+                            .or()
+                                .eq("userPermissions.canRead", true)
+                                .eq("userPermissions.canWrite", true)
+                            .endOr()
+                    .endAnd()
+                    .and()
+                        .eq("groupPermissions.group.members.userId", userId)
+                        .and()
+                            .or()
+                                .eq("groupPermissions.canRead", true)
+                                .eq("groupPermissions.canWrite", true)
+                            .endOr()
+                        .endAnd()
+                    .endAnd()
+                .endOr()
+                .findList();
     }
 }

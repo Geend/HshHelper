@@ -6,6 +6,7 @@ import io.ebean.SqlRow;
 import models.File;
 import models.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public class FileFinder extends Finder<Long, File> {
@@ -46,4 +47,7 @@ public class FileFinder extends Finder<Long, File> {
         return quota;
     }
 
+    public List<File> getFilesByOwner(Long userId) {
+        return this.query().where().eq("owner_id", userId).findList();
+    }
 }

@@ -3,6 +3,8 @@ package models;
 import io.ebean.Model;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "files")
@@ -18,6 +20,14 @@ public class File extends Model {
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
     private User owner;
+
+
+    @OneToMany(mappedBy = "file", fetch = FetchType.EAGER)
+    private Set<UserPermission> userPermissions;
+
+
+    @OneToMany(mappedBy = "file", fetch = FetchType.EAGER)
+    private Set<GroupPermission> groupPermissions;
 
 
     public File() {
