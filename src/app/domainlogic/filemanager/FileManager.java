@@ -1,6 +1,6 @@
 package domainlogic.filemanager;
 
-import domainlogic.groupmanager.GroupNameAlreadyExistsException;
+import domainlogic.UnauthorizedException;
 import io.ebean.*;
 import io.ebean.annotation.TxIsolation;
 import models.*;
@@ -8,10 +8,9 @@ import models.finders.FileFinder;
 import models.finders.TempFileFinder;
 import models.finders.UserFinder;
 import models.finders.UserQuota;
+import policy.Specification;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,13 +19,15 @@ public class FileManager {
     private TempFileFinder tempFileFinder;
     private UserFinder userFinder;
     private final EbeanServer ebeanServer;
+    private Specification specification;
 
     @Inject
-    public FileManager(FileFinder fileFinder, TempFileFinder tempFileFinder, UserFinder userFinder, EbeanServer ebeanServer) {
+    public FileManager(FileFinder fileFinder, TempFileFinder tempFileFinder, UserFinder userFinder, EbeanServer ebeanServer, Specification specification) {
         this.fileFinder = fileFinder;
         this.tempFileFinder = tempFileFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
+        this.specification = specification;
     }
 
     private void checkQuota(User user, String filename, String comment, byte[] data) throws QuotaExceededException {
@@ -59,7 +60,7 @@ public class FileManager {
         }
     }
 
-    public File storeFile(Long userId, Long tempFileId, String filename, String comment) throws QuotaExceededException, FilenameAlreadyExistsException {
+    public File storeFile(Long userId, Long tempFileId, String filename, String comment) throws QuotaExceededException, FilenameAlreadyExistsException, UnauthorizedException {
         try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
             Optional<User> user = userFinder.byIdOptional(userId);
             if(!user.isPresent()) {
@@ -69,6 +70,10 @@ public class FileManager {
             Optional<TempFile> tempFile = tempFileFinder.byIdOptional(tempFileId);
             if(!tempFile.isPresent()){
                 throw new IllegalArgumentException("TempFile doesn't exist");
+            }
+
+            if(!specification.CanAccessTempFile(user.get(), tempFile.get())) {
+                throw new UnauthorizedException();
             }
 
             checkQuota(user.get(), filename, comment, new byte[]{});
@@ -86,34 +91,6 @@ public class FileManager {
             file.save();
 
             tempFile.get().delete();
-
-            tx.commit();
-
-            return file;
-        }
-    }
-
-
-    public File createFile(Long userId, String filename, String comment, byte[] filedata) throws QuotaExceededException, FilenameAlreadyExistsException {
-        try(Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
-            Optional<User> user = userFinder.byIdOptional(userId);
-            if(!user.isPresent()) {
-                throw new IllegalArgumentException("Uid doesn't exist");
-            }
-
-            checkQuota(user.get(), filename, comment, filedata);
-
-            Optional<File> existingFile = fileFinder.byFileName(userId, filename);
-            if(existingFile.isPresent()) {
-                throw new FilenameAlreadyExistsException();
-            }
-
-            File file = new File();
-            file.setOwner(user.get());
-            file.setComment(comment);
-            file.setName(filename);
-            file.setData(filedata);
-            file.save();
 
             tx.commit();
 

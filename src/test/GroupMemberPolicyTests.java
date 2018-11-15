@@ -34,6 +34,8 @@ public class GroupMemberPolicyTests {
     private static GroupPermission petersGroupFilePetersGroupPermission;
     private static GroupPermission petersGroupFileAdminGroupPermission;
 
+    private static TempFile klausTempFile;
+
 
     /*
         adminGroup:
@@ -94,6 +96,10 @@ public class GroupMemberPolicyTests {
         klausFileKlausGroupPermission = new GroupPermission(petersGroupFile, adminGroup, true, false);
         klausGroup.getGroupPermissions().add(klausFileKlausGroupPermission);
 
+        klausTempFile = new TempFile(
+            klaus,
+            new byte[]{}
+        );
     }
 
     @Before
@@ -654,5 +660,26 @@ public class GroupMemberPolicyTests {
     public void normalUserCantWriteFile(){
         boolean actual = Specification.instance.CanWriteFile(horst, klausFile);
         assertThat(actual).isFalse();
+    }
+
+    /*
+        Zugriff auf Temporäre Datei
+     */
+    @Test
+    public void adminCannotAccessTempFile() {
+        boolean actual = Specification.instance.CanAccessTempFile(admin, klausTempFile);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonAdminNonOwnerCannotAccessTempFile() {
+        boolean actual = Specification.instance.CanAccessTempFile(peter, klausTempFile);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void ownerCanAccessTempFile() {
+        boolean actual = Specification.instance.CanAccessTempFile(klaus, klausTempFile);
+        assertThat(actual).isTrue();
     }
 }

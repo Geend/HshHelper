@@ -1,5 +1,6 @@
 package controllers;
 
+import domainlogic.UnauthorizedException;
 import domainlogic.filemanager.FileManager;
 import domainlogic.filemanager.FilenameAlreadyExistsException;
 import domainlogic.filemanager.QuotaExceededException;
@@ -73,7 +74,7 @@ public class FileController extends Controller {
         }
     }
 
-    public Result storeFile() {
+    public Result storeFile() throws UnauthorizedException {
         Form<UploadFileMetaDto> boundForm = uploadFileMetaForm.bindFromRequest();
         if (boundForm.hasErrors()) {
             return badRequest(views.html.upload.FileMeta.render(boundForm));
