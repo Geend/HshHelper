@@ -33,6 +33,10 @@ POST        /sessions/delete                       controllers.UserController.de
 GET         /forbidden                             controllers.ErrorController.showForbiddenMessage()
 GET         /badrequest                            controllers.ErrorController.showBadRequestMessage()
 
+GET         /permissions/list                                     controllers.PermissionController.listGrantedPermissions
+GET         /permissions/editgrouppermission/:groupPermissionId   controllers.PermissionController.editGroupPermission(groupPermissionId: Long)
+GET         /permissions/edituserpermission/:userPermissionId     controllers.PermissionController.editUserPermission(userPermissionId: Long)
+
 
 GET         /assets/*file                          controllers.Assets.at(path="/public", file)
 

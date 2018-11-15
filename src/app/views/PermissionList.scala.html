@@ -1,0 +1,34 @@
+@import models.dtos.PermissionEntryDto
+@(permissions: Seq[PermissionEntryDto])
+
+@Main("HsH-Helfer: Permissions") {
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="thead-dark">
+                <th scope="col">#</th>
+                <th scope="col">Type</th>
+                <th scope="col">Text</th>
+                <th scope="col">Permission</th>
+                <th scope="col">Aktion</th>
+            </thead>
+
+            <tbody>
+            @for(user <- permissions) {
+                <tr>
+                    <td>@user.getIndex()</td>
+                    <td>@user.getType()</td>
+                    <td>@user.getText()</td>
+                    <td>@user.getPermission()</td>
+                    <td>
+                        @if(user.getIsGroupPermission()) {
+                            <a class="btn btn-primary" href="@routes.PermissionController.editGroupPermission(0)" role="button">Link</a>
+                        } else {
+                            <a class="btn btn-primary" href="#" role="@routes.PermissionController.editUserPermission(0)">Link</a>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
