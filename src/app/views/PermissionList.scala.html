@@ -7,7 +7,8 @@
             <thead class="thead-dark">
                 <th scope="col">#</th>
                 <th scope="col">Type</th>
-                <th scope="col">Text</th>
+                <th scope="col">FileName</th>
+                <th scope="col">Name</th>
                 <th scope="col">Permission</th>
                 <th scope="col">Aktion</th>
             </thead>
@@ -17,6 +18,7 @@
                     <tr>
                         <td>@user.getIndex()</td>
                         <td>@user.getType()</td>
+                        <td>@user.getFileName()</td>
                         <td>@user.getText()</td>
                         <td>@user.getPermission()</td>
                         <td>
@@ -29,7 +31,7 @@
                     </tr>
                 }
                 <tr>
-                    <td colspan="5">
+                    <td colspan="6">
                         <a class="btn btn-primary" href="@routes.PermissionController.showCreateGroupPermission()" role="button">Neue Gruppen Berechtigung</a>
                         <a class="btn btn-primary" href="@routes.PermissionController.showCreateUserPermission()" role="button">Neue Nutzer Berechtigung</a>
                     </td>

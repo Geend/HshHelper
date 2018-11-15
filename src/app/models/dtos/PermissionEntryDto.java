@@ -6,17 +6,27 @@ public class PermissionEntryDto {
     private String type;
     private String text;
     private String permission;
+    private String fileName;
     private Boolean isGroupPermission;
 
     public PermissionEntryDto() {
     }
 
-    public PermissionEntryDto(int index, String type, String text, String permission, Boolean isGroupPermission) {
+    public PermissionEntryDto(int index, String type, String text, String permission, Boolean isGroupPermission, String fileName) {
         this.index = index;
         this.type = type;
         this.text = text;
         this.permission = permission;
         this.isGroupPermission = isGroupPermission;
+        this.fileName = fileName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public String getPermission() {

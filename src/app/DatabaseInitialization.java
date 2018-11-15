@@ -96,7 +96,7 @@ public class DatabaseInitialization {
         gp1.setGroup(g1);
         gp1.setFile(f1);
         gp1.setCanRead(true);
-        gp1.setCanWrite(true);
+        gp1.setCanWrite(false);
         gp1.save();
 
 

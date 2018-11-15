@@ -1,7 +1,6 @@
 package domainlogic.permissionmanager;
 
 import models.File;
-import models.Group;
 import models.GroupPermission;
 import models.UserPermission;
 import models.dtos.PermissionEntryDto;
@@ -45,14 +44,15 @@ public class PermissionManager {
         List<File> ownedFiles = this.fileFinder.getFilesByOwner(userId);
         for (File ownedFile : ownedFiles) {
             List<GroupPermission> groupPermissionsForFile = this.groupPermissionFinder.findForFileId(ownedFile.getFileId());
+            String fileName = ownedFile.getName();
             for (GroupPermission groupPermission : groupPermissionsForFile) {
                 String permissionString = this.getPermissionString(groupPermission.getCanRead(), groupPermission.getCanWrite());
-                result.add(new PermissionEntryDto(index++, "Group", groupPermission.getGroup().getName(), permissionString, true));
+                result.add(new PermissionEntryDto(index++, "Group", groupPermission.getGroup().getName(), permissionString, true, fileName));
             }
             List<UserPermission> userPermissions = this.userPermissionFinder.findForFileId(ownedFile.getFileId());
             for (UserPermission userPermission : userPermissions) {
                 String permissionString = this.getPermissionString(userPermission.getCanRead(), userPermission.getCanWrite());
-                result.add(new PermissionEntryDto(index++, "User", userPermission.getUser().getUsername(), permissionString, false));
+                result.add(new PermissionEntryDto(index++, "User", userPermission.getUser().getUsername(), permissionString, false, fileName));
             }
         }
         return result;
