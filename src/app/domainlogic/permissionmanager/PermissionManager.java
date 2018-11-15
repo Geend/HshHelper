@@ -17,10 +17,9 @@ public class PermissionManager {
     private UserPermissionFinder userPermissionFinder;
     private GroupPermissionFinder groupPermissionFinder;
     private FileFinder fileFinder;
-    private GroupFinder groupFinder;
 
     @Inject
-    public PermissionManager(UserPermissionFinder userPermissionFinder, GroupPermissionFinder groupPermissionFinder, FileFinder fileFinder, GroupFinder groupFinder) {
+    public PermissionManager(UserPermissionFinder userPermissionFinder, GroupPermissionFinder groupPermissionFinder, FileFinder fileFinder) {
         this.userPermissionFinder = userPermissionFinder;
         this.groupPermissionFinder = groupPermissionFinder;
         this.fileFinder = fileFinder;
