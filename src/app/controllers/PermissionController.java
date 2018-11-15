@@ -2,16 +2,28 @@ package controllers;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import domainlogic.InvalidArgumentException;
+import domainlogic.UnauthorizedException;
 import domainlogic.permissionmanager.PermissionManager;
+import domainlogic.usermanager.EmailAlreadyExistsException;
+import domainlogic.usermanager.UsernameAlreadyExistsException;
+import domainlogic.usermanager.UsernameCannotBeAdmin;
+import models.PermissionLevel;
 import models.User;
-import models.dtos.PermissionEntryDto;
+import models.File;
+import models.User;
+import models.dtos.*;
+import play.data.Form;
+import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
+import policy.Specification;
 import policy.session.Authentication;
 import policy.session.SessionManager;
 import scala.collection.Seq;
+import views.html.CreateUserPermission;
 
-import java.util.List;
+import java.util.*;
 
 import static play.libs.Scala.asScala;
 
@@ -22,8 +34,14 @@ public class PermissionController extends Controller {
     private PermissionManager manager;
     private SessionManager sessionManager;
 
+    private Form<CreateUserPermissionDto> createUserPermissionForm;
+
+
+
     @Inject
-    public PermissionController(PermissionManager manager, SessionManager sessionManager) {
+    public PermissionController(FormFactory formFactory, PermissionManager manager, SessionManager sessionManager, Specification specification) {
+        this.createUserPermissionForm = formFactory.form(CreateUserPermissionDto.class);
+
         this.manager = manager;
         this.sessionManager = sessionManager;
     }
@@ -45,7 +63,29 @@ public class PermissionController extends Controller {
 
     public Result showCreateUserPermission()
     {
-        return ok("create user permission");
+        return renderShowCreateUserPermissionForm(createUserPermissionForm);
+    }
+
+    public Result createUserPermission() throws UnauthorizedException, InvalidArgumentException {
+        User currentUser = sessionManager.currentUser();
+        Form<CreateUserPermissionDto> boundForm = createUserPermissionForm.bindFromRequest("fileId", "userId", "permissionLevel");
+
+        if (boundForm.hasErrors()) {
+            return renderShowCreateUserPermissionForm(boundForm);
+        }
+
+        CreateUserPermissionDto createUserPermissionDto = boundForm.get();
+
+        manager.createUserPermission(currentUser, createUserPermissionDto.getFileId(), createUserPermissionDto.getUserId(), createUserPermissionDto.getPermissionLevel());
+        return redirect(routes.PermissionController.listGrantedPermissions());
+    }
+
+    private Result renderShowCreateUserPermissionForm(Form<CreateUserPermissionDto> form){
+        List<File> ownFiles = manager.getUserFiles(sessionManager.currentUser().userId);
+        Set<User> allOtherUsers = manager.getAllOtherUsers(sessionManager.currentUser().userId);
+        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
+
+        return ok(views.html.CreateUserPermission.render(form, asScala(ownFiles), asScala(allOtherUsers), asScala(possiblePermissions)));
     }
 
     public Result listGrantedPermissions()
