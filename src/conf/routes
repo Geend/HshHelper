@@ -6,7 +6,6 @@ POST        /users/delete                          controllers.UserController.de
 GET         /resetpassword                         controllers.UserController.showResetUserPasswordForm
 POST        /resetpassword                         controllers.UserController.resetUserPassword
 
-GET         /files/changepermissions               controllers.FileController.changePermissionsForFile
 GET         /files/add                             controllers.FileController.addFile
 GET         /files/all                             controllers.FileController.listFiles
 

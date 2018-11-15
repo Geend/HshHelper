@@ -24,12 +24,6 @@ public class FileController extends Controller {
         this.fileManager = fileManager;
     }
 
-    public Result changePermissionsForFile()
-    {
-        return ok(views.html.ChangeFilePermissions.render());
-    }
-
-
     public Result addFile()
     {
         try {
