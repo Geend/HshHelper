@@ -4,6 +4,12 @@ import java.util.UUID;
 
 public class DeleteSessionDto {
 
+    public DeleteSessionDto() {
+    }
+
+    public DeleteSessionDto(UUID sessionId) {
+        this.sessionId = sessionId;
+    }
 
     private UUID sessionId;
 

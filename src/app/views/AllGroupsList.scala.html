@@ -1,6 +1,6 @@
 @import models.dtos.DeleteGroupDto
 @import policy.session.SessionManager.SessionInstance
-@(groups: Seq[Group], deleteGroupForm: Form[DeleteGroupDto])
+@(groupsFormMap: scala.collection.Map[Group, Form[DeleteGroupDto]])
 
 @import bootstrapHelper._
 
@@ -10,14 +10,13 @@
     }
 }
 
-@deleteGroupButton(g: Group) = {
+@deleteGroupButton(g: Group, f: Form[DeleteGroupDto]) = {
     @if(policy.Specification.instance.CanDeleteGroup(SessionInstance().currentUser(), g)) {
         @bootstrapHelper.form(
             routes.GroupController.deleteGroup(g.getGroupId()),
-            deleteGroupForm,
+            f,
             scala.collection.Map(
-                "groupId" -> Input(InputType.Hidden,
-                    value = Left(g.getGroupId().toString))
+                "groupId" -> Input(InputType.Hidden)
             ),
             button = bootstrapHelper.button("Gruppe loeschen")
         )
@@ -35,12 +34,14 @@
         <div class="container-fluid" role="main">
             <div class="row flex-xl-row">
                 <div class="col px-3 py-3 bd-content col-align-self-center">
-                @table(groups
-                        .map(g => scala.collection.Map(
-                                "Gruppenname" -> Left(g.getName()),
-                                "Gruppenmitglieder anschauen" -> Right(viewGroupButton(g)),
-                                "Gruppe loeschen" -> Right(deleteGroupButton(g))
-                )))
+                    @table(groupsFormMap
+                            .map{ case (k, v) => scala.collection.Map(
+                                    "Gruppenname" -> Left(k.getName()),
+                                    "Gruppenmitglieder anschauen" -> Right(viewGroupButton(k)),
+                                    "Gruppe loeschen" -> Right(deleteGroupButton(k, v))
+                                )}
+                            .toSeq
+                    )
                 </div>
             </div>
         </div>

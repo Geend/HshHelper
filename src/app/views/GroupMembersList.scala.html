@@ -5,16 +5,15 @@
 
 @import models.dtos.UserIdDto
 @import policy.session.SessionManager.SessionInstance
-@(group: Group, members: Seq[User], notMembers: Seq[User], addUserForm: Form[UserIdDto], removeGroupUserForm: Form[UserIdDto])
+@(group: Group, members: scala.collection.Map[User, Form[UserIdDto]], notMembers: Seq[User], addUserForm: Form[UserIdDto], removeGroupUserForm: Form[UserIdDto])
 
-@removeMemberButton(member: User) = {
+@removeMemberButton(member: User, f: Form[UserIdDto]) = {
     @if(policy.Specification.instance.CanRemoveGroupMember(SessionInstance().currentUser(), group, member)) {
         @bootstrapHelper.form(
             routes.GroupController.removeGroupMember(group.getGroupId()),
-            removeGroupUserForm,
+            f,
             scala.collection.Map(
-                "userId" -> Input(InputType.Hidden,
-                    value = Left(member.getUserId().toString))
+                "userId" -> Input(InputType.Hidden)
             ),
             button = listGroupButton(member.getUsername())
         )
@@ -51,10 +50,9 @@
             <div class="card-footer">
                 <h5>Mitglied entfernen</h5>
             </div>
-            @bootstrapHelper.listGroupFlush(
-                group.getMembers().asScala.toSeq.map(
-                    u => removeMemberButton(u)
-                )
+            @bootstrapHelper.listGroupFlush( members.map {
+                    case (k, v) => removeMemberButton(k, v)
+                }.toSeq
             )
         }
     } {

@@ -20,6 +20,7 @@ import scala.collection.Seq;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
@@ -145,8 +146,13 @@ public class UserController extends Controller {
     @Authentication.Required
     public Result showActiveUserSessions() {
         User u = sessionManager.currentUser();
-        List<Session> userSessions = sessionManager.sessionsByUser(u);
-        return ok(views.html.UserSessions.render(asScala(userSessions), deleteSessionForm));
+        Map<Session, Form<DeleteSessionDto>> sessionFormMap = sessionManager.sessionsByUser(u)
+                .stream()
+                .collect(Collectors.toMap(
+                        session -> session,
+                        s -> deleteSessionForm.fill(new DeleteSessionDto(s.getSessionKey()))
+                        ));
+        return ok(views.html.UserSessions.render(asScala(sessionFormMap)));
     }
 
     @Authentication.Required
