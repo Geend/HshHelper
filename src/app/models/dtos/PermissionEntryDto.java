@@ -3,6 +3,7 @@ package models.dtos;
 public class PermissionEntryDto {
 
     private int index;
+    private Long groupOrUserIdentifier;
     private String type;
     private String text;
     private String permission;
@@ -12,13 +13,22 @@ public class PermissionEntryDto {
     public PermissionEntryDto() {
     }
 
-    public PermissionEntryDto(int index, String type, String text, String permission, Boolean isGroupPermission, String fileName) {
+    public PermissionEntryDto(int index, String type, String text, String permission, Boolean isGroupPermission, String fileName, Long groupOrUserIdentifier) {
+        this.groupOrUserIdentifier = groupOrUserIdentifier;
         this.index = index;
         this.type = type;
         this.text = text;
         this.permission = permission;
         this.isGroupPermission = isGroupPermission;
         this.fileName = fileName;
+    }
+
+    public Long getGroupOrUserIdentifier() {
+        return groupOrUserIdentifier;
+    }
+
+    public void setGroupOrUserIdentifier(Long groupOrUserIdentifier) {
+        this.groupOrUserIdentifier = groupOrUserIdentifier;
     }
 
     public String getFileName() {

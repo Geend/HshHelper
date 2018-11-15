@@ -14,18 +14,18 @@
             </thead>
 
             <tbody>
-                @for(user <- permissions) {
+                @for(permission <- permissions) {
                     <tr>
-                        <td>@user.getIndex()</td>
-                        <td>@user.getType()</td>
-                        <td>@user.getFileName()</td>
-                        <td>@user.getText()</td>
-                        <td>@user.getPermission()</td>
+                        <td>@permission.getIndex()</td>
+                        <td>@permission.getType()</td>
+                        <td>@permission.getFileName()</td>
+                        <td>@permission.getText()</td>
+                        <td>@permission.getPermission()</td>
                         <td>
-                            @if(user.getIsGroupPermission()) {
-                                <a class="btn btn-primary" href="@routes.PermissionController.editGroupPermission(0)" role="button">Bearbeiten</a>
+                            @if(permission.getIsGroupPermission()) {
+                                <a class="btn btn-primary" href="@routes.PermissionController.editGroupPermission(permission.getGroupOrUserIdentifier())" role="button">Bearbeiten</a>
                             } else {
-                                <a class="btn btn-primary" href="#" role="@routes.PermissionController.editUserPermission(0)">Bearbeiten</a>
+                                <a class="btn btn-primary" href="@routes.PermissionController.editUserPermission(permission.getGroupOrUserIdentifier())" role="button">Bearbeiten</a>
                             }
                         </td>
                     </tr>

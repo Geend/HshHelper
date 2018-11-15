@@ -5,7 +5,6 @@ import models.GroupPermission;
 import models.UserPermission;
 import models.dtos.PermissionEntryDto;
 import models.finders.FileFinder;
-import models.finders.GroupFinder;
 import models.finders.GroupPermissionFinder;
 import models.finders.UserPermissionFinder;
 
@@ -46,12 +45,26 @@ public class PermissionManager {
             String fileName = ownedFile.getName();
             for (GroupPermission groupPermission : groupPermissionsForFile) {
                 String permissionString = this.getPermissionString(groupPermission.getCanRead(), groupPermission.getCanWrite());
-                result.add(new PermissionEntryDto(index++, "Group", groupPermission.getGroup().getName(), permissionString, true, fileName));
+                result.add(new PermissionEntryDto(
+                        index++,
+                        "Group",
+                        groupPermission.getGroup().getName(),
+                        permissionString,
+                        true,
+                        fileName,
+                        groupPermission.getGroup().getGroupId()));
             }
             List<UserPermission> userPermissions = this.userPermissionFinder.findForFileId(ownedFile.getFileId());
             for (UserPermission userPermission : userPermissions) {
                 String permissionString = this.getPermissionString(userPermission.getCanRead(), userPermission.getCanWrite());
-                result.add(new PermissionEntryDto(index++, "User", userPermission.getUser().getUsername(), permissionString, false, fileName));
+                result.add(new PermissionEntryDto(
+                        index++,
+                        "User",
+                        userPermission.getUser().getUsername(),
+                        permissionString,
+                        false,
+                        fileName,
+                        userPermission.getUser().getUserId()));
             }
         }
         return result;
