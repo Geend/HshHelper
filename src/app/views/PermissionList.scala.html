@@ -13,21 +13,27 @@
             </thead>
 
             <tbody>
-            @for(user <- permissions) {
+                @for(user <- permissions) {
+                    <tr>
+                        <td>@user.getIndex()</td>
+                        <td>@user.getType()</td>
+                        <td>@user.getText()</td>
+                        <td>@user.getPermission()</td>
+                        <td>
+                            @if(user.getIsGroupPermission()) {
+                                <a class="btn btn-primary" href="@routes.PermissionController.editGroupPermission(0)" role="button">Bearbeiten</a>
+                            } else {
+                                <a class="btn btn-primary" href="#" role="@routes.PermissionController.editUserPermission(0)">Bearbeiten</a>
+                            }
+                        </td>
+                    </tr>
+                }
                 <tr>
-                    <td>@user.getIndex()</td>
-                    <td>@user.getType()</td>
-                    <td>@user.getText()</td>
-                    <td>@user.getPermission()</td>
-                    <td>
-                        @if(user.getIsGroupPermission()) {
-                            <a class="btn btn-primary" href="@routes.PermissionController.editGroupPermission(0)" role="button">Link</a>
-                        } else {
-                            <a class="btn btn-primary" href="#" role="@routes.PermissionController.editUserPermission(0)">Link</a>
-                        }
+                    <td colspan="5">
+                        <a class="btn btn-primary" href="@routes.PermissionController.showCreateGroupPermission()" role="button">Neue Gruppen Berechtigung</a>
+                        <a class="btn btn-primary" href="@routes.PermissionController.showCreateUserPermission()" role="button">Neue Nutzer Berechtigung</a>
                     </td>
                 </tr>
-            }
             </tbody>
         </table>
     </div>

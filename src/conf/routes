@@ -36,6 +36,8 @@ GET         /badrequest                            controllers.ErrorController.s
 GET         /permissions/list                                     controllers.PermissionController.listGrantedPermissions
 GET         /permissions/editgrouppermission/:groupPermissionId   controllers.PermissionController.editGroupPermission(groupPermissionId: Long)
 GET         /permissions/edituserpermission/:userPermissionId     controllers.PermissionController.editUserPermission(userPermissionId: Long)
+GET         /permissions/creategrouppermission/                   controllers.PermissionController.showCreateGroupPermission()
+GET         /permissions/createuserpermission/                    controllers.PermissionController.showCreateUserPermission()
 
 
 GET         /assets/*file                          controllers.Assets.at(path="/public", file)

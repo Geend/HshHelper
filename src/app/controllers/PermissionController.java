@@ -24,14 +24,24 @@ public class PermissionController extends Controller {
         this.manager = manager;
     }
 
-    public Result editGroupPermission(long groupPermissionId)
+    public Result editGroupPermission(Long groupPermissionId)
     {
         return ok("edit permission");
     }
 
-    public Result editUserPermission(long userPermissionId)
+    public Result editUserPermission(Long userPermissionId)
     {
         return ok("edit user");
+    }
+
+    public Result showCreateGroupPermission()
+    {
+        return ok("create group permission");
+    }
+
+    public Result showCreateUserPermission()
+    {
+        return ok("create user permission");
     }
 
     public Result listGrantedPermissions()
