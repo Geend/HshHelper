@@ -1,44 +1,47 @@
-GET         /                                      controllers.HomeController.index
-POST        /users/create                          controllers.UserController.createUser
-GET         /users/create                          controllers.UserController.showCreateUserForm
-GET         /users                                 controllers.UserController.showUsers
-POST        /users/delete                          controllers.UserController.deleteUser
-GET         /resetpassword                         controllers.UserController.showResetUserPasswordForm
-POST        /resetpassword                         controllers.UserController.resetUserPassword
+GET         /                                                          controllers.HomeController.index
+POST        /users/create                                              controllers.UserController.createUser
+GET         /users/create                                              controllers.UserController.showCreateUserForm
+GET         /users                                                     controllers.UserController.showUsers
+POST        /users/delete                                              controllers.UserController.deleteUser
+GET         /resetpassword                                             controllers.UserController.showResetUserPasswordForm
+POST        /resetpassword                                             controllers.UserController.resetUserPassword
 
-GET         /files/add                             controllers.FileController.addFile
-GET         /files/all                             controllers.FileController.listFiles
+GET         /files/all                                                 controllers.FileController.listFiles
+GET         /files/upload                                              controllers.FileController.showUploadFileForm
+POST        /files/upload                                              controllers.FileController.uploadFile
+POST        /files/upload/store                                        controllers.FileController.storeFile
 
-GET         /login                                 controllers.LoginController.showLoginForm
-POST        /login                                 controllers.LoginController.login
-POST        /logout                                controllers.LoginController.logout
-GET         /changePasswordAfterReset              controllers.LoginController.showChangePasswordAfterResetForm
-POST        /changePasswordAfterReset              controllers.LoginController.changePasswordAfterReset
+GET         /login                                                     controllers.LoginController.showLoginForm
+POST        /login                                                     controllers.LoginController.login
+POST        /logout                                                    controllers.LoginController.logout
+GET         /changePasswordAfterReset                                  controllers.LoginController.showChangePasswordAfterResetForm
+POST        /changePasswordAfterReset                                  controllers.LoginController.changePasswordAfterReset
 
-GET         /user/groups                           controllers.GroupController.showOwnGroups
-POST        /user/groups/:groupId/delete           controllers.GroupController.deleteOwnGroup(groupId : Long)
+GET         /user/groups                                               controllers.GroupController.showOwnGroups
+POST        /user/groups/:groupId/delete                               controllers.GroupController.deleteOwnGroup(groupId : Long)
 
-GET         /groups                                controllers.GroupController.showAllGroups
-GET         /groups/create                         controllers.GroupController.showCreateGroupForm
-POST        /groups/create                         controllers.GroupController.createGroup
-GET         /groups/:groupId                       controllers.GroupController.showGroup(groupId : Long)
-POST        /groups/:groupId/delete                controllers.GroupController.deleteGroup(groupId : Long)
-POST        /groups/:groupId/members/remove        controllers.GroupController.removeGroupMember(groupId : Long)
-POST        /groups/:groupId/members/add           controllers.GroupController.addGroupMember(groupId : Long)
-
-
-GET         /sessions                              controllers.UserController.showActiveUserSessions()
-POST        /sessions/delete                       controllers.UserController.deleteUserSession()
-
-GET         /forbidden                             controllers.ErrorController.showForbiddenMessage()
-GET         /badrequest                            controllers.ErrorController.showBadRequestMessage()
-
-GET         /permissions/list                                     controllers.PermissionController.listGrantedPermissions
-GET         /permissions/editgrouppermission/:groupPermissionId   controllers.PermissionController.editGroupPermission(groupPermissionId: Long)
-GET         /permissions/edituserpermission/:userPermissionId     controllers.PermissionController.editUserPermission(userPermissionId: Long)
-GET         /permissions/creategrouppermission/                   controllers.PermissionController.showCreateGroupPermission()
-GET         /permissions/createuserpermission/                    controllers.PermissionController.showCreateUserPermission()
+GET         /groups                                                    controllers.GroupController.showAllGroups
+GET         /groups/create                                             controllers.GroupController.showCreateGroupForm
+POST        /groups/create                                             controllers.GroupController.createGroup
+GET         /groups/:groupId                                           controllers.GroupController.showGroup(groupId : Long)
+POST        /groups/:groupId/delete                                    controllers.GroupController.deleteGroup(groupId : Long)
+POST        /groups/:groupId/members/remove                            controllers.GroupController.removeGroupMember(groupId : Long)
+POST        /groups/:groupId/members/add                               controllers.GroupController.addGroupMember(groupId : Long)
 
 
-GET         /assets/*file                          controllers.Assets.at(path="/public", file)
+GET         /sessions                                                  controllers.UserController.showActiveUserSessions()
+POST        /sessions/delete                                           controllers.UserController.deleteUserSession()
+
+GET         /forbidden                                                 controllers.ErrorController.showForbiddenMessage()
+GET         /badrequest                                                controllers.ErrorController.showBadRequestMessage()
+
+GET         /permissions/list                                          controllers.PermissionController.listGrantedPermissions
+GET         /permissions/editgrouppermission/:groupPermissionId        controllers.PermissionController.editGroupPermission(groupPermissionId: Long)
+GET         /permissions/edituserpermission/:userPermissionId          controllers.PermissionController.editUserPermission(userPermissionId: Long)
+GET         /permissions/creategrouppermission/                        controllers.PermissionController.showCreateGroupPermission()
+GET         /permissions/createuserpermission/                         controllers.PermissionController.showCreateUserPermission()
+POST        /permissions/createuserpermission/                         controllers.PermissionController.createUserPermission()
+
+
+GET         /assets/*file                                              controllers.Assets.at(path="/public", file)
 

@@ -1,0 +1,18 @@
+@import models.dtos.UploadFileDto
+@(error : String)
+
+@Main("Datei Hochladen"){
+    @bootstrapHelper.center("Datei auswählen") {
+        @if(error) {
+            <div>@error</div>
+        }
+
+        @helper.form(action = routes.FileController.uploadFile(), 'enctype -> "multipart/form-data") {
+            @helper.CSRF.formField
+            <input type="file" name="file">
+            <p>
+                <input type="submit">
+            </p>
+        }
+    }
+}

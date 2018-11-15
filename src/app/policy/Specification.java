@@ -242,4 +242,15 @@ public class Specification {
 
         return false;
     }
+
+    public boolean CanCreateUserPermission(File file, User user) {
+
+        if(user == null || file == null)
+            return false;
+
+        if(file.getOwner().equals(user))
+            return true;
+
+        return false;
+    }
 }

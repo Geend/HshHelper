@@ -1,0 +1,19 @@
+@(form: Form[dtos.UploadFileMetaDto])
+
+@Main("Datei Hochladen"){
+    @bootstrapHelper.center("Metadaten angeben") {
+        @bootstrapHelper.form(
+            routes.FileController.storeFile(),
+            form,
+            scala.collection.Map(
+                "tempFileId" -> Input(InputType.Hidden),
+                "filename" -> Input(InputType.Text,
+                    label = "Dateiname"),
+                "comment" -> Input(InputType.Text,
+                    label = "Kommentar",
+                    placeholder = "Kommentar eingeben")
+            ),
+            button = bootstrapHelper.button("Datei speichern")
+        )
+    }
+}
