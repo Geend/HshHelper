@@ -17,7 +17,7 @@
         @defining(if(form(k).hasErrors) "is-invalid" ) { hasErrors =>
             @v.typ match {
                 case InputType.Hidden => {
-                    <input type="hidden" name="@k" value="@form(k).value">
+                    <input type="@v.typ.toString" name="@k" value="@form(k).getValue.get">
                 }
                 case InputType.Select => {
                     @helper.select(

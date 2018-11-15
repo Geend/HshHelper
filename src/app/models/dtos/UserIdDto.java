@@ -7,6 +7,14 @@ public class UserIdDto {
     @Constraints.Required
     private Long userId;
 
+    public UserIdDto() {
+
+    }
+
+    public UserIdDto(Long userId) {
+        this.userId = userId;
+    }
+
     public Long getUserId() {
         return userId;
     }

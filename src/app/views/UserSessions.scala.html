@@ -2,18 +2,17 @@
 @import models.dtos.DeleteSessionDto
 @import policy.session.SessionManager.SessionInstance
 @import policy.session.Session
-@(sessions: Seq[Session], deleteSessionform: Form[DeleteSessionDto])
+@(sessions: scala.collection.Map[Session, Form[DeleteSessionDto]])
 
 @import bootstrapHelper._
 
-@sessionButton(s: Session) = {
+@sessionButton(s: Session, f: Form[DeleteSessionDto]) = {
     @if(policy.Specification.instance.CanDeleteSession(SessionInstance().currentUser(), s)) {
         @form(
             routes.UserController.deleteUserSession(),
-            deleteSessionform,
+            f,
             scala.collection.Map(
-                "sessionId" -> Input(InputType.Hidden,
-                    value = Left(s.getSessionKey.toString))
+                "sessionId" -> Input(InputType.Hidden)
             ),
             button = bootstrapHelper.button("Session Zerstören")
         )
@@ -24,13 +23,14 @@
 
 @Main("HsH-Helfer: deine aktive Sessions") {
     @bootstrapHelper.center("Aktive Sessions") {
-        @table(sessions.map(
-            s => scala.collection.Map(
-                "Verwendete IP" -> Left(s.getRemoteAddress),
-                "Erstellungsdatum" -> Left(s.getIssuedAt.toString("dd.MM.yyyy - HH:mm:ss")),
-                "Aktion" -> Right(sessionButton(s))
-            )
-        ),
+        @table(sessions
+                .map{
+                    case (k, v) => scala.collection.Map(
+                            "Verwendete IP" -> Left(k.getRemoteAddress),
+                            "Erstellungsdatum" -> Left(k.getIssuedAt.toString("dd.MM.yyyy - HH:mm:ss")),
+                            "Aktion" -> Right(sessionButton(k, v))
+                    )}
+                .toSeq,
             bordered = true
         )
     }
