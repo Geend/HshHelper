@@ -4,6 +4,15 @@ public class UserQuota {
     private long nameUsage;
     private long commentUsage;
     private long fileContentUsage;
+    private long tempFileContentUsage;
+
+    public long getTempFileContentUsage() {
+        return tempFileContentUsage;
+    }
+
+    protected void setTempFileContentUsage(long tempFileContentUsage) {
+        this.tempFileContentUsage = tempFileContentUsage;
+    }
 
     public long getNameUsage() {
         return nameUsage;
@@ -36,6 +45,6 @@ public class UserQuota {
     }
 
     public long getTotalUsage() {
-        return nameUsage +commentUsage+fileContentUsage;
+        return nameUsage +commentUsage+fileContentUsage + tempFileContentUsage;
     }
 }

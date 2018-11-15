@@ -2,6 +2,7 @@ import javax.inject.*;
 
 import extension.HashHelper;
 import models.*;
+import org.joda.time.DateTime;
 import play.Logger;
 import play.db.Database;
 
@@ -28,6 +29,7 @@ public class DatabaseInitialization {
             stmt.execute("TRUNCATE TABLE users");
             stmt.execute("TRUNCATE TABLE groups");
             stmt.execute("TRUNCATE TABLE files");
+            stmt.execute("TRUNCATE TABLE temp_files");
             stmt.execute("TRUNCATE TABLE group_permissions");
             stmt.execute("TRUNCATE TABLE user_permissions");
             stmt.execute("TRUNCATE TABLE internal_session");
@@ -37,7 +39,7 @@ public class DatabaseInitialization {
         Logger.info("DatabaseInitialization - Prepare DB; Truncated");
 
         Logger.info("ApplicationStart - Prepare DB; Add new users and groups");
-        User u1 = new User("admin", "hsh.helper+admin@gmail.com", hashHelper.hashPassword("admin"), false, 1000);
+        User u1 = new User("admin", "hsh.helper+admin@gmail.com", hashHelper.hashPassword("admin"), false, 100000000);
         User u2 = new User("peter", "hsh.helper+peter@gmail.com",  hashHelper.hashPassword("peter"), false, 10);
         User u3 = new User("klaus", "hsh.helper+klaus@gmail.com",  hashHelper.hashPassword("klaus"), false, 10);
         User u4 = new User("hans", "hsh.helper+hans@gmail.com",  hashHelper.hashPassword("hans"), true, 10);
@@ -99,6 +101,11 @@ public class DatabaseInitialization {
         gp1.setCanWrite(false);
         gp1.save();
 
+        TempFile tf = new TempFile();
+        tf.setCreated(DateTime.now());
+        tf.setOwner(u1);
+        tf.setData(new byte[]{});
+        tf.save();
 
         Logger.info("DatabaseInitialization - Prepare DB; Done adding new users and groups");
     }
