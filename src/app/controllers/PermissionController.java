@@ -8,9 +8,7 @@ import domainlogic.permissionmanager.PermissionManager;
 import domainlogic.usermanager.EmailAlreadyExistsException;
 import domainlogic.usermanager.UsernameAlreadyExistsException;
 import domainlogic.usermanager.UsernameCannotBeAdmin;
-import models.PermissionLevel;
-import models.User;
-import models.File;
+import models.*;
 import models.User;
 import models.dtos.*;
 import play.data.Form;
@@ -35,13 +33,14 @@ public class PermissionController extends Controller {
     private SessionManager sessionManager;
 
     private Form<CreateUserPermissionDto> createUserPermissionForm;
+    private Form<CreateGroupPermissionDto> createGroupPermissionForm;
 
 
 
     @Inject
     public PermissionController(FormFactory formFactory, PermissionManager manager, SessionManager sessionManager, Specification specification) {
         this.createUserPermissionForm = formFactory.form(CreateUserPermissionDto.class);
-
+        this.createGroupPermissionForm = formFactory.form(CreateGroupPermissionDto.class) ;
         this.manager = manager;
         this.sessionManager = sessionManager;
     }
@@ -58,7 +57,29 @@ public class PermissionController extends Controller {
 
     public Result showCreateGroupPermission()
     {
-        return ok("create group permission");
+        return renderCreateGroupPermissionForm(createGroupPermissionForm);
+    }
+
+    public Result createGroupPermission() throws UnauthorizedException, InvalidArgumentException {
+        User currentUser = sessionManager.currentUser();
+        Form<CreateGroupPermissionDto> boundForm = createGroupPermissionForm.bindFromRequest("fileId", "groupId", "permissionLevel");
+
+        if (boundForm.hasErrors()) {
+            return renderCreateGroupPermissionForm(boundForm);
+        }
+
+        CreateGroupPermissionDto createUserPermissionDto = boundForm.get();
+
+        manager.createGroupPermission(currentUser, createUserPermissionDto.getFileId(), createUserPermissionDto.getGroupId(), createUserPermissionDto.getPermissionLevel());
+        return redirect(routes.PermissionController.listGrantedPermissions());
+    }
+
+    private Result renderCreateGroupPermissionForm(Form<CreateGroupPermissionDto> form){
+        List<File> ownFiles = manager.getUserFiles(sessionManager.currentUser().userId);
+        Set<Group> ownGroups = sessionManager.currentUser().getGroups();
+        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
+
+        return ok(views.html.CreateGroupPermission.render(form, asScala(ownFiles), asScala(ownGroups), asScala(possiblePermissions)));
     }
 
     public Result showCreateUserPermission()

@@ -253,4 +253,14 @@ public class Specification {
 
         return false;
     }
+
+    public boolean CanCreateGroupPermission(File file, User user, Group group) {
+        if(user == null || file == null || group == null)
+            return false;
+
+        if(group.getMembers().contains(user))
+            return true;
+
+        return false;
+    }
 }

@@ -37,6 +37,7 @@ GET         /permissions/list                                          controlle
 GET         /permissions/editgrouppermission/:groupPermissionId        controllers.PermissionController.editGroupPermission(groupPermissionId: Long)
 GET         /permissions/edituserpermission/:userPermissionId          controllers.PermissionController.editUserPermission(userPermissionId: Long)
 GET         /permissions/creategrouppermission/                        controllers.PermissionController.showCreateGroupPermission()
+POST        /permissions/creategrouppermission/                        controllers.PermissionController.createGroupPermission()
 GET         /permissions/createuserpermission/                         controllers.PermissionController.showCreateUserPermission()
 POST        /permissions/createuserpermission/                         controllers.PermissionController.createUserPermission()
 

@@ -107,11 +107,9 @@ private EbeanServer ebeanServer;
         if (!specification.CanCreateUserPermission(file.get(), currentUser))
             throw new UnauthorizedException();
 
-        boolean userAlreadyHaPermission = userPermissionFinder.findForFileId(fileId).stream().anyMatch(x -> x.getUser().equals(user.get()));
-        if(userAlreadyHaPermission)
+        boolean userAlreadyHasPermission = userPermissionFinder.findForFileId(fileId).stream().anyMatch(x -> x.getUser().equals(user.get()));
+        if(userAlreadyHasPermission)
             throw new InvalidArgumentException("Der Benutzer hat bereits eine Berechtigung auf diese Datei.");
-
-
 
         UserPermission permission = new UserPermission();
         permission.setFile(file.get());
@@ -130,6 +128,45 @@ private EbeanServer ebeanServer;
                 throw new InvalidArgumentException("Permission Level ungültig");
         }
 
+
+        ebeanServer.save(permission);
+    }
+
+    public void createGroupPermission(User currentUser, Long fileId, Long groupId, PermissionLevel permissionLevel) throws InvalidArgumentException, UnauthorizedException {
+        Optional<File> file = fileFinder.byIdOptional(fileId);
+        Optional<Group> group = groupFinder.byIdOptional(groupId);
+
+        if (!group.isPresent())
+            throw new InvalidArgumentException("Dieser Gruppe existiert nicht.");
+
+        if (!file.isPresent())
+            throw new InvalidArgumentException("Diese Datei existiert nicht.");
+
+        if (!specification.CanCreateGroupPermission(file.get(), currentUser, group.get()))
+            throw new UnauthorizedException();
+
+
+        boolean groupAlreadyHasPermission = groupPermissionFinder.findForFileId(fileId).stream().anyMatch(x -> x.getGroup().equals(group.get()));
+        if(groupAlreadyHasPermission)
+            throw new InvalidArgumentException("Der Gruppe hat bereits eine Berechtigung auf diese Datei.");
+
+
+        GroupPermission permission = new GroupPermission();
+        permission.setFile(file.get());
+        permission.setGroup(group.get());
+
+        switch (permissionLevel) {
+            case READ:
+                permission.setCanRead(true);
+                permission.setCanWrite(false);
+                break;
+            case WRITE:
+                permission.setCanRead(false);
+                permission.setCanWrite(true);
+                break;
+            default:
+                throw new InvalidArgumentException("Permission Level ungültig");
+        }
 
         ebeanServer.save(permission);
 
