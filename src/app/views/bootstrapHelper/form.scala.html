@@ -10,14 +10,14 @@
     </p>
 }
 
-@helper.form(action = route) {
+@helper.form(action = route, 'enctype -> "multipart/form-data") {
     @helper.CSRF.formField
 
     @for((k, v) <- fields) {
         @defining(if(form(k).hasErrors) "is-invalid" ) { hasErrors =>
             @v.typ match {
                 case InputType.Hidden => {
-                    <input type="@v.typ.toString" name="@k" value="@v.value.left.get"/>
+                    <input type="hidden" name="@k" value="@form(k).value">
                 }
                 case InputType.Select => {
                     @helper.select(
