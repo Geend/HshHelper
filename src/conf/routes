@@ -39,7 +39,9 @@ GET         /badrequest                                                controlle
 GET         /permissions/list                                          controllers.PermissionController.listGrantedPermissions
 GET         /permissions/editgrouppermission/:groupPermissionId        controllers.PermissionController.showEditGroupPermission(groupPermissionId: Long)
 POST        /permissions/editgrouppermission/                          controllers.PermissionController.editGroupPermission()
+POST        /permissions/edituserpermission/                           controllers.PermissionController.editUserPermission()
 POST        /permissions/deletegrouppermission/                        controllers.PermissionController.deleteGroupPermission()
+POST        /permissions/deleteuserpermission/                         controllers.PermissionController.deleteUserPermission()
 GET         /permissions/edituserpermission/:userPermissionId          controllers.PermissionController.showEditUserPermission(userPermissionId: Long)
 GET         /permissions/creategrouppermission/                        controllers.PermissionController.showCreateGroupPermission()
 POST        /permissions/creategrouppermission/                        controllers.PermissionController.createGroupPermission()

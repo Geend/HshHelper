@@ -2,7 +2,7 @@ package models.dtos;
 
 import play.data.validation.Constraints;
 
-public class GroupPermissionDto {
+public class GroupPermissionIdDto {
     @Constraints.Required
     private Long groupPermissionId;
 
@@ -10,10 +10,10 @@ public class GroupPermissionDto {
         return groupPermissionId;
     }
 
-    public GroupPermissionDto() {
+    public GroupPermissionIdDto() {
     }
 
-    public GroupPermissionDto(@Constraints.Required Long groupPermissionId) {
+    public GroupPermissionIdDto(@Constraints.Required Long groupPermissionId) {
         this.groupPermissionId = groupPermissionId;
     }
 

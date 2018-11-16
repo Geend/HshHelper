@@ -35,14 +35,18 @@ public class PermissionController extends Controller {
     private Form<CreateGroupPermissionDto> createGroupPermissionForm;
 
     private Form<EditGroupPermissionDto> editGroupPermissionForm;
-    private Form<GroupPermissionDto> deleteGroupPermissionForm;
+    private Form<GroupPermissionIdDto> deleteGroupPermissionForm;
+    private Form<EditUserPermissionDto> editUserPermissionForm;
+    private Form<UserPermissionIdDto> deleteUserPermissionForm;
 
     @Inject
     public PermissionController(FormFactory formFactory, PermissionManager manager, SessionManager sessionManager, Specification specification) {
         this.createUserPermissionForm = formFactory.form(CreateUserPermissionDto.class);
         this.createGroupPermissionForm = formFactory.form(CreateGroupPermissionDto.class) ;
         this.editGroupPermissionForm = formFactory.form(EditGroupPermissionDto.class);
-        this.deleteGroupPermissionForm = formFactory.form(GroupPermissionDto.class);
+        this.deleteGroupPermissionForm = formFactory.form(GroupPermissionIdDto.class);
+        this.editUserPermissionForm = formFactory.form(EditUserPermissionDto.class);
+        this.deleteUserPermissionForm = formFactory.form(UserPermissionIdDto.class);
 
         this.manager = manager;
         this.sessionManager = sessionManager;
@@ -51,14 +55,13 @@ public class PermissionController extends Controller {
     public Result showEditGroupPermission(Long groupPermissionId) throws InvalidDataException {
         User currentUser = sessionManager.currentUser();
         EditGroupPermissionDto dto = this.manager.getGroupPermissionForEdit(currentUser.getUserId(), groupPermissionId);
-        GroupPermissionDto deleteDto = new GroupPermissionDto(dto.getGroupPermissionId());
+        GroupPermissionIdDto deleteDto = new GroupPermissionIdDto(dto.getGroupPermissionId());
         return ok(views.html.EditGroupPermission.render(dto, this.editGroupPermissionForm.fill(dto), this.deleteGroupPermissionForm.fill(deleteDto)));
     }
 
     public Result deleteGroupPermission() {
         User currentUser = sessionManager.currentUser();
-
-        Form<GroupPermissionDto> boundForm = deleteGroupPermissionForm.bindFromRequest("groupPermissionId");
+        Form<GroupPermissionIdDto> boundForm = deleteGroupPermissionForm.bindFromRequest("groupPermissionId");
         if (boundForm.hasErrors()) {
             return badRequest();
         }
@@ -67,8 +70,29 @@ public class PermissionController extends Controller {
         return redirect(routes.PermissionController.listGrantedPermissions());
     }
 
-    public Result editGroupPermission()
-    {
+    public Result deleteUserPermission() {
+        User currentUser = sessionManager.currentUser();
+        Form<UserPermissionIdDto> boundForm = this.deleteUserPermissionForm.bindFromRequest("userPermissionId");
+        if (boundForm.hasErrors()) {
+            return badRequest();
+        }
+
+        this.manager.deleteUserPermission(currentUser.getUserId(), boundForm.get().getUserPermissionId());
+        return redirect(routes.PermissionController.listGrantedPermissions());
+    }
+
+    public Result editUserPermission() throws InvalidArgumentException {
+        User currentUser = sessionManager.currentUser();
+        Form<EditUserPermissionDto> boundForm = this.editUserPermissionForm.bindFromRequest("userPermissionId", "permissionLevel");
+        if (boundForm.hasErrors()) {
+            return badRequest();
+        }
+        EditUserPermissionDto dto = boundForm.get();
+        this.manager.editUserPermission(currentUser.getUserId(), dto.getUserPermissionId(), dto.getPermissionLevel());
+        return redirect(routes.PermissionController.listGrantedPermissions());
+    }
+
+    public Result editGroupPermission() throws InvalidArgumentException {
         User currentUser = sessionManager.currentUser();
         Form<EditGroupPermissionDto> boundForm = this.editGroupPermissionForm.bindFromRequest("groupPermissionId", "permissionLevel");
         if (boundForm.hasErrors()) {
@@ -79,9 +103,11 @@ public class PermissionController extends Controller {
         return redirect(routes.PermissionController.listGrantedPermissions());
     }
 
-    public Result showEditUserPermission(Long userPermissionId)
-    {
-        return ok("edit user");
+    public Result showEditUserPermission(Long userPermissionId) throws InvalidDataException {
+        User currentUser = sessionManager.currentUser();
+        EditUserPermissionDto dto = this.manager.getUserPermissionForEdit(currentUser.getUserId(), userPermissionId);
+        UserPermissionIdDto deleteDto = new UserPermissionIdDto(dto.getUserPermissionId());
+        return ok(views.html.EditUserPermission.render(dto, this.editUserPermissionForm.fill(dto), this.deleteUserPermissionForm.fill(deleteDto)));
     }
 
     public Result showCreateGroupPermission()

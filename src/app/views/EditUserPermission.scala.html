@@ -1,13 +1,13 @@
-@import models.dtos.{EditGroupPermissionDto, GroupPermissionIdDto}
-@(dto: EditGroupPermissionDto, editForm: Form[EditGroupPermissionDto], deleteForm: Form[GroupPermissionIdDto])
+@import models.dtos.{EditUserPermissionDto, UserPermissionIdDto}
+@(dto: EditUserPermissionDto, editForm: Form[EditUserPermissionDto], deleteForm: Form[UserPermissionIdDto])
 
 @Main("HsH-Helfer: Gruppenberechtigung bearbeiten") {
     @bootstrapHelper.center("Bearbeiten") {
         @bootstrapHelper.form(
-            routes.PermissionController.editGroupPermission(),
+            routes.PermissionController.editUserPermission(),
             editForm,
             scala.collection.Map(
-                "groupPermissionId" -> Input(InputType.Hidden),
+                "userPermissionId" -> Input(InputType.Hidden),
                 "permissionLevel" -> Input(InputType.Select,
                     value = Right(play.libs.Scala.asScala(dto.getPossiblePermissions()).map(permissionLevel => permissionLevel.toString -> permissionLevel.toString)),
                     label = "Berechtigung")
@@ -17,9 +17,9 @@
     }
     @bootstrapHelper.center("Löschen") {
         @bootstrapHelper.form(
-            routes.PermissionController.deleteGroupPermission(),
+            routes.PermissionController.deleteUserPermission(),
             deleteForm,
-            scala.collection.Map("groupPermissionId" -> Input(InputType.Hidden)),
+            scala.collection.Map("userPermissionId" -> Input(InputType.Hidden)),
             button = bootstrapHelper.button("Berechtigung löschen")
         )
     }
