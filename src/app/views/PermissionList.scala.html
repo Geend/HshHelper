@@ -23,9 +23,9 @@
                         <td>@permission.getPermission()</td>
                         <td>
                             @if(permission.getIsGroupPermission()) {
-                                <a class="btn btn-primary" href="@routes.PermissionController.editGroupPermission(permission.getGroupOrUserIdentifier())" role="button">Bearbeiten</a>
+                                <a class="btn btn-primary" href="@routes.PermissionController.showEditGroupPermission(permission.getGroupOrUserIdentifier())" role="button">Bearbeiten</a>
                             } else {
-                                <a class="btn btn-primary" href="@routes.PermissionController.editUserPermission(permission.getGroupOrUserIdentifier())" role="button">Bearbeiten</a>
+                                <a class="btn btn-primary" href="@routes.PermissionController.showEditUserPermission(permission.getGroupOrUserIdentifier())" role="button">Bearbeiten</a>
                             }
                         </td>
                     </tr>

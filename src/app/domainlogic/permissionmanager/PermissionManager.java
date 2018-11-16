@@ -7,6 +7,7 @@ import models.*;
 import models.File;
 import models.GroupPermission;
 import models.UserPermission;
+import models.dtos.EditGroupPermissionDto;
 import models.dtos.PermissionEntryDto;
 import models.finders.*;
 import models.finders.FileFinder;
@@ -15,10 +16,7 @@ import models.finders.UserPermissionFinder;
 import policy.Specification;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class PermissionManager {
     private UserPermissionFinder userPermissionFinder;
@@ -59,7 +57,21 @@ private EbeanServer ebeanServer;
         return fileFinder.getFilesByOwner(userId);
     }
 
-    public List<PermissionEntryDto> GetAllGrantedPermissions(Long userId) {
+    public EditGroupPermissionDto getGroupPermissionForEdit(Long userId, Long groupPermissionId) throws InvalidDataException {
+        // TODO: authorization
+        GroupPermission permission = this.groupPermissionFinder.byId(groupPermissionId);
+        PermissionLevel permissionLevel = this.fromReadWrite(permission.getCanRead(), permission.getCanWrite());
+        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
+        return new EditGroupPermissionDto(permission.getGroupPermissionId(), permissionLevel, possiblePermissions);
+    }
+
+    public void deleteGroupPermission(Long userId, Long groupPermissionId) {
+        // TODO: authorization
+        GroupPermission permission = this.groupPermissionFinder.byId(groupPermissionId);
+        this.ebeanServer.delete(permission);
+    }
+
+    public List<PermissionEntryDto> getAllGrantedPermissions(Long userId) {
         Integer index = 0;
         ArrayList<PermissionEntryDto> result = new ArrayList<>();
         List<File> ownedFiles = this.fileFinder.getFilesByOwner(userId);
@@ -75,7 +87,7 @@ private EbeanServer ebeanServer;
                         permissionString,
                         true,
                         fileName,
-                        groupPermission.getGroup().getGroupId()));
+                        groupPermission.getGroupPermissionId()));
             }
             List<UserPermission> userPermissions = this.userPermissionFinder.findForFileId(ownedFile.getFileId());
             for (UserPermission userPermission : userPermissions) {
@@ -87,7 +99,7 @@ private EbeanServer ebeanServer;
                         permissionString,
                         false,
                         fileName,
-                        userPermission.getUser().getUserId()));
+                        userPermission.getUserPermissionId()));
             }
         }
         return result;
@@ -170,5 +182,15 @@ private EbeanServer ebeanServer;
 
         ebeanServer.save(permission);
 
+    }
+
+    private PermissionLevel fromReadWrite(boolean canRead, boolean canWrite) throws InvalidDataException {
+        if(canWrite) {
+            return PermissionLevel.WRITE;
+        }
+        else if(canRead) {
+            return PermissionLevel.READ;
+        }
+        throw new InvalidDataException("no permission level exists for no read and no write access");
     }
 }

@@ -37,8 +37,10 @@ GET         /forbidden                                                 controlle
 GET         /badrequest                                                controllers.ErrorController.showBadRequestMessage()
 
 GET         /permissions/list                                          controllers.PermissionController.listGrantedPermissions
-GET         /permissions/editgrouppermission/:groupPermissionId        controllers.PermissionController.editGroupPermission(groupPermissionId: Long)
-GET         /permissions/edituserpermission/:userPermissionId          controllers.PermissionController.editUserPermission(userPermissionId: Long)
+GET         /permissions/editgrouppermission/:groupPermissionId        controllers.PermissionController.showEditGroupPermission(groupPermissionId: Long)
+POST        /permissions/editgrouppermission/                          controllers.PermissionController.editGroupPermission()
+POST        /permissions/deletegrouppermission/                        controllers.PermissionController.deleteGroupPermission()
+GET         /permissions/edituserpermission/:userPermissionId          controllers.PermissionController.showEditUserPermission(userPermissionId: Long)
 GET         /permissions/creategrouppermission/                        controllers.PermissionController.showCreateGroupPermission()
 POST        /permissions/creategrouppermission/                        controllers.PermissionController.createGroupPermission()
 GET         /permissions/createuserpermission/                         controllers.PermissionController.showCreateUserPermission()

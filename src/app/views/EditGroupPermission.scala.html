@@ -1,0 +1,16 @@
+@import models.dtos.EditGroupPermissionDto
+@import models.dtos.GroupPermissionDto
+@(editForm: Form[EditGroupPermissionDto], deleteForm: Form[GroupPermissionDto])
+
+@Main("HsH-Helfer: Gruppenberechtigung bearbeiten") {
+    @bootstrapHelper.center("Berechtigung bearbeiten") {
+
+        @bootstrapHelper.form(
+            routes.PermissionController.deleteGroupPermission(),
+            deleteForm,
+            scala.collection.Map("groupPermissionId" -> Input(InputType.Hidden)),
+            button = bootstrapHelper.button("Berechtigung löschen")
+            //button = @Html("<input class=\"btn btn-primary btn-danger\" type=\"submit\" value=\"Löschen\">")
+        )
+    }
+}
