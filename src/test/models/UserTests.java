@@ -21,7 +21,6 @@ public class UserTests {
     public static void startApp() {
         app = Helpers.fakeApplication();
         Helpers.start(app);
-
     }
 
     @AfterClass

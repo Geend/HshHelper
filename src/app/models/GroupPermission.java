@@ -11,11 +11,11 @@ public class GroupPermission extends Model {
     private Long groupPermissionId;
 
     @ManyToOne
-    @JoinColumn(name = "file_id", referencedColumnName = "file_id")
+    @JoinColumn(name = "fk_file_id", referencedColumnName = "file_id")
     private File file;
 
     @ManyToOne
-    @JoinColumn(name = "group_id", referencedColumnName = "group_id")
+    @JoinColumn(name = "fk_group_id", referencedColumnName = "group_id")
     private Group group;
 
     private Boolean canRead;

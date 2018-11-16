@@ -11,11 +11,11 @@ public class UserPermission extends Model {
     private Long userPermissionId;
 
     @ManyToOne
-    @JoinColumn(name = "file_id", referencedColumnName = "file_id")
+    @JoinColumn(name = "fk_file_id", referencedColumnName = "file_id")
     private File file;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "fk_user_id", referencedColumnName = "user_id")
     private User user;
 
     private Boolean canRead;
