@@ -6,10 +6,8 @@ import domainlogic.filemanager.FilenameAlreadyExistsException;
 import domainlogic.filemanager.QuotaExceededException;
 import models.File;
 import models.TempFile;
-import models.dtos.CreateGroupDto;
-import models.dtos.UploadFileDto;
-import models.dtos.UploadFileMetaDto;
-import models.dtos.UserLoginDto;
+import models.dtos.*;
+import models.finders.UserQuota;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -106,5 +104,18 @@ public class FileController extends Controller {
         }
 
         return ok(files);
+    }
+
+    public Result showQuotaUsage() {
+        UserQuota uq = fileManager.getCurrentQuotaUsage(sessionManager.currentUser().getUserId());
+        UserQuotaDto dto = new UserQuotaDto(
+            (long)sessionManager.currentUser().getQuotaLimit(),
+            uq.getNameUsage(),
+            uq.getCommentUsage(),
+            uq.getFileContentUsage(),
+            uq.getTempFileContentUsage()
+        );
+
+        return ok(views.html.UserQuota.render(dto));
     }
 }

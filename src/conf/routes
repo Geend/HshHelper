@@ -10,6 +10,7 @@ GET         /files/all                                                 controlle
 GET         /files/upload                                              controllers.FileController.showUploadFileForm
 POST        /files/upload                                              controllers.FileController.uploadFile
 POST        /files/upload/store                                        controllers.FileController.storeFile
+GET         /files/quota                                               controllers.FileController.showQuotaUsage
 
 GET         /login                                                     controllers.LoginController.showLoginForm
 POST        /login                                                     controllers.LoginController.login

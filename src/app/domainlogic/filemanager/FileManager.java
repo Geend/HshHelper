@@ -128,4 +128,8 @@ public class FileManager {
                 .endOr()
                 .findList();
     }
+
+    public UserQuota getCurrentQuotaUsage(Long userId) {
+        return fileFinder.getUsedQuota(userId);
+    }
 }
