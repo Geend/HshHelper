@@ -685,51 +685,8 @@ public class SpecificationTests {
 
     /*
         Zugriff auf Berechtigungen
-
-    public boolean CanDeleteGroupPermission(User user, GroupPermission groupPermission) {
-        if(user == null || groupPermission == null)
-            return false;
-
-        if(user.equals(groupPermission.getFile().getOwner())){
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean CanDeleteUserPermission(User user, UserPermission userPermission) {
-        if(user == null || userPermission == null)
-            return false;
-
-        if(user.equals(userPermission.getFile().getOwner())){
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean CanEditUserPermission(User user, UserPermission userPermission) {
-        if(user == null || userPermission == null)
-            return false;
-
-        if(user.equals(userPermission.getFile().getOwner())){
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean CanEditGroupPermission(User user, GroupPermission userPermission) {
-        if(user == null || userPermission == null)
-            return false;
-
-        if(user.equals(userPermission.getFile().getOwner())){
-            return true;
-        }
-
-        return false;
-    }
      */
+    
     @Test
     public void CanDeleteGroupPermissionTest() {
         User otherUser = mock(User.class);
