@@ -686,7 +686,7 @@ public class SpecificationTests {
     /*
         Zugriff auf Berechtigungen
      */
-    
+
     @Test
     public void CanDeleteGroupPermissionTest() {
         User otherUser = mock(User.class);
