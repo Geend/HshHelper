@@ -682,4 +682,111 @@ public class SpecificationTests {
         boolean actual = Specification.instance.CanAccessTempFile(klaus, klausTempFile);
         assertThat(actual).isTrue();
     }
+
+    /*
+        Zugriff auf Berechtigungen
+
+    public boolean CanDeleteGroupPermission(User user, GroupPermission groupPermission) {
+        if(user == null || groupPermission == null)
+            return false;
+
+        if(user.equals(groupPermission.getFile().getOwner())){
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean CanDeleteUserPermission(User user, UserPermission userPermission) {
+        if(user == null || userPermission == null)
+            return false;
+
+        if(user.equals(userPermission.getFile().getOwner())){
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean CanEditUserPermission(User user, UserPermission userPermission) {
+        if(user == null || userPermission == null)
+            return false;
+
+        if(user.equals(userPermission.getFile().getOwner())){
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean CanEditGroupPermission(User user, GroupPermission userPermission) {
+        if(user == null || userPermission == null)
+            return false;
+
+        if(user.equals(userPermission.getFile().getOwner())){
+            return true;
+        }
+
+        return false;
+    }
+     */
+    @Test
+    public void CanDeleteGroupPermissionTest() {
+        User otherUser = mock(User.class);
+        User user = mock(User.class);
+        File file = mock(File.class);
+        GroupPermission permission = mock(GroupPermission.class);
+        when(file.getOwner()).thenReturn(otherUser);
+        when(permission.getFile()).thenReturn(file);
+        assertThat(Specification.instance.CanDeleteGroupPermission(null, permission)).isFalse();
+        assertThat(Specification.instance.CanDeleteGroupPermission(user, null)).isFalse();
+        assertThat(Specification.instance.CanDeleteGroupPermission(user, permission)).isFalse();
+        when(file.getOwner()).thenReturn(user);
+        assertThat(Specification.instance.CanDeleteGroupPermission(user, permission)).isTrue();
+    }
+
+    @Test
+    public void CanDeleteUserPermissionTest() {
+        User otherUser = mock(User.class);
+        User user = mock(User.class);
+        File file = mock(File.class);
+        UserPermission permission = mock(UserPermission.class);
+        when(file.getOwner()).thenReturn(otherUser);
+        when(permission.getFile()).thenReturn(file);
+        assertThat(Specification.instance.CanDeleteUserPermission(null, permission)).isFalse();
+        assertThat(Specification.instance.CanDeleteUserPermission(user, null)).isFalse();
+        assertThat(Specification.instance.CanDeleteUserPermission(user, permission)).isFalse();
+        when(file.getOwner()).thenReturn(user);
+        assertThat(Specification.instance.CanDeleteUserPermission(user, permission)).isTrue();
+    }
+
+    @Test
+    public void CanEditUserPermissionTest() {
+        User otherUser = mock(User.class);
+        User user = mock(User.class);
+        File file = mock(File.class);
+        UserPermission permission = mock(UserPermission.class);
+        when(file.getOwner()).thenReturn(otherUser);
+        when(permission.getFile()).thenReturn(file);
+        assertThat(Specification.instance.CanEditUserPermission(null, permission)).isFalse();
+        assertThat(Specification.instance.CanEditUserPermission(user, null)).isFalse();
+        assertThat(Specification.instance.CanEditUserPermission(user, permission)).isFalse();
+        when(file.getOwner()).thenReturn(user);
+        assertThat(Specification.instance.CanEditUserPermission(user, permission)).isTrue();
+    }
+
+    @Test
+    public void CanEditGroupPermissionTest() {
+        User otherUser = mock(User.class);
+        User user = mock(User.class);
+        File file = mock(File.class);
+        GroupPermission permission = mock(GroupPermission.class);
+        when(file.getOwner()).thenReturn(otherUser);
+        when(permission.getFile()).thenReturn(file);
+        assertThat(Specification.instance.CanEditGroupPermission(null, permission)).isFalse();
+        assertThat(Specification.instance.CanEditGroupPermission(user, null)).isFalse();
+        assertThat(Specification.instance.CanEditGroupPermission(user, permission)).isFalse();
+        when(file.getOwner()).thenReturn(user);
+        assertThat(Specification.instance.CanEditGroupPermission(user, permission)).isTrue();
+    }
 }
