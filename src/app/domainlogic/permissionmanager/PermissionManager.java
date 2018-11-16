@@ -48,13 +48,31 @@ private EbeanServer ebeanServer;
         }
     }
 
-
     public Set<User> getAllOtherUsers(Long userId) {
         return userFinder.query().where().notIn("userId", userId).findSet();
     }
 
     public List<File> getUserFiles(Long userId) {
         return fileFinder.getFilesByOwner(userId);
+    }
+
+    public void editGroupPermission(Long userId, Long groupPermissionId, PermissionLevel newLevel) {
+        // TODO: authorization
+        GroupPermission groupPermission = this.groupPermissionFinder.byId(groupPermissionId);
+        switch(newLevel) {
+            case WRITE:
+                groupPermission.setCanWrite(true);
+                groupPermission.setCanRead(true);
+                break;
+            case READ:
+                groupPermission.setCanWrite(false);
+                groupPermission.setCanRead(true);
+            default:
+                groupPermission.setCanWrite(false);
+                groupPermission.setCanRead(false);
+                break;
+        }
+        this.ebeanServer.save(groupPermission);
     }
 
     public EditGroupPermissionDto getGroupPermissionForEdit(Long userId, Long groupPermissionId) throws InvalidDataException {

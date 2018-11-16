@@ -52,7 +52,7 @@ public class PermissionController extends Controller {
         User currentUser = sessionManager.currentUser();
         EditGroupPermissionDto dto = this.manager.getGroupPermissionForEdit(currentUser.getUserId(), groupPermissionId);
         GroupPermissionDto deleteDto = new GroupPermissionDto(dto.getGroupPermissionId());
-        return ok(views.html.EditGroupPermission.render(this.editGroupPermissionForm.fill(dto), this.deleteGroupPermissionForm.fill(deleteDto)));
+        return ok(views.html.EditGroupPermission.render(dto, this.editGroupPermissionForm.fill(dto), this.deleteGroupPermissionForm.fill(deleteDto)));
     }
 
     public Result deleteGroupPermission() {
@@ -69,7 +69,14 @@ public class PermissionController extends Controller {
 
     public Result editGroupPermission()
     {
-        return ok("edit permission");
+        User currentUser = sessionManager.currentUser();
+        Form<EditGroupPermissionDto> boundForm = this.editGroupPermissionForm.bindFromRequest("groupPermissionId", "permissionLevel");
+        if (boundForm.hasErrors()) {
+            return badRequest();
+        }
+        EditGroupPermissionDto dto = boundForm.get();
+        this.manager.editGroupPermission(currentUser.getUserId(), dto.getGroupPermissionId(), dto.getPermissionLevel());
+        return redirect(routes.PermissionController.listGrantedPermissions());
     }
 
     public Result showEditUserPermission(Long userPermissionId)
