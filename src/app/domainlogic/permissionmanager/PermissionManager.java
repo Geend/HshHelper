@@ -25,8 +25,9 @@ public class PermissionManager {
     private FileFinder fileFinder;
     private GroupFinder groupFinder;
     private UserFinder userFinder;
-private EbeanServer ebeanServer;
+    private EbeanServer ebeanServer;
     private Specification specification;
+    private String anfrageFehlerMessage;
 
     @Inject
     public PermissionManager(UserPermissionFinder userPermissionFinder, GroupPermissionFinder groupPermissionFinder, FileFinder fileFinder, GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer, Specification specification) {
@@ -37,71 +38,121 @@ private EbeanServer ebeanServer;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
         this.specification = specification;
+        this.anfrageFehlerMessage = "Fehler bei der Verarbeitung der Anfrage. Haben sie ungültige Informationen eingegeben?";
     }
 
-    private String getPermissionString(boolean canRead, boolean canWrite) {
-        if (canWrite) {
-            return "write";
-        } else if (canRead) {
-            return "read";
-        } else {
-            return "none";
-        }
-    }
+    //
+    //  group permissions
+    //
 
-    public Set<User> getAllOtherUsers(Long userId) {
-        return userFinder.query().where().notIn("userId", userId).findSet();
-    }
+    public void editGroupPermission(Long userId, Long groupPermissionId, PermissionLevel newLevel) throws InvalidArgumentException, UnauthorizedException {
+        Optional<User> user = this.userFinder.byIdOptional(userId);
+        Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
 
-    public List<File> getUserFiles(Long userId) {
-        return fileFinder.getFilesByOwner(userId);
-    }
+        if (!user.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
+        if (!permission.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
 
-    public void editGroupPermission(Long userId, Long groupPermissionId, PermissionLevel newLevel) throws InvalidArgumentException {
-        // TODO: authorization
-        GroupPermission groupPermission = this.groupPermissionFinder.byId(groupPermissionId);
+        if (!specification.CanEditGroupPermission(user.get(), permission.get()))
+            throw new UnauthorizedException();
+
         CanReadWrite c = this.PermissionLevelToCanReadWrite(newLevel);
-        groupPermission.setCanWrite(c.canWrite);
-        groupPermission.setCanRead(c.canRead);
-        this.ebeanServer.save(groupPermission);
+        permission.get().setCanWrite(c.canWrite);
+        permission.get().setCanRead(c.canRead);
+
+        this.ebeanServer.save(permission.get());
     }
 
-    public void editUserPermission(Long userId, Long userPermissionId, PermissionLevel newLevel) throws InvalidArgumentException {
-        // TODO: authorization
-        UserPermission userPermission = this.userPermissionFinder.byId(userPermissionId);
+    public EditGroupPermissionDto getGroupPermissionForEdit(Long userId, Long groupPermissionId) throws InvalidDataException, InvalidArgumentException, UnauthorizedException {
+        Optional<User> user = this.userFinder.byIdOptional(userId);
+        Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
+
+        if (!user.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
+        if (!permission.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
+
+        if (!specification.CanEditGroupPermission(user.get(), permission.get()))
+            throw new UnauthorizedException();
+
+        PermissionLevel permissionLevel = this.fromReadWrite(permission.get().getCanRead(), permission.get().getCanWrite());
+        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
+        return new EditGroupPermissionDto(permission.get().getGroupPermissionId(), permissionLevel, possiblePermissions);
+    }
+
+    public void deleteGroupPermission(Long userId, Long groupPermissionId) throws InvalidArgumentException, UnauthorizedException {
+        Optional<User> user = this.userFinder.byIdOptional(userId);
+        Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
+
+        if (!user.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
+        if (!permission.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
+
+        if (!specification.CanDeleteGroupPermission(user.get(), permission.get()))
+            throw new UnauthorizedException();
+
+        this.ebeanServer.delete(permission.get());
+    }
+
+    //
+    // user permissions
+    //
+
+    public EditUserPermissionDto getUserPermissionForEdit(Long userId, Long userPermissionId) throws InvalidDataException, InvalidArgumentException, UnauthorizedException {
+        Optional<User> user = this.userFinder.byIdOptional(userId);
+        Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
+
+        if (!user.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
+        if (!permission.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
+
+        if (!specification.CanEditUserPermission(user.get(), permission.get()))
+            throw new UnauthorizedException();
+
+        PermissionLevel permissionLevel = this.fromReadWrite(permission.get().getCanRead(), permission.get().getCanWrite());
+        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
+        return new EditUserPermissionDto(permission.get().getUserPermissionId(), permissionLevel, possiblePermissions);
+    }
+
+    public void deleteUserPermission(Long userId, Long userPermissionId) throws InvalidArgumentException, UnauthorizedException {
+        Optional<User> user = this.userFinder.byIdOptional(userId);
+        Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
+
+        if (!user.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
+        if (!permission.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
+
+        if (!specification.CanDeleteUserPermission(user.get(), permission.get()))
+            throw new UnauthorizedException();
+
+        this.ebeanServer.delete(permission.get());
+    }
+
+    public void editUserPermission(Long userId, Long userPermissionId, PermissionLevel newLevel) throws InvalidArgumentException, UnauthorizedException {
+        Optional<User> user = this.userFinder.byIdOptional(userId);
+        Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
+
+        if (!user.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
+        if (!permission.isPresent())
+            throw new InvalidArgumentException(anfrageFehlerMessage);
+
+        if (!specification.CanEditUserPermission(user.get(), permission.get()))
+            throw new UnauthorizedException();
+
         CanReadWrite c = this.PermissionLevelToCanReadWrite(newLevel);
-        userPermission.setCanWrite(c.canWrite);
-        userPermission.setCanRead(c.canRead);
-        this.ebeanServer.save(userPermission);
+        permission.get().setCanWrite(c.canWrite);
+        permission.get().setCanRead(c.canRead);
+        this.ebeanServer.save(permission.get());
     }
 
-    public EditGroupPermissionDto getGroupPermissionForEdit(Long userId, Long groupPermissionId) throws InvalidDataException {
-        // TODO: authorization
-        GroupPermission permission = this.groupPermissionFinder.byId(groupPermissionId);
-        PermissionLevel permissionLevel = this.fromReadWrite(permission.getCanRead(), permission.getCanWrite());
-        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
-        return new EditGroupPermissionDto(permission.getGroupPermissionId(), permissionLevel, possiblePermissions);
-    }
-
-    public EditUserPermissionDto getUserPermissionForEdit(Long userId, Long userPermissionId) throws InvalidDataException {
-        // TODO: authorization
-        UserPermission permission = this.userPermissionFinder.byId(userPermissionId);
-        PermissionLevel permissionLevel = this.fromReadWrite(permission.getCanRead(), permission.getCanWrite());
-        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
-        return new EditUserPermissionDto(permission.getUserPermissionId(), permissionLevel, possiblePermissions);
-    }
-
-    public void deleteGroupPermission(Long userId, Long groupPermissionId) {
-        // TODO: authorization
-        GroupPermission permission = this.groupPermissionFinder.byId(groupPermissionId);
-        this.ebeanServer.delete(permission);
-    }
-
-    public void deleteUserPermission(Long userId, Long userPermissionId) {
-        // TODO: authorization
-        UserPermission permission = this.userPermissionFinder.byId(userPermissionId);
-        this.ebeanServer.delete(permission);
-    }
+    //
+    //  all permissions and create
+    //
 
     public List<PermissionEntryDto> getAllGrantedPermissions(Long userId) {
         Integer index = 0;
@@ -222,6 +273,24 @@ private EbeanServer ebeanServer;
                 throw new InvalidArgumentException("Permission Level ungültig");
         }
         return result;
+    }
+
+    public Set<User> getAllOtherUsers(Long userId) {
+        return userFinder.query().where().notIn("userId", userId).findSet();
+    }
+
+    public List<File> getUserFiles(Long userId) {
+        return fileFinder.getFilesByOwner(userId);
+    }
+
+    private String getPermissionString(boolean canRead, boolean canWrite) {
+        if (canWrite) {
+            return "write";
+        } else if (canRead) {
+            return "read";
+        } else {
+            return "none";
+        }
     }
 
     class CanReadWrite
