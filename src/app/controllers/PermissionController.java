@@ -28,16 +28,16 @@ import static play.libs.Scala.asScala;
 @Authentication.Required
 public class PermissionController extends Controller {
 
-    private PermissionManager manager;
-    private SessionManager sessionManager;
+    private final PermissionManager manager;
+    private final SessionManager sessionManager;
 
-    private Form<CreateUserPermissionDto> createUserPermissionForm;
-    private Form<CreateGroupPermissionDto> createGroupPermissionForm;
+    private final Form<CreateUserPermissionDto> createUserPermissionForm;
+    private final Form<CreateGroupPermissionDto> createGroupPermissionForm;
 
-    private Form<EditGroupPermissionDto> editGroupPermissionForm;
-    private Form<GroupPermissionIdDto> deleteGroupPermissionForm;
-    private Form<EditUserPermissionDto> editUserPermissionForm;
-    private Form<UserPermissionIdDto> deleteUserPermissionForm;
+    private final Form<EditGroupPermissionDto> editGroupPermissionForm;
+    private final Form<GroupPermissionIdDto> deleteGroupPermissionForm;
+    private final Form<EditUserPermissionDto> editUserPermissionForm;
+    private final Form<UserPermissionIdDto> deleteUserPermissionForm;
 
     @Inject
     public PermissionController(FormFactory formFactory, PermissionManager manager, SessionManager sessionManager, Policy policy) {
@@ -57,31 +57,28 @@ public class PermissionController extends Controller {
      */
 
     public Result showEditGroupPermission(Long groupPermissionId) throws InvalidDataException, UnauthorizedException, InvalidArgumentException {
-        User currentUser = sessionManager.currentUser();
-        EditGroupPermissionDto dto = this.manager.getGroupPermissionForEdit(currentUser.getUserId(), groupPermissionId);
+        EditGroupPermissionDto dto = this.manager.getGroupPermissionForEdit(groupPermissionId);
         GroupPermissionIdDto deleteDto = new GroupPermissionIdDto(dto.getGroupPermissionId());
         return ok(views.html.filepermissions.EditGroupPermission.render(dto, this.editGroupPermissionForm.fill(dto), this.deleteGroupPermissionForm.fill(deleteDto)));
     }
 
     public Result deleteGroupPermission() throws UnauthorizedException, InvalidArgumentException {
-        User currentUser = sessionManager.currentUser();
         Form<GroupPermissionIdDto> boundForm = deleteGroupPermissionForm.bindFromRequest("groupPermissionId");
         if (boundForm.hasErrors()) {
             return badRequest();
         }
 
-        this.manager.deleteGroupPermission(currentUser.getUserId(), boundForm.get().getGroupPermissionId());
+        this.manager.deleteGroupPermission(boundForm.get().getGroupPermissionId());
         return redirect(routes.PermissionController.listGrantedPermissions());
     }
 
     public Result editGroupPermission() throws InvalidArgumentException, UnauthorizedException {
-        User currentUser = sessionManager.currentUser();
         Form<EditGroupPermissionDto> boundForm = this.editGroupPermissionForm.bindFromRequest("groupPermissionId", "permissionLevel");
         if (boundForm.hasErrors()) {
             return badRequest();
         }
         EditGroupPermissionDto dto = boundForm.get();
-        this.manager.editGroupPermission(currentUser.getUserId(), dto.getGroupPermissionId(), dto.getPermissionLevel());
+        this.manager.editGroupPermission(dto.getGroupPermissionId(), dto.getPermissionLevel());
         return redirect(routes.PermissionController.listGrantedPermissions());
     }
 
@@ -90,38 +87,45 @@ public class PermissionController extends Controller {
      */
 
     public Result showEditUserPermission(Long userPermissionId) throws InvalidDataException, UnauthorizedException, InvalidArgumentException {
-        User currentUser = sessionManager.currentUser();
-        EditUserPermissionDto dto = this.manager.getUserPermissionForEdit(currentUser.getUserId(), userPermissionId);
+        EditUserPermissionDto dto = this.manager.getUserPermissionForEdit(userPermissionId);
         UserPermissionIdDto deleteDto = new UserPermissionIdDto(dto.getUserPermissionId());
         return ok(views.html.filepermissions.EditUserPermission.render(dto, this.editUserPermissionForm.fill(dto), this.deleteUserPermissionForm.fill(deleteDto)));
     }
 
     public Result deleteUserPermission() throws UnauthorizedException, InvalidArgumentException {
-        User currentUser = sessionManager.currentUser();
         Form<UserPermissionIdDto> boundForm = this.deleteUserPermissionForm.bindFromRequest("userPermissionId");
         if (boundForm.hasErrors()) {
             return badRequest();
         }
 
-        this.manager.deleteUserPermission(currentUser.getUserId(), boundForm.get().getUserPermissionId());
+        this.manager.deleteUserPermission(boundForm.get().getUserPermissionId());
         return redirect(routes.PermissionController.listGrantedPermissions());
     }
 
     public Result editUserPermission() throws InvalidArgumentException, UnauthorizedException {
-        User currentUser = sessionManager.currentUser();
         Form<EditUserPermissionDto> boundForm = this.editUserPermissionForm.bindFromRequest("userPermissionId", "permissionLevel");
         if (boundForm.hasErrors()) {
             return badRequest();
         }
         EditUserPermissionDto dto = boundForm.get();
-        this.manager.editUserPermission(currentUser.getUserId(), dto.getUserPermissionId(), dto.getPermissionLevel());
+        this.manager.editUserPermission(dto.getUserPermissionId(), dto.getPermissionLevel());
         return redirect(routes.PermissionController.listGrantedPermissions());
+    }
+
+    /*
+        listing all granted permissions
+     */
+
+    public Result listGrantedPermissions()
+    {
+        List<PermissionEntryDto> entries = this.manager.getAllGrantedPermissions();
+        Seq<PermissionEntryDto> scalaEntries = asScala(entries);
+        return ok(views.html.filepermissions.PermissionList.render(scalaEntries));
     }
 
     /*
         creating permissions
      */
-
 
     public Result showCreateGroupPermission()
     {
@@ -129,7 +133,6 @@ public class PermissionController extends Controller {
     }
 
     public Result createGroupPermission() throws UnauthorizedException, InvalidArgumentException {
-        User currentUser = sessionManager.currentUser();
         Form<CreateGroupPermissionDto> boundForm = createGroupPermissionForm.bindFromRequest("fileId", "groupId", "permissionLevel");
 
         if (boundForm.hasErrors()) {
@@ -138,7 +141,25 @@ public class PermissionController extends Controller {
 
         CreateGroupPermissionDto createUserPermissionDto = boundForm.get();
 
-        manager.createGroupPermission(currentUser, createUserPermissionDto.getFileId(), createUserPermissionDto.getGroupId(), createUserPermissionDto.getPermissionLevel());
+        manager.createGroupPermission(createUserPermissionDto.getFileId(), createUserPermissionDto.getGroupId(), createUserPermissionDto.getPermissionLevel());
+        return redirect(routes.PermissionController.listGrantedPermissions());
+    }
+
+    public Result showCreateUserPermission()
+    {
+        return renderShowCreateUserPermissionForm(createUserPermissionForm);
+    }
+
+    public Result createUserPermission() throws UnauthorizedException, InvalidArgumentException {
+        Form<CreateUserPermissionDto> boundForm = createUserPermissionForm.bindFromRequest("fileId", "userId", "permissionLevel");
+
+        if (boundForm.hasErrors()) {
+            return renderShowCreateUserPermissionForm(boundForm);
+        }
+
+        CreateUserPermissionDto createUserPermissionDto = boundForm.get();
+
+        manager.createUserPermission(createUserPermissionDto.getFileId(), createUserPermissionDto.getUserId(), createUserPermissionDto.getPermissionLevel());
         return redirect(routes.PermissionController.listGrantedPermissions());
     }
 
@@ -150,25 +171,6 @@ public class PermissionController extends Controller {
         return ok(views.html.filepermissions.CreateGroupPermission.render(form, asScala(ownFiles), asScala(ownGroups), asScala(possiblePermissions)));
     }
 
-    public Result showCreateUserPermission()
-    {
-        return renderShowCreateUserPermissionForm(createUserPermissionForm);
-    }
-
-    public Result createUserPermission() throws UnauthorizedException, InvalidArgumentException {
-        User currentUser = sessionManager.currentUser();
-        Form<CreateUserPermissionDto> boundForm = createUserPermissionForm.bindFromRequest("fileId", "userId", "permissionLevel");
-
-        if (boundForm.hasErrors()) {
-            return renderShowCreateUserPermissionForm(boundForm);
-        }
-
-        CreateUserPermissionDto createUserPermissionDto = boundForm.get();
-
-        manager.createUserPermission(currentUser, createUserPermissionDto.getFileId(), createUserPermissionDto.getUserId(), createUserPermissionDto.getPermissionLevel());
-        return redirect(routes.PermissionController.listGrantedPermissions());
-    }
-
     private Result renderShowCreateUserPermissionForm(Form<CreateUserPermissionDto> form){
         List<File> ownFiles = manager.getUserFiles(sessionManager.currentUser().userId);
         Set<User> allOtherUsers = manager.getAllOtherUsers(sessionManager.currentUser().userId);
@@ -177,11 +179,4 @@ public class PermissionController extends Controller {
         return ok(views.html.filepermissions.CreateUserPermission.render(form, asScala(ownFiles), asScala(allOtherUsers), asScala(possiblePermissions)));
     }
 
-    public Result listGrantedPermissions()
-    {
-        User currentUser = sessionManager.currentUser();
-        List<PermissionEntryDto> entries = this.manager.getAllGrantedPermissions(currentUser.getUserId());
-        Seq<PermissionEntryDto> scalaEntries = asScala(entries);
-        return ok(views.html.filepermissions.PermissionList.render(scalaEntries));
-    }
 }

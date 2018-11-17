@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import play.libs.mailer.MailerClient;
 import policyenforcement.Policy;
+import policyenforcement.session.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class UserManagerTest {
     MailerClient defaultMailerClient;
     EbeanServer defaultServer;
     Policy defaultPolicy;
+    SessionManager defaultSessionManager;
 
     @Before
     public void init() {
@@ -46,6 +48,8 @@ public class UserManagerTest {
         defaultServer = mock(EbeanServer.class);
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
         when(adminUser.isAdmin()).thenReturn(true);
+        defaultSessionManager = mock(SessionManager.class);
+        when(defaultSessionManager.currentUser()).thenReturn(adminUser);
     }
 
     @Test
@@ -69,7 +73,7 @@ public class UserManagerTest {
         UserFinder userFinder = mock(UserFinder.class);
         when(userFinder.byName(testUsername)).thenReturn(Optional.of(user));
 
-        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy);
+        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy, defaultSessionManager);
 
         userManager.resetPassword(testUsername);
 
@@ -83,8 +87,8 @@ public class UserManagerTest {
         when(spec.CanViewAllUsers(any(User.class))).thenReturn(false);
         HashHelper hashHelper = mock(HashHelper.class);
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(defaultUserFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, spec);
-        sut.getAllUsers(1l);
+        UserManager sut = new UserManager(defaultUserFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, spec, defaultSessionManager);
+        sut.getAllUsers();
     }
 
     @Test
@@ -96,8 +100,8 @@ public class UserManagerTest {
         when(userFinder.all()).thenReturn(users);
         HashHelper hashHelper = mock(HashHelper.class);
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy);
-        List<User> result = sut.getAllUsers(1l);
+        UserManager sut = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy, defaultSessionManager);
+        List<User> result = sut.getAllUsers();
         assertEquals(result.size(), 2);
     }
 
@@ -107,8 +111,8 @@ public class UserManagerTest {
         when(spec.CanCreateUser(any(User.class))).thenReturn(false);
         HashHelper hashHelper = mock(HashHelper.class);
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(defaultUserFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, spec);
-        sut.createUser(1l, "klaus", "test@test.de", 5);
+        UserManager sut = new UserManager(defaultUserFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, spec, defaultSessionManager);
+        sut.createUser( "klaus", "test@test.de", 5);
     }
 
     @Test(expected = UsernameAlreadyExistsException.class)
@@ -118,8 +122,8 @@ public class UserManagerTest {
         User klausUser = mock(User.class);
         when(userFinder.byName("klaus")).thenReturn(Optional.of(klausUser));
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy);
-        sut.createUser(1l, "klaus", "test@test.de", 5);
+        UserManager sut = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy, defaultSessionManager);
+        sut.createUser("klaus", "test@test.de", 5);
     }
 
     @Test(expected = EmailAlreadyExistsException.class)
@@ -129,8 +133,8 @@ public class UserManagerTest {
         User klausUser = mock(User.class);
         when(userFinder.byEmail(eq("test@test.de"), any())).thenReturn(Optional.of(klausUser));
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy);
-        sut.createUser(1l, "klaus", "test@test.de", 5);
+        UserManager sut = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy, defaultSessionManager);
+        sut.createUser( "klaus", "test@test.de", 5);
     }
 
     @Test
@@ -139,10 +143,10 @@ public class UserManagerTest {
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         EbeanServer server = mock(EbeanServer.class);
         when(server.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
-        UserManager sut = new UserManager(defaultUserFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, server, defaultPolicy);
+        UserManager sut = new UserManager(defaultUserFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, server, defaultPolicy, defaultSessionManager);
 
         ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
-        sut.createUser(1l, "klaus", "test@test.de", 5);
+        sut.createUser( "klaus", "test@test.de", 5);
         verify(server).save(argumentCaptor.capture());
         User addedUser = argumentCaptor.getValue();
         assertEquals(addedUser.getUsername(), "klaus");
@@ -157,7 +161,7 @@ public class UserManagerTest {
         UserFinder userFinder= mock(UserFinder.class);
         HashHelper hashHelper = mock(HashHelper.class);
 
-        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy);
+        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy, defaultSessionManager);
 
         userManager.resetPassword(null);
     }
@@ -170,7 +174,7 @@ public class UserManagerTest {
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         HashHelper hashHelper = mock(HashHelper.class);
 
-        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, new Policy());
+        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, new Policy(), defaultSessionManager);
 
         Long adminUserId = 0l;
         when(userFinder.byIdOptional(adminUserId)).thenReturn(Optional.of(adminUser));
@@ -182,7 +186,7 @@ public class UserManagerTest {
         when(userFinder.byIdOptional(userToBeDeletedId)).thenReturn(Optional.of(userToBeDeleted));
 
 
-        userManager.deleteUser(adminUserId, userToBeDeletedId);
+        userManager.deleteUser(userToBeDeletedId);
 
         verify(defaultServer,times(1)).delete(userToBeDeleted);
     }
@@ -192,13 +196,13 @@ public class UserManagerTest {
 
         UserFinder userFinder = mock(UserFinder.class);
 
+        SessionManager sessionManager = mock(SessionManager.class);
+        when(sessionManager.currentUser()).thenReturn((mock(User.class)));
+
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         HashHelper hashHelper = mock(HashHelper.class);
 
-        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, new Policy());
-
-        Long unauthorizedUserId = 0l;
-        when(userFinder.byIdOptional(unauthorizedUserId)).thenReturn(Optional.of(mock(User.class)));
+        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, new Policy(), sessionManager);
 
         Long userToBeDeletedId = 10l;
 
@@ -206,45 +210,27 @@ public class UserManagerTest {
         when(userToBeDeleted.getUserId()).thenReturn(userToBeDeletedId);
         when(userFinder.byIdOptional(userToBeDeletedId)).thenReturn(Optional.of(userToBeDeleted));
 
-        userManager.deleteUser(unauthorizedUserId, userToBeDeletedId);
+        userManager.deleteUser(userToBeDeletedId);
 
         verify(defaultServer, never()).delete(userToBeDeleted);
     }
 
+
+
     @Test(expected = InvalidArgumentException.class)
-    public void testDeleteUserWithNullInput1() throws UnauthorizedException, InvalidArgumentException {
+    public void testDeleteUserWithNullInput() throws UnauthorizedException, InvalidArgumentException {
 
         UserFinder userFinder = mock(UserFinder.class);
 
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         HashHelper hashHelper = mock(HashHelper.class);
 
-        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy);
-
-        Long userToBeDeletedId = 10l;
-        User userToBeDeleted = mock(User.class);
-        when(userToBeDeleted.getUserId()).thenReturn(userToBeDeletedId);
-        when(userFinder.byId(userToBeDeletedId)).thenReturn(userToBeDeleted);
-
-        userManager.deleteUser(null, userToBeDeletedId);
-
-        verify(defaultServer, never()).delete(userToBeDeleted);
-    }
-
-    @Test(expected = InvalidArgumentException.class)
-    public void testDeleteUserWithNullInput2() throws UnauthorizedException, InvalidArgumentException {
-
-        UserFinder userFinder = mock(UserFinder.class);
-
-        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        HashHelper hashHelper = mock(HashHelper.class);
-
-        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy);
+        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy, defaultSessionManager);
 
         Long adminUserId = 0l;
         when(userFinder.byId(adminUserId)).thenReturn(adminUser);
 
-        userManager.deleteUser(adminUserId, null);
+        userManager.deleteUser(null);
 
         verify(defaultServer, never()).delete(null);
     }

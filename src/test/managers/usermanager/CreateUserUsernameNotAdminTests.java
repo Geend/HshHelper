@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import play.libs.mailer.MailerClient;
 import policyenforcement.Policy;
+import policyenforcement.session.SessionManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,10 +47,11 @@ public class CreateUserUsernameNotAdminTests {
         GroupFinder groupFinder = mock(GroupFinder.class);
         EbeanServer defaultServer = mock(EbeanServer.class);
         Policy spec = mock(Policy.class);
+        SessionManager sessionManager = mock(SessionManager.class);
         when(spec.CanCreateUser(any())).thenReturn(true);
         when(userFinder.byName(any())).thenReturn(Optional.empty());
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, spec);
-        sut.createUser(1l, this.username, "test@test.de", 5);
+        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, spec, sessionManager);
+        sut.createUser(this.username, "test@test.de", 5);
     }
 }

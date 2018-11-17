@@ -1,12 +1,9 @@
 package controllers;
 
 import extension.ErrorHandler;
-import models.User;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-
-import static play.libs.Scala.asScala;
 
 public class ErrorController  extends Controller {
 

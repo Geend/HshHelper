@@ -1,8 +1,31 @@
-@(file:File, isOwner:Boolean, canWrite:Boolean)
+@import dtos.EditFileDto
+@(file:File, changeFileForm:Form[EditFileDto])
 
 @Main("Datei"){
 
+
+
     <p>
-        @file.getName
+        Datei: @file.getName()
+    </p>
+
+    @bootstrapHelper.form(
+        routes.FileController.editFile(),
+        changeFileForm,
+        scala.collection.Map(
+            "fileId" -> Input(InputType.Hidden),
+            "comment" -> Input(InputType.Text,
+                label = "Kommentar",
+                placeholder = "Kommentar eingeben"),
+
+            "data" -> Input(InputType.File,
+                label = "Datei")
+        ),
+        button = bootstrapHelper.button("Datei speichern")
+    )
+
+
+    <p>
+        <a href="@routes.FileController.downloadFile(file.getFileId)">Download</a>
     </p>
 }

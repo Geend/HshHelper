@@ -15,9 +15,9 @@ import java.util.Optional;
 
 public class LoginController extends Controller {
 
-    private Form<UserLoginDto> loginForm;
-    private Form<ChangePasswordAfterResetDto> changePasswordForm;
-    private LoginManager loginManager;
+    private final Form<UserLoginDto> loginForm;
+    private final Form<ChangePasswordAfterResetDto> changePasswordForm;
+    private final LoginManager loginManager;
 
     @Inject
     public LoginController(
