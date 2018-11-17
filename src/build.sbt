@@ -9,6 +9,7 @@ lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 scalaVersion := "2.12.6"
 
 crossScalaVersions := Seq("2.11.12", "2.12.4")
+javacOptions += "-Xlint:deprecation"
 
 libraryDependencies += guice
 
