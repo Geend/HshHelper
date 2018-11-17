@@ -1,6 +1,5 @@
 package managers.filemanager;
 
-import io.ebeaninternal.server.grammer.antlr.EQLParser;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.*;
@@ -145,5 +144,35 @@ public class FileManager {
             throw new UnauthorizedException();
 
         return file.get();
+    }
+
+
+    public void editFile(User currentUser, Long fileId, String comment, byte[] data) throws InvalidArgumentException, UnauthorizedException, QuotaExceededException {
+
+        Optional<File> fileOptional = fileFinder.byIdOptional(fileId);
+
+        if(!fileOptional.isPresent())
+            throw new InvalidArgumentException();
+
+        if(!policy.CanWriteFile(currentUser, fileOptional.get()))
+            throw new UnauthorizedException();
+
+
+        File file = fileOptional.get();
+
+        file.setComment(comment);
+
+        if(data != null) {
+            file.setData(data);
+        }
+
+
+        checkQuota(currentUser, file.getName(), file.getComment(), file.getData());
+
+        ebeanServer.save(file);
+    }
+
+    public void editFile(User currentUser, Long fileId, String comment) throws QuotaExceededException, UnauthorizedException, InvalidArgumentException {
+        editFile(currentUser, fileId, comment, null);
     }
 }

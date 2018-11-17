@@ -19,21 +19,28 @@ import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.nio.file.Files;
 
 @Singleton
 @Authentication.Required
 public class FileController extends Controller {
     private final Form<UploadFileMetaDto> uploadFileMetaForm;
+
+    private final Form<EditFileDto> editFileForm;
+
+
     private final SessionManager sessionManager;
     private final FileManager fileManager;
 
     @Inject
     public FileController(SessionManager sessionManager, FileManager fileManager, FormFactory formFactory) {
         this.uploadFileMetaForm = formFactory.form(UploadFileMetaDto.class);
+        this.editFileForm = formFactory.form(EditFileDto.class);
         this.sessionManager = sessionManager;
         this.fileManager = fileManager;
     }
+
 
     public Result changePermissionsForFile() {
         return ok("test");
@@ -121,7 +128,56 @@ public class FileController extends Controller {
         File file = fileManager.getFile(sessionManager.currentUser(), fileId);
         boolean isOwner = file.getOwner().equals(sessionManager.currentUser());
 
-        return ok(views.html.file.File.render(file, isOwner, false));
+
+        EditFileDto editFileDto = new EditFileDto();
+        editFileDto.setFileId(fileId);
+        editFileDto.setComment(file.getComment());
+        Form<EditFileDto> form = editFileForm.fill(editFileDto);
+
+
+        return ok(views.html.file.File.render(file, form));
     }
+
+
+    public Result downloadFile(long fileId) throws UnauthorizedException, InvalidArgumentException {
+        File file = fileManager.getFile(sessionManager.currentUser(), fileId);
+        return ok(file.getData()).as("application/octet-stream").withHeader("Content-Disposition", "attatchment; filename=" + file.getName());
+    }
+
+    public Result editFile() throws UnauthorizedException, InvalidArgumentException {
+
+        Form<EditFileDto> boundForm = editFileForm.bindFromRequest("fileId", "comment");
+        if (boundForm.hasErrors()) {
+            return badRequest();
+        }
+
+        EditFileDto editFileDto = boundForm.get();
+
+
+        Http.MultipartFormData<java.io.File> body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart<java.io.File> file = body.getFile("data");
+
+        try {
+            if (file == null) {
+                fileManager.editFile(sessionManager.currentUser(), editFileDto.getFileId(), editFileDto.getComment());
+            } else {
+                try {
+                    byte[] data = Files.readAllBytes(file.getFile().toPath());
+                    fileManager.editFile(sessionManager.currentUser(), editFileDto.getFileId(), editFileDto.getComment(), data);
+
+                } catch (IOException e) {
+                    //TODO
+                }
+
+            }
+
+
+        } catch (QuotaExceededException e) {
+            return badRequest(views.html.file.upload.SelectFile.render("Quota überschritten!"));
+        }
+        return showFile(editFileDto.getFileId());
+
+    }
+
 
 }
