@@ -106,8 +106,6 @@ public class FileManager {
 
     public List<File> accessibleFiles(Long userId) {
         return fileFinder.query()
-                //.fetch("userPermissions")
-                .fetch("userPermissions.user")
                 .where()
                 .or()
                     .eq("owner.userId", userId)
