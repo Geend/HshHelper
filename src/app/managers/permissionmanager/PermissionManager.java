@@ -249,7 +249,6 @@ public class PermissionManager {
         permission.setCanRead(c.canRead);
 
         ebeanServer.save(permission);
-
     }
 
     public Set<User> getAllOtherUsers(Long userId) {

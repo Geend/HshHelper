@@ -10,6 +10,7 @@ import models.*;
 import models.finders.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import policyenforcement.Policy;
 
 import java.util.ArrayList;
@@ -45,10 +46,13 @@ public class PermissionManagerTests {
         when(defaultPolicy.CanDeleteUserPermission(any(User.class), any(UserPermission.class))).thenReturn(true);
         when(defaultPolicy.CanEditUserPermission(any(User.class), any(UserPermission.class))).thenReturn(true);
         when(defaultPolicy.CanEditGroupPermission(any(User.class), any(GroupPermission.class))).thenReturn(true);
+        when(defaultPolicy.CanCreateUserPermission(any(File.class), any(User.class))).thenReturn(true);
+        when(defaultPolicy.CanCreateGroupPermission(any(File.class), any(User.class), any(Group.class))).thenReturn(true);
 
         when(defaultUserFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(User.class)));
         when(defaultGroupPermissionFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(GroupPermission.class)));
         when(defaultUserPermissionFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(UserPermission.class)));
+        when(defaultFileFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(File.class)));
     }
 
     @Test
@@ -275,5 +279,47 @@ public class PermissionManagerTests {
                 this.defaultEbeanServer,
                 spec);
         permissionManager.deleteUserPermission(0l, 0l);
+    }
+
+    /*
+        Create permissions test
+     */
+    @Test
+    public void CreateUserPermissionTest() throws UnauthorizedException, InvalidArgumentException {
+        User currentUser = mock(User.class);
+        when(currentUser.getUserId()).thenReturn(10l);
+        EbeanServer s = mock(EbeanServer.class);
+        PermissionManager permissionManager = new PermissionManager(
+                this.defaultUserPermissionFinder,
+                this.defaultGroupPermissionFinder,
+                this.defaultFileFinder,
+                this.defaultGroupFinder,
+                this.defaultUserFinder,
+                s,
+                this.defaultPolicy);
+        ArgumentCaptor<UserPermission> argumentCaptor = ArgumentCaptor.forClass(UserPermission.class);
+        permissionManager.createUserPermission(currentUser, 0l, 0l, PermissionLevel.WRITE);
+        verify(s).save(argumentCaptor.capture());
+        UserPermission createdPermission = argumentCaptor.getValue();
+        assertEquals(createdPermission.getCanRead(), false);
+        assertEquals(createdPermission.getCanWrite(), true);
+        assertEquals((long)createdPermission.getFile().getFileId(), 0l);
+        assertEquals((long)createdPermission.getUser().getUserId(), 0l);
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void CreateUserPermissionIsAuthorizedTest() throws UnauthorizedException, InvalidArgumentException {
+        User currentUser = mock(User.class);
+        Policy spec = mock(Policy.class);
+        when(spec.CanCreateUserPermission(any(File.class), any(User.class))).thenReturn(false);
+        PermissionManager permissionManager = new PermissionManager(
+                this.defaultUserPermissionFinder,
+                this.defaultGroupPermissionFinder,
+                this.defaultFileFinder,
+                this.defaultGroupFinder,
+                this.defaultUserFinder,
+                this.defaultEbeanServer,
+                spec);
+        permissionManager.createUserPermission(currentUser, 0l, 0l, PermissionLevel.WRITE);
     }
 }
