@@ -50,6 +50,7 @@ public class PermissionManagerTests {
         when(defaultPolicy.CanCreateGroupPermission(any(File.class), any(User.class), any(Group.class))).thenReturn(true);
 
         when(defaultUserFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(User.class)));
+        when(defaultGroupFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(Group.class)));
         when(defaultGroupPermissionFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(GroupPermission.class)));
         when(defaultUserPermissionFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(UserPermission.class)));
         when(defaultFileFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(File.class)));
@@ -321,5 +322,44 @@ public class PermissionManagerTests {
                 this.defaultEbeanServer,
                 spec);
         permissionManager.createUserPermission(currentUser, 0l, 0l, PermissionLevel.WRITE);
+    }
+
+    @Test
+    public void CreateGroupPermissionTest() throws UnauthorizedException, InvalidArgumentException {
+        User currentUser = mock(User.class);
+        when(currentUser.getUserId()).thenReturn(10l);
+        EbeanServer s = mock(EbeanServer.class);
+        PermissionManager permissionManager = new PermissionManager(
+                this.defaultUserPermissionFinder,
+                this.defaultGroupPermissionFinder,
+                this.defaultFileFinder,
+                this.defaultGroupFinder,
+                this.defaultUserFinder,
+                s,
+                this.defaultPolicy);
+        ArgumentCaptor<GroupPermission> argumentCaptor = ArgumentCaptor.forClass(GroupPermission.class);
+        permissionManager.createGroupPermission(currentUser, 0l, 0l, PermissionLevel.WRITE);
+        verify(s).save(argumentCaptor.capture());
+        GroupPermission createdPermission = argumentCaptor.getValue();
+        assertEquals(createdPermission.getCanRead(), false);
+        assertEquals(createdPermission.getCanWrite(), true);
+        assertEquals((long)createdPermission.getFile().getFileId(), 0l);
+        assertEquals((long)createdPermission.getGroup().getGroupId(), 0l);
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void CreateGroupPermissionIsAuthorizedTest() throws UnauthorizedException, InvalidArgumentException {
+        User currentUser = mock(User.class);
+        Policy spec = mock(Policy.class);
+        when(spec.CanCreateGroupPermission(any(File.class), any(User.class), any(Group.class))).thenReturn(false);
+        PermissionManager permissionManager = new PermissionManager(
+                this.defaultUserPermissionFinder,
+                this.defaultGroupPermissionFinder,
+                this.defaultFileFinder,
+                this.defaultGroupFinder,
+                this.defaultUserFinder,
+                this.defaultEbeanServer,
+                spec);
+        permissionManager.createGroupPermission(currentUser, 0l, 0l, PermissionLevel.WRITE);
     }
 }
