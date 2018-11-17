@@ -111,6 +111,46 @@ public class PermissionManagerTests {
     }
 
     @Test
+    public void EditUserPermissionTest() throws UnauthorizedException, InvalidArgumentException {
+        UserPermission up = mock(UserPermission.class);
+        UserPermissionFinder upf = mock(UserPermissionFinder.class);
+        when(upf.byIdOptional(0l)).thenReturn(Optional.of(up));
+        EbeanServer s = mock(EbeanServer.class);
+        PermissionManager permissionManager = new PermissionManager(
+                upf,
+                this.defaultGroupPermissionFinder,
+                this.defaultFileFinder,
+                this.defaultGroupFinder,
+                this.defaultUserFinder,
+                s,
+                this.defaultPolicy);
+        permissionManager.editUserPermission(0l, 0l, PermissionLevel.WRITE);
+        verify(up).setCanRead(false);
+        verify(up).setCanWrite(true);
+        verify(s).save(up);
+    }
+
+    @Test
+    public void EditGroupPermissionTest() throws UnauthorizedException, InvalidArgumentException {
+        GroupPermission gp = mock(GroupPermission.class);
+        GroupPermissionFinder gpf = mock(GroupPermissionFinder.class);
+        when(gpf.byIdOptional(0l)).thenReturn(Optional.of(gp));
+        EbeanServer s = mock(EbeanServer.class);
+        PermissionManager permissionManager = new PermissionManager(
+                this.defaultUserPermissionFinder,
+                gpf,
+                this.defaultFileFinder,
+                this.defaultGroupFinder,
+                this.defaultUserFinder,
+                s,
+                this.defaultPolicy);
+        permissionManager.editGroupPermission(0l, 0l, PermissionLevel.READ);
+        verify(gp).setCanRead(true);
+        verify(gp).setCanWrite(false);
+        verify(s).save(gp);
+    }
+
+    @Test
     public void ShowEditUserPermissionDataTest() throws InvalidDataException, UnauthorizedException, InvalidArgumentException {
         UserPermissionFinder userFinder = mock(UserPermissionFinder.class);
         UserPermission p = mock(UserPermission.class);
