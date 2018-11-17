@@ -173,7 +173,7 @@ public class FileController extends Controller {
 
 
         } catch (QuotaExceededException e) {
-            return badRequest(views.html.file.upload.SelectFile.render("Quota überschritten!"));
+            return badRequest("Quota überschritten!");
         }
         return showFile(editFileDto.getFileId());
 
