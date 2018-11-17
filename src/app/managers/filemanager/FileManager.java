@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.Optional;
 
 public class FileManager {
-    private FileFinder fileFinder;
-    private TempFileFinder tempFileFinder;
-    private UserFinder userFinder;
+    private final FileFinder fileFinder;
+    private final TempFileFinder tempFileFinder;
+    private final UserFinder userFinder;
     private final EbeanServer ebeanServer;
-    private Policy policy;
-    private SessionManager sessionManager;
+    private final Policy policy;
+    private final SessionManager sessionManager;
 
     @Inject
     public FileManager(FileFinder fileFinder, TempFileFinder tempFileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy, SessionManager sessionManager) {
