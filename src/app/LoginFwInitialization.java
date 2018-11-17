@@ -1,5 +1,5 @@
 import akka.actor.ActorSystem;
-import policy.ext.loginFirewall.Firewall;
+import policyenforcement.ext.loginFirewall.Firewall;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.duration.Duration;
 

@@ -1,9 +1,7 @@
 package models.dtos;
 
 import play.data.validation.Constraints;
-import policy.ConstraintValues;
-
-import javax.validation.Constraint;
+import policyenforcement.ConstraintValues;
 
 public class ResetUserPasswordDto {
 

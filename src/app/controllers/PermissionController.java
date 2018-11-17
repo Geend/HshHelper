@@ -2,10 +2,10 @@ package controllers;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import domainlogic.InvalidArgumentException;
-import domainlogic.UnauthorizedException;
-import domainlogic.permissionmanager.InvalidDataException;
-import domainlogic.permissionmanager.PermissionManager;
+import managers.InvalidArgumentException;
+import managers.UnauthorizedException;
+import managers.permissionmanager.InvalidDataException;
+import managers.permissionmanager.PermissionManager;
 import models.*;
 import models.User;
 import models.PermissionLevel;
@@ -15,9 +15,9 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
-import policy.Specification;
-import policy.session.Authentication;
-import policy.session.SessionManager;
+import policyenforcement.Specification;
+import policyenforcement.session.Authentication;
+import policyenforcement.session.SessionManager;
 import scala.collection.Seq;
 
 import java.util.*;
@@ -56,7 +56,7 @@ public class PermissionController extends Controller {
         User currentUser = sessionManager.currentUser();
         EditGroupPermissionDto dto = this.manager.getGroupPermissionForEdit(currentUser.getUserId(), groupPermissionId);
         GroupPermissionIdDto deleteDto = new GroupPermissionIdDto(dto.getGroupPermissionId());
-        return ok(views.html.EditGroupPermission.render(dto, this.editGroupPermissionForm.fill(dto), this.deleteGroupPermissionForm.fill(deleteDto)));
+        return ok(views.html.filepermissions.EditGroupPermission.render(dto, this.editGroupPermissionForm.fill(dto), this.deleteGroupPermissionForm.fill(deleteDto)));
     }
 
     public Result deleteGroupPermission() throws UnauthorizedException, InvalidArgumentException {
@@ -107,7 +107,7 @@ public class PermissionController extends Controller {
         User currentUser = sessionManager.currentUser();
         EditUserPermissionDto dto = this.manager.getUserPermissionForEdit(currentUser.getUserId(), userPermissionId);
         UserPermissionIdDto deleteDto = new UserPermissionIdDto(dto.getUserPermissionId());
-        return ok(views.html.EditUserPermission.render(dto, this.editUserPermissionForm.fill(dto), this.deleteUserPermissionForm.fill(deleteDto)));
+        return ok(views.html.filepermissions.EditUserPermission.render(dto, this.editUserPermissionForm.fill(dto), this.deleteUserPermissionForm.fill(deleteDto)));
     }
 
     public Result showCreateGroupPermission()
@@ -134,7 +134,7 @@ public class PermissionController extends Controller {
         Set<Group> ownGroups = sessionManager.currentUser().getGroups();
         List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
 
-        return ok(views.html.CreateGroupPermission.render(form, asScala(ownFiles), asScala(ownGroups), asScala(possiblePermissions)));
+        return ok(views.html.filepermissions.CreateGroupPermission.render(form, asScala(ownFiles), asScala(ownGroups), asScala(possiblePermissions)));
     }
 
     public Result showCreateUserPermission()
@@ -161,7 +161,7 @@ public class PermissionController extends Controller {
         Set<User> allOtherUsers = manager.getAllOtherUsers(sessionManager.currentUser().userId);
         List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
 
-        return ok(views.html.CreateUserPermission.render(form, asScala(ownFiles), asScala(allOtherUsers), asScala(possiblePermissions)));
+        return ok(views.html.filepermissions.CreateUserPermission.render(form, asScala(ownFiles), asScala(allOtherUsers), asScala(possiblePermissions)));
     }
 
     public Result listGrantedPermissions()
@@ -169,6 +169,6 @@ public class PermissionController extends Controller {
         User currentUser = sessionManager.currentUser();
         List<PermissionEntryDto> entries = this.manager.getAllGrantedPermissions(currentUser.getUserId());
         Seq<PermissionEntryDto> scalaEntries = asScala(entries);
-        return ok(views.html.PermissionList.render(scalaEntries));
+        return ok(views.html.filepermissions.PermissionList.render(scalaEntries));
     }
 }

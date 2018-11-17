@@ -2,12 +2,12 @@ package models.dtos;
 
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
-import policy.ConstraintValues;
+import policyenforcement.ConstraintValues;
 
 import java.util.Objects;
 
-import static policy.ConstraintValues.MAX_PASSWORD_LENGTH;
-import static policy.ConstraintValues.MAX_USERNAME_LENGTH;
+import static policyenforcement.ConstraintValues.MAX_PASSWORD_LENGTH;
+import static policyenforcement.ConstraintValues.MAX_USERNAME_LENGTH;
 
 @Constraints.Validate
 public class ChangePasswordAfterResetDto implements Constraints.Validatable<ValidationError>{

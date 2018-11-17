@@ -1,9 +1,9 @@
 package controllers;
 
-import domainlogic.UnauthorizedException;
-import domainlogic.filemanager.FileManager;
-import domainlogic.filemanager.FilenameAlreadyExistsException;
-import domainlogic.filemanager.QuotaExceededException;
+import managers.UnauthorizedException;
+import managers.filemanager.FileManager;
+import managers.filemanager.FilenameAlreadyExistsException;
+import managers.filemanager.QuotaExceededException;
 import models.File;
 import models.TempFile;
 import models.dtos.*;
@@ -13,12 +13,11 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import policy.session.Authentication;
-import policy.session.SessionManager;
+import policyenforcement.session.Authentication;
+import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.nio.file.Files;
 
 @Singleton
@@ -41,7 +40,7 @@ public class FileController extends Controller {
     }
 
     public Result showUploadFileForm() {
-        return ok(views.html.upload.SelectFile.render(null));
+        return ok(views.html.file.upload.SelectFile.render(null));
     }
 
     public Result uploadFile() {
@@ -62,20 +61,20 @@ public class FileController extends Controller {
                     )
             );
 
-            return ok(views.html.upload.FileMeta.render(boundForm));
+            return ok(views.html.file.upload.FileMeta.render(boundForm));
         }
         catch (QuotaExceededException qe) {
-            return badRequest(views.html.upload.SelectFile.render("Quota überschritten!"));
+            return badRequest(views.html.file.upload.SelectFile.render("Quota überschritten!"));
         }
         catch (Exception e) {
-            return badRequest(views.html.upload.SelectFile.render(e.getMessage()));
+            return badRequest(views.html.file.upload.SelectFile.render(e.getMessage()));
         }
     }
 
     public Result storeFile() throws UnauthorizedException {
         Form<UploadFileMetaDto> boundForm = uploadFileMetaForm.bindFromRequest();
         if (boundForm.hasErrors()) {
-            return badRequest(views.html.upload.FileMeta.render(boundForm));
+            return badRequest(views.html.file.upload.FileMeta.render(boundForm));
         }
 
         UploadFileMetaDto formData = boundForm.get();
@@ -90,10 +89,10 @@ public class FileController extends Controller {
             return ok("File stored. id="+file.getFileId());
         } catch (QuotaExceededException e) {
             boundForm = boundForm.withGlobalError("Quota überschritten!");
-            return badRequest(views.html.upload.FileMeta.render(boundForm));
+            return badRequest(views.html.file.upload.FileMeta.render(boundForm));
         } catch (FilenameAlreadyExistsException e) {
             boundForm = boundForm.withError("filename", "Ist nicht eindeutig!");
-            return badRequest(views.html.upload.FileMeta.render(boundForm));
+            return badRequest(views.html.file.upload.FileMeta.render(boundForm));
         }
     }
 
@@ -116,6 +115,6 @@ public class FileController extends Controller {
             uq.getTempFileContentUsage()
         );
 
-        return ok(views.html.UserQuota.render(dto));
+        return ok(views.html.file.UserQuota.render(dto));
     }
 }

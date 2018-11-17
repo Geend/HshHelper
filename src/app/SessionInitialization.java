@@ -1,7 +1,5 @@
 import akka.actor.ActorSystem;
-import policy.ext.loginFirewall.Firewall;
-import policy.session.Session;
-import policy.session.SessionManager;
+import policyenforcement.session.SessionManager;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.duration.Duration;
 

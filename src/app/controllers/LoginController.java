@@ -1,13 +1,13 @@
 package controllers;
 
-import domainlogic.loginmanager.*;
+import managers.loginmanager.*;
 import models.dtos.ChangePasswordAfterResetDto;
 import models.dtos.UserLoginDto;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
-import policy.session.Authentication;
+import policyenforcement.session.Authentication;
 
 
 import javax.inject.Inject;
@@ -30,14 +30,14 @@ public class LoginController extends Controller {
     // Not allowed wichtig, kann sonst zum DOS verwendet werden!
     @Authentication.NotAllowed
     public Result showLoginForm() {
-        return ok(views.html.Login.render(loginForm, false));
+        return ok(views.html.login.Login.render(loginForm, false));
     }
 
     @Authentication.NotAllowed
     public Result login() {
         Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password");
         if (boundForm.hasErrors()) {
-            return badRequest(views.html.Login.render(boundForm, false));
+            return badRequest(views.html.login.Login.render(boundForm, false));
         }
 
         UserLoginDto loginData = boundForm.get();
@@ -54,10 +54,10 @@ public class LoginController extends Controller {
             );
         } catch (CaptchaRequiredException e) {
             boundForm = boundForm.withGlobalError("Complete the Captcha!");
-            return badRequest(views.html.Login.render(boundForm, true));
+            return badRequest(views.html.login.Login.render(boundForm, true));
         } catch (InvalidLoginException e) {
             boundForm = boundForm.withGlobalError("Invalid Login Data!");
-            return badRequest(views.html.Login.render(boundForm, false));
+            return badRequest(views.html.login.Login.render(boundForm, false));
         } catch (PasswordChangeRequiredException e) {
             return redirect(routes.LoginController.changePasswordAfterReset());
         }
@@ -68,7 +68,7 @@ public class LoginController extends Controller {
     // NotAllowed wichtig, kann sonst für DOS verwendet werden!
     @Authentication.NotAllowed
     public Result showChangePasswordAfterResetForm() {
-        return ok(views.html.ChangePasswordAfterReset.render(this.changePasswordForm, false));
+        return ok(views.html.login.ChangePasswordAfterReset.render(this.changePasswordForm, false));
     }
 
     // TODO: Sollte man nach password reset eingelogged sein?!
@@ -76,7 +76,7 @@ public class LoginController extends Controller {
     public Result changePasswordAfterReset() {
         Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat");
         if (boundForm.hasErrors()) {
-            return ok(views.html.ChangePasswordAfterReset.render(boundForm, false));
+            return ok(views.html.login.ChangePasswordAfterReset.render(boundForm, false));
         }
 
         ChangePasswordAfterResetDto changePasswordData = boundForm.get();
@@ -94,10 +94,10 @@ public class LoginController extends Controller {
             );
         } catch (InvalidLoginException e) {
             boundForm = boundForm.withGlobalError("Invalid Login Data!");
-            return badRequest(views.html.ChangePasswordAfterReset.render(boundForm, false));
+            return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, false));
         } catch (CaptchaRequiredException e) {
             boundForm = boundForm.withGlobalError("Complete the Captcha!");
-            return badRequest(views.html.ChangePasswordAfterReset.render(boundForm, true));
+            return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, true));
         }
 
         return redirect(routes.LoginController.login());

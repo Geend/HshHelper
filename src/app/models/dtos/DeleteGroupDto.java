@@ -1,7 +1,6 @@
 package models.dtos;
 
 import play.data.validation.Constraints;
-import policy.session.Authentication;
 
 public class DeleteGroupDto {
     @Constraints.Required

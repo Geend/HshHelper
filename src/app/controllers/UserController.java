@@ -1,21 +1,21 @@
 package controllers;
 
-import domainlogic.InvalidArgumentException;
-import domainlogic.UnauthorizedException;
-import domainlogic.usermanager.EmailAlreadyExistsException;
-import domainlogic.usermanager.UserManager;
-import domainlogic.usermanager.UsernameAlreadyExistsException;
-import domainlogic.usermanager.UsernameCannotBeAdmin;
+import managers.InvalidArgumentException;
+import managers.UnauthorizedException;
+import managers.usermanager.EmailAlreadyExistsException;
+import managers.usermanager.UserManager;
+import managers.usermanager.UsernameAlreadyExistsException;
+import managers.usermanager.UsernameCannotBeAdmin;
 import models.User;
 import models.dtos.*;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
-import policy.Specification;
-import policy.session.Authentication;
-import policy.session.Session;
-import policy.session.SessionManager;
+import policyenforcement.Specification;
+import policyenforcement.session.Authentication;
+import policyenforcement.session.Session;
+import policyenforcement.session.SessionManager;
 import scala.collection.Seq;
 
 import javax.inject.Inject;
@@ -59,7 +59,7 @@ public class UserController extends Controller {
             entries.get(i).setIndex(i + 1);
         }
         Seq<UserListEntryDto> scalaEntries = asScala(entries);
-        return ok(views.html.UserList.render(scalaEntries));
+        return ok(views.html.users.UserList.render(scalaEntries));
 
     }
 
@@ -84,7 +84,7 @@ public class UserController extends Controller {
         if (!Specification.instance.CanCreateUser(currentUser)) {
             throw new UnauthorizedException();
         }
-        return ok(views.html.CreateUser.render(createUserForm));
+        return ok(views.html.users.CreateUser.render(createUserForm));
     }
 
     @Authentication.Required
@@ -93,7 +93,7 @@ public class UserController extends Controller {
         User currentUser = sessionManager.currentUser();
         Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
         if (boundForm.hasErrors()) {
-            return ok(views.html.CreateUser.render(boundForm));
+            return ok(views.html.users.CreateUser.render(boundForm));
         }
         CreateUserDto createUserDto = boundForm.get();
         try {
@@ -106,21 +106,21 @@ public class UserController extends Controller {
             UserCreatedDto userCreatedDto = new UserCreatedDto();
             userCreatedDto.setUsername(createUserDto.getUsername());
             userCreatedDto.setPlaintextPassword(plaintextPassword);
-            return ok(views.html.UserCreated.render(userCreatedDto));
+            return ok(views.html.users.UserCreated.render(userCreatedDto));
         } catch (EmailAlreadyExistsException e) {
             boundForm = boundForm.withError("email", "Email already in use");
-            return badRequest(views.html.CreateUser.render(boundForm));
+            return badRequest(views.html.users.CreateUser.render(boundForm));
         } catch (UsernameAlreadyExistsException e) {
             throw new InvalidArgumentException(e.getMessage());
         } catch (UsernameCannotBeAdmin usernameCannotBeAdmin) {
             boundForm = boundForm.withError("username", "Username must not be admin");
-            return badRequest(views.html.CreateUser.render(boundForm));
+            return badRequest(views.html.users.CreateUser.render(boundForm));
         }
     }
 
     @Authentication.NotAllowed
     public Result showResetUserPasswordForm() {
-        return ok(views.html.ResetUserPassword.render(resetUserPasswordForm));
+        return ok(views.html.users.ResetUserPassword.render(resetUserPasswordForm));
     }
 
     @Authentication.NotAllowed
@@ -129,7 +129,7 @@ public class UserController extends Controller {
 
         Form<ResetUserPasswordDto> boundForm = resetUserPasswordForm.bindFromRequest("username");
         if (boundForm.hasErrors()) {
-            return ok(views.html.ResetUserPassword.render(boundForm));
+            return ok(views.html.users.ResetUserPassword.render(boundForm));
         }
         ResetUserPasswordDto resetUserPasswordDto = boundForm.get();
         try {
@@ -139,7 +139,7 @@ public class UserController extends Controller {
         }
 
 
-        return ok(views.html.ResetUserPasswordResult.render());
+        return ok(views.html.users.ResetUserPasswordResult.render());
     }
 
 
@@ -152,7 +152,7 @@ public class UserController extends Controller {
                         session -> session,
                         s -> deleteSessionForm.fill(new DeleteSessionDto(s.getSessionKey()))
                         ));
-        return ok(views.html.UserSessions.render(asScala(sessionFormMap)));
+        return ok(views.html.users.UserSessions.render(asScala(sessionFormMap)));
     }
 
     @Authentication.Required

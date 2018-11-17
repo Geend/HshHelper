@@ -1,9 +1,9 @@
 import models.*;
 import org.junit.Before;
-import policy.session.Session;
+import policyenforcement.session.Session;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import policy.Specification;
+import policyenforcement.Specification;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

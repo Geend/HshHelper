@@ -6,10 +6,10 @@ import org.joda.time.DateTimeUtils;
 import org.junit.*;
 import play.Application;
 import play.test.Helpers;
-import policy.ext.loginFirewall.Firewall;
-import policy.ext.loginFirewall.Instance;
-import policy.ext.loginFirewall.LaggyDT;
-import policy.ext.loginFirewall.Strategy;
+import policyenforcement.ext.loginFirewall.Firewall;
+import policyenforcement.ext.loginFirewall.Instance;
+import policyenforcement.ext.loginFirewall.LaggyDT;
+import policyenforcement.ext.loginFirewall.Strategy;
 
 import java.util.List;
 

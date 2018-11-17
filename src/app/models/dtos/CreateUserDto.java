@@ -1,9 +1,9 @@
 package models.dtos;
 
 import play.data.validation.Constraints;
-import policy.ConstraintValues;
+import policyenforcement.ConstraintValues;
 
-import static policy.ConstraintValues.MAX_USERNAME_LENGTH;
+import static policyenforcement.ConstraintValues.MAX_USERNAME_LENGTH;
 
 public class CreateUserDto {
 

@@ -1,7 +1,7 @@
 package models.dtos;
 
 import play.data.validation.Constraints;
-import policy.ConstraintValues;
+import policyenforcement.ConstraintValues;
 
 public class CreateGroupDto {
     @Constraints.Required

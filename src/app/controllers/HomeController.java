@@ -3,9 +3,8 @@ package controllers;
 import models.User;
 import play.mvc.Controller;
 import play.mvc.Result;
-import policy.session.Authentication;
-import policy.session.Session;
-import policy.session.SessionManager;
+import policyenforcement.session.Authentication;
+import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

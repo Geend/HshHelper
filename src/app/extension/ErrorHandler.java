@@ -1,7 +1,7 @@
 package extension;
 
-import domainlogic.InvalidArgumentException;
-import domainlogic.UnauthorizedException;
+import managers.InvalidArgumentException;
+import managers.UnauthorizedException;
 import play.*;
 import play.api.OptionalSourceMapper;
 import play.api.UsefulException;
