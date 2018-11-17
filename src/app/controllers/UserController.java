@@ -48,9 +48,7 @@ public class UserController extends Controller {
 
     @Authentication.Required
     public Result showUsers() throws UnauthorizedException {
-
-        User currentUser = sessionManager.currentUser();
-        List<User> users = this.userManager.getAllUsers(currentUser.getUserId());
+        List<User> users = this.userManager.getAllUsers();
         List<UserListEntryDto> entries = users
                 .stream()
                 .map(x -> new UserListEntryDto(x.getUserId(), x.getUsername()))
@@ -65,14 +63,13 @@ public class UserController extends Controller {
 
     @Authentication.Required
     public Result deleteUser() throws UnauthorizedException, InvalidArgumentException {
-        User currentUser = sessionManager.currentUser();
         Form<UserIdDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
         if (boundForm.hasErrors()) {
             return badRequest();
         }
         Long userToDeleteId = boundForm.get().getUserId();
 
-        this.userManager.deleteUser(currentUser.getUserId(), userToDeleteId);
+        this.userManager.deleteUser( userToDeleteId);
 
         return redirect(routes.UserController.showUsers());
     }
@@ -89,8 +86,6 @@ public class UserController extends Controller {
 
     @Authentication.Required
     public Result createUser() throws UnauthorizedException, InvalidArgumentException {
-
-        User currentUser = sessionManager.currentUser();
         Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
         if (boundForm.hasErrors()) {
             return ok(views.html.users.CreateUser.render(boundForm));
@@ -98,7 +93,6 @@ public class UserController extends Controller {
         CreateUserDto createUserDto = boundForm.get();
         try {
             String plaintextPassword = this.userManager.createUser(
-                    currentUser.getUserId(),
                     createUserDto.getUsername(),
                     createUserDto.getEmail(),
                     createUserDto.getQuotaLimit());

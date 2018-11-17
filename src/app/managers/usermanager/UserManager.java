@@ -15,6 +15,7 @@ import models.finders.UserFinderQueryOptions;
 import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
 import policyenforcement.Policy;
+import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -30,6 +31,7 @@ public class UserManager {
     private HashHelper hashHelper;
     private EbeanServer ebeanServer;
     private Policy policy;
+    private SessionManager sessionManager;
 
     @Inject
     public UserManager(
@@ -39,7 +41,8 @@ public class UserManager {
             MailerClient mailerClient,
             HashHelper hashHelper,
             EbeanServer server,
-            Policy policy)
+            Policy policy,
+            SessionManager sessionManager)
     {
         this.groupFinder = groupFinder;
         this.policy = policy;
@@ -48,10 +51,12 @@ public class UserManager {
         this.passwordGenerator = passwordGenerator;
         this.userFinder = userFinder;
         this.hashHelper = hashHelper;
+        this.sessionManager = sessionManager;
     }
 
-    public String createUser(Long userId, String username, String email, int quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException, UsernameCannotBeAdmin {
-        User currentUser = this.userFinder.byId(userId);
+    public String createUser(String username, String email, int quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException, UsernameCannotBeAdmin {
+        User currentUser = sessionManager.currentUser();
+
         if(!this.policy.CanCreateUser(currentUser)) {
             throw new UnauthorizedException();
         }
@@ -87,25 +92,22 @@ public class UserManager {
         return plaintextPassword;
     }
 
-    public void deleteUser(Long userId, Long userToBeDeletedId) throws UnauthorizedException, InvalidArgumentException {
-        Optional<User> currentUser = this.userFinder.byIdOptional(userId);
+    public void deleteUser(Long userToBeDeletedId) throws UnauthorizedException, InvalidArgumentException {
+        User currentUser = sessionManager.currentUser();
         Optional<User> userToDelete = this.userFinder.byIdOptional(userToBeDeletedId);
-
-        if(!currentUser.isPresent())
-            throw new InvalidArgumentException("Dieser User existiert nicht.");
 
         if(!userToDelete.isPresent())
             throw new InvalidArgumentException("Dieser User existiert nicht.");
 
-
-        if(!this.policy.CanDeleteUser(currentUser.get(), userToDelete.get())) {
+        if(!this.policy.CanDeleteUser(currentUser, userToDelete.get())) {
             throw new UnauthorizedException();
         }
         ebeanServer.delete(userToDelete.get());
     }
 
-    public List<User> getAllUsers(Long userId) throws UnauthorizedException {
-        User currentUser = this.userFinder.byId(userId);
+    public List<User> getAllUsers() throws UnauthorizedException {
+        User currentUser = sessionManager.currentUser();
+
         if(!this.policy.CanViewAllUsers(currentUser)) {
             throw new UnauthorizedException();
         }
