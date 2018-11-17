@@ -4,6 +4,7 @@ import io.ebean.Finder;
 import models.User;
 
 import java.util.Optional;
+import java.util.Set;
 
 public class UserFinder extends Finder<Long, User> {
 
@@ -17,6 +18,10 @@ public class UserFinder extends Finder<Long, User> {
             return Optional.empty();
         }
         return Optional.of(u);
+    }
+
+    public Set<User> findAllButThis(Long userId) {
+        return this.query().where().notIn("userId", userId).findSet();
     }
 
     public Optional<User> byName(String username) {

@@ -119,9 +119,20 @@ public class PermissionController extends Controller {
     }
 
     /*
-        creating permissions
+        listing all granted permissions
      */
 
+    public Result listGrantedPermissions()
+    {
+        User currentUser = sessionManager.currentUser();
+        List<PermissionEntryDto> entries = this.manager.getAllGrantedPermissions(currentUser.getUserId());
+        Seq<PermissionEntryDto> scalaEntries = asScala(entries);
+        return ok(views.html.filepermissions.PermissionList.render(scalaEntries));
+    }
+
+    /*
+        creating permissions
+     */
 
     public Result showCreateGroupPermission()
     {
@@ -140,14 +151,6 @@ public class PermissionController extends Controller {
 
         manager.createGroupPermission(currentUser, createUserPermissionDto.getFileId(), createUserPermissionDto.getGroupId(), createUserPermissionDto.getPermissionLevel());
         return redirect(routes.PermissionController.listGrantedPermissions());
-    }
-
-    private Result renderCreateGroupPermissionForm(Form<CreateGroupPermissionDto> form){
-        List<File> ownFiles = manager.getUserFiles(sessionManager.currentUser().userId);
-        Set<Group> ownGroups = sessionManager.currentUser().getGroups();
-        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
-
-        return ok(views.html.filepermissions.CreateGroupPermission.render(form, asScala(ownFiles), asScala(ownGroups), asScala(possiblePermissions)));
     }
 
     public Result showCreateUserPermission()
@@ -169,6 +172,14 @@ public class PermissionController extends Controller {
         return redirect(routes.PermissionController.listGrantedPermissions());
     }
 
+    private Result renderCreateGroupPermissionForm(Form<CreateGroupPermissionDto> form){
+        List<File> ownFiles = manager.getUserFiles(sessionManager.currentUser().userId);
+        Set<Group> ownGroups = sessionManager.currentUser().getGroups();
+        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
+
+        return ok(views.html.filepermissions.CreateGroupPermission.render(form, asScala(ownFiles), asScala(ownGroups), asScala(possiblePermissions)));
+    }
+
     private Result renderShowCreateUserPermissionForm(Form<CreateUserPermissionDto> form){
         List<File> ownFiles = manager.getUserFiles(sessionManager.currentUser().userId);
         Set<User> allOtherUsers = manager.getAllOtherUsers(sessionManager.currentUser().userId);
@@ -177,11 +188,4 @@ public class PermissionController extends Controller {
         return ok(views.html.filepermissions.CreateUserPermission.render(form, asScala(ownFiles), asScala(allOtherUsers), asScala(possiblePermissions)));
     }
 
-    public Result listGrantedPermissions()
-    {
-        User currentUser = sessionManager.currentUser();
-        List<PermissionEntryDto> entries = this.manager.getAllGrantedPermissions(currentUser.getUserId());
-        Seq<PermissionEntryDto> scalaEntries = asScala(entries);
-        return ok(views.html.filepermissions.PermissionList.render(scalaEntries));
-    }
 }

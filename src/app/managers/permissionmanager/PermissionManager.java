@@ -151,7 +151,7 @@ public class PermissionManager {
     }
 
     //
-    //  all permissions and create
+    //  all permissions
     //
 
     public List<PermissionEntryDto> getAllGrantedPermissions(Long userId) {
@@ -187,6 +187,10 @@ public class PermissionManager {
         }
         return result;
     }
+
+    //
+    //  create permissions
+    //
 
     public void createUserPermission(User currentUser, Long fileId, Long userId, PermissionLevel permissionLevel) throws InvalidArgumentException, UnauthorizedException {
 
@@ -248,6 +252,14 @@ public class PermissionManager {
 
     }
 
+    public Set<User> getAllOtherUsers(Long userId) {
+        return userFinder.findAllButThis(userId);
+    }
+
+    public List<File> getUserFiles(Long userId) {
+        return fileFinder.getFilesByOwner(userId);
+    }
+
     private PermissionLevel fromReadWrite(boolean canRead, boolean canWrite) throws InvalidDataException {
         if(canWrite) {
             return PermissionLevel.WRITE;
@@ -273,14 +285,6 @@ public class PermissionManager {
                 throw new InvalidArgumentException("Permission Level ungültig");
         }
         return result;
-    }
-
-    public Set<User> getAllOtherUsers(Long userId) {
-        return userFinder.query().where().notIn("userId", userId).findSet();
-    }
-
-    public List<File> getUserFiles(Long userId) {
-        return fileFinder.getFilesByOwner(userId);
     }
 
     private String getPermissionString(boolean canRead, boolean canWrite) {
