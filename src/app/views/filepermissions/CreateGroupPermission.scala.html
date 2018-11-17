@@ -11,7 +11,7 @@
                     label = "Datei wählen"),
                 "groupId" -> Input(InputType.Select,
                     value = Right(allGroups.map(user => user.getGroupId().toString -> user.getName())),
-                    label = "Nutzer wählen"),
+                    label = "Gruppe wählen"),
                 "permissionLevel" -> Input(InputType.Select,
                     value = Right(possiblePermissions.map(permissionLevel => permissionLevel.toString -> permissionLevel.toString)),
                     label = "Berechtigung")
