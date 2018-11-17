@@ -27,7 +27,7 @@ public class PermissionManager {
     private UserFinder userFinder;
     private EbeanServer ebeanServer;
     private Policy policy;
-    private String anfrageFehlerMessage;
+    private String requestErrorMessage;
 
     @Inject
     public PermissionManager(UserPermissionFinder userPermissionFinder, GroupPermissionFinder groupPermissionFinder, FileFinder fileFinder, GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy) {
@@ -38,7 +38,7 @@ public class PermissionManager {
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
         this.policy = policy;
-        this.anfrageFehlerMessage = "Fehler bei der Verarbeitung der Anfrage. Haben sie ungültige Informationen eingegeben?";
+        this.requestErrorMessage = "Fehler bei der Verarbeitung der Anfrage. Haben sie ungültige Informationen eingegeben?";
     }
 
     //
@@ -50,9 +50,9 @@ public class PermissionManager {
         Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
 
         if (!user.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
         if (!permission.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
 
         if (!policy.CanEditGroupPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
@@ -69,9 +69,9 @@ public class PermissionManager {
         Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
 
         if (!user.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
         if (!permission.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
 
         if (!policy.CanEditGroupPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
@@ -86,9 +86,9 @@ public class PermissionManager {
         Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
 
         if (!user.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
         if (!permission.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
 
         if (!policy.CanDeleteGroupPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
@@ -105,9 +105,9 @@ public class PermissionManager {
         Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
 
         if (!user.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
         if (!permission.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
 
         if (!policy.CanEditUserPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
@@ -122,9 +122,9 @@ public class PermissionManager {
         Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
 
         if (!user.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
         if (!permission.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
 
         if (!policy.CanDeleteUserPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
@@ -137,9 +137,9 @@ public class PermissionManager {
         Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
 
         if (!user.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
         if (!permission.isPresent())
-            throw new InvalidArgumentException(anfrageFehlerMessage);
+            throw new InvalidArgumentException(requestErrorMessage);
 
         if (!policy.CanEditUserPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
@@ -194,17 +194,17 @@ public class PermissionManager {
         Optional<User> user = userFinder.byIdOptional(userId);
 
         if (!user.isPresent())
-            throw new InvalidArgumentException("Dieser User existiert nicht.");
+            throw new InvalidArgumentException(this.requestErrorMessage);
 
         if (!file.isPresent())
-            throw new InvalidArgumentException("Diese Datei existiert nicht.");
+            throw new InvalidArgumentException(this.requestErrorMessage);
 
         if (!policy.CanCreateUserPermission(file.get(), currentUser))
             throw new UnauthorizedException();
 
         boolean userAlreadyHasPermission = userPermissionFinder.findForFileId(fileId).stream().anyMatch(x -> x.getUser().equals(user.get()));
         if(userAlreadyHasPermission)
-            throw new InvalidArgumentException("Der Benutzer hat bereits eine Berechtigung auf diese Datei.");
+            throw new InvalidArgumentException(this.requestErrorMessage);
 
         UserPermission permission = new UserPermission();
         permission.setFile(file.get());
@@ -222,10 +222,10 @@ public class PermissionManager {
         Optional<Group> group = groupFinder.byIdOptional(groupId);
 
         if (!group.isPresent())
-            throw new InvalidArgumentException("Dieser Gruppe existiert nicht.");
+            throw new InvalidArgumentException(this.requestErrorMessage);
 
         if (!file.isPresent())
-            throw new InvalidArgumentException("Diese Datei existiert nicht.");
+            throw new InvalidArgumentException(this.requestErrorMessage);
 
         if (!policy.CanCreateGroupPermission(file.get(), currentUser, group.get()))
             throw new UnauthorizedException();
@@ -233,7 +233,7 @@ public class PermissionManager {
 
         boolean groupAlreadyHasPermission = groupPermissionFinder.findForFileId(fileId).stream().anyMatch(x -> x.getGroup().equals(group.get()));
         if(groupAlreadyHasPermission)
-            throw new InvalidArgumentException("Der Gruppe hat bereits eine Berechtigung auf diese Datei.");
+            throw new InvalidArgumentException(this.requestErrorMessage);
 
 
         GroupPermission permission = new GroupPermission();
