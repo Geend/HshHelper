@@ -46,14 +46,9 @@ public class User extends Model {
     private Set<Group> groups = new HashSet<>();
 
 
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.REMOVE,
-            CascadeType.MERGE
-    })
-    @JoinTable(name = "user_permissions",
-            joinColumns = @JoinColumn(name = "fk_user_id", referencedColumnName = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "fk_user_permission_id", referencedColumnName = "user_permission_id")
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL
     )
     private Set<UserPermission> userPermissions = new HashSet<>();
 

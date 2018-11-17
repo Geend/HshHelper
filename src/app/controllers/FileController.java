@@ -84,7 +84,7 @@ public class FileController extends Controller {
                     formData.getComment()
             );
 
-            return ok("File stored. id=" + file.getFileId());
+            return redirect(routes.FileController.showFile(file.getFileId()));
         } catch (QuotaExceededException e) {
             boundForm = boundForm.withGlobalError("Quota überschritten!");
             return badRequest(views.html.file.upload.FileMeta.render(boundForm));

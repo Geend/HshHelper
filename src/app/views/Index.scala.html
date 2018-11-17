@@ -1,4 +1,5 @@
 @import policyenforcement.session.SessionManager.SessionInstance
+@import policyenforcement.Policy
 @(user: User, groups: Seq[Group], files: Seq[File])
 
 @ownFile(file : File) = {
@@ -6,6 +7,15 @@
         class="ownFile"
     } else {
         class="thirdPartyFile"
+    }
+}
+
+@permissions(file : File) = {
+    @if(Policy.instance.CanReadFile(SessionInstance().currentUser(), file)) {
+        R
+    }
+    @if(Policy.instance.CanWriteFile(SessionInstance().currentUser(), file)) {
+        W
     }
 }
 
@@ -45,7 +55,7 @@
                         <td><b><a href="@routes.FileController.showFile(file.getFileId)">@file.getName</a></b></td>
                         <td>@file.getComment</td>
                         <td>@file.getOwner.getUsername</td>
-                        <td>XXXXXX</td>
+                        <td>@permissions(file)</td>
                     </tr>
                 }
             </table>

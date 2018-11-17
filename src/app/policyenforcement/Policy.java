@@ -219,7 +219,6 @@ public class Policy {
         if(user.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanRead)))
             return true;
 
-
         return false;
 
     }

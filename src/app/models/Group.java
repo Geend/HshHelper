@@ -26,23 +26,11 @@ public class Group extends Model {
     }, mappedBy = "groups")
     private Set<User> members = new HashSet<>();
 
-
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.REMOVE,
-            CascadeType.MERGE
-    })
-    @JoinTable(name = "group_permissions",
-            joinColumns = @JoinColumn(name = "fk_group_id", referencedColumnName = "group_id"),
-            inverseJoinColumns = @JoinColumn(name = "fk_group_permission_id", referencedColumnName = "group_permission_id")
+    @OneToMany(
+            mappedBy = "group",
+            cascade = CascadeType.ALL
     )
     private Set<GroupPermission> groupPermissions = new HashSet<>();
-
-
-
-
-
-
 
     public Group(Long id, String name, User owner, boolean isAdminGroup) {
         this.groupId = id;
