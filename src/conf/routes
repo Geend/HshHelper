@@ -11,7 +11,7 @@ GET         /files/upload                                              controlle
 POST        /files/upload                                              controllers.FileController.uploadFile
 POST        /files/upload/store                                        controllers.FileController.storeFile
 GET         /files/quota                                               controllers.FileController.showQuotaUsage
-
+GET         /files/:fileId                                              controllers.FileController.showFile(fileId: Long)
 GET         /login                                                     controllers.LoginController.showLoginForm
 POST        /login                                                     controllers.LoginController.login
 POST        /logout                                                    controllers.LoginController.logout

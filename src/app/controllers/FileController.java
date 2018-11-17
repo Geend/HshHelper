@@ -1,5 +1,6 @@
 package controllers;
 
+import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.filemanager.FileManager;
 import managers.filemanager.FilenameAlreadyExistsException;
@@ -34,8 +35,7 @@ public class FileController extends Controller {
         this.fileManager = fileManager;
     }
 
-    public Result changePermissionsForFile()
-    {
+    public Result changePermissionsForFile() {
         return ok("test");
     }
 
@@ -49,24 +49,22 @@ public class FileController extends Controller {
             Http.MultipartFormData.FilePart<java.io.File> file = body.getFile("file");
             byte[] data = Files.readAllBytes(file.getFile().toPath());
             TempFile tempFile = fileManager.createTempFile(
-                sessionManager.currentUser().getUserId(),
-                data
+                    sessionManager.currentUser().getUserId(),
+                    data
             );
 
             Form<UploadFileMetaDto> boundForm = uploadFileMetaForm.fill(
                     new UploadFileMetaDto(
                             tempFile.getFileId(),
                             file.getFilename(),
-                        ""
+                            ""
                     )
             );
 
             return ok(views.html.file.upload.FileMeta.render(boundForm));
-        }
-        catch (QuotaExceededException qe) {
+        } catch (QuotaExceededException qe) {
             return badRequest(views.html.file.upload.SelectFile.render("Quota überschritten!"));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return badRequest(views.html.file.upload.SelectFile.render(e.getMessage()));
         }
     }
@@ -80,13 +78,13 @@ public class FileController extends Controller {
         UploadFileMetaDto formData = boundForm.get();
         try {
             File file = fileManager.storeFile(
-                sessionManager.currentUser().getUserId(),
-                formData.getTempFileId(),
-                formData.getFilename(),
-                formData.getComment()
+                    sessionManager.currentUser().getUserId(),
+                    formData.getTempFileId(),
+                    formData.getFilename(),
+                    formData.getComment()
             );
 
-            return ok("File stored. id="+file.getFileId());
+            return ok("File stored. id=" + file.getFileId());
         } catch (QuotaExceededException e) {
             boundForm = boundForm.withGlobalError("Quota überschritten!");
             return badRequest(views.html.file.upload.FileMeta.render(boundForm));
@@ -98,7 +96,7 @@ public class FileController extends Controller {
 
     public Result listFiles() {
         String files = "";
-        for(File f : fileManager.accessibleFiles(sessionManager.currentUser().getUserId())) {
+        for (File f : fileManager.accessibleFiles(sessionManager.currentUser().getUserId())) {
             files += f.getName() + "<br>";
         }
 
@@ -108,13 +106,22 @@ public class FileController extends Controller {
     public Result showQuotaUsage() {
         UserQuota uq = fileManager.getCurrentQuotaUsage(sessionManager.currentUser().getUserId());
         UserQuotaDto dto = new UserQuotaDto(
-            (long)sessionManager.currentUser().getQuotaLimit(),
-            uq.getNameUsage(),
-            uq.getCommentUsage(),
-            uq.getFileContentUsage(),
-            uq.getTempFileContentUsage()
+                (long) sessionManager.currentUser().getQuotaLimit(),
+                uq.getNameUsage(),
+                uq.getCommentUsage(),
+                uq.getFileContentUsage(),
+                uq.getTempFileContentUsage()
         );
 
         return ok(views.html.file.UserQuota.render(dto));
     }
+
+
+    public Result showFile(long fileId) throws UnauthorizedException, InvalidArgumentException {
+        File file = fileManager.getFile(sessionManager.currentUser(), fileId);
+        boolean isOwner = file.getOwner().equals(sessionManager.currentUser());
+
+        return ok(views.html.file.File.render(file, isOwner, false));
+    }
+
 }

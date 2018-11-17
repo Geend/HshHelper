@@ -1,5 +1,7 @@
 package managers.filemanager;
 
+import io.ebeaninternal.server.grammer.antlr.EQLParser;
+import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.*;
 import io.ebean.annotation.TxIsolation;
@@ -131,5 +133,19 @@ public class FileManager {
 
     public UserQuota getCurrentQuotaUsage(Long userId) {
         return fileFinder.getUsedQuota(userId);
+    }
+
+    public File getFile(User currentUser, long fileId) throws InvalidArgumentException, UnauthorizedException {
+
+        Optional<File> file = fileFinder.byIdOptional(fileId);
+
+        if(!file.isPresent())
+            throw new InvalidArgumentException();
+
+
+        if(!policy.CanReadFile(currentUser, file.get()))
+            throw new UnauthorizedException();
+
+        return file.get();
     }
 }
