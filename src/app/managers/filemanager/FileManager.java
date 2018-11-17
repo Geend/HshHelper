@@ -11,6 +11,7 @@ import models.finders.TempFileFinder;
 import models.finders.UserFinder;
 import models.finders.UserQuota;
 import policyenforcement.Policy;
+import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -22,14 +23,16 @@ public class FileManager {
     private UserFinder userFinder;
     private final EbeanServer ebeanServer;
     private Policy policy;
+    private SessionManager sessionManager;
 
     @Inject
-    public FileManager(FileFinder fileFinder, TempFileFinder tempFileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy) {
+    public FileManager(FileFinder fileFinder, TempFileFinder tempFileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy, SessionManager sessionManager) {
         this.fileFinder = fileFinder;
         this.tempFileFinder = tempFileFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
         this.policy = policy;
+        this.sessionManager = sessionManager;
     }
 
     private void checkQuota(User user, String filename, String comment, byte[] data) throws QuotaExceededException {
@@ -41,17 +44,14 @@ public class FileManager {
         }
     }
 
-    public TempFile createTempFile(Long userId, byte[] filedata) throws QuotaExceededException {
+    public TempFile createTempFile(byte[] filedata) throws QuotaExceededException {
         try(Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
-            Optional<User> user = userFinder.byIdOptional(userId);
-            if(!user.isPresent()) {
-                throw new IllegalArgumentException("Uid doesn't exist");
-            }
+            User user = sessionManager.currentUser();
 
-            checkQuota(user.get(), "", "", filedata);
+            checkQuota(user, "", "", filedata);
 
             TempFile tf = new TempFile(
-                user.get(),
+                user,
                 filedata
             );
 
@@ -62,31 +62,28 @@ public class FileManager {
         }
     }
 
-    public File storeFile(Long userId, Long tempFileId, String filename, String comment) throws QuotaExceededException, FilenameAlreadyExistsException, UnauthorizedException {
+    public File storeFile(Long tempFileId, String filename, String comment) throws QuotaExceededException, FilenameAlreadyExistsException, UnauthorizedException {
         try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
-            Optional<User> user = userFinder.byIdOptional(userId);
-            if(!user.isPresent()) {
-                throw new IllegalArgumentException("Uid doesn't exist");
-            }
+            User user = sessionManager.currentUser();
 
             Optional<TempFile> tempFile = tempFileFinder.byIdOptional(tempFileId);
             if(!tempFile.isPresent()){
                 throw new IllegalArgumentException("TempFile doesn't exist");
             }
 
-            if(!policy.CanAccessTempFile(user.get(), tempFile.get())) {
+            if(!policy.CanAccessTempFile(user, tempFile.get())) {
                 throw new UnauthorizedException();
             }
 
-            checkQuota(user.get(), filename, comment, new byte[]{});
+            checkQuota(user, filename, comment, new byte[]{});
 
-            Optional<File> existingFile = fileFinder.byFileName(userId, filename);
+            Optional<File> existingFile = fileFinder.byFileName(user.getUserId(), filename);
             if(existingFile.isPresent()) {
                 throw new FilenameAlreadyExistsException();
             }
 
             File file = new File();
-            file.setOwner(user.get());
+            file.setOwner(user);
             file.setComment(comment);
             file.setName(filename);
             file.setData(tempFile.get().getData());
@@ -100,24 +97,27 @@ public class FileManager {
         }
     }
 
-    public List<File> ownedFiles(Long userId) {
-        return fileFinder.getFilesByOwner(userId);
+    public List<File> ownedFiles() {
+        User user = sessionManager.currentUser();
+        return fileFinder.getFilesByOwner(user.getUserId());
     }
 
-    public List<File> accessibleFiles(Long userId) {
+    public List<File> accessibleFiles() {
+        User user = sessionManager.currentUser();
+
         return fileFinder.query()
                 .where()
                 .or()
-                    .eq("owner.userId", userId)
+                    .eq("owner", user)
                     .and()
-                        .eq("userPermissions.user.userId", userId)
+                        .eq("userPermissions.user", user)
                             .or()
                                 .eq("userPermissions.canRead", true)
                                 .eq("userPermissions.canWrite", true)
                             .endOr()
                     .endAnd()
                     .and()
-                        .eq("groupPermissions.group.members.userId", userId)
+                        .eq("groupPermissions.group.members", user)
                         .and()
                             .or()
                                 .eq("groupPermissions.canRead", true)
@@ -129,11 +129,12 @@ public class FileManager {
                 .findList();
     }
 
-    public UserQuota getCurrentQuotaUsage(Long userId) {
-        return fileFinder.getUsedQuota(userId);
+    public UserQuota getCurrentQuotaUsage() {
+        User user = sessionManager.currentUser();
+        return fileFinder.getUsedQuota(user.getUserId());
     }
 
-    public File getFile(User currentUser, long fileId) throws InvalidArgumentException, UnauthorizedException {
+    public File getFile(long fileId) throws InvalidArgumentException, UnauthorizedException {
 
         Optional<File> file = fileFinder.byIdOptional(fileId);
 
@@ -141,7 +142,7 @@ public class FileManager {
             throw new InvalidArgumentException();
 
 
-        if(!policy.CanReadFile(currentUser, file.get()))
+        if(!policy.CanReadFile(sessionManager.currentUser(), file.get()))
             throw new UnauthorizedException();
 
         return file.get();

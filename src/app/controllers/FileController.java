@@ -49,8 +49,7 @@ public class FileController extends Controller {
             Http.MultipartFormData.FilePart<java.io.File> file = body.getFile("file");
             byte[] data = Files.readAllBytes(file.getFile().toPath());
             TempFile tempFile = fileManager.createTempFile(
-                    sessionManager.currentUser().getUserId(),
-                    data
+                data
             );
 
             Form<UploadFileMetaDto> boundForm = uploadFileMetaForm.fill(
@@ -78,7 +77,6 @@ public class FileController extends Controller {
         UploadFileMetaDto formData = boundForm.get();
         try {
             File file = fileManager.storeFile(
-                    sessionManager.currentUser().getUserId(),
                     formData.getTempFileId(),
                     formData.getFilename(),
                     formData.getComment()
@@ -96,7 +94,7 @@ public class FileController extends Controller {
 
     public Result listFiles() {
         String files = "";
-        for (File f : fileManager.accessibleFiles(sessionManager.currentUser().getUserId())) {
+        for (File f : fileManager.accessibleFiles()) {
             files += f.getName() + "<br>";
         }
 
@@ -104,7 +102,7 @@ public class FileController extends Controller {
     }
 
     public Result showQuotaUsage() {
-        UserQuota uq = fileManager.getCurrentQuotaUsage(sessionManager.currentUser().getUserId());
+        UserQuota uq = fileManager.getCurrentQuotaUsage();
         UserQuotaDto dto = new UserQuotaDto(
                 (long) sessionManager.currentUser().getQuotaLimit(),
                 uq.getNameUsage(),
@@ -118,7 +116,7 @@ public class FileController extends Controller {
 
 
     public Result showFile(long fileId) throws UnauthorizedException, InvalidArgumentException {
-        File file = fileManager.getFile(sessionManager.currentUser(), fileId);
+        File file = fileManager.getFile(fileId);
         boolean isOwner = file.getOwner().equals(sessionManager.currentUser());
 
         return ok(views.html.file.File.render(file, isOwner, false));

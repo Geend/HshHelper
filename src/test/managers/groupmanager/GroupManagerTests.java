@@ -15,6 +15,8 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import policyenforcement.Policy;
+import policyenforcement.session.SessionManager;
 
 import java.util.Optional;
 import java.util.Set;
@@ -35,6 +37,12 @@ public class GroupManagerTests {
 
     @Mock
     EbeanServer defaultServer;
+
+    @Mock
+    SessionManager sessionManager;
+
+    @Mock
+    Policy policy;
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -84,16 +92,17 @@ public class GroupManagerTests {
         peter.setGroups(Stream.of(all, petersGroup).collect(Collectors.toSet()));
         klaus.setGroups(Stream.of(all).collect(Collectors.toSet()));
 
-        gm = new GroupManager(groupFinder, userFinder, defaultServer);
+        gm = new GroupManager(groupFinder, userFinder, defaultServer, sessionManager, policy);
     }
 
     @Test
     public void canCreateGroup() throws GroupNameAlreadyExistsException, InvalidArgumentException {
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
-        when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
+        when(sessionManager.currentUser()).thenReturn(admin);
 
         String groupName = "TestGroup";
-        gm.createGroup(adminId, groupName);
+        gm.createGroup(groupName);
+
         verify(defaultServer).save(new Group("TestGroup", admin));
     }
 
@@ -102,20 +111,13 @@ public class GroupManagerTests {
         String groupName = "All";
 
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
-        when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
         when(groupFinder.byName("All")).thenReturn(Optional.of(all));
+        when(sessionManager.currentUser()).thenReturn(admin);
 
         expected.expect(GroupNameAlreadyExistsException.class);
-        gm.createGroup(adminId, groupName);
+        gm.createGroup(groupName);
+
         verify(defaultServer, never()).save(all);
-    }
-
-    @Test
-    public void canGetOwnGroups() throws InvalidArgumentException {
-        when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
-
-        Set<Group> ownGroups = gm.getOwnGroups(adminId);
-        assertThat(ownGroups).containsExactlyInAnyOrder(all, admins, petersGroup);
     }
 
     @Test
@@ -124,111 +126,82 @@ public class GroupManagerTests {
     }
 
     @Test
-    public void canSeeGroupMembers() throws UnauthorizedException, InvalidArgumentException {
-        when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
-        when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
-
-        Set<User> users = gm.getGroupMembers(adminId, allId);
-        assertThat(users).containsExactlyInAnyOrder(admin, klaus, peter);
-    }
-
-    @Test
-    public void cannotSeeGroupMembersOfAnotherGroup() throws UnauthorizedException, InvalidArgumentException {
-        when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
-        when(groupFinder.byIdOptional(adminsGrpId)).thenReturn(Optional.of(admins));
-
-        expected.expect(UnauthorizedException.class);
-        Set<User> users = gm.getGroupMembers(klausId, adminsGrpId);
-    }
-
-    @Test
     public void canRemoveGroupMember() throws UnauthorizedException, InvalidArgumentException {
-        when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
+        when(sessionManager.currentUser()).thenReturn(admin);
 
-        gm.removeGroupMember(adminId, klausId, allId);
+        gm.removeGroupMember(klausId, allId);
         verify(defaultServer).save(all);
         assertThat(all.getMembers()).containsExactlyInAnyOrder(admin, peter);
     }
 
     @Test
     public void cannotRemoveGroupMemberOfAnotherGroup() throws UnauthorizedException, InvalidArgumentException {
-        when(userFinder.byIdOptional(peterId)).thenReturn(Optional.of(peter));
+        when(sessionManager.currentUser()).thenReturn(peter);
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
 
         expected.expect(UnauthorizedException.class);
-        gm.removeGroupMember(peterId, klausId, allId);
+        gm.removeGroupMember(klausId, allId);
         verify(defaultServer, never()).save(all);
     }
 
     @Test
     public void canAddGroupMember() throws UnauthorizedException, InvalidArgumentException {
-        when(userFinder.byIdOptional(peterId)).thenReturn(Optional.of(peter));
+        when(sessionManager.currentUser()).thenReturn(peter);
         when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
 
-        gm.addGroupMember(peterId, klausId, petersGrpId);
+        gm.addGroupMember(klausId, petersGrpId);
         verify(defaultServer).save(petersGroup);
         assertThat(petersGroup.getMembers()).containsExactlyInAnyOrder(klaus, peter, admin);
     }
 
     @Test
     public void cannotAddGroupMemberToAnotherGroup() throws UnauthorizedException, InvalidArgumentException {
-        when(userFinder.byIdOptional(peterId)).thenReturn(Optional.of(peter));
+        when(sessionManager.currentUser()).thenReturn(peter);
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
 
         expected.expect(UnauthorizedException.class);
-        gm.addGroupMember(peterId, klausId, allId);
+        gm.addGroupMember(klausId, allId);
         verify(defaultServer, never()).save(klaus);
     }
 
     @Test
     public void canDeleteGroup() throws UnauthorizedException, InvalidArgumentException {
-        when(userFinder.byIdOptional(peterId)).thenReturn(Optional.of(peter));
+        when(sessionManager.currentUser()).thenReturn(peter);
         when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
 
-        gm.deleteGroup(peterId, petersGrpId);
+        gm.deleteGroup(petersGrpId);
         verify(defaultServer).delete(petersGroup);
     }
 
     @Test
     public void cannotDeleteGroupAnotherGroup() throws UnauthorizedException, InvalidArgumentException {
-        when(userFinder.byIdOptional(peterId)).thenReturn(Optional.of(peter));
+        when(sessionManager.currentUser()).thenReturn(peter);
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
 
         expected.expect(UnauthorizedException.class);
-        gm.deleteGroup(peterId, allId);
+        gm.deleteGroup(allId);
         verify(defaultServer, never()).delete(all);
     }
 
     @Test
     public void adminCanSeeAllGroups() throws UnauthorizedException, InvalidArgumentException {
-        when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
-        when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
-        when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
+        when(sessionManager.currentUser()).thenReturn(admin);
 
-        gm.getAllGroups(adminId);
+        gm.getAllGroups();
         verify(groupFinder).all();
     }
 
     @Test
     public void nonAdminCanNotSeeAllGroups() throws UnauthorizedException, InvalidArgumentException {
-        when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
-        when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
-        when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
+        when(sessionManager.currentUser()).thenReturn(klaus);
 
         expected.expect(UnauthorizedException.class);
-        gm.getAllGroups(klausId);
-        verify(groupFinder, never()).all();
-    }
-
-    @Test
-    public void getAllGroupsNullInput() throws UnauthorizedException, InvalidArgumentException {
-        expected.expect(InvalidArgumentException.class);
-        gm.getAllGroups(null);
+        gm.getAllGroups();
         verify(groupFinder, never()).all();
     }
 }

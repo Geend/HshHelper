@@ -61,7 +61,7 @@ public class GroupController extends Controller {
             CreateGroupDto gDto = bf.get();
 
             try {
-                groupManager.createGroup(sessionManager.currentUser().getUserId(), gDto.getName());
+                groupManager.createGroup(gDto.getName());
             } catch (GroupNameAlreadyExistsException e) {
                 bf = bf.withError("name", e.getMessage());
                 return badRequest(views.html.groups.CreateGroup.render(bf));
@@ -71,17 +71,17 @@ public class GroupController extends Controller {
         }
     }
 
-    public Result showOwnGroups() throws InvalidArgumentException {
+    public Result showOwnGroups() {
         Map<Group, Form<DeleteGroupDto>> groupFormMap = createGroupsFormMap(
-                groupManager.getOwnGroups(sessionManager.currentUser().getUserId()
-        ));
+                sessionManager.currentUser().getGroups()
+        );
         return ok(views.html.groups.OwnGroupsList.render(asScala(groupFormMap)));
     }
 
     public Result showAllGroups() throws InvalidArgumentException, UnauthorizedException {
         Map<Group, Form<DeleteGroupDto>> groupFormMap = createGroupsFormMap(
-                groupManager.getAllGroups(sessionManager.currentUser().getUserId()
-        ));
+                groupManager.getAllGroups()
+        );
         return ok(views.html.groups.AllGroupsList.render(asScala(groupFormMap)));
     }
 
@@ -93,14 +93,14 @@ public class GroupController extends Controller {
 
         try {
             Map<User, Form<UserIdDto>> membersFormMap =
-                    groupManager.getGroupMembers(sessionManager.currentUser().getUserId(), groupId)
+                    groupManager.getGroup(groupId).getMembers()
                     .stream()
                     .collect(Collectors.toMap(
                             user -> user,
                             u -> removeGroupUserForm.fill(new UserIdDto(u.getUserId()))
                             ));
-            Set<User> notMember = groupManager.getUsersWhichAreNotInThisGroup(sessionManager.currentUser().getUserId(), groupId);
-            Group grp = groupManager.getGroup(sessionManager.currentUser().getUserId(), groupId);
+            Set<User> notMember = groupManager.getUsersWhichAreNotInThisGroup(groupId);
+            Group grp = groupManager.getGroup(groupId);
             return status(httpStatus, views.html.groups.GroupMembersList.render(grp,
                     asScala(membersFormMap), asScala(notMember), addUserToGroupForm, removeGroupUserForm));
         } catch (IllegalArgumentException | UnauthorizedException e) {
@@ -119,7 +119,7 @@ public class GroupController extends Controller {
         UserIdDto ru = form.get();
 
 
-        groupManager.removeGroupMember(sessionManager.currentUser().getUserId(), ru.getUserId(), groupId);
+        groupManager.removeGroupMember(ru.getUserId(), groupId);
 
 
         return redirect(routes.GroupController.showGroup(groupId));
@@ -134,7 +134,7 @@ public class GroupController extends Controller {
         UserIdDto au = form.get();
 
 
-        groupManager.addGroupMember(sessionManager.currentUser().getUserId(), au.getUserId(), groupId);
+        groupManager.addGroupMember(au.getUserId(), groupId);
 
         return redirect(routes.GroupController.showGroup(groupId));
     }
@@ -144,13 +144,13 @@ public class GroupController extends Controller {
 
         if (form.hasErrors()) {
             Map<Group, Form<DeleteGroupDto>> groupFormMap = createGroupsFormMap(
-                    groupManager.getOwnGroups(sessionManager.currentUser().getUserId()
-                    ));
+                sessionManager.currentUser().getGroups()
+            );
             return badRequest(views.html.groups.OwnGroupsList.render(asScala(groupFormMap)));
         }
 
         DeleteGroupDto dg = form.get();
-        groupManager.deleteGroup(sessionManager.currentUser().getUserId(), groupId);
+        groupManager.deleteGroup(groupId);
 
         return redirect(routes.GroupController.showOwnGroups());
     }
@@ -160,12 +160,12 @@ public class GroupController extends Controller {
 
         if (form.hasErrors()) {
             Map<Group, Form<DeleteGroupDto>> groupFormMap = createGroupsFormMap(
-                    groupManager.getOwnGroups(sessionManager.currentUser().getUserId()
-            ));
+                    sessionManager.currentUser().getGroups()
+            );
             return badRequest(views.html.groups.OwnGroupsList.render(asScala(groupFormMap)));
         }
 
-        groupManager.deleteGroup(sessionManager.currentUser().getUserId(), groupId);
+        groupManager.deleteGroup(groupId);
 
         return redirect(routes.GroupController.showAllGroups());
     }
