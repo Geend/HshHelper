@@ -1,0 +1,20 @@
+.ownTable {
+    width: 100%;
+}
+.ownTable td {
+    padding: 5px;
+}
+.ownTable thead {
+    background: #eee;
+    font-weight: bold;
+    border-bottom: solid 1px #ccc;
+}
+.ownTable tr {
+    border-bottom: solid 1px #ccc;
+}
+.ownTable .mainColumn {
+    width:100%;
+}
+
+.own_file {
+}
