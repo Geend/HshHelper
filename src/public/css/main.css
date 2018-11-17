@@ -16,5 +16,10 @@
     width:100%;
 }
 
-.own_file {
+.ownFile {
+    background: #edfaeb;
+}
+
+.thirdPartyFile {
+    background: #faebeb;
 }

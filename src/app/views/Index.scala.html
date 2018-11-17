@@ -3,9 +3,9 @@
 
 @ownFile(file : File) = {
     @if(file.getOwner.equals(SessionInstance().currentUser())) {
-        class="own_file"
+        class="ownFile"
     } else {
-        class="third_party_file"
+        class="thirdPartyFile"
     }
 }
 
