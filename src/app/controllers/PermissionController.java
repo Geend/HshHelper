@@ -28,16 +28,16 @@ import static play.libs.Scala.asScala;
 @Authentication.Required
 public class PermissionController extends Controller {
 
-    private PermissionManager manager;
-    private SessionManager sessionManager;
+    private final PermissionManager manager;
+    private final SessionManager sessionManager;
 
-    private Form<CreateUserPermissionDto> createUserPermissionForm;
-    private Form<CreateGroupPermissionDto> createGroupPermissionForm;
+    private final Form<CreateUserPermissionDto> createUserPermissionForm;
+    private final Form<CreateGroupPermissionDto> createGroupPermissionForm;
 
-    private Form<EditGroupPermissionDto> editGroupPermissionForm;
-    private Form<GroupPermissionIdDto> deleteGroupPermissionForm;
-    private Form<EditUserPermissionDto> editUserPermissionForm;
-    private Form<UserPermissionIdDto> deleteUserPermissionForm;
+    private final Form<EditGroupPermissionDto> editGroupPermissionForm;
+    private final Form<GroupPermissionIdDto> deleteGroupPermissionForm;
+    private final Form<EditUserPermissionDto> editUserPermissionForm;
+    private final Form<UserPermissionIdDto> deleteUserPermissionForm;
 
     @Inject
     public PermissionController(FormFactory formFactory, PermissionManager manager, SessionManager sessionManager, Policy policy) {

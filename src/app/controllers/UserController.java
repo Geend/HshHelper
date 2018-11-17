@@ -27,12 +27,11 @@ import static play.libs.Scala.asScala;
 
 public class UserController extends Controller {
 
-    private UserManager userManager;
-
-    private Form<CreateUserDto> createUserForm;
-    private Form<ResetUserPasswordDto> resetUserPasswordForm;
-    private Form<DeleteSessionDto> deleteSessionForm;
-    private Form<UserIdDto> deleteUserForm;
+    private final UserManager userManager;
+    private final Form<CreateUserDto> createUserForm;
+    private final Form<ResetUserPasswordDto> resetUserPasswordForm;
+    private final Form<DeleteSessionDto> deleteSessionForm;
+    private final Form<UserIdDto> deleteUserForm;
     private final SessionManager sessionManager;
 
 
