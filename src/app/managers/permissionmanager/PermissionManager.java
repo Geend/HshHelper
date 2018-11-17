@@ -21,15 +21,15 @@ import javax.inject.Inject;
 import java.util.*;
 
 public class PermissionManager {
-    private SessionManager sessionManager;
-    private UserPermissionFinder userPermissionFinder;
-    private GroupPermissionFinder groupPermissionFinder;
-    private FileFinder fileFinder;
-    private GroupFinder groupFinder;
-    private UserFinder userFinder;
-    private EbeanServer ebeanServer;
-    private Policy policy;
-    private String requestErrorMessage;
+    private final SessionManager sessionManager;
+    private final UserPermissionFinder userPermissionFinder;
+    private final GroupPermissionFinder groupPermissionFinder;
+    private final FileFinder fileFinder;
+    private final GroupFinder groupFinder;
+    private final UserFinder userFinder;
+    private final EbeanServer ebeanServer;
+    private final Policy policy;
+    private final String requestErrorMessage;
 
     @Inject
     public PermissionManager(

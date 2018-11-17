@@ -24,14 +24,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class UserManager {
-    private UserFinder userFinder;
-    private GroupFinder groupFinder;
-    private PasswordGenerator passwordGenerator;
-    private MailerClient mailerClient;
-    private HashHelper hashHelper;
-    private EbeanServer ebeanServer;
-    private Policy policy;
-    private SessionManager sessionManager;
+    private final UserFinder userFinder;
+    private final GroupFinder groupFinder;
+    private final PasswordGenerator passwordGenerator;
+    private final MailerClient mailerClient;
+    private final HashHelper hashHelper;
+    private final EbeanServer ebeanServer;
+    private final Policy policy;
+    private final SessionManager sessionManager;
 
     @Inject
     public UserManager(
