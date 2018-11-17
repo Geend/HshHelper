@@ -1,9 +1,9 @@
 import models.*;
 import org.junit.Before;
+import policyenforcement.Policy;
 import policyenforcement.session.Session;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import policyenforcement.Specification;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SpecificationTests {
+public class PolicyTests {
 
     private static User admin;
     private static User adminTwo;
@@ -139,19 +139,19 @@ public class SpecificationTests {
      */
     @Test
     public void adminCanCreateUser() {
-        boolean actual = Specification.instance.CanCreateUser(admin);
+        boolean actual = Policy.instance.CanCreateUser(admin);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void nonAdminCantCreateUser() {
-        boolean actual = Specification.instance.CanCreateUser(peter);
+        boolean actual = Policy.instance.CanCreateUser(peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void unauthorizedCantCreateUser() {
-        boolean actual = Specification.instance.CanCreateUser(null);
+        boolean actual = Policy.instance.CanCreateUser(null);
         assertThat(actual).isFalse();
     }
 
@@ -160,37 +160,37 @@ public class SpecificationTests {
      */
     @Test
     public void adminCanDeleteUser() {
-        boolean actual = Specification.instance.CanDeleteUser(admin, peter);
+        boolean actual = Policy.instance.CanDeleteUser(admin, peter);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminCantDeleteAdminOwner() {
-        boolean actual = Specification.instance.CanDeleteUser(adminTwo, admin);
+        boolean actual = Policy.instance.CanDeleteUser(adminTwo, admin);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void adminCanDeleteOtherAdmin() {
-        boolean actual = Specification.instance.CanDeleteUser(admin, adminTwo);
+        boolean actual = Policy.instance.CanDeleteUser(admin, adminTwo);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void nonAdminCantDeleteUser() {
-        boolean actual = Specification.instance.CanDeleteUser(peter, klaus);
+        boolean actual = Policy.instance.CanDeleteUser(peter, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void userCantDeleteHimself() {
-        boolean actual = Specification.instance.CanDeleteUser(peter, peter);
+        boolean actual = Policy.instance.CanDeleteUser(peter, peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAuthorizedCantDeleteUser() {
-        boolean actual = Specification.instance.CanDeleteUser(null, peter);
+        boolean actual = Policy.instance.CanDeleteUser(null, peter);
         assertThat(actual).isFalse();
     }
 
@@ -199,49 +199,49 @@ public class SpecificationTests {
      */
     @Test
     public void ownerCannotBeRemovedFromGroup() {
-        boolean actual = Specification.instance.CanRemoveGroupMember(peter, petersGroup, peter);
+        boolean actual = Policy.instance.CanRemoveGroupMember(peter, petersGroup, peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void ownerCannotBeRemovedFromGroupByAdmin() {
-        boolean actual = Specification.instance.CanRemoveGroupMember(admin, petersGroup, peter);
+        boolean actual = Policy.instance.CanRemoveGroupMember(admin, petersGroup, peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void ownerCanRemoveMember() {
-        boolean actual = Specification.instance.CanRemoveGroupMember(peter, petersGroup, klaus);
+        boolean actual = Policy.instance.CanRemoveGroupMember(peter, petersGroup, klaus);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminCanRemoveMemberFromForeignGroup() {
-        boolean actual = Specification.instance.CanRemoveGroupMember(admin, petersGroup, klaus);
+        boolean actual = Policy.instance.CanRemoveGroupMember(admin, petersGroup, klaus);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void memberCannotRemoveOtherMembersFromGroup() {
-        boolean actual = Specification.instance.CanRemoveGroupMember(klaus, petersGroup, adminTwo);
+        boolean actual = Policy.instance.CanRemoveGroupMember(klaus, petersGroup, adminTwo);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonMemberCannotRemoveOtherMembersFromGroup() {
-        boolean actual = Specification.instance.CanRemoveGroupMember(horst, petersGroup, klaus);
+        boolean actual = Policy.instance.CanRemoveGroupMember(horst, petersGroup, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonMemberCannotRemoveOwnerFromGroup() {
-        boolean actual = Specification.instance.CanRemoveGroupMember(horst, petersGroup, peter);
+        boolean actual = Policy.instance.CanRemoveGroupMember(horst, petersGroup, peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAuthorizedCannotRemoveGroupMember() {
-        boolean actual = Specification.instance.CanRemoveGroupMember(null, petersGroup, peter);
+        boolean actual = Policy.instance.CanRemoveGroupMember(null, petersGroup, peter);
         assertThat(actual).isFalse();
     }
 
@@ -250,31 +250,31 @@ public class SpecificationTests {
      */
     @Test
     public void ownerCanGenerallyAddGroupMember() {
-        boolean actual = Specification.instance.CanGenerallyAddGroupMember(peter, petersGroup);
+        boolean actual = Policy.instance.CanGenerallyAddGroupMember(peter, petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminMemberCanGenerallyAddGroupMember() {
-        boolean actual = Specification.instance.CanGenerallyAddGroupMember(adminTwo, petersGroup);
+        boolean actual = Policy.instance.CanGenerallyAddGroupMember(adminTwo, petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminNonMemberCanGenerallyAddGroupMember() {
-        boolean actual = Specification.instance.CanGenerallyAddGroupMember(admin, petersGroup);
+        boolean actual = Policy.instance.CanGenerallyAddGroupMember(admin, petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void memberCannotGenerallyAddGroupMember() {
-        boolean actual = Specification.instance.CanGenerallyAddGroupMember(klaus, petersGroup);
+        boolean actual = Policy.instance.CanGenerallyAddGroupMember(klaus, petersGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonMemberCannotGenerallyAddGroupMember() {
-        boolean actual = Specification.instance.CanGenerallyAddGroupMember(rudi, petersGroup);
+        boolean actual = Policy.instance.CanGenerallyAddGroupMember(rudi, petersGroup);
         assertThat(actual).isFalse();
     }
 
@@ -283,55 +283,55 @@ public class SpecificationTests {
      */
     @Test
     public void ownerCanAddGroupMember() {
-        boolean actual = Specification.instance.CanAddSpecificGroupMember(peter, petersGroup, admin);
+        boolean actual = Policy.instance.CanAddSpecificGroupMember(peter, petersGroup, admin);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void foreignAdminCanAddGroupMember() {
-        boolean actual = Specification.instance.CanAddSpecificGroupMember(admin, petersGroup, horst);
+        boolean actual = Policy.instance.CanAddSpecificGroupMember(admin, petersGroup, horst);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminGroupMemberCanAddGroupMember() {
-        boolean actual = Specification.instance.CanAddSpecificGroupMember(adminTwo, petersGroup, horst);
+        boolean actual = Policy.instance.CanAddSpecificGroupMember(adminTwo, petersGroup, horst);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void ownerCannotAddMemberTwice() {
-        boolean actual = Specification.instance.CanAddSpecificGroupMember(peter, petersGroup, klaus);
+        boolean actual = Policy.instance.CanAddSpecificGroupMember(peter, petersGroup, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void foreignAdminCannotAddGroupMemberTwice() {
-        boolean actual = Specification.instance.CanAddSpecificGroupMember(admin, petersGroup, klaus);
+        boolean actual = Policy.instance.CanAddSpecificGroupMember(admin, petersGroup, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void adminGroupMemberCannotAddGroupMemberTwice() {
-        boolean actual = Specification.instance.CanAddSpecificGroupMember(adminTwo, petersGroup, klaus);
+        boolean actual = Policy.instance.CanAddSpecificGroupMember(adminTwo, petersGroup, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void groupMemberCannotAddOtherGroupMember() {
-        boolean actual = Specification.instance.CanAddSpecificGroupMember(klaus, petersGroup, horst);
+        boolean actual = Policy.instance.CanAddSpecificGroupMember(klaus, petersGroup, horst);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonGroupMemberCannotAddOtherGroupMember() {
-        boolean actual = Specification.instance.CanAddSpecificGroupMember(horst, petersGroup, rudi);
+        boolean actual = Policy.instance.CanAddSpecificGroupMember(horst, petersGroup, rudi);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAuthorizedUserCannotAddOtherGroupMember() {
-        boolean actual = Specification.instance.CanAddSpecificGroupMember(null, petersGroup, rudi);
+        boolean actual = Policy.instance.CanAddSpecificGroupMember(null, petersGroup, rudi);
         assertThat(actual).isFalse();
     }
 
@@ -340,19 +340,19 @@ public class SpecificationTests {
      */
     @Test
     public void adminCanCreateGroup() {
-        boolean actual = Specification.instance.CanCreateGroup(admin);
+        boolean actual = Policy.instance.CanCreateGroup(admin);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void userCanCreateGroup() {
-        boolean actual = Specification.instance.CanCreateGroup(peter);
+        boolean actual = Policy.instance.CanCreateGroup(peter);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void nonAuthorizedUserCannotCreateGroup() {
-        boolean actual = Specification.instance.CanCreateGroup(null);
+        boolean actual = Policy.instance.CanCreateGroup(null);
         assertThat(actual).isFalse();
     }
 
@@ -362,37 +362,37 @@ public class SpecificationTests {
      */
     @Test
     public void foreignAdminCanViewGroupDetails() {
-        boolean actual = Specification.instance.CanViewGroupDetails(admin, petersGroup);
+        boolean actual = Policy.instance.CanViewGroupDetails(admin, petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminGroupMemberCanViewGroupDetails() {
-        boolean actual = Specification.instance.CanViewGroupDetails(adminTwo, petersGroup);
+        boolean actual = Policy.instance.CanViewGroupDetails(adminTwo, petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void groupOwnerCanViewGroupDetails() {
-        boolean actual = Specification.instance.CanViewGroupDetails(peter, petersGroup);
+        boolean actual = Policy.instance.CanViewGroupDetails(peter, petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void groupMemberCanViewGroupDetails() {
-        boolean actual = Specification.instance.CanViewGroupDetails(klaus, petersGroup);
+        boolean actual = Policy.instance.CanViewGroupDetails(klaus, petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void nonGroupMemberCannotViewGroupDetails() {
-        boolean actual = Specification.instance.CanViewGroupDetails(horst, petersGroup);
+        boolean actual = Policy.instance.CanViewGroupDetails(horst, petersGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void notAuthorizedUserCannotViewGroupDetails() {
-        boolean actual = Specification.instance.CanViewGroupDetails(null, petersGroup);
+        boolean actual = Policy.instance.CanViewGroupDetails(null, petersGroup);
         assertThat(actual).isFalse();
     }
 
@@ -401,19 +401,19 @@ public class SpecificationTests {
      */
     @Test
     public void adminCanViewAllGroups() {
-        boolean actual = Specification.instance.CanViewAllGroupsList(admin);
+        boolean actual = Policy.instance.CanViewAllGroupsList(admin);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void memberCannotViewAllGroups() {
-        boolean actual = Specification.instance.CanViewAllGroupsList(peter);
+        boolean actual = Policy.instance.CanViewAllGroupsList(peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void notAuthorizedUserCannotViewAllGroups() {
-        boolean actual = Specification.instance.CanViewAllGroupsList(null);
+        boolean actual = Policy.instance.CanViewAllGroupsList(null);
         assertThat(actual).isFalse();
     }
 
@@ -422,37 +422,37 @@ public class SpecificationTests {
      */
     @Test
     public void ownerCanDeleteGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(peter, petersGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(peter, petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void foreignAdminCanDeleteGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(admin, petersGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(admin, petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminGroupMemberCanDeleteGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(adminTwo, petersGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(adminTwo, petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void groupMemberCannotDeleteGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(klaus, petersGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(klaus, petersGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonGroupMemberCannotDeleteGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(horst, petersGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(horst, petersGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAuthorizedUserCannotDeleteGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(null, petersGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(null, petersGroup);
         assertThat(actual).isFalse();
     }
 
@@ -461,25 +461,25 @@ public class SpecificationTests {
      */
     @Test
     public void adminGroupOwnerCannotDeleteAdminGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(admin, adminGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(admin, adminGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonGroupOwningAdminCannotDeleteAdminGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(adminTwo, adminGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(adminTwo, adminGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAdminCannotDeleteAdminGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(horst, adminGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(horst, adminGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void notAuthorizedUserCannotDeleteAdminGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(null, adminGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(null, adminGroup);
         assertThat(actual).isFalse();
     }
 
@@ -488,25 +488,25 @@ public class SpecificationTests {
      */
     @Test
     public void allGroupOwnerCannotDeleteAllGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(admin, allGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(admin, allGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonGroupOwningAdminCannotDeleteAllGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(adminTwo, allGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(adminTwo, allGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAdminCannotDeleteAllGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(horst, allGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(horst, allGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void notAuthorizedUserCannotDeleteAllGroup() {
-        boolean actual = Specification.instance.CanDeleteGroup(null, allGroup);
+        boolean actual = Policy.instance.CanDeleteGroup(null, allGroup);
         assertThat(actual).isFalse();
     }
 
@@ -515,19 +515,19 @@ public class SpecificationTests {
      */
     @Test
     public void adminCannotResetPassword() {
-        boolean actual = Specification.instance.CanResetPassword(admin);
+        boolean actual = Policy.instance.CanResetPassword(admin);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void userCanResetPassword() {
-        boolean actual = Specification.instance.CanResetPassword(peter);
+        boolean actual = Policy.instance.CanResetPassword(peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAuthorizedUserCanResetPassword() {
-        boolean actual = Specification.instance.CanResetPassword(null);
+        boolean actual = Policy.instance.CanResetPassword(null);
         assertThat(actual).isTrue();
     }
 
@@ -536,31 +536,31 @@ public class SpecificationTests {
      */
     @Test
     public void adminCannotUpdateOthersPassword() {
-        boolean actual = Specification.instance.CanUpdatePassword(admin, peter);
+        boolean actual = Policy.instance.CanUpdatePassword(admin, peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void userCannotUpdateOthersPassword() {
-        boolean actual = Specification.instance.CanUpdatePassword(peter, klaus);
+        boolean actual = Policy.instance.CanUpdatePassword(peter, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void adminCanUpdateOwnPassword() {
-        boolean actual = Specification.instance.CanUpdatePassword(admin, admin);
+        boolean actual = Policy.instance.CanUpdatePassword(admin, admin);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void userCanUpdateOwnPassword() {
-        boolean actual = Specification.instance.CanUpdatePassword(peter, peter);
+        boolean actual = Policy.instance.CanUpdatePassword(peter, peter);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void notAuthorizedCannotUpdateOthersPassword() {
-        boolean actual = Specification.instance.CanUpdatePassword(null, peter);
+        boolean actual = Policy.instance.CanUpdatePassword(null, peter);
         assertThat(actual).isFalse();
     }
 
@@ -569,25 +569,25 @@ public class SpecificationTests {
      */
     @Test
     public void adminCannotDeleteOthersSession() {
-        boolean actual = Specification.instance.CanDeleteSession(admin, petersSession);
+        boolean actual = Policy.instance.CanDeleteSession(admin, petersSession);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void userCannotDeleteOthersSession() {
-        boolean actual = Specification.instance.CanDeleteSession(klaus, petersSession);
+        boolean actual = Policy.instance.CanDeleteSession(klaus, petersSession);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAuthorizedUserCannotDeleteOthersSession() {
-        boolean actual = Specification.instance.CanDeleteSession(null, petersSession);
+        boolean actual = Policy.instance.CanDeleteSession(null, petersSession);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void userCanDeleteOwnSession() {
-        boolean actual = Specification.instance.CanDeleteSession(peter, petersSession);
+        boolean actual = Policy.instance.CanDeleteSession(peter, petersSession);
         assertThat(actual).isTrue();
     }
 
@@ -597,30 +597,30 @@ public class SpecificationTests {
      */
     @Test
     public void ownerCanReadFile(){
-        boolean actual = Specification.instance.CanReadFile(klaus, klausFile);
+        boolean actual = Policy.instance.CanReadFile(klaus, klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void userWithUserPermissionCanReadFile(){
-        boolean actual = Specification.instance.CanReadFile(peter, klausFile);
+        boolean actual = Policy.instance.CanReadFile(peter, klausFile);
         assertThat(actual).isTrue();
     }
     @Test
     public void userWithGroupPermissionCanReadFile(){
-        boolean actual = Specification.instance.CanReadFile(klaus, petersGroupFile);
+        boolean actual = Policy.instance.CanReadFile(klaus, petersGroupFile);
         assertThat(actual).isTrue();
 
     }
     @Test
     public void userWithGroupPermissionWithoutReadTrueCantReadFile(){
-        boolean actual = Specification.instance.CanReadFile(admin, petersGroupFile);
+        boolean actual = Policy.instance.CanReadFile(admin, petersGroupFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void normalUserCantReadFile(){
-        boolean actual = Specification.instance.CanReadFile(horst, klausFile);
+        boolean actual = Policy.instance.CanReadFile(horst, klausFile);
         assertThat(actual).isFalse();
     }
 
@@ -629,36 +629,36 @@ public class SpecificationTests {
   */
     @Test
     public void ownerCanWriteFile(){
-        boolean actual = Specification.instance.CanWriteFile(klaus, klausFile);
+        boolean actual = Policy.instance.CanWriteFile(klaus, klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void userWithUserPermissionCanWriteFile(){
-        boolean actual = Specification.instance.CanWriteFile(peter, klausFile);
+        boolean actual = Policy.instance.CanWriteFile(peter, klausFile);
         assertThat(actual).isTrue();
     }
     @Test
     public void userWithGroupPermissionCanWriteFile(){
-        boolean actual = Specification.instance.CanWriteFile(klaus, petersGroupFile);
+        boolean actual = Policy.instance.CanWriteFile(klaus, petersGroupFile);
         assertThat(actual).isTrue();
 
     }
     @Test
     public void userWithGroupPermissionWithoutWriteTrueCantWriteFile(){
-        boolean actual = Specification.instance.CanWriteFile(rudi, petersGroupFile);
+        boolean actual = Policy.instance.CanWriteFile(rudi, petersGroupFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void groupPermissionWithReadTrueWithoutWriteTrueCantWriteFile(){
-        boolean actual = Specification.instance.CanWriteFile(rudi, klausFile);
+        boolean actual = Policy.instance.CanWriteFile(rudi, klausFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void normalUserCantWriteFile(){
-        boolean actual = Specification.instance.CanWriteFile(horst, klausFile);
+        boolean actual = Policy.instance.CanWriteFile(horst, klausFile);
         assertThat(actual).isFalse();
     }
 
@@ -667,19 +667,19 @@ public class SpecificationTests {
      */
     @Test
     public void adminCannotAccessTempFile() {
-        boolean actual = Specification.instance.CanAccessTempFile(admin, klausTempFile);
+        boolean actual = Policy.instance.CanAccessTempFile(admin, klausTempFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAdminNonOwnerCannotAccessTempFile() {
-        boolean actual = Specification.instance.CanAccessTempFile(peter, klausTempFile);
+        boolean actual = Policy.instance.CanAccessTempFile(peter, klausTempFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void ownerCanAccessTempFile() {
-        boolean actual = Specification.instance.CanAccessTempFile(klaus, klausTempFile);
+        boolean actual = Policy.instance.CanAccessTempFile(klaus, klausTempFile);
         assertThat(actual).isTrue();
     }
 
@@ -695,11 +695,11 @@ public class SpecificationTests {
         GroupPermission permission = mock(GroupPermission.class);
         when(file.getOwner()).thenReturn(otherUser);
         when(permission.getFile()).thenReturn(file);
-        assertThat(Specification.instance.CanDeleteGroupPermission(null, permission)).isFalse();
-        assertThat(Specification.instance.CanDeleteGroupPermission(user, null)).isFalse();
-        assertThat(Specification.instance.CanDeleteGroupPermission(user, permission)).isFalse();
+        assertThat(Policy.instance.CanDeleteGroupPermission(null, permission)).isFalse();
+        assertThat(Policy.instance.CanDeleteGroupPermission(user, null)).isFalse();
+        assertThat(Policy.instance.CanDeleteGroupPermission(user, permission)).isFalse();
         when(file.getOwner()).thenReturn(user);
-        assertThat(Specification.instance.CanDeleteGroupPermission(user, permission)).isTrue();
+        assertThat(Policy.instance.CanDeleteGroupPermission(user, permission)).isTrue();
     }
 
     @Test
@@ -710,11 +710,11 @@ public class SpecificationTests {
         UserPermission permission = mock(UserPermission.class);
         when(file.getOwner()).thenReturn(otherUser);
         when(permission.getFile()).thenReturn(file);
-        assertThat(Specification.instance.CanDeleteUserPermission(null, permission)).isFalse();
-        assertThat(Specification.instance.CanDeleteUserPermission(user, null)).isFalse();
-        assertThat(Specification.instance.CanDeleteUserPermission(user, permission)).isFalse();
+        assertThat(Policy.instance.CanDeleteUserPermission(null, permission)).isFalse();
+        assertThat(Policy.instance.CanDeleteUserPermission(user, null)).isFalse();
+        assertThat(Policy.instance.CanDeleteUserPermission(user, permission)).isFalse();
         when(file.getOwner()).thenReturn(user);
-        assertThat(Specification.instance.CanDeleteUserPermission(user, permission)).isTrue();
+        assertThat(Policy.instance.CanDeleteUserPermission(user, permission)).isTrue();
     }
 
     @Test
@@ -725,11 +725,11 @@ public class SpecificationTests {
         UserPermission permission = mock(UserPermission.class);
         when(file.getOwner()).thenReturn(otherUser);
         when(permission.getFile()).thenReturn(file);
-        assertThat(Specification.instance.CanEditUserPermission(null, permission)).isFalse();
-        assertThat(Specification.instance.CanEditUserPermission(user, null)).isFalse();
-        assertThat(Specification.instance.CanEditUserPermission(user, permission)).isFalse();
+        assertThat(Policy.instance.CanEditUserPermission(null, permission)).isFalse();
+        assertThat(Policy.instance.CanEditUserPermission(user, null)).isFalse();
+        assertThat(Policy.instance.CanEditUserPermission(user, permission)).isFalse();
         when(file.getOwner()).thenReturn(user);
-        assertThat(Specification.instance.CanEditUserPermission(user, permission)).isTrue();
+        assertThat(Policy.instance.CanEditUserPermission(user, permission)).isTrue();
     }
 
     @Test
@@ -740,10 +740,10 @@ public class SpecificationTests {
         GroupPermission permission = mock(GroupPermission.class);
         when(file.getOwner()).thenReturn(otherUser);
         when(permission.getFile()).thenReturn(file);
-        assertThat(Specification.instance.CanEditGroupPermission(null, permission)).isFalse();
-        assertThat(Specification.instance.CanEditGroupPermission(user, null)).isFalse();
-        assertThat(Specification.instance.CanEditGroupPermission(user, permission)).isFalse();
+        assertThat(Policy.instance.CanEditGroupPermission(null, permission)).isFalse();
+        assertThat(Policy.instance.CanEditGroupPermission(user, null)).isFalse();
+        assertThat(Policy.instance.CanEditGroupPermission(user, permission)).isFalse();
         when(file.getOwner()).thenReturn(user);
-        assertThat(Specification.instance.CanEditGroupPermission(user, permission)).isTrue();
+        assertThat(Policy.instance.CanEditGroupPermission(user, permission)).isTrue();
     }
 }

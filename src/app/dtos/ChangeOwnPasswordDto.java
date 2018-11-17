@@ -1,4 +1,4 @@
-package models.dtos;
+package dtos;
 
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;

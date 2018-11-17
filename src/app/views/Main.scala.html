@@ -1,5 +1,5 @@
+@import policyenforcement.Policy
 @import policyenforcement.session.SessionManager.SessionInstance
-@import policyenforcement.Specification
 @(title: String)(content: Html)
 
 @navbar() = {
@@ -18,21 +18,21 @@
                             Sessions
                         </a>
                     </li>
-                    @if(Specification.instance.CanCreateUser(SessionInstance().currentUser())) {
+                    @if(Policy.instance.CanCreateUser(SessionInstance().currentUser())) {
                         <li>
                             <a class="nav-link" href="@routes.UserController.showCreateUserForm()">
                                 Benutzer anlegen
                             </a>
                         </li>
                     }
-                    @if(Specification.instance.CanViewAllUsers(SessionInstance().currentUser())) {
+                    @if(Policy.instance.CanViewAllUsers(SessionInstance().currentUser())) {
                         <li>
                             <a class="nav-link" href="@routes.UserController.showUsers()">
                                 Benutzerübersicht
                             </a>
                         </li>
                     }
-                    @if(Specification.instance.CanSeeAllGroups(SessionInstance().currentUser())) {
+                    @if(Policy.instance.CanSeeAllGroups(SessionInstance().currentUser())) {
                         <li>
                             <a class="nav-link" href="@routes.GroupController.showAllGroups()">
                                 Alle Gruppen

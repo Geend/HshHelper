@@ -7,14 +7,14 @@ import models.*;
 import models.File;
 import models.GroupPermission;
 import models.UserPermission;
-import models.dtos.EditGroupPermissionDto;
-import models.dtos.EditUserPermissionDto;
-import models.dtos.PermissionEntryDto;
+import dtos.EditGroupPermissionDto;
+import dtos.EditUserPermissionDto;
+import dtos.PermissionEntryDto;
 import models.finders.*;
 import models.finders.FileFinder;
 import models.finders.GroupPermissionFinder;
 import models.finders.UserPermissionFinder;
-import policyenforcement.Specification;
+import policyenforcement.Policy;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -26,18 +26,18 @@ public class PermissionManager {
     private GroupFinder groupFinder;
     private UserFinder userFinder;
     private EbeanServer ebeanServer;
-    private Specification specification;
+    private Policy policy;
     private String anfrageFehlerMessage;
 
     @Inject
-    public PermissionManager(UserPermissionFinder userPermissionFinder, GroupPermissionFinder groupPermissionFinder, FileFinder fileFinder, GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer, Specification specification) {
+    public PermissionManager(UserPermissionFinder userPermissionFinder, GroupPermissionFinder groupPermissionFinder, FileFinder fileFinder, GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy) {
         this.userPermissionFinder = userPermissionFinder;
         this.groupPermissionFinder = groupPermissionFinder;
         this.fileFinder = fileFinder;
         this.groupFinder = groupFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
-        this.specification = specification;
+        this.policy = policy;
         this.anfrageFehlerMessage = "Fehler bei der Verarbeitung der Anfrage. Haben sie ungültige Informationen eingegeben?";
     }
 
@@ -54,7 +54,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(anfrageFehlerMessage);
 
-        if (!specification.CanEditGroupPermission(user.get(), permission.get()))
+        if (!policy.CanEditGroupPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
 
         CanReadWrite c = this.PermissionLevelToCanReadWrite(newLevel);
@@ -73,7 +73,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(anfrageFehlerMessage);
 
-        if (!specification.CanEditGroupPermission(user.get(), permission.get()))
+        if (!policy.CanEditGroupPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
 
         PermissionLevel permissionLevel = this.fromReadWrite(permission.get().getCanRead(), permission.get().getCanWrite());
@@ -90,7 +90,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(anfrageFehlerMessage);
 
-        if (!specification.CanDeleteGroupPermission(user.get(), permission.get()))
+        if (!policy.CanDeleteGroupPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
 
         this.ebeanServer.delete(permission.get());
@@ -109,7 +109,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(anfrageFehlerMessage);
 
-        if (!specification.CanEditUserPermission(user.get(), permission.get()))
+        if (!policy.CanEditUserPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
 
         PermissionLevel permissionLevel = this.fromReadWrite(permission.get().getCanRead(), permission.get().getCanWrite());
@@ -126,7 +126,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(anfrageFehlerMessage);
 
-        if (!specification.CanDeleteUserPermission(user.get(), permission.get()))
+        if (!policy.CanDeleteUserPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
 
         this.ebeanServer.delete(permission.get());
@@ -141,7 +141,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(anfrageFehlerMessage);
 
-        if (!specification.CanEditUserPermission(user.get(), permission.get()))
+        if (!policy.CanEditUserPermission(user.get(), permission.get()))
             throw new UnauthorizedException();
 
         CanReadWrite c = this.PermissionLevelToCanReadWrite(newLevel);
@@ -199,7 +199,7 @@ public class PermissionManager {
         if (!file.isPresent())
             throw new InvalidArgumentException("Diese Datei existiert nicht.");
 
-        if (!specification.CanCreateUserPermission(file.get(), currentUser))
+        if (!policy.CanCreateUserPermission(file.get(), currentUser))
             throw new UnauthorizedException();
 
         boolean userAlreadyHasPermission = userPermissionFinder.findForFileId(fileId).stream().anyMatch(x -> x.getUser().equals(user.get()));
@@ -227,7 +227,7 @@ public class PermissionManager {
         if (!file.isPresent())
             throw new InvalidArgumentException("Diese Datei existiert nicht.");
 
-        if (!specification.CanCreateGroupPermission(file.get(), currentUser, group.get()))
+        if (!policy.CanCreateGroupPermission(file.get(), currentUser, group.get()))
             throw new UnauthorizedException();
 
 

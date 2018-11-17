@@ -1,17 +1,17 @@
-@import models.dtos.DeleteGroupDto
+@import dtos.DeleteGroupDto
 @import policyenforcement.session.SessionManager.SessionInstance
 @(groupsFormMap: scala.collection.Map[Group, Form[DeleteGroupDto]])
 
 @import bootstrapHelper._
 
 @viewGroupButton(g: Group) = {
-    @if(policyenforcement.Specification.instance.CanViewGroupDetails(SessionInstance().currentUser(), g)) {
+    @if(policyenforcement.Policy.instance.CanViewGroupDetails(SessionInstance().currentUser(), g)) {
         @link("Mitglieder bearbeiten", routes.GroupController.showGroup(g.getGroupId()))
     }
 }
 
 @deleteGroupButton(g: Group, f: Form[DeleteGroupDto]) = {
-    @if(policyenforcement.Specification.instance.CanDeleteGroup(SessionInstance().currentUser(), g)) {
+    @if(policyenforcement.Policy.instance.CanDeleteGroup(SessionInstance().currentUser(), g)) {
         @bootstrapHelper.form(
             routes.GroupController.deleteGroup(g.getGroupId()),
             f,

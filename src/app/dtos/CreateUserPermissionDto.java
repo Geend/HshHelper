@@ -1,15 +1,15 @@
-package models.dtos;
+package dtos;
 
 import models.PermissionLevel;
 import play.data.validation.Constraints;
 
-public class CreateGroupPermissionDto {
+public class CreateUserPermissionDto {
 
     @Constraints.Required
     private Long fileId;
 
     @Constraints.Required
-    private Long groupId;
+    private Long userId;
 
     @Constraints.Required
     private PermissionLevel permissionLevel;
@@ -23,12 +23,12 @@ public class CreateGroupPermissionDto {
         this.fileId = fileId;
     }
 
-    public Long getGroupId() {
-        return groupId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setGroupId(Long groupId) {
-        this.groupId = groupId;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public PermissionLevel getPermissionLevel() {

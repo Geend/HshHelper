@@ -1,4 +1,4 @@
-package models.dtos;
+package dtos;
 
 public class UploadFileMetaDto {
     private Long tempFileId;

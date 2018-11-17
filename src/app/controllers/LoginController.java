@@ -1,8 +1,8 @@
 package controllers;
 
 import managers.loginmanager.*;
-import models.dtos.ChangePasswordAfterResetDto;
-import models.dtos.UserLoginDto;
+import dtos.ChangePasswordAfterResetDto;
+import dtos.UserLoginDto;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;

@@ -3,8 +3,8 @@ package policyenforcement;
 import models.*;
 import policyenforcement.session.Session;
 
-public class Specification {
-    public static Specification instance = new Specification();
+public class Policy {
+    public static Policy instance = new Policy();
 
     public boolean CanViewGroupDetails(User currentUser, Group toBeWatched) {
         if(currentUser == null) {

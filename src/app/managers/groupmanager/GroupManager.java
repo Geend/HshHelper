@@ -9,7 +9,7 @@ import models.Group;
 import models.User;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
-import policyenforcement.Specification;
+import policyenforcement.Policy;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -74,7 +74,7 @@ public class GroupManager {
         User currentUser = currentUserOptional.get();
 
 
-        if(!Specification.instance.CanSeeAllGroups(currentUser))
+        if(!Policy.instance.CanSeeAllGroups(currentUser))
             throw new UnauthorizedException();
 
         return new HashSet<Group>(groupFinder.all());
@@ -116,7 +116,7 @@ public class GroupManager {
         Group group = groupOptional.get();
         User currentUser = currentUserOptional.get();
 
-        if (!policyenforcement.Specification.instance.CanViewGroupDetails(currentUser, group)) {
+        if (!Policy.instance.CanViewGroupDetails(currentUser, group)) {
             throw new UnauthorizedException("Du bist nicht authorisiert, die Mitglieder dieser Gruppe zu sehen.");
         }
 
@@ -138,7 +138,7 @@ public class GroupManager {
         Group group = groupOptional.get();
         User currentUser = currentUserOptional.get();
 
-        if (!policyenforcement.Specification.instance.CanViewGroupDetails(currentUser, group)) {
+        if (!Policy.instance.CanViewGroupDetails(currentUser, group)) {
             throw new UnauthorizedException("Du bist nicht authorisiert, die Mitglieder dieser Gruppe zu sehen.");
         }
 
@@ -170,7 +170,7 @@ public class GroupManager {
         User currentUser = currentUserOptional.get();
         User toBeRemovedUser = tobeRemovedUserOptional.get();
 
-        if(!policyenforcement.Specification.instance.CanRemoveGroupMember(currentUser, g, toBeRemovedUser)) {
+        if(!Policy.instance.CanRemoveGroupMember(currentUser, g, toBeRemovedUser)) {
             throw new UnauthorizedException("Du bist nicht authorisiert, einen Member aus dieser Gruppe zu loeschen.");
         }
 
@@ -200,7 +200,7 @@ public class GroupManager {
         User currentUser = currentUserOptional.get();
         User toBeAddedUser = tobeAddedUserOptional.get();
 
-        if (!policyenforcement.Specification.instance.CanAddSpecificGroupMember(currentUser, g, toBeAddedUser)) {
+        if (!Policy.instance.CanAddSpecificGroupMember(currentUser, g, toBeAddedUser)) {
             throw new UnauthorizedException("Du bist nicht authorisiert, einen Member zu dieser Gruppe hinzu zu fuegen.");
         }
 
@@ -222,7 +222,7 @@ public class GroupManager {
 
         Group g = groupOptional.get();
         User u = currentUserOptional.get();
-        if (!policyenforcement.Specification.instance.CanDeleteGroup(u, g)) {
+        if (!Policy.instance.CanDeleteGroup(u, g)) {
             throw new UnauthorizedException("Du bist nicht authorisiert, eine Gruppe zu loeschen.");
         }
 

@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import play.Logger;
 import play.mvc.Http;
 import policyenforcement.ConstraintValues;
+import policyenforcement.Policy;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class SessionManager {
             throw new InvalidArgumentException();
         }
 
-        if (!policyenforcement.Specification.instance.CanDeleteSession(currentUser(), session.get())) {
+        if (!Policy.instance.CanDeleteSession(currentUser(), session.get())) {
             throw new UnauthorizedException();
         }
 

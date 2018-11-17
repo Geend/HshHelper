@@ -1,4 +1,4 @@
-package models.dtos;
+package dtos;
 
 import java.util.UUID;
 

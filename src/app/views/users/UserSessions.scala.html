@@ -1,5 +1,5 @@
 @import policyenforcement.session.Session
-@import models.dtos.DeleteSessionDto
+@import dtos.DeleteSessionDto
 @import policyenforcement.session.SessionManager.SessionInstance
 @import policyenforcement.session.Session
 @(sessions: scala.collection.Map[Session, Form[DeleteSessionDto]])
@@ -7,7 +7,7 @@
 @import bootstrapHelper._
 
 @sessionButton(s: Session, f: Form[DeleteSessionDto]) = {
-    @if(policyenforcement.Specification.instance.CanDeleteSession(SessionInstance().currentUser(), s)) {
+    @if(policyenforcement.Policy.instance.CanDeleteSession(SessionInstance().currentUser(), s)) {
         @form(
             routes.UserController.deleteUserSession(),
             f,

@@ -7,12 +7,12 @@ import managers.usermanager.UserManager;
 import managers.usermanager.UsernameAlreadyExistsException;
 import managers.usermanager.UsernameCannotBeAdmin;
 import models.User;
-import models.dtos.*;
+import dtos.*;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
-import policyenforcement.Specification;
+import policyenforcement.Policy;
 import policyenforcement.session.Authentication;
 import policyenforcement.session.Session;
 import policyenforcement.session.SessionManager;
@@ -81,7 +81,7 @@ public class UserController extends Controller {
     @Authentication.Required
     public Result showCreateUserForm() throws UnauthorizedException {
         User currentUser = sessionManager.currentUser();
-        if (!Specification.instance.CanCreateUser(currentUser)) {
+        if (!Policy.instance.CanCreateUser(currentUser)) {
             throw new UnauthorizedException();
         }
         return ok(views.html.users.CreateUser.render(createUserForm));

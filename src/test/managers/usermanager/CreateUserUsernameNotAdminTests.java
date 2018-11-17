@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import play.libs.mailer.MailerClient;
-import policyenforcement.Specification;
+import policyenforcement.Policy;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +45,7 @@ public class CreateUserUsernameNotAdminTests {
         HashHelper hashHelper = mock(HashHelper.class);
         GroupFinder groupFinder = mock(GroupFinder.class);
         EbeanServer defaultServer = mock(EbeanServer.class);
-        Specification spec = mock(Specification.class);
+        Policy spec = mock(Policy.class);
         when(spec.CanCreateUser(any())).thenReturn(true);
         when(userFinder.byName(any())).thenReturn(Optional.empty());
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);

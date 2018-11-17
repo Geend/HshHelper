@@ -10,12 +10,12 @@ import models.*;
 import models.User;
 import models.PermissionLevel;
 import models.File;
-import models.dtos.*;
+import dtos.*;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
-import policyenforcement.Specification;
+import policyenforcement.Policy;
 import policyenforcement.session.Authentication;
 import policyenforcement.session.SessionManager;
 import scala.collection.Seq;
@@ -40,7 +40,7 @@ public class PermissionController extends Controller {
     private Form<UserPermissionIdDto> deleteUserPermissionForm;
 
     @Inject
-    public PermissionController(FormFactory formFactory, PermissionManager manager, SessionManager sessionManager, Specification specification) {
+    public PermissionController(FormFactory formFactory, PermissionManager manager, SessionManager sessionManager, Policy policy) {
         this.createUserPermissionForm = formFactory.form(CreateUserPermissionDto.class);
         this.createGroupPermissionForm = formFactory.form(CreateGroupPermissionDto.class) ;
         this.editGroupPermissionForm = formFactory.form(EditGroupPermissionDto.class);

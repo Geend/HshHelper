@@ -8,7 +8,7 @@ import models.finders.FileFinder;
 import models.finders.TempFileFinder;
 import models.finders.UserFinder;
 import models.finders.UserQuota;
-import policyenforcement.Specification;
+import policyenforcement.Policy;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -19,15 +19,15 @@ public class FileManager {
     private TempFileFinder tempFileFinder;
     private UserFinder userFinder;
     private final EbeanServer ebeanServer;
-    private Specification specification;
+    private Policy policy;
 
     @Inject
-    public FileManager(FileFinder fileFinder, TempFileFinder tempFileFinder, UserFinder userFinder, EbeanServer ebeanServer, Specification specification) {
+    public FileManager(FileFinder fileFinder, TempFileFinder tempFileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy) {
         this.fileFinder = fileFinder;
         this.tempFileFinder = tempFileFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
-        this.specification = specification;
+        this.policy = policy;
     }
 
     private void checkQuota(User user, String filename, String comment, byte[] data) throws QuotaExceededException {
@@ -72,7 +72,7 @@ public class FileManager {
                 throw new IllegalArgumentException("TempFile doesn't exist");
             }
 
-            if(!specification.CanAccessTempFile(user.get(), tempFile.get())) {
+            if(!policy.CanAccessTempFile(user.get(), tempFile.get())) {
                 throw new UnauthorizedException();
             }
 

@@ -1,4 +1,4 @@
-package models.dtos;
+package dtos;
 
 import models.PermissionLevel;
 import play.data.validation.Constraints;

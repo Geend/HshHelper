@@ -3,12 +3,12 @@
 
 @import scala.collection.JavaConverters._
 
-@import models.dtos.UserIdDto
+@import dtos.UserIdDto
 @import policyenforcement.session.SessionManager.SessionInstance
 @(group: Group, members: scala.collection.Map[User, Form[UserIdDto]], notMembers: Seq[User], addUserForm: Form[UserIdDto], removeGroupUserForm: Form[UserIdDto])
 
 @removeMemberButton(member: User, f: Form[UserIdDto]) = {
-    @if(policyenforcement.Specification.instance.CanRemoveGroupMember(SessionInstance().currentUser(), group, member)) {
+    @if(policyenforcement.Policy.instance.CanRemoveGroupMember(SessionInstance().currentUser(), group, member)) {
         @bootstrapHelper.form(
             routes.GroupController.removeGroupMember(group.getGroupId()),
             f,
@@ -23,7 +23,7 @@
 }
 
 @addMemberButton() = {
-    @if(policyenforcement.Specification.instance.CanGenerallyAddGroupMember(SessionInstance().currentUser(), group)) {
+    @if(policyenforcement.Policy.instance.CanGenerallyAddGroupMember(SessionInstance().currentUser(), group)) {
         @bootstrapHelper.form(
             routes.GroupController.addGroupMember(group.getGroupId()),
             addUserForm,

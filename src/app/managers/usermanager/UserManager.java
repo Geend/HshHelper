@@ -14,7 +14,7 @@ import models.finders.UserFinder;
 import models.finders.UserFinderQueryOptions;
 import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
-import policyenforcement.Specification;
+import policyenforcement.Policy;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -29,7 +29,7 @@ public class UserManager {
     private MailerClient mailerClient;
     private HashHelper hashHelper;
     private EbeanServer ebeanServer;
-    private Specification specification;
+    private Policy policy;
 
     @Inject
     public UserManager(
@@ -39,10 +39,10 @@ public class UserManager {
             MailerClient mailerClient,
             HashHelper hashHelper,
             EbeanServer server,
-            Specification specification)
+            Policy policy)
     {
         this.groupFinder = groupFinder;
-        this.specification = specification;
+        this.policy = policy;
         this.ebeanServer = server;
         this.mailerClient = mailerClient;
         this.passwordGenerator = passwordGenerator;
@@ -52,7 +52,7 @@ public class UserManager {
 
     public String createUser(Long userId, String username, String email, int quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException, UsernameCannotBeAdmin {
         User currentUser = this.userFinder.byId(userId);
-        if(!this.specification.CanCreateUser(currentUser)) {
+        if(!this.policy.CanCreateUser(currentUser)) {
             throw new UnauthorizedException();
         }
 
@@ -98,7 +98,7 @@ public class UserManager {
             throw new InvalidArgumentException("Dieser User existiert nicht.");
 
 
-        if(!this.specification.CanDeleteUser(currentUser.get(), userToDelete.get())) {
+        if(!this.policy.CanDeleteUser(currentUser.get(), userToDelete.get())) {
             throw new UnauthorizedException();
         }
         ebeanServer.delete(userToDelete.get());
@@ -106,7 +106,7 @@ public class UserManager {
 
     public List<User> getAllUsers(Long userId) throws UnauthorizedException {
         User currentUser = this.userFinder.byId(userId);
-        if(!this.specification.CanViewAllUsers(currentUser)) {
+        if(!this.policy.CanViewAllUsers(currentUser)) {
             throw new UnauthorizedException();
         }
         return this.userFinder.all();

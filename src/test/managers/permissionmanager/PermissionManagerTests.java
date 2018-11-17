@@ -9,7 +9,7 @@ import models.UserPermission;
 import models.finders.*;
 import org.junit.Before;
 import org.junit.Test;
-import policyenforcement.Specification;
+import policyenforcement.Policy;
 
 import java.util.Optional;
 
@@ -25,19 +25,19 @@ public class PermissionManagerTests {
     private FileFinder defaultFileFinder;
     private GroupFinder defaultGroupFinder;
     private UserFinder defaultUserFinder;
-    private Specification defaultSpecification;
+    private Policy defaultPolicy;
 
     @Before
     public void init() {
         this.defaultUserFinder = mock(UserFinder.class);
-        this.defaultSpecification = mock(Specification.class);
+        this.defaultPolicy = mock(Policy.class);
         this.defaultGroupFinder = mock(GroupFinder.class);
         this.defaultFileFinder = mock(FileFinder.class);
         this.defaultEbeanServer = mock(EbeanServer.class);
         this.defaultGroupPermissionFinder = mock(GroupPermissionFinder.class);
         this.defaultUserPermissionFinder = mock(UserPermissionFinder.class);
-        when(defaultSpecification.CanDeleteGroupPermission(any(User.class), any(GroupPermission.class))).thenReturn(true);
-        when(defaultSpecification.CanDeleteUserPermission(any(User.class), any(UserPermission.class))).thenReturn(true);
+        when(defaultPolicy.CanDeleteGroupPermission(any(User.class), any(GroupPermission.class))).thenReturn(true);
+        when(defaultPolicy.CanDeleteUserPermission(any(User.class), any(UserPermission.class))).thenReturn(true);
 
         when(defaultUserFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(User.class)));
         when(defaultGroupPermissionFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(GroupPermission.class)));
@@ -46,7 +46,7 @@ public class PermissionManagerTests {
 
     @Test(expected = UnauthorizedException.class)
     public void ShowEditEditPermissionIsAuthorizes() throws InvalidDataException, UnauthorizedException, InvalidArgumentException {
-        Specification spec = mock(Specification.class);
+        Policy spec = mock(Policy.class);
         when(spec.CanEditUserPermission(any(User.class), any(UserPermission.class))).thenReturn(false);
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
@@ -61,7 +61,7 @@ public class PermissionManagerTests {
 
     @Test(expected = UnauthorizedException.class)
     public void DeleteGroupPermissionIsAuthorizedTest() throws UnauthorizedException, InvalidArgumentException {
-        Specification spec = mock(Specification.class);
+        Policy spec = mock(Policy.class);
         when(spec.CanDeleteGroupPermission(any(User.class), any(GroupPermission.class))).thenReturn(false);
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
@@ -87,7 +87,7 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 s,
-                this.defaultSpecification);
+                this.defaultPolicy);
         permissionManager.deleteGroupPermission(0l, 0l);
 
         verify(s).delete(permission);
@@ -107,7 +107,7 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 s,
-                this.defaultSpecification);
+                this.defaultPolicy);
         permissionManager.deleteUserPermission(0l, 0l);
 
         verify(s).delete(permission);
@@ -115,7 +115,7 @@ public class PermissionManagerTests {
 
     @Test(expected = UnauthorizedException.class)
     public void DeleteUserPermissionIsAuthorizedTest() throws UnauthorizedException, InvalidArgumentException {
-        Specification spec = mock(Specification.class);
+        Policy spec = mock(Policy.class);
         when(spec.CanDeleteUserPermission(any(User.class), any(UserPermission.class))).thenReturn(false);
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,

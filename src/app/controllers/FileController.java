@@ -6,7 +6,7 @@ import managers.filemanager.FilenameAlreadyExistsException;
 import managers.filemanager.QuotaExceededException;
 import models.File;
 import models.TempFile;
-import models.dtos.*;
+import dtos.*;
 import models.finders.UserQuota;
 import play.data.Form;
 import play.data.FormFactory;
