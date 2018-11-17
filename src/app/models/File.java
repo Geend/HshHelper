@@ -16,19 +16,17 @@ public class File extends Model {
 
     @Lob
     private byte[] data;
+    private Long dataSize;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
     private User owner;
 
-
     @OneToMany(mappedBy = "file", fetch = FetchType.EAGER)
     private Set<UserPermission> userPermissions;
 
-
     @OneToMany(mappedBy = "file", fetch = FetchType.EAGER)
     private Set<GroupPermission> groupPermissions;
-
 
     public File() {
     }
@@ -37,6 +35,7 @@ public class File extends Model {
         this.name = name;
         this.comment = comment;
         this.data = data;
+        this.dataSize = (long) data.length;
         this.owner = owner;
     }
 
@@ -70,6 +69,7 @@ public class File extends Model {
 
     public void setData(byte[] data) {
         this.data = data;
+        this.dataSize = (long)data.length;
     }
 
     public User getOwner() {
@@ -80,4 +80,7 @@ public class File extends Model {
         this.owner = owner;
     }
 
+    public Long getTotalSize() {
+        return this.dataSize + this.name.length() + this.comment.length();
+    }
 }

@@ -46,6 +46,7 @@
                 <thead>
                     <td>Name</td>
                     <td>Kommentar</td>
+                    <td>Größe</td>
                     <td>Eigentümer</td>
                     <td>Zugriffsrechte</td>
                 </thead>
@@ -54,6 +55,7 @@
                     <tr @ownFile(file)>
                         <td><b><a href="@routes.FileController.showFile(file.getFileId)">@file.getName</a></b></td>
                         <td>@file.getComment</td>
+                        <td>@extension.FileSizeFormatter.humanReadableByteCount(file.getTotalSize)</td>
                         <td>@file.getOwner.getUsername</td>
                         <td>@permissions(file)</td>
                     </tr>
