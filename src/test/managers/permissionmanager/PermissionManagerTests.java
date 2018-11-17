@@ -2,21 +2,22 @@ package managers.permissionmanager;
 
 import dtos.EditGroupPermissionDto;
 import dtos.EditUserPermissionDto;
+import dtos.PermissionEntryDto;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.EbeanServer;
-import models.GroupPermission;
-import models.PermissionLevel;
-import models.User;
-import models.UserPermission;
+import models.*;
 import models.finders.*;
 import org.junit.Before;
 import org.junit.Test;
 import policyenforcement.Policy;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -50,6 +51,50 @@ public class PermissionManagerTests {
         when(defaultUserPermissionFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(UserPermission.class)));
     }
 
+    @Test
+    public void getAllGrantedPermissions() {
+        ArrayList<File> userFiles = new ArrayList<>();
+        File f = mock(File.class);
+        when(f.getFileId()).thenReturn(55l);
+        userFiles.add(f);
+        FileFinder fileFinder = mock(FileFinder.class);
+        when(fileFinder.getFilesByOwner(any(Long.class))).thenReturn(userFiles);
+
+        Group g = mock(Group.class);
+        User u = mock(User.class);
+        GroupPermission gp = mock(GroupPermission.class);
+        UserPermission up = mock(UserPermission.class);
+        when(gp.getGroupPermissionId()).thenReturn(50l);
+        when(up.getUserPermissionId()).thenReturn(100l);
+        when(gp.getCanRead()).thenReturn(true);
+        when(up.getCanWrite()).thenReturn(true);
+        when(gp.getGroup()).thenReturn(g);
+        when(up.getUser()).thenReturn(u);
+        ArrayList<GroupPermission> groupPermissionsForFile = new ArrayList<>();
+        groupPermissionsForFile.add(gp);
+        ArrayList<UserPermission> userPermissionsForFile = new ArrayList<>();
+        userPermissionsForFile.add(up);
+
+        GroupPermissionFinder groupPermFinder = mock(GroupPermissionFinder.class);
+        UserPermissionFinder userPermFinder = mock(UserPermissionFinder.class);
+        when(groupPermFinder.findForFileId(55l)).thenReturn(groupPermissionsForFile);
+        when(userPermFinder.findForFileId(55l)).thenReturn(userPermissionsForFile);
+
+        PermissionManager permissionManager = new PermissionManager(
+                userPermFinder,
+                groupPermFinder,
+                fileFinder,
+                this.defaultGroupFinder,
+                this.defaultUserFinder,
+                this.defaultEbeanServer,
+                this.defaultPolicy);
+
+        List<PermissionEntryDto> grantedPermissions = permissionManager.getAllGrantedPermissions(0l);
+        assertEquals(grantedPermissions.size(), 2);
+        assertTrue(grantedPermissions.stream().anyMatch(x -> x.getIsGroupPermission() && x.getGroupOrUserIdentifier() == 50l));
+        assertTrue(grantedPermissions.stream().anyMatch(x -> !x.getIsGroupPermission() && x.getGroupOrUserIdentifier() == 100l));
+    }
+
     @Test(expected = UnauthorizedException.class)
     public void ShowEditUserPermissionIsAuthorizesTest() throws InvalidDataException, UnauthorizedException, InvalidArgumentException {
         Policy spec = mock(Policy.class);
@@ -63,6 +108,46 @@ public class PermissionManagerTests {
                 this.defaultEbeanServer,
                 spec);
         permissionManager.getUserPermissionForEdit(0l, 0l);
+    }
+
+    @Test
+    public void EditUserPermissionTest() throws UnauthorizedException, InvalidArgumentException {
+        UserPermission up = mock(UserPermission.class);
+        UserPermissionFinder upf = mock(UserPermissionFinder.class);
+        when(upf.byIdOptional(0l)).thenReturn(Optional.of(up));
+        EbeanServer s = mock(EbeanServer.class);
+        PermissionManager permissionManager = new PermissionManager(
+                upf,
+                this.defaultGroupPermissionFinder,
+                this.defaultFileFinder,
+                this.defaultGroupFinder,
+                this.defaultUserFinder,
+                s,
+                this.defaultPolicy);
+        permissionManager.editUserPermission(0l, 0l, PermissionLevel.WRITE);
+        verify(up).setCanRead(false);
+        verify(up).setCanWrite(true);
+        verify(s).save(up);
+    }
+
+    @Test
+    public void EditGroupPermissionTest() throws UnauthorizedException, InvalidArgumentException {
+        GroupPermission gp = mock(GroupPermission.class);
+        GroupPermissionFinder gpf = mock(GroupPermissionFinder.class);
+        when(gpf.byIdOptional(0l)).thenReturn(Optional.of(gp));
+        EbeanServer s = mock(EbeanServer.class);
+        PermissionManager permissionManager = new PermissionManager(
+                this.defaultUserPermissionFinder,
+                gpf,
+                this.defaultFileFinder,
+                this.defaultGroupFinder,
+                this.defaultUserFinder,
+                s,
+                this.defaultPolicy);
+        permissionManager.editGroupPermission(0l, 0l, PermissionLevel.READ);
+        verify(gp).setCanRead(true);
+        verify(gp).setCanWrite(false);
+        verify(s).save(gp);
     }
 
     @Test

@@ -204,7 +204,7 @@ public class PermissionManager {
 
         boolean userAlreadyHasPermission = userPermissionFinder.findForFileId(fileId).stream().anyMatch(x -> x.getUser().equals(user.get()));
         if(userAlreadyHasPermission)
-            throw new InvalidArgumentException(this.requestErrorMessage);
+            throw new InvalidArgumentException("Es existiert bereits eine Berechtigung");
 
         UserPermission permission = new UserPermission();
         permission.setFile(file.get());
@@ -233,7 +233,7 @@ public class PermissionManager {
 
         boolean groupAlreadyHasPermission = groupPermissionFinder.findForFileId(fileId).stream().anyMatch(x -> x.getGroup().equals(group.get()));
         if(groupAlreadyHasPermission)
-            throw new InvalidArgumentException(this.requestErrorMessage);
+            throw new InvalidArgumentException("Es existiert bereits eine Berechtigung");
 
 
         GroupPermission permission = new GroupPermission();
@@ -295,7 +295,7 @@ public class PermissionManager {
 
     class CanReadWrite
     {
-        public boolean canRead;
-        public boolean canWrite;
+        boolean canRead;
+        boolean canWrite;
     }
 }
