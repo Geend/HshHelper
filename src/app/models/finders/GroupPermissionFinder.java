@@ -13,7 +13,7 @@ public class GroupPermissionFinder extends Finder<Long, GroupPermission> {
 
     public List<GroupPermission> findForFileId(Long fileId)
     {
-        return this.query().where().eq("file_id", fileId).findList();
+        return this.query().where().eq("fk_file_id", fileId).findList();
     }
 
     public Optional<GroupPermission> byIdOptional(Long id) {

@@ -13,7 +13,7 @@ public class UserPermissionFinder extends Finder<Long, UserPermission> {
 
     public List<UserPermission> findForFileId(Long fileId)
     {
-        return this.query().where().eq("file_id", fileId).findList();
+        return this.query().where().eq("fk_file_id", fileId).findList();
     }
 
     public Optional<UserPermission> byIdOptional(Long id) {
