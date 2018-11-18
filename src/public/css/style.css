@@ -1,0 +1,307 @@
+/*
+    Allgemeines
+ */
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size:14px;
+    color:#303030
+}
+
+input {
+    font-family: 'Roboto', sans-serif;
+    font-size:14px;
+    box-sizing: border-box;
+}
+
+
+a {
+    color:#0066c0;
+}
+
+.main {
+    margin:0 auto;
+    max-width: 900px;
+    width:100%;
+}
+
+.main .linkBtn {
+    background:none!important;
+    border:none;
+    padding:0!important;
+    color:#0066c0;
+    font-family: 'Roboto', sans-serif;
+    font-size:14px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/*
+    Logout
+ */
+.main .logout {
+    margin-top:25px;
+    text-align: right;
+    padding-bottom: 10px;
+}
+
+/*
+    Header
+ */
+.main .header {
+    border-top:solid 1px #ccc;
+    border-bottom: solid 3px #ea8f4c;
+    padding-bottom: 15px;
+    padding-top: 15px;
+    margin-bottom: 10px;
+    width:100%;
+    display: table;
+    vertical-align: middle;
+}
+
+.header > div {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.header .logo {
+    width: 250px;
+    min-width: 250px;
+}
+
+.header .logo h1 {
+    padding-left: 10px;
+}
+
+.header .logo h1, .header .logo h1 a {
+    font-size:30px;
+    color:#e56100;
+    margin:0;
+    text-decoration:none;
+    white-space: nowrap;
+}
+
+.header .searchControl {
+    width: 100%;
+    padding-left: 15px;
+}
+
+.searchControl input {
+    height:37px;
+    padding:4px;
+    width:100%;
+}
+
+.searchControl form {
+    width: 100%;
+    display: table;
+}
+
+.searchControl form > div {
+    display: table-cell;
+}
+
+.searchControl .query {
+    width: 100%;
+}
+
+.searchControl .query input {
+    padding-left: 7px;
+}
+
+.searchControl .submit {
+    padding-left: 10px;
+}
+
+.searchControl .submit input {
+    font-weight: bold;
+    padding: 0 15px;
+}
+
+/*
+    Body
+ */
+
+.main .body {
+    display: table
+}
+
+
+/* Sidebar */
+.body .sidebar {
+    display: table-cell;
+    width: 250px;
+    min-width: 250px;
+}
+
+.sidebar .box {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.sidebar .box:last-child {
+    margin-bottom: 0;
+}
+
+.sidebar .box h2 {
+    font-size:16px;
+    padding: 10px;
+    margin: 0;
+    background: #fae9dc;
+    border-bottom: solid 1px #e1bf84;
+}
+
+.sidebar .box > p {
+    line-height: 1.5em;
+    padding: 10px;
+    background: #eee;
+    margin:0;
+}
+
+.sidebar .box > p.hr {
+    padding: 0;
+    background: #ccc;
+    height: 1px;
+}
+
+
+.box.sessionInfo {
+
+}
+
+.box .menu a {
+    width:100%;
+    background: #ebf0fa;
+    display: block;
+    padding:10px;
+    box-sizing: border-box;
+    color:#000;
+    text-decoration: none;
+    border-bottom: solid 1px #c7cedd;
+}
+
+.box .menu a:hover {
+    background-color: #d4e1fa;
+}
+
+.box .menu a.active {
+    background-color: #d4e1fa;
+}
+
+.box.groups {
+    margin-top: 20px;
+}
+
+.box.groups .groupList {
+    max-height: 150px;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+/*
+    Actual content
+ */
+.body .content {
+    display: table-cell;
+    width: 100%;
+    padding-left: 15px;
+}
+
+.content h1 {
+    margin: 0 0 10px 0;
+    padding: 10px 10px 10px 7px;
+    font-size: 16px;
+    background: #fae9dc;
+    border-bottom: solid 1px #ea8f4c;
+}
+
+.content h2:first-of-type {
+    margin: 0;
+}
+
+.content h2 {
+    margin: 25px 0 0 0;
+    padding: 10px 10px 10px 7px;
+    font-size: 16px;
+}
+
+.content p {
+    padding: 7px;
+}
+.content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.content table td {
+    padding:10px 5px;
+    border:0;
+}
+
+.content table thead tr {
+    background: #eee;
+    font-weight: bold;
+    border-bottom: solid 1px #ccc !important;
+    border-top: solid 1px #ccc !important;
+}
+
+.content table tr {
+    border-bottom: solid 1px #ccc;
+}
+
+.content .fileTable .ownFile {
+    background: #edfaeb;
+}
+
+.content .fileTable .thirdPartyFile {
+    background: #faebeb;
+}
+
+.fileTableLegend {
+    width: 100%;
+    margin-top: 10px;
+    text-align: right;
+    background: #f5f5f5;
+    padding:4px 5px;
+    box-sizing: border-box;
+}
+
+.fileTableLegend > div {
+    padding: 5px 10px;
+    display: inline-block;
+    color:#8c8c8c;
+}
+
+.fileTableLegend > div.title {
+    font-weight: bold;
+}
+
+.fileTableLegend > div.ownFile {
+    background: #edfaeb;
+}
+
+.fileTableLegend > div.thirdPartyFile {
+    background: #faebeb;
+}
+
+/*
+    Footer
+ */
+.main .footer {
+    display: table;
+    width: 100%;
+    padding: 10px 0;
+    margin-top: 10px;
+    border-top:solid 1px #ccc
+}
+
+.main .footer .copyright {
+    display: table-cell;
+    padding-left: 10px;
+    color: #666;
+}
+
+.main .footer .links {
+    display: table-cell;
+    text-align: right;
+}
