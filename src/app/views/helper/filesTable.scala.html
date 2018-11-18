@@ -1,0 +1,54 @@
+@import policyenforcement.Policy
+@import policyenforcement.session.SessionManager.SessionInstance
+@(files : Seq[File])
+
+@classname(file : File) = {
+    @if(file.getOwner.equals(SessionInstance().currentUser())) {
+        class="ownFile"
+    } else {
+        class="thirdPartyFile"
+    }
+}
+
+@permissions(file : File) = {
+    @if(Policy.instance.CanReadFile(SessionInstance().currentUser(), file)) {
+        R
+    }
+    @if(Policy.instance.CanWriteFile(SessionInstance().currentUser(), file)) {
+        W
+    }
+}
+
+@if(files.nonEmpty) {
+    <table class="fileTable">
+        <thead>
+            <tr>
+                <td>Name</td>
+                <td>Kommentar</td>
+                <td>Größe</td>
+                <td>Eigentümer</td>
+                <td>Zugriffsrechte</td>
+            </tr>
+        </thead>
+
+        <tbody>
+        @for(file <- files) {
+            <tr @classname(file)>
+                <td><b><a href="@routes.FileController.showFile(file.getFileId)">admin.txt</a></b></td>
+                <td>@file.getComment</td>
+                <td>@extension.FileSizeFormatter.humanReadableByteCount(file.getTotalSize)</td>
+                <td>@file.getOwner.getUsername</td>
+                <td>@permissions(file)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <div class="fileTableLegend">
+        <div class="title">Legende:</div>
+        <div class="ownFile">Selbst geschriebene Dateien</div>
+        <div class="thirdPartyFile">Von anderen geschriebene Dateien</div>
+    </div>
+} else {
+    <div class="message">Keine Dateien vorhanden!</div>
+}
