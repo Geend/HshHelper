@@ -88,9 +88,9 @@ public class GroupManagerTests {
         admins.setMembers(Stream.of(admin).collect(Collectors.toSet()));
         petersGroup.setMembers(Stream.of(admin, peter).collect(Collectors.toSet()));
 
-        admin.setGroups(Stream.of(all, admins, petersGroup).collect(Collectors.toSet()));
-        peter.setGroups(Stream.of(all, petersGroup).collect(Collectors.toSet()));
-        klaus.setGroups(Stream.of(all).collect(Collectors.toSet()));
+        admin.setGroups(Stream.of(all, admins, petersGroup).collect(Collectors.toList()));
+        peter.setGroups(Stream.of(all, petersGroup).collect(Collectors.toList()));
+        klaus.setGroups(Stream.of(all).collect(Collectors.toList()));
 
         gm = new GroupManager(groupFinder, userFinder, defaultServer, sessionManager, policy);
     }

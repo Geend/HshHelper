@@ -21,6 +21,8 @@ import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -73,7 +75,7 @@ public class GroupController extends Controller {
 
     public Result showOwnGroups() {
         Map<Group, Form<DeleteGroupDto>> groupFormMap = createGroupsFormMap(
-                sessionManager.currentUser().getGroups()
+                new HashSet<>(sessionManager.currentUser().getGroups())
         );
         return ok(views.html.groups.OwnGroupsList.render(asScala(groupFormMap)));
     }
@@ -144,7 +146,7 @@ public class GroupController extends Controller {
 
         if (form.hasErrors()) {
             Map<Group, Form<DeleteGroupDto>> groupFormMap = createGroupsFormMap(
-                sessionManager.currentUser().getGroups()
+                    new HashSet<>(sessionManager.currentUser().getGroups())
             );
             return badRequest(views.html.groups.OwnGroupsList.render(asScala(groupFormMap)));
         }
@@ -160,7 +162,7 @@ public class GroupController extends Controller {
 
         if (form.hasErrors()) {
             Map<Group, Form<DeleteGroupDto>> groupFormMap = createGroupsFormMap(
-                    sessionManager.currentUser().getGroups()
+                    new HashSet<>(sessionManager.currentUser().getGroups())
             );
             return badRequest(views.html.groups.OwnGroupsList.render(asScala(groupFormMap)));
         }

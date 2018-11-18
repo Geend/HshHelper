@@ -165,7 +165,7 @@ public class PermissionController extends Controller {
 
     private Result renderCreateGroupPermissionForm(Form<CreateGroupPermissionDto> form){
         List<File> ownFiles = manager.getUserFiles(sessionManager.currentUser().userId);
-        Set<Group> ownGroups = sessionManager.currentUser().getGroups();
+        Set<Group> ownGroups = new HashSet<>(sessionManager.currentUser().getGroups());
         List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
 
         return ok(views.html.filepermissions.CreateGroupPermission.render(form, asScala(ownFiles), asScala(ownGroups), asScala(possiblePermissions)));

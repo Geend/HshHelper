@@ -43,7 +43,8 @@ public class User extends Model {
             joinColumns = @JoinColumn(name = "fk_user_id", referencedColumnName = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "fk_group_id", referencedColumnName = "group_id")
     )
-    private Set<Group> groups = new HashSet<>();
+    @OrderBy("name")
+    private List<Group> groups = new ArrayList<>();
 
 
     @OneToMany(
@@ -126,11 +127,11 @@ public class User extends Model {
         this.ownerOf = ownerOf;
     }
 
-    public Set<Group> getGroups() {
+    public List<Group> getGroups() {
         return groups;
     }
 
-    public void setGroups(Set<Group> groups) {
+    public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
 

@@ -70,12 +70,12 @@ public class PolicyTests {
         klausGroup = new Group("Klaus Group", klaus);
         klausGroup.setMembers(Stream.of(klaus, rudi).collect(Collectors.toSet()));
 
-        admin.setGroups(Stream.of(adminGroup, allGroup).collect(Collectors.toSet()));
-        adminTwo.setGroups(Stream.of(adminGroup, petersGroup, allGroup).collect(Collectors.toSet()));
-        peter.setGroups(Stream.of(petersGroup, allGroup).collect(Collectors.toSet()));
-        klaus.setGroups(Stream.of(petersGroup, allGroup).collect(Collectors.toSet()));
-        horst.setGroups(Stream.of(allGroup).collect(Collectors.toSet()));
-        rudi.setGroups(Stream.of(allGroup).collect(Collectors.toSet()));
+        admin.setGroups(Stream.of(adminGroup, allGroup).collect(Collectors.toList()));
+        adminTwo.setGroups(Stream.of(adminGroup, petersGroup, allGroup).collect(Collectors.toList()));
+        peter.setGroups(Stream.of(petersGroup, allGroup).collect(Collectors.toList()));
+        klaus.setGroups(Stream.of(petersGroup, allGroup).collect(Collectors.toList()));
+        horst.setGroups(Stream.of(allGroup).collect(Collectors.toList()));
+        rudi.setGroups(Stream.of(allGroup).collect(Collectors.toList()));
 
         byte[] data = {0x42};
         klausFile = new File("klausFile", "Klaus Comment",data,klaus);
