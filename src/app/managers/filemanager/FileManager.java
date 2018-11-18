@@ -4,6 +4,7 @@ import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.*;
 import io.ebean.annotation.TxIsolation;
+import managers.groupmanager.GroupManager;
 import models.*;
 import models.finders.FileFinder;
 import models.finders.TempFileFinder;
@@ -99,6 +100,19 @@ public class FileManager {
     public List<File> ownedFiles() {
         User user = sessionManager.currentUser();
         return fileFinder.getFilesByOwner(user.getUserId());
+    }
+
+    public List<File> getGroupFiles(Group group) throws UnauthorizedException, InvalidArgumentException {
+        return fileFinder.query()
+                .where()
+                .and()
+                .eq("groupPermissions.group", group)
+                .or()
+                    .eq("groupPermissions.canRead", true)
+                    .eq("groupPermissions.canWrite", true)
+                .endOr()
+                .endAnd()
+                .findList();
     }
 
     public List<File> accessibleFiles() {

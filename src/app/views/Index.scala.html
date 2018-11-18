@@ -1,66 +1,7 @@
 @import policyenforcement.session.SessionManager.SessionInstance
 @import policyenforcement.Policy
-@(user: User, groups: Seq[Group], files: Seq[File])
+@(files: Seq[File])
 
-@ownFile(file : File) = {
-    @if(file.getOwner.equals(SessionInstance().currentUser())) {
-        class="ownFile"
-    } else {
-        class="thirdPartyFile"
-    }
-}
-
-@permissions(file : File) = {
-    @if(Policy.instance.CanReadFile(SessionInstance().currentUser(), file)) {
-        R
-    }
-    @if(Policy.instance.CanWriteFile(SessionInstance().currentUser(), file)) {
-        W
-    }
-}
-
-@Main("HsH-Helfer: Index") {
-    @bootstrapHelper.sidebarPlusContent{
-        @bootstrapHelper.cardWithTitle("Gruppen") {
-            @bootstrapHelper.listGroupFlush(
-                groups.map(
-                    g => bootstrapHelper.listGroupLink(g.getName(), routes.GroupController.showGroup(g.getGroupId()))
-                )
-            )
-        }
-    } {
-        @bootstrapHelper.mainContent("Willkommen zum HsH-Helfer, " + user.getUsername() + "!") {
-            <p>
-                Bisher ist die einzige Funktionalitaet des HsH-Helfers, Gruppen anzulegen und in diesen Nutzer zu verwalten.<br/>
-                In einer spaeteren Entwicklungsiteration werden wir fuer Sie eine Plattform zum Dateienaustausch bereitstellen,
-                sowie ihnen ermoeglichen, dass sie sich mit einem Login auf dieser Page via eines Single-Sign-On ebenfalls bei
-                ihren Lieblingsnetzdiensten anmelden.<br/>
-                <br/>
-                Euer HsH-Helfer-Team.
-            </p>
-            <h2>Dateien</h2>
-            <p>Hier koennen sie in Zukunft die Dateien sehen, die fuer Sie von anderen Nutzern sowie in Gruppen, dessen
-                Mitglied sie sind, fuer sie freigeschalten wurden!</p>
-
-            <table class="ownTable">
-                <thead>
-                    <td>Name</td>
-                    <td>Kommentar</td>
-                    <td>Größe</td>
-                    <td>Eigentümer</td>
-                    <td>Zugriffsrechte</td>
-                </thead>
-
-                @for(file <- files) {
-                    <tr @ownFile(file)>
-                        <td><b><a href="@routes.FileController.showFile(file.getFileId)">@file.getName</a></b></td>
-                        <td>@file.getComment</td>
-                        <td>@extension.FileSizeFormatter.humanReadableByteCount(file.getTotalSize)</td>
-                        <td>@file.getOwner.getUsername</td>
-                        <td>@permissions(file)</td>
-                    </tr>
-                }
-            </table>
-        }
-    }
+@Base("Verfügbare Dateien") {
+    @helper.FilesTable(files)
 }

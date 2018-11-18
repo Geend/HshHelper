@@ -37,6 +37,12 @@ a {
     cursor: pointer;
 }
 
+.main .linkBtn:disabled {
+    color: #a1a1a1;
+    text-decoration: none;
+    cursor: default;
+}
+
 /*
     Logout
  */
@@ -182,11 +188,11 @@ a {
 }
 
 .box .menu a:hover {
-    background-color: #d4e1fa;
+    background-color: #cbdaf7;
 }
 
 .box .menu a.active {
-    background-color: #d4e1fa;
+    background-color: #cbdaf7;
 }
 
 .box.groups {
@@ -239,14 +245,18 @@ a {
 }
 
 .content table thead tr {
-    background: #eee;
+    background: #f7f7f7;
     font-weight: bold;
-    border-bottom: solid 1px #ccc !important;
-    border-top: solid 1px #ccc !important;
+    border-bottom: solid 1px #bfbfbf !important;
+    border-top: solid 1px #a1a1a1 !important;
 }
 
 .content table tr {
-    border-bottom: solid 1px #ccc;
+    border-bottom: solid 1px #bfbfbf;
+}
+
+.content table tr td.right {
+    text-align: right;
 }
 
 .content .fileTable .ownFile {
@@ -284,9 +294,57 @@ a {
     background: #faebeb;
 }
 
-/*
-    Footer
- */
+.content .inline-menu.lr {
+    display: table;
+    width: 100%;
+}
+
+.content .inline-menu.lr .left {
+    display: table-cell;
+    text-align: left;
+}
+
+.content .inline-menu.lr .right {
+    display: table-cell;
+    text-align: right;
+}
+
+.content .inline-menu.noBorder {
+    border: 0 !important;
+}
+
+.content .inline-menu {
+    padding: 5px 0px 15px 7px;
+    font-weight: bold;
+    color: #666;
+    border-bottom: solid 1px #ccc;
+    box-sizing: border-box;
+}
+
+.content .inline-menu a {
+    background: #ebf0fa;
+    padding: 5px 10px;
+}
+
+.content .inline-menu a.active {
+    background: #cbdaf7;
+    padding: 5px 10px;
+}
+
+.content .borderMessage .message {
+    border-top: solid 1px #ccc;
+    margin-top: 0 !important;
+}
+
+.content .message div {
+    padding: 15px 10px 15px 7px;
+    background: #f7f7f7;
+    font-weight: bold;
+}
+
+    /*
+        Footer
+     */
 .main .footer {
     display: table;
     width: 100%;

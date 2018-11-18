@@ -5,14 +5,6 @@
     80% verbraucht (10MB übrig)
 }
 
-@menuLinkActiveClass(url : String) = {
-    @if(request.path().startsWith(url)) {
-        class="active"
-    }
-}
-@menuLink(title : String, url : play.api.mvc.Call) = {
-    <a @menuLinkActiveClass(url.toString) href="@url">@title</a>
-}
 
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
@@ -60,7 +52,7 @@
                             <a href="#">Benutzerverwaltung</a>
                             <a href="#">Gruppenverwaltung</a>
                             <a href="#">Dateiverwaltung</a>
-                            @menuLink("Sessionübersicht", routes.UserController.showActiveUserSessions())
+                            @helper.MenuLink("Sessionübersicht", routes.UserController.showActiveUserSessions())
                         </div>
                     </div>
 
@@ -68,7 +60,11 @@
                         <h2>Gruppen (@SessionInstance().currentUser().getGroups.size())</h2>
                         <div class="groupList menu">
                             @for(group <- SessionInstance().currentUser().getGroups.asScala) {
-                                @menuLink(group.getName, routes.GroupController.showGroupInfoFiles(group.getGroupId))
+                                @helper.MenuLink(
+                                    group.getName,
+                                    routes.GroupController.showGroupFiles(group.getGroupId),
+                                    "/groups/"+group.getGroupId  // alias
+                                )
                             }
                         </div>
                     </div>

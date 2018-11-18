@@ -2,36 +2,67 @@
 @import dtos.DeleteSessionDto
 @import policyenforcement.session.SessionManager.SessionInstance
 @import policyenforcement.session.Session
-@(sessions: scala.collection.Map[Session, Form[DeleteSessionDto]])
+@(sessions: Seq[Session])
 
-@import bootstrapHelper._
+@Base("Sessionübersicht") {
+    <h2>Aktive Sessions</h2>
+    <table>
+        <thead>
+            <tr>
+                <td>Erstellungsdatum</td>
+                <td>Verwendete IP</td>
+                <td></td>
+            </tr>
+        </thead>
 
-@sessionButton(s: Session, f: Form[DeleteSessionDto]) = {
-    @if(policyenforcement.Policy.instance.CanDeleteSession(SessionInstance().currentUser(), s)) {
-        @form(
-            routes.UserController.deleteUserSession(),
-            f,
-            scala.collection.Map(
-                "sessionId" -> Input(InputType.Hidden)
-            ),
-            button = bootstrapHelper.button("Session Zerstören")
-        )
-    } else {
-        @button("Session Zerstören", disabled = true)
-    }
-}
+        <tbody>
+            @for(session <- sessions) {
+                <tr>
+                    <td>@session.getIssuedAt.toString("dd.MM.yyyy - HH:mm:ss")</td>
+                    <td>@session.getRemoteAddress</td>
+                    <td>
+                        @if(policyenforcement.Policy.instance.CanDeleteSession(SessionInstance().currentUser(), session)) {
+                            @helper.form(action = routes.UserController.deleteUserSession()) {
+                                @helper.CSRF.formField
+                                <input type="hidden" name="sessionId" value="@session.getSessionKey" />
+                                <button type="submit" class="linkBtn">Session zerstören</button>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-@Main("HsH-Helfer: deine aktive Sessions") {
-    @bootstrapHelper.center("Aktive Sessions") {
-        @table(sessions
-                .map{
-                    case (k, v) => scala.collection.Map(
-                            "Verwendete IP" -> Left(k.getRemoteAddress),
-                            "Erstellungsdatum" -> Left(k.getIssuedAt.toString("dd.MM.yyyy - HH:mm:ss")),
-                            "Aktion" -> Right(sessionButton(k, v))
-                    )}
-                .toSeq,
-            bordered = true
-        )
-    }
+
+    <h2>Letzte erfolgreiche Logins</h2>
+    <table>
+        <thead>
+            <tr>
+                <td>Zeitpunkt</td>
+                <td>Verwendete IP</td>
+                <td>User-Agent</td>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>17.11.2018 - 21:19:53</td>
+                <td>123.123.123.21</td>
+                <td>Google Chrome</td>
+            </tr>
+
+            <tr>
+                <td>15.11.2018 - 21:19:53</td>
+                <td>21.22.1.21</td>
+                <td>iOS Safari</td>
+            </tr>
+
+            <tr>
+                <td>12.11.2018 - 21:19:53</td>
+                <td>21.22.1.2</td>
+                <td>Firefox</td>
+            </tr>
+        </tbody>
+    </table>
 }

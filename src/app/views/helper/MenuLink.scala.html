@@ -1,0 +1,13 @@
+@(title : String, url : play.api.mvc.Call, aliasUrl : String = null)
+
+@menuLinkActiveClass() = {
+    @if(request.path().startsWith(url.toString)) {
+        class="active"
+    } else {
+        @if(aliasUrl != null && request().path().startsWith(aliasUrl)) {
+            class="active"
+        }
+    }
+}
+
+<a @menuLinkActiveClass() href="@url">@title</a>

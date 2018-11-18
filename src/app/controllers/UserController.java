@@ -138,14 +138,10 @@ public class UserController extends Controller {
 
     @Authentication.Required
     public Result showActiveUserSessions() {
-        User u = sessionManager.currentUser();
-        Map<Session, Form<DeleteSessionDto>> sessionFormMap = sessionManager.sessionsByUser(u)
-                .stream()
-                .collect(Collectors.toMap(
-                        session -> session,
-                        s -> deleteSessionForm.fill(new DeleteSessionDto(s.getSessionKey()))
-                        ));
-        return ok(views.html.users.UserSessions.render(asScala(sessionFormMap)));
+        List<Session> activeSessions = sessionManager.sessionsByUser(
+            sessionManager.currentUser()
+        );
+        return ok(views.html.users.UserSessions.render(asScala(activeSessions)));
     }
 
     @Authentication.Required

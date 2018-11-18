@@ -1,0 +1,53 @@
+@import policyenforcement.session.SessionManager.SessionInstance
+@(group : Group, members : Seq[User])
+
+@Base("Gruppe: "+group.getName) {
+
+    <div class="inline-menu lr noBorder">
+        <div class="left">
+            <span class="title">Ansicht:</span>
+            @helper.MenuLink("Dateien", routes.GroupController.showGroupFiles(group.getGroupId))
+            -
+            @helper.MenuLink("Mitglieder", routes.GroupController.showGroupMembers(group.getGroupId))
+        </div>
+        <div class="right">
+            <a href="#">+ Benutzer hinzufügen</a>
+        </div>
+        <div class="collapse">
+            Ein tolles formular
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <td>Benutzername</td>
+                <td></td>
+            </tr>
+        </thead>
+
+        <tbody>
+            @for(member <- members) {
+                <tr>
+                    <td>
+                        <b>@member.getUsername</b>
+                        @if(member.equals(SessionInstance().currentUser)) {
+                            (Sie selbst)
+                        }
+                    </td>
+                    <td class="right">
+                        @if(policyenforcement.Policy.instance.CanRemoveGroupMember(SessionInstance().currentUser(), group, member)) {
+                            @helper.form(action = routes.GroupController.removeGroupMember(group.getGroupId())) {
+                                @helper.CSRF.formField
+                                <input type="hidden" name="userId" value="@member.getUserId" />
+                                <button type="submit" class="linkBtn">Aus Gruppe entfernen</button>
+                            }
+                        } else {
+                            <button type="submit" class="linkBtn" disabled>Aus Gruppe entfernen</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

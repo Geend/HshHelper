@@ -28,9 +28,8 @@ public class HomeController extends Controller {
     }
 
     public Result index() {
-        User user = sessionManager.currentUser();
         List<File> accessibleFiles = fileManager.accessibleFiles();
-        return ok(views.html.Index.render(user, asScala(user.getGroups()), asScala(accessibleFiles)));
+        return ok(views.html.Index.render(asScala(accessibleFiles)));
     }
 
 }

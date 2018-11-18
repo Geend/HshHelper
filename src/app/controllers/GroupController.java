@@ -2,8 +2,10 @@ package controllers;
 
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import managers.filemanager.FileManager;
 import managers.groupmanager.GroupManager;
 import managers.groupmanager.GroupNameAlreadyExistsException;
+import models.File;
 import models.Group;
 import models.User;
 import dtos.CreateGroupDto;
@@ -39,15 +41,17 @@ public class GroupController extends Controller {
 
     private final GroupManager groupManager;
     private final SessionManager sessionManager;
+    private final FileManager fileManager;
 
     @Inject
-    public GroupController(FormFactory formFactory, UserFinder userFinder, GroupFinder groupFinder, GroupManager groupManager, SessionManager sessionManager) {
+    public GroupController(FormFactory formFactory, UserFinder userFinder, GroupFinder groupFinder, GroupManager groupManager, SessionManager sessionManager, FileManager fileManager) {
         this.groupForm = formFactory.form(CreateGroupDto.class);
         this.removeGroupUserForm = formFactory.form(UserIdDto.class);
         this.addUserToGroupForm = formFactory.form(UserIdDto.class);
         this.deleteGroupForm = formFactory.form(DeleteGroupDto.class);
         this.groupManager = groupManager;
         this.sessionManager = sessionManager;
+        this.fileManager = fileManager;
     }
 
     public Result showCreateGroupForm() {
@@ -87,7 +91,7 @@ public class GroupController extends Controller {
         return ok(views.html.groups.AllGroupsList.render(asScala(groupFormMap)));
     }
 
-    public Result showGroup(Long groupId) throws UnauthorizedException {
+    public Result showGroupOld(Long groupId) throws UnauthorizedException {
         return renderGroupMemberList(groupId, addUserToGroupForm, removeGroupUserForm, Http.Status.OK);
     }
 
@@ -179,5 +183,26 @@ public class GroupController extends Controller {
                         gr -> gr,
                         group -> deleteGroupForm.fill(new DeleteGroupDto(group.getGroupId()))
                 ));
+    }
+
+
+
+
+
+
+    public Result showGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
+        return showGroupFiles(groupId);
+    }
+
+    public Result showGroupFiles(Long groupId) throws UnauthorizedException, InvalidArgumentException {
+        Group group = groupManager.getGroup(groupId);
+        List<File> sharedWithGroup = fileManager.getGroupFiles(group);
+        return ok(views.html.groups.GroupFiles.render(group, asScala(sharedWithGroup)));
+    }
+
+    public Result showGroupMembers(Long groupId) throws UnauthorizedException, InvalidArgumentException {
+        Group group = groupManager.getGroup(groupId);
+        Set<User> members = group.getMembers();
+        return ok(views.html.groups.GroupMembers.render(group, asScala(members)));
     }
 }
