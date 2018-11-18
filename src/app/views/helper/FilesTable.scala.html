@@ -12,10 +12,14 @@
 
 @permissions(file : File) = {
     @if(Policy.instance.CanReadFile(SessionInstance().currentUser(), file)) {
-        R
-    }
-    @if(Policy.instance.CanWriteFile(SessionInstance().currentUser(), file)) {
-        W
+        Read
+        @if(Policy.instance.CanWriteFile(SessionInstance().currentUser(), file)) {
+            / Write
+        }
+    } else {
+        @if(Policy.instance.CanWriteFile(SessionInstance().currentUser(), file)) {
+            Write
+        }
     }
 }
 
@@ -23,10 +27,10 @@
     <table class="fileTable">
         <thead>
             <tr>
-                <td>Name</td>
+                <td class="name">Dateiname</td>
                 <td>Kommentar</td>
-                <td>Größe</td>
                 <td>Eigentümer</td>
+                <td>Größe</td>
                 <td>Zugriffsrechte</td>
             </tr>
         </thead>
@@ -34,10 +38,10 @@
         <tbody>
         @for(file <- files) {
             <tr @classname(file)>
-                <td><b><a href="@routes.FileController.showFile(file.getFileId)">admin.txt</a></b></td>
+                <td class="name"><b><a href="@routes.FileController.showFile(file.getFileId)">admin.txt</a></b></td>
                 <td>@file.getComment</td>
-                <td>@extension.FileSizeFormatter.humanReadableByteCount(file.getTotalSize)</td>
                 <td>@file.getOwner.getUsername</td>
+                <td>@extension.FileSizeFormatter.humanReadableByteCount(file.getTotalSize)</td>
                 <td>@permissions(file)</td>
             </tr>
         }
@@ -50,7 +54,7 @@
         <div class="thirdPartyFile">Von anderen geschriebene Dateien</div>
     </div>
 } else {
-    <div class="message">
-        <div>Keine Dateien vorhanden!</div>
+    <div class="message error">
+        Keine Dateien vorhanden!
     </div>
 }

@@ -1,7 +1,19 @@
 /*
     Allgemeines
  */
-@import url('https://fonts.googleapis.com/css?family=Roboto');
+/* roboto-regular - latin */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/assets/fonts/roboto/roboto-v18-latin-regular.eot'); /* IE9 Compat Modes */
+    src: local('Roboto'), local('Roboto-Regular'),
+    url('/assets/fonts/roboto/roboto-v18-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('/assets/fonts/roboto/roboto-v18-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+    url('/assets/fonts/roboto/roboto-v18-latin-regular.woff') format('woff'), /* Modern Browsers */
+    url('/assets/fonts/roboto/roboto-v18-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('/assets/fonts/roboto/roboto-v18-latin-regular.svg#Roboto') format('svg'); /* Legacy iOS */
+}
 
 body {
     font-family: 'Roboto', sans-serif;
@@ -22,7 +34,7 @@ a {
 
 .main {
     margin:0 auto;
-    max-width: 900px;
+    max-width: 1000px;
     width:100%;
 }
 
@@ -57,7 +69,7 @@ a {
  */
 .main .header {
     border-top:solid 1px #ccc;
-    border-bottom: solid 3px #ea8f4c;
+    border-bottom: solid 2px #ea8f4c;
     padding-bottom: 15px;
     padding-top: 15px;
     margin-bottom: 10px;
@@ -72,12 +84,13 @@ a {
 }
 
 .header .logo {
-    width: 250px;
-    min-width: 250px;
+    width: 220px;
+    min-width: 220px;
 }
 
 .header .logo h1 {
     padding-left: 10px;
+    box-sizing: border-box;
 }
 
 .header .logo h1, .header .logo h1 a {
@@ -90,7 +103,8 @@ a {
 
 .header .searchControl {
     width: 100%;
-    padding-left: 15px;
+    padding-left: 25px;
+    box-sizing: border-box;
 }
 
 .searchControl input {
@@ -113,11 +127,11 @@ a {
 }
 
 .searchControl .query input {
-    padding-left: 7px;
+    padding-left: 10px;
 }
 
 .searchControl .submit {
-    padding-left: 10px;
+    padding-left: 5px;
 }
 
 .searchControl .submit input {
@@ -137,8 +151,8 @@ a {
 /* Sidebar */
 .body .sidebar {
     display: table-cell;
-    width: 250px;
-    min-width: 250px;
+    width: 220px;
+    min-width: 220px;
 }
 
 .sidebar .box {
@@ -155,14 +169,13 @@ a {
     padding: 10px;
     margin: 0;
     background: #fae9dc;
-    border-bottom: solid 1px #e1bf84;
 }
 
 .sidebar .box > p {
     line-height: 1.5em;
     padding: 10px;
-    background: #eee;
-    margin:0;
+    background: #f7f7f7;
+    margin-top:6px;
 }
 
 .sidebar .box > p.hr {
@@ -184,7 +197,7 @@ a {
     box-sizing: border-box;
     color:#000;
     text-decoration: none;
-    border-bottom: solid 1px #c7cedd;
+    margin-top: 6px;
 }
 
 .box .menu a:hover {
@@ -211,12 +224,12 @@ a {
 .body .content {
     display: table-cell;
     width: 100%;
-    padding-left: 15px;
+    padding-left: 25px;
 }
 
 .content h1 {
     margin: 0 0 10px 0;
-    padding: 10px 10px 10px 7px;
+    padding: 10px;
     font-size: 16px;
     background: #fae9dc;
     border-bottom: solid 1px #ea8f4c;
@@ -233,26 +246,28 @@ a {
 }
 
 .content p {
-    padding: 7px;
+    padding: 10px;
+}
+.content hr {
+    border: 0;
+    height: 1px;
+    background: #ccc;
 }
 .content table {
     width: 100%;
     border-collapse: collapse;
 }
 .content table td {
-    padding:10px 5px;
+    padding:10px;
     border:0;
+    box-sizing: border-box;
+    border-bottom: solid 1px #bfbfbf;
 }
 
-.content table thead tr {
+.content table thead td {
     background: #f7f7f7;
     font-weight: bold;
-    border-bottom: solid 1px #bfbfbf !important;
-    border-top: solid 1px #a1a1a1 !important;
-}
-
-.content table tr {
-    border-bottom: solid 1px #bfbfbf;
+    border-top: solid 1px #bfbfbf;
 }
 
 .content table tr td.right {
@@ -265,6 +280,10 @@ a {
 
 .content .fileTable .thirdPartyFile {
     background: #faebeb;
+}
+
+.content .fileTable .name {
+    width: 100%;
 }
 
 .fileTableLegend {
@@ -309,36 +328,30 @@ a {
     text-align: right;
 }
 
-.content .inline-menu.noBorder {
-    border: 0 !important;
-}
-
 .content .inline-menu {
-    padding: 5px 0px 15px 7px;
-    font-weight: bold;
-    color: #666;
-    border-bottom: solid 1px #ccc;
+    padding: 10px;
+    background: #f0f0f0;
     box-sizing: border-box;
+    margin-bottom: 10px;
 }
 
 .content .inline-menu a {
-    background: #ebf0fa;
-    padding: 5px 10px;
+    padding: 5px;
 }
 
 .content .inline-menu a.active {
-    background: #cbdaf7;
-    padding: 5px 10px;
+    font-weight: bold;
 }
 
-.content .borderMessage .message {
-    border-top: solid 1px #ccc;
-    margin-top: 0 !important;
-}
-
-.content .message div {
-    padding: 15px 10px 15px 7px;
+.content .message {
+    padding: 10px;
     background: #f7f7f7;
+    font-weight: bold;
+}
+
+.content .message.error {
+    padding: 10px;
+    background: #fae6e6;
     font-weight: bold;
 }
 

@@ -1,9 +1,9 @@
 @import policyenforcement.session.SessionManager.SessionInstance
 @(group : Group, members : Seq[User])
 
-@Base("Gruppe: "+group.getName) {
+@Base(group.getName + " (Gruppe)") {
 
-    <div class="inline-menu lr noBorder">
+    <div class="inline-menu lr">
         <div class="left">
             <span class="title">Ansicht:</span>
             @helper.MenuLink("Dateien", routes.GroupController.showGroupFiles(group.getGroupId))
@@ -12,9 +12,6 @@
         </div>
         <div class="right">
             <a href="#">+ Benutzer hinzufügen</a>
-        </div>
-        <div class="collapse">
-            Ein tolles formular
         </div>
     </div>
 
@@ -31,8 +28,8 @@
                 <tr>
                     <td>
                         <b>@member.getUsername</b>
-                        @if(member.equals(SessionInstance().currentUser)) {
-                            (Sie selbst)
+                        @if(member.equals(group.getOwner)) {
+                            (Eigentümer der Gruppe)
                         }
                     </td>
                     <td class="right">

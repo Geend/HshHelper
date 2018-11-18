@@ -1,6 +1,6 @@
 @(group : Group, files : Seq[File])
 
-@Base("Gruppe: "+group.getName) {
+@Base(group.getName + " (Gruppe)") {
 
     <div class="inline-menu lr noBorder">
         <div class="left">
@@ -14,7 +14,5 @@
         </div>
     </div>
 
-    <div class="borderMessage">
-        @helper.FilesTable(files)
-    </div>
+    @helper.FilesTable(files)
 }

@@ -48,15 +48,7 @@ public class UserController extends Controller {
     @Authentication.Required
     public Result showUsers() throws UnauthorizedException {
         List<User> users = this.userManager.getAllUsers();
-        List<UserListEntryDto> entries = users
-                .stream()
-                .map(x -> new UserListEntryDto(x.getUserId(), x.getUsername()))
-                .collect(Collectors.toList());
-        for (int i = 0; i < entries.size(); i++) {
-            entries.get(i).setIndex(i + 1);
-        }
-        Seq<UserListEntryDto> scalaEntries = asScala(entries);
-        return ok(views.html.users.UserList.render(scalaEntries));
+        return ok(views.html.users.Users.render(asScala(users)));
 
     }
 

@@ -1,0 +1,50 @@
+@import policyenforcement.session.SessionManager.SessionInstance
+@(users : Seq[User])
+
+@Base("Benutzer") {
+
+    <div class="inline-menu lr">
+        <div class="left">
+            <span class="title">Ansicht:</span>
+            @helper.MenuLink("Alle Benutzer", routes.GroupController.showGroupFiles(1))
+            -
+            @helper.MenuLink("Administratoren", routes.GroupController.showGroupMembers(1))
+        </div>
+        <div class="right">
+            <a href="#">+ Benutzer erstellen</a>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <td>Benutzername</td>
+                <td></td>
+            </tr>
+        </thead>
+
+        <tbody>
+            @for(user <- users) {
+                <tr>
+                    <td>
+                        <b>@user.getUsername</b>
+                        @if(user.isAdmin) {
+                            (Administrator)
+                        }
+                    </td>
+                    <td class="right">
+                        @if(policyenforcement.Policy.instance.CanDeleteUser(SessionInstance().currentUser(), user)) {
+                            @helper.form(action = routes.UserController.deleteUser()) {
+                                @helper.CSRF.formField
+                                <input type="hidden" name="userId" value="@user.getUserId" />
+                                <button type="submit" class="linkBtn">Löschen</button>
+                            }
+                        } else {
+                            <button type="submit" class="linkBtn" disabled>Löschen</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

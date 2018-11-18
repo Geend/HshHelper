@@ -5,12 +5,11 @@
     80% verbraucht (10MB übrig)
 }
 
-
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
     <head>
         <meta charset="UTF-8">
-        <title>@title - HsH Helper</title>
+        <title>@title - HsHelper</title>
         <link rel="stylesheet" href="@routes.Assets.at("css/style.css")">
     </head>
     <body>
@@ -30,12 +29,12 @@
 
             <div class="header">
                 <div class="logo">
-                    <h1><a href="@routes.HomeController.index()">HsH Helper</a></h1>
+                    <h1><a href="@routes.HomeController.index()">HsHelper</a></h1>
                 </div>
                 <div class="searchControl">
                     <form method="GET" action="/search">
                         <div class="query">
-                            <input type="text" name="q" value="{{ search_query }}" />
+                            <input type="text" name="q" value="" />
                         </div>
                         <div class="submit">
                             <input type="submit" id="search_submit" value="Suchen" />
@@ -49,15 +48,17 @@
                     <div class="box actions">
                         <h2>Menü</h2>
                         <div class="menu">
-                            <a href="#">Benutzerverwaltung</a>
-                            <a href="#">Gruppenverwaltung</a>
-                            <a href="#">Dateiverwaltung</a>
-                            @helper.MenuLink("Sessionübersicht", routes.UserController.showActiveUserSessions())
+                            @if(policyenforcement.Policy.instance.CanViewAllUsers(SessionInstance().currentUser())) {
+                                @helper.MenuLink("Benutzer", routes.UserController.showUsers())
+                            }
+                            <a href="#">Gruppen</a>
+                            <a href="#">Dateien</a>
+                            @helper.MenuLink("Sessions", routes.UserController.showActiveUserSessions())
                         </div>
                     </div>
 
                     <div class="box groups">
-                        <h2>Gruppen (@SessionInstance().currentUser().getGroups.size())</h2>
+                        <h2>Mitgliedschaften</h2>
                         <div class="groupList menu">
                             @for(group <- SessionInstance().currentUser().getGroups.asScala) {
                                 @helper.MenuLink(
@@ -72,7 +73,7 @@
                     <div class="box sessionInfo">
                         <h2>Session-Information</h2>
                         <p>
-                            Session-Ende: 22.10.2018 - 13:14:12<br>
+                            Session endet in 5 Minuten<br>
                             Aktive Sessions: <a href="@routes.UserController.showActiveUserSessions()">
                                 @SessionInstance().sessionsByUser(SessionInstance().currentUser()).size()
                             </a><br>
