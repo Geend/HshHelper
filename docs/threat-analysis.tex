@@ -498,7 +498,10 @@ Um zu verhindern, dass unsere Seite in einem \texttt{<frame>}, \texttt{<iframe>}
 \begin{sloppypar}
 \texttt{X-XSS-Protection: 1; mode=block}
 \end{sloppypar}
-Durch den Header \texttt{X-XSS-Protection} wird der Browser angewiesen, eine XSS Erkennung zu versuchen. Dieses Feature ist für älteren Browser interessant, die noch kein CSP implementieren. Durch den Modus \enquote{block} wird das Laden der Seite abgebrochen, sobald ein XSS Versuch erkannt wird.
+Durch den Header \texttt{X-XSS-Protection} wird der Browser (Chrome, Safari, Internet Explorer und Opera) angewiesen, eine \enquote{reflected XSS}-Erkennung zu versuchen. Dieses Feature ist für älteren Browser interessant, die noch kein CSP implementieren. Durch den Modus \enquote{block} wird das Laden der Seite abgebrochen.
+Die oben genannten Browser verwenden hierfür ein Blacklisting verschiedener Tags sowie gefährlicher Zeichen, bei welchen der \enquote{XSS-Auditor} anspringt und die potentielle XSS-Payload herausfiltert.
+Solch ein Blacklisting ist allerdings aufgrund verschiedener Möglichkeiten zum Deformieren des Payloads ziemlich unsicher.
+Dieser Header dient daher als zusätzliches Auffangnetz, aber nicht als ausreichender Schutz.
 
 \subsection{X-Content-Type-Options}
 \begin{sloppypar}
