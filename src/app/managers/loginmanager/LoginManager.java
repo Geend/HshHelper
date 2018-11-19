@@ -2,7 +2,10 @@ package managers.loginmanager;
 
 import extension.HashHelper;
 import extension.RecaptchaHelper;
+import models.LoginAttempt;
 import models.User;
+import models.finders.LoginAttemptFinder;
+import org.joda.time.DateTime;
 import play.mvc.Http;
 import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
@@ -10,6 +13,7 @@ import policyenforcement.ext.loginFirewall.Strategy;
 import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class LoginManager {
 
@@ -31,7 +35,7 @@ public class LoginManager {
             username,
             password
         );
-
+        Http.Request request = Http.Context.current().request();
         Long uid = null;
         if(auth.userExists()) {
             uid = auth.user().getUserId();
@@ -44,7 +48,7 @@ public class LoginManager {
             uid = fakeUid;
         }
 
-        Instance fw = loginFirewall.get(Http.Context.current().request().remoteAddress());
+        Instance fw = loginFirewall.get(request.remoteAddress());
         Strategy strategy = fw.getStrategy(uid);
 
         if(strategy.equals(Strategy.BLOCK)) {
@@ -60,6 +64,20 @@ public class LoginManager {
         if(!auth.success()) {
             fw.fail(uid);
             throw new InvalidLoginException();
+        }
+
+        String userAgent = request.getHeaders().get("User-Agent").get();
+        LoginAttempt attempt = new LoginAttempt();
+        attempt.setUser(auth.user());
+        attempt.setAddress(request.remoteAddress());
+        attempt.setClientName(userAgent);
+        attempt.setDateTime(DateTime.now());
+        attempt.save();
+
+        LoginAttemptFinder finder = new LoginAttemptFinder();
+        List<LoginAttempt> attempts = finder.all();
+        for(int i = 5; i < attempts.size(); i++) {
+            attempts.get(i).delete();
         }
 
         return auth.user();

@@ -47,12 +47,13 @@ public class User extends Model {
     private List<Group> groups = new ArrayList<>();
 
 
-    @OneToMany(
-            mappedBy = "user",
-            cascade = CascadeType.ALL
-    )
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserPermission> userPermissions = new HashSet<>();
 
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OrderBy("dateTime")
+    private List<LoginAttempt> loginAttempts = new ArrayList<>();
 
     public User(
             String username,
@@ -65,6 +66,14 @@ public class User extends Model {
         this.passwordHash = passwordHash;
         this.passwordResetRequired = passwordResetRequired;
         this.quotaLimit = quotaLimit;
+    }
+
+    public List<LoginAttempt> getLoginAttempts() {
+        return loginAttempts;
+    }
+
+    public void setLoginAttempts(List<LoginAttempt> loginAttempts) {
+        this.loginAttempts = loginAttempts;
     }
 
     public boolean isAdmin() {
