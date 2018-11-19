@@ -31,7 +31,7 @@ public class User extends Model {
         mappedBy = "owner",
         cascade = CascadeType.ALL
     )
-    private Set<Group> ownerOf = new HashSet<>();
+    private List<Group> ownerOf = new ArrayList<>();
 
 
     @ManyToMany(cascade = {
@@ -48,8 +48,7 @@ public class User extends Model {
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<UserPermission> userPermissions = new HashSet<>();
-
+    private List<UserPermission> userPermissions = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @OrderBy("dateTime")
@@ -128,11 +127,11 @@ public class User extends Model {
         this.quotaLimit = quotaLimit;
     }
 
-    public Set<Group> getOwnerOf() {
+    public List<Group> getOwnerOf() {
         return ownerOf;
     }
 
-    public void setOwnerOf(Set<Group> ownerOf) {
+    public void setOwnerOf(List<Group> ownerOf) {
         this.ownerOf = ownerOf;
     }
 
@@ -144,11 +143,11 @@ public class User extends Model {
         this.groups = groups;
     }
 
-    public Set<UserPermission> getUserPermissions() {
+    public List<UserPermission> getUserPermissions() {
         return userPermissions;
     }
 
-    public void setUserPermissions(Set<UserPermission> userPermissions) {
+    public void setUserPermissions(List<UserPermission> userPermissions) {
         this.userPermissions = userPermissions;
     }
 

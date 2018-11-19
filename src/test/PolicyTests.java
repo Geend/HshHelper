@@ -58,17 +58,17 @@ public class PolicyTests {
 
         allGroup = new Group("Alle", admin);
         allGroup.setIsAllGroup(true);
-        allGroup.setMembers(Stream.of(admin, adminTwo, peter, klaus, horst, rudi).collect(Collectors.toSet()));
+        allGroup.setMembers(Stream.of(admin, adminTwo, peter, klaus, horst, rudi).collect(Collectors.toList()));
 
         adminGroup = new Group("Administrators", admin);
         adminGroup.setIsAdminGroup(true);
-        adminGroup.setMembers(Stream.of(admin, adminTwo).collect(Collectors.toSet()));
+        adminGroup.setMembers(Stream.of(admin, adminTwo).collect(Collectors.toList()));
 
         petersGroup = new Group("Peters Group", peter);
-        petersGroup.setMembers(Stream.of(peter, klaus, adminTwo).collect(Collectors.toSet()));
+        petersGroup.setMembers(Stream.of(peter, klaus, adminTwo).collect(Collectors.toList()));
 
         klausGroup = new Group("Klaus Group", klaus);
-        klausGroup.setMembers(Stream.of(klaus, rudi).collect(Collectors.toSet()));
+        klausGroup.setMembers(Stream.of(klaus, rudi).collect(Collectors.toList()));
 
         admin.setGroups(Stream.of(adminGroup, allGroup).collect(Collectors.toList()));
         adminTwo.setGroups(Stream.of(adminGroup, petersGroup, allGroup).collect(Collectors.toList()));

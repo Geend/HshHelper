@@ -252,7 +252,7 @@ public class PermissionManager {
         ebeanServer.save(permission);
     }
 
-    public Set<User> getAllOtherUsers(Long userId) {
+    public List<User> getAllOtherUsers(Long userId) {
         return userFinder.findAllButThis(userId);
     }
 

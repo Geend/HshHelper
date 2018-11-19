@@ -24,13 +24,14 @@ public class Group extends Model {
             CascadeType.PERSIST,
             CascadeType.REMOVE
     }, mappedBy = "groups")
-    private Set<User> members = new HashSet<>();
+    @OrderBy("username")
+    private List<User> members = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "group",
             cascade = CascadeType.ALL
     )
-    private Set<GroupPermission> groupPermissions = new HashSet<>();
+    private List<GroupPermission> groupPermissions = new ArrayList<>();
 
     public Group(Long id, String name, User owner, boolean isAdminGroup) {
         this.groupId = id;
@@ -85,19 +86,19 @@ public class Group extends Model {
         isAllGroup = allGroup;
     }
 
-    public Set<User> getMembers() {
+    public List<User> getMembers() {
         return members;
     }
 
-    public void setMembers(Set<User> members) {
+    public void setMembers(List<User> members) {
         this.members = members;
     }
 
-    public Set<GroupPermission> getGroupPermissions() {
+    public List<GroupPermission> getGroupPermissions() {
         return groupPermissions;
     }
 
-    public void setGroupPermissions(Set<GroupPermission> groupPermissions) {
+    public void setGroupPermissions(List<GroupPermission> groupPermissions) {
         this.groupPermissions = groupPermissions;
     }
 
