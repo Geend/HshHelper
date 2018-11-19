@@ -355,6 +355,73 @@ a {
     font-weight: bold;
 }
 
+.content .inputForm {
+    display: table;
+    width: 100%;
+}
+
+.content .inputForm .element {
+    display: table-row;
+    width: 100%;
+}
+
+.content .inputForm .element:first-of-type > div {
+    border-top: solid 1px #dedede;
+}
+
+.content .inputForm .element > div {
+    display: table-cell;
+    padding:10px 15px 10px 10px;
+    border-bottom: solid 1px #dedede;
+}
+
+.content .inputForm .element .label {
+    width: 1px;
+    font-weight: bold;
+}
+
+.content .inputForm .element .label label {
+    cursor: pointer;
+}
+
+.content .inputForm .element .input {
+    width: 100%;
+    padding-right: 0;
+}
+
+.content .inputForm .element .input input {
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.content .inputControls {
+    width: 100%;
+    padding: 10px;
+}
+
+.content .inputControls input {
+    padding:5px;
+}
+
+.content .inputForm .element .input .help {
+    color:#666;
+    width:100%;
+    padding: 4px 0 0 0;
+    display: block;
+}
+
+.content .inputForm .element .input .errors {
+    color:#da0000;
+    width:100%;
+    padding: 4px 0 0 0;
+    display: none;
+}
+
+.content .inputForm .element.error .input .errors {
+    display: block;
+}
+
     /*
         Footer
      */

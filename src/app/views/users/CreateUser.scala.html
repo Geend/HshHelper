@@ -1,39 +1,16 @@
 @(form: Form[dtos.CreateUserDto])
 
 @Base("Benutzer erstellen"){
-    <div class="inputForm">
-        <div class="element">
-            <div class="label">Benutzername</div>
-            <div class="input"></div>
+    @helper.form(action = routes.UserController.createUser()) {
+        <div class="inputForm">
+            @helper.TextInput(form("username"), "Benutzername")
+            @helper.TextInput(form("email"), "E-Mail")
+            @helper.TextInput(form("quotaLimit"), "Datenkontigent")
+        </div>
+        <div class="inputControls">
+            <input type="submit" value="Benutzer anlegen" />
         </div>
 
-        @helper.input(form("username")) { (id, name, value, args) =>
-            <input type="date" name="@name" id="@id" @toHtmlArgs(args)>
-        }
-
-    </div>
-
-
-
-
-
-
-    @bootstrapHelper.center("Einen neuen Benutzer erstellen") {
-        @bootstrapHelper.form(
-            routes.UserController.createUser(),
-            form,
-            scala.collection.Map(
-                "username" -> Input(InputType.Text,
-                    label = "Benutzernamen",
-                    placeholder = "Benutzernamen hier eingeben"),
-                "email" -> Input(InputType.Text,
-                    label = "E-Mail Adresse",
-                    placeholder = "E-Mail hier eingeben"),
-                "quotaLimit" -> Input(InputType.Text,
-                    label = "Datenkontigent",
-                    placeholder = "Datenkontigent als Zahl eingeben")
-            ),
-            button = bootstrapHelper.button("Benutzer erstellen")
-        )
+        @helper.CSRF.formField
     }
 }
