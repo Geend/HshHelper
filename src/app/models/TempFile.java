@@ -4,7 +4,7 @@ import io.ebean.Model;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
-import java.util.Set;
+
 
 @Entity
 @Table(name = "temp_files")

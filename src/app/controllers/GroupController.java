@@ -23,10 +23,7 @@ import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
@@ -79,7 +76,7 @@ public class GroupController extends Controller {
 
     public Result showOwnGroups() {
         Map<Group, Form<DeleteGroupDto>> groupFormMap = createGroupsFormMap(
-                new HashSet<>(sessionManager.currentUser().getGroups())
+                new ArrayList<>(sessionManager.currentUser().getGroups())
         );
         return ok(views.html.groups.OwnGroupsList.render(asScala(groupFormMap)));
     }
@@ -105,7 +102,7 @@ public class GroupController extends Controller {
                             user -> user,
                             u -> removeGroupUserForm.fill(new UserIdDto(u.getUserId()))
                             ));
-            Set<User> notMember = groupManager.getUsersWhichAreNotInThisGroup(groupId);
+            List<User> notMember = groupManager.getUsersWhichAreNotInThisGroup(groupId);
             Group grp = groupManager.getGroup(groupId);
             return status(httpStatus, views.html.groups.GroupMembersList.render(grp,
                     asScala(membersFormMap), asScala(notMember), addUserToGroupForm, removeGroupUserForm));
@@ -150,7 +147,7 @@ public class GroupController extends Controller {
 
         if (form.hasErrors()) {
             Map<Group, Form<DeleteGroupDto>> groupFormMap = createGroupsFormMap(
-                    new HashSet<>(sessionManager.currentUser().getGroups())
+                    new ArrayList<>(sessionManager.currentUser().getGroups())
             );
             return badRequest(views.html.groups.OwnGroupsList.render(asScala(groupFormMap)));
         }
@@ -166,7 +163,7 @@ public class GroupController extends Controller {
 
         if (form.hasErrors()) {
             Map<Group, Form<DeleteGroupDto>> groupFormMap = createGroupsFormMap(
-                    new HashSet<>(sessionManager.currentUser().getGroups())
+                    new ArrayList<>(sessionManager.currentUser().getGroups())
             );
             return badRequest(views.html.groups.OwnGroupsList.render(asScala(groupFormMap)));
         }
@@ -176,7 +173,7 @@ public class GroupController extends Controller {
         return redirect(routes.GroupController.showAllGroups());
     }
 
-    private Map<Group, Form<DeleteGroupDto>> createGroupsFormMap(Set<Group> groups) {
+    private Map<Group, Form<DeleteGroupDto>> createGroupsFormMap(List<Group> groups) {
         return groups
                 .stream()
                 .collect(Collectors.toMap(

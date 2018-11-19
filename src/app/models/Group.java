@@ -31,7 +31,7 @@ public class Group extends Model {
             mappedBy = "group",
             cascade = CascadeType.ALL
     )
-    private Set<GroupPermission> groupPermissions = new HashSet<>();
+    private List<GroupPermission> groupPermissions = new ArrayList<>();
 
     public Group(Long id, String name, User owner, boolean isAdminGroup) {
         this.groupId = id;
@@ -94,11 +94,11 @@ public class Group extends Model {
         this.members = members;
     }
 
-    public Set<GroupPermission> getGroupPermissions() {
+    public List<GroupPermission> getGroupPermissions() {
         return groupPermissions;
     }
 
-    public void setGroupPermissions(Set<GroupPermission> groupPermissions) {
+    public void setGroupPermissions(List<GroupPermission> groupPermissions) {
         this.groupPermissions = groupPermissions;
     }
 

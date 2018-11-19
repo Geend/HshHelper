@@ -84,9 +84,9 @@ public class GroupManagerTests {
 
     @Before
     public void setup() {
-        all.setMembers(Stream.of(admin, peter, klaus).collect(Collectors.toSet()));
-        admins.setMembers(Stream.of(admin).collect(Collectors.toSet()));
-        petersGroup.setMembers(Stream.of(admin, peter).collect(Collectors.toSet()));
+        all.setMembers(Stream.of(admin, peter, klaus).collect(Collectors.toList()));
+        admins.setMembers(Stream.of(admin).collect(Collectors.toList()));
+        petersGroup.setMembers(Stream.of(admin, peter).collect(Collectors.toList()));
 
         admin.setGroups(Stream.of(all, admins, petersGroup).collect(Collectors.toList()));
         peter.setGroups(Stream.of(all, petersGroup).collect(Collectors.toList()));

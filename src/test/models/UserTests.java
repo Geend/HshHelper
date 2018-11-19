@@ -7,7 +7,9 @@ import org.junit.Test;
 import play.Application;
 import play.test.Helpers;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertNotEquals;
@@ -33,7 +35,7 @@ public class UserTests {
         User user = new User("testUser", "", "", false, 5);
         Group group1 = new Group("testGroup1", user);
         Group group2 = new Group("testGroup2", user);
-        HashSet<Group> groups = new HashSet<>();
+        List<Group> groups = new ArrayList<>();
         groups.add(group1);
         groups.add(group2);
         user.setOwnerOf(groups);
