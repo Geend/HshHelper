@@ -53,6 +53,13 @@ public class User extends Model {
     )
     private List<UserPermission> userPermissions = new ArrayList<>();
 
+    @OneToMany(
+            mappedBy = "owner",
+            cascade = CascadeType.ALL
+    )
+    private List<File> ownFiles = new ArrayList<>();
+
+
 
     public User(
             String username,
@@ -66,6 +73,7 @@ public class User extends Model {
         this.passwordResetRequired = passwordResetRequired;
         this.quotaLimit = quotaLimit;
     }
+
 
     public boolean isAdmin() {
         return this.groups.stream().anyMatch(x -> x.getIsAdminGroup());
@@ -143,6 +151,15 @@ public class User extends Model {
         this.userPermissions = userPermissions;
     }
 
+    public List<File> getOwnFiles() {
+        return ownFiles;
+    }
+
+    public void setOwnFiles(List<File> ownFiles) {
+        this.ownFiles = ownFiles;
+    }
+
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
