@@ -1,0 +1,18 @@
+@import policyenforcement.session.SessionManager.SessionInstance
+@(files : Seq[File])
+
+@Base("Dateien") {
+    <div class="inline-menu lr">
+        <div class="left">
+            <span class="title">Ansicht:</span>
+            @helper.MenuLink("Eigene Dateien", routes.FileController.showOwnFiles())
+            -
+            @helper.MenuLink("Geteilte Dateien", routes.GroupController.showGroupMembers(1))
+            -
+            @helper.MenuLink("Fremde Dateien", routes.GroupController.showGroupMembers(1))
+        </div>
+        <div class="right">
+            <a href="@routes.FileController.showUploadFileForm()">Datei hochladen</a>
+        </div>
+    </div>
+}

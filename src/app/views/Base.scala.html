@@ -54,7 +54,7 @@
                                 @helper.MenuLink("Benutzer", routes.UserController.showUsers(), "/users")
                             }
                             @helper.MenuLink("Gruppen", routes.GroupController.showOwnMemberships(), "/groups")
-                            <a href="#">Dateien</a>
+                            @helper.MenuLink("Dateien", routes.FileController.showOwnFiles(), "/files")
                             @helper.MenuLink("Sessions", routes.UserController.showActiveUserSessions())
                         </div>
                     </div>

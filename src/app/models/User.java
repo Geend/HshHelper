@@ -33,6 +33,11 @@ public class User extends Model {
     )
     private List<Group> ownerOf = new ArrayList<>();
 
+    @OneToMany(
+            mappedBy = "owner",
+            cascade = CascadeType.ALL
+    )
+    private List<File> ownedFiles = new ArrayList<>();
 
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
@@ -65,6 +70,10 @@ public class User extends Model {
         this.passwordHash = passwordHash;
         this.passwordResetRequired = passwordResetRequired;
         this.quotaLimit = quotaLimit;
+    }
+
+    public List<File> getOwnedFiles() {
+        return ownedFiles;
     }
 
     public List<LoginAttempt> getLoginAttempts() {

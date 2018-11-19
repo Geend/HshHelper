@@ -1,13 +1,5 @@
 GET         /                                                          controllers.HomeController.index
 
-GET         /files/all                                                 controllers.FileController.listFiles
-GET         /files/upload                                              controllers.FileController.showUploadFileForm
-POST        /files/upload                                              controllers.FileController.uploadFile
-POST        /files/upload/store                                        controllers.FileController.storeFile
-GET         /files/quota                                               controllers.FileController.showQuotaUsage
-GET         /files/:fileId                                             controllers.FileController.showFile(fileId: Long)
-GET         /files/:fileId/download                                    controllers.FileController.downloadFile(fileId: Long)
-POST        /files/edit                                                controllers.FileController.editFile
 
 GET         /login                                                     controllers.LoginController.showLoginForm
 POST        /login                                                     controllers.LoginController.login
@@ -45,6 +37,20 @@ GET         /groups/:groupId/members/add                               controlle
 POST        /groups/:groupId/members/add                               controllers.GroupController.addGroupMember(groupId : Long)
 # GroupController - End
 
+
+# FileController - Start
+GET         /files/own                                                 controllers.FileController.showOwnFiles
+
+
+GET         /files/all                                                 controllers.FileController.listFiles
+GET         /files/upload                                              controllers.FileController.showUploadFileForm
+POST        /files/upload                                              controllers.FileController.uploadFile
+POST        /files/upload/store                                        controllers.FileController.storeFile
+GET         /files/quota                                               controllers.FileController.showQuotaUsage
+GET         /files/:fileId                                             controllers.FileController.showFile(fileId: Long)
+GET         /files/:fileId/download                                    controllers.FileController.downloadFile(fileId: Long)
+POST        /files/edit                                                controllers.FileController.editFile
+# FileController - End
 
 
 
