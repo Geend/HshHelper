@@ -13,9 +13,7 @@ import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GroupManager {
@@ -52,11 +50,11 @@ public class GroupManager {
         }
     }
 
-    public Set<Group> getAllGroups() throws InvalidArgumentException, UnauthorizedException {
+    public List<Group> getAllGroups() throws InvalidArgumentException, UnauthorizedException {
         if(!Policy.instance.CanSeeAllGroups(sessionManager.currentUser()))
             throw new UnauthorizedException();
 
-        return new HashSet<Group>(groupFinder.all());
+        return groupFinder.all();
     }
 
 
@@ -75,7 +73,7 @@ public class GroupManager {
         return group;
     }
 
-    public Set<User> getUsersWhichAreNotInThisGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
+    public List<User> getUsersWhichAreNotInThisGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Group group = getGroup(groupId);
 
         if (!Policy.instance.CanViewGroupDetails(sessionManager.currentUser(), group)) {
@@ -84,7 +82,7 @@ public class GroupManager {
 
         return userFinder.query().where().notIn("userId",
                 group.getMembers().stream().map(user -> user.getUserId()).collect(Collectors.toSet())
-        ).findSet();
+        ).findList();
     }
 
     public void removeGroupMember(Long userToRemove, Long groupId) throws UnauthorizedException, InvalidArgumentException {
