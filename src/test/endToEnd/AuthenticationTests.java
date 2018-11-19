@@ -145,7 +145,7 @@ public class AuthenticationTests {
                     { "GET", "/", Http.Status.SEE_OTHER },    // controllers.HomeController.index
                     { "POST", "/users/create", Http.Status.SEE_OTHER },    // controllers.UserController.createUser
                     { "GET", "/users/create", Http.Status.SEE_OTHER },    // controllers.UserController.showCreateUserForm
-                    { "GET", "/users", Http.Status.SEE_OTHER },    // controllers.UserController.showUsers
+                    { "GET", "/users/all", Http.Status.SEE_OTHER },    // controllers.UserController.showUsers
                     { "POST", "/users/delete", Http.Status.SEE_OTHER },    // controllers.UserController.deleteUser
                     { "GET", "/resetpassword", Http.Status.OK },    // controllers.UserController.showResetUserPasswordForm
                     { "POST", "/resetpassword", Http.Status.OK },    // controllers.UserController.resetUserPassword
