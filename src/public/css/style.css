@@ -364,6 +364,11 @@ form {
     font-weight: normal;
 }
 
+.content .message.success {
+    background: #e2f7dc;
+    font-weight: normal;
+}
+
 .content .inputForm {
     display: table;
     width: 100%;
@@ -439,6 +444,11 @@ form {
     max-height: 200px;
     overflow: auto;
     overflow-x: hidden;
+}
+
+.content .noTopSpace {
+    padding-top: 0;
+    margin-top: 0;
 }
 
     /*

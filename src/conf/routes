@@ -1,14 +1,4 @@
 GET         /                                                          controllers.HomeController.index
-POST        /users/create                                              controllers.UserController.createUser
-GET         /users/create                                              controllers.UserController.showCreateUserForm
-
-GET         /users/all                                                 controllers.UserController.showUsers
-GET         /users/admins                                              controllers.UserController.showAdminUsers
-
-
-POST        /users/delete                                              controllers.UserController.deleteUser
-GET         /resetpassword                                             controllers.UserController.showResetUserPasswordForm
-POST        /resetpassword                                             controllers.UserController.resetUserPassword
 
 GET         /files/all                                                 controllers.FileController.listFiles
 GET         /files/upload                                              controllers.FileController.showUploadFileForm
@@ -26,7 +16,20 @@ GET         /changePasswordAfterReset                                  controlle
 POST        /changePasswordAfterReset                                  controllers.LoginController.changePasswordAfterReset
 
 
-# Groups - Start
+# UserController - Start
+POST        /users/create                                              controllers.UserController.createUser
+GET         /users/create                                              controllers.UserController.showCreateUserForm
+GET         /users/all                                                 controllers.UserController.showUsers
+GET         /users/admins                                              controllers.UserController.showAdminUsers
+POST        /users/delete                                              controllers.UserController.deleteUser
+GET         /resetpassword                                             controllers.UserController.showResetUserPasswordForm
+POST        /resetpassword                                             controllers.UserController.resetUserPassword
+GET         /sessions                                                  controllers.UserController.showActiveUserSessions()
+POST        /sessions/delete                                           controllers.UserController.deleteUserSession()
+# UserController - End
+
+
+# GroupController - Start
 GET         /groups/membership                                         controllers.GroupController.showOwnMemberships
 GET         /groups/own                                                controllers.GroupController.showOwnGroups
 GET         /groups/all                                                controllers.GroupController.showAllGroups
@@ -40,13 +43,11 @@ GET         /groups/:groupId/members                                   controlle
 POST        /groups/:groupId/members/remove                            controllers.GroupController.removeGroupMember(groupId : Long)
 GET         /groups/:groupId/members/add                               controllers.GroupController.showAddMemberForm(groupId : Long)
 POST        /groups/:groupId/members/add                               controllers.GroupController.addGroupMember(groupId : Long)
-# Groups - End
+# GroupController - End
 
 
 
 
-GET         /sessions                                                  controllers.UserController.showActiveUserSessions()
-POST        /sessions/delete                                           controllers.UserController.deleteUserSession()
 
 GET         /forbidden                                                 controllers.ErrorController.showForbiddenMessage()
 GET         /badrequest                                                controllers.ErrorController.showBadRequestMessage()

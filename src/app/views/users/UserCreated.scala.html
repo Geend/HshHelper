@@ -1,15 +1,16 @@
 @(data: dtos.UserCreatedDto)
 @import bootstrapHelper._
 
-@Main("Administrator-Funktion: Benutzer erstellen"){
-    @bootstrapHelper.center("Benutzer erfolgreich angelegt!") {
-        <p>
-            <b>Username:</b> @data.getUsername
-        </p>
-        <p>
-            <b>Temporäres Passwort:</b> @data.getPlaintextPassword
-        </p>
+@Base("Benutzer erstellen"){
+    <div class="message success">
+        <b>Benutzer erfolgreich angelegt!</b><br><br>
+        Benutzername: @data.getUsername<br>
+        Temporäres Passwort: @data.getPlaintextPassword
+    </div>
 
-        @link("Weiteren Benutzer anlegen", routes.UserController.showCreateUserForm())
-    }
+    <hr>
+
+    <p class="noTopSpace">
+        <a href="@routes.UserController.showCreateUserForm()">Einen weiteren Benutzer erstellen</a>
+    </p>
 }
