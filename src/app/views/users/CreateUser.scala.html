@@ -1,6 +1,23 @@
 @(form: Form[dtos.CreateUserDto])
 
-@Main("HsH-Helfer: Benutzer erstellen"){
+@Base("Benutzer erstellen"){
+    <div class="inputForm">
+        <div class="element">
+            <div class="label">Benutzername</div>
+            <div class="input"></div>
+        </div>
+
+        @helper.input(form("username")) { (id, name, value, args) =>
+            <input type="date" name="@name" id="@id" @toHtmlArgs(args)>
+        }
+
+    </div>
+
+
+
+
+
+
     @bootstrapHelper.center("Einen neuen Benutzer erstellen") {
         @bootstrapHelper.form(
             routes.UserController.createUser(),

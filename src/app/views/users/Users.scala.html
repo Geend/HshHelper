@@ -6,12 +6,12 @@
     <div class="inline-menu lr">
         <div class="left">
             <span class="title">Ansicht:</span>
-            @helper.MenuLink("Alle Benutzer", routes.GroupController.showGroupFiles(1))
+            @helper.MenuLink("Alle Benutzer", routes.UserController.showUsers())
             -
-            @helper.MenuLink("Administratoren", routes.GroupController.showGroupMembers(1))
+            @helper.MenuLink("Administratoren", routes.UserController.showAdminUsers())
         </div>
         <div class="right">
-            <a href="#">+ Benutzer erstellen</a>
+            @helper.MenuLink("+ Benutzer erstellen", routes.UserController.createUser())
         </div>
     </div>
 

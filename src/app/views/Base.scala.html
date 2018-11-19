@@ -49,7 +49,7 @@
                         <h2>Menü</h2>
                         <div class="menu">
                             @if(policyenforcement.Policy.instance.CanViewAllUsers(SessionInstance().currentUser())) {
-                                @helper.MenuLink("Benutzer", routes.UserController.showUsers())
+                                @helper.MenuLink("Benutzer", routes.UserController.showUsers(), "/users")
                             }
                             <a href="#">Gruppen</a>
                             <a href="#">Dateien</a>

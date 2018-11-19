@@ -49,7 +49,14 @@ public class UserController extends Controller {
     public Result showUsers() throws UnauthorizedException {
         List<User> users = this.userManager.getAllUsers();
         return ok(views.html.users.Users.render(asScala(users)));
+    }
 
+    @Authentication.Required
+    public Result showAdminUsers() throws UnauthorizedException {
+        List<User> users = this.userManager.getAllUsers();
+        // TODO: db query instead local filtering
+        users = users.stream().filter(User::isAdmin).collect(Collectors.toList());
+        return ok(views.html.users.Users.render(asScala(users)));
     }
 
     @Authentication.Required

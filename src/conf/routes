@@ -1,7 +1,11 @@
 GET         /                                                          controllers.HomeController.index
 POST        /users/create                                              controllers.UserController.createUser
 GET         /users/create                                              controllers.UserController.showCreateUserForm
-GET         /users                                                     controllers.UserController.showUsers
+
+GET         /users/all                                                 controllers.UserController.showUsers
+GET         /users/admins                                              controllers.UserController.showAdminUsers
+
+
 POST        /users/delete                                              controllers.UserController.deleteUser
 GET         /resetpassword                                             controllers.UserController.showResetUserPasswordForm
 POST        /resetpassword                                             controllers.UserController.resetUserPassword
