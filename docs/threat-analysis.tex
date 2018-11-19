@@ -530,7 +530,10 @@ Dieser Header ist dem \enquote{X-XSS-Protection}-Header vorzuziehen.
 \printglossary[title=Glossar,toctitle=Glossar,type=main]
 
 %\addcontentsline{toc}{chapter}{\listfigurename}
-\listoffigures      % Abbildungsverzeichnis
+% Insert list of figures, if a figure has been added to document
+\iftotalfigures
+  \listoffigures
+\fi
 
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis

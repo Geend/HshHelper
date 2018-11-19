@@ -252,7 +252,10 @@ Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine
 \printglossary[title=Glossar,toctitle=Glossar,type=main]
 
 %\addcontentsline{toc}{chapter}{\listfigurename}
-\listoffigures      % Abbildungsverzeichnis
+% Insert list of figures, if a figure has been added to document
+\iftotalfigures
+  \listoffigures
+\fi
 
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis

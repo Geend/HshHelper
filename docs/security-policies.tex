@@ -180,6 +180,10 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
 \printacronyms[title=Abkürzungsverzeichnis,toctitle=Abkürzungsverzeichnis]
 \printglossary[title=Glossar,toctitle=Glossar,type=main]
 
+% Insert list of figures, if a figure has been added to document
+\iftotalfigures
+  \listoffigures
+\fi
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis
 

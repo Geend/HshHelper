@@ -309,7 +309,10 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
 \printglossary[title=Glossar,toctitle=Glossar,type=main]
 
 %\addcontentsline{toc}{chapter}{\listfigurename}
-\listoffigures      % Abbildungsverzeichnis
+% Insert list of figures, if a figure has been added to document
+\iftotalfigures
+  \listoffigures
+\fi
 
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis
