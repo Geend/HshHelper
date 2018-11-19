@@ -1,0 +1,26 @@
+@import policyenforcement.session.SessionManager.SessionInstance
+@(group : Group)(body : Html)
+
+@Base(group.getName + " (Gruppe)") {
+    <div class="inline-menu lr">
+        <div class="left">
+            <span class="title">Ansicht:</span>
+            @helper.MenuLink("Dateien", routes.GroupController.showGroupFiles(group.getGroupId))
+            -
+            @helper.MenuLink("Mitglieder", routes.GroupController.showGroupMembers(group.getGroupId))
+        </div>
+        <div class="right">
+            @DeleteGroupBtn(group)
+            -
+            @if(policyenforcement.Policy.instance.CanGenerallyAddGroupMember(SessionInstance().currentUser, group)) {
+                <a href="@routes.GroupController.showAddMemberForm(group.getGroupId)">Benutzer hinzufügen</a>
+            } else {
+                <button type="submit" class="linkBtn" disabled>Benutzer hinzufügen</button>
+            }
+            -
+            <a href="#">Datei hinzufügen</a>
+        </div>
+    </div>
+
+    @body
+}

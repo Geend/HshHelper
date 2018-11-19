@@ -1,20 +1,7 @@
 @import policyenforcement.session.SessionManager.SessionInstance
 @(group : Group, members : Seq[User])
 
-@Base(group.getName + " (Gruppe)") {
-
-    <div class="inline-menu lr">
-        <div class="left">
-            <span class="title">Ansicht:</span>
-            @helper.MenuLink("Dateien", routes.GroupController.showGroupFiles(group.getGroupId))
-            -
-            @helper.MenuLink("Mitglieder", routes.GroupController.showGroupMembers(group.getGroupId))
-        </div>
-        <div class="right">
-            <a href="#">+ Benutzer hinzufügen</a>
-        </div>
-    </div>
-
+@GroupBase(group) {
     <table>
         <thead>
             <tr>

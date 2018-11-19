@@ -1,0 +1,52 @@
+@import policyenforcement.Policy
+@import policyenforcement.session.SessionManager.SessionInstance
+@(groups : Seq[Group])
+
+@Base("Gruppen") {
+
+    <div class="inline-menu lr">
+        <div class="left">
+            <span class="title">Ansicht:</span>
+            @helper.MenuLink("Mitgliedschaften", routes.GroupController.showOwnMemberships())
+            -
+            @helper.MenuLink("Eigene Gruppen", routes.GroupController.showOwnGroups())
+
+            @if(Policy.instance.CanViewAllGroupsList(SessionInstance().currentUser())) {
+                -
+                @helper.MenuLink("Alle Gruppen", routes.GroupController.showAllGroups())
+            }
+        </div>
+        <div class="right">
+            @helper.MenuLink("Gruppe erstellen", routes.GroupController.createGroup())
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <td>Name</td>
+                <td>Mitglieder</td>
+                <td>Dateien</td>
+                <td></td>
+            </tr>
+        </thead>
+
+        <tbody>
+            @for(group <- groups) {
+                <tr>
+                    <td>
+                        <a href="@routes.GroupController.showGroup(group.getGroupId)"><b>@group.getName</b></a>
+                        @if(group.getOwner.equals(SessionInstance.currentUser)) {
+                            (Eigentümer)
+                        }
+                    </td>
+                    <td>@group.getMembers.size()</td>
+                    <td>?</td>
+                    <td class="right">
+                        @DeleteGroupBtn(group)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

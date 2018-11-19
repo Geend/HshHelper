@@ -55,6 +55,10 @@ a {
     cursor: default;
 }
 
+form {
+    display: inline;
+}
+
 /*
     Logout
  */
@@ -247,6 +251,7 @@ a {
 
 .content p {
     padding: 10px;
+    line-height: 1.5em;
 }
 .content hr {
     border: 0;
@@ -328,15 +333,12 @@ a {
     text-align: right;
 }
 
+
 .content .inline-menu {
     padding: 10px;
     background: #f0f0f0;
     box-sizing: border-box;
     margin-bottom: 10px;
-}
-
-.content .inline-menu a {
-    padding: 5px;
 }
 
 .content .inline-menu a.active {
@@ -347,12 +349,19 @@ a {
     padding: 10px;
     background: #f7f7f7;
     font-weight: bold;
+    margin-bottom: 10px;
+    line-height: 1.4em;
 }
 
 .content .message.error {
     padding: 10px;
     background: #fae6e6;
     font-weight: bold;
+}
+
+.content .message.notice {
+    background: #f7f2dc;
+    font-weight: normal;
 }
 
 .content .inputForm {
@@ -389,7 +398,7 @@ a {
     padding-right: 0;
 }
 
-.content .inputForm .element .input input {
+.content .inputForm .element .input input, .content .inputForm .element .input select {
     padding: 5px;
     width: 100%;
     box-sizing: border-box;
@@ -420,6 +429,16 @@ a {
 
 .content .inputForm .element.error .input .errors {
     display: block;
+}
+
+.content li {
+    padding:6px 0;
+}
+
+.content .max200PxHigh {
+    max-height: 200px;
+    overflow: auto;
+    overflow-x: hidden;
 }
 
     /*

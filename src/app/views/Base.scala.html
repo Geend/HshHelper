@@ -51,7 +51,7 @@
                             @if(policyenforcement.Policy.instance.CanViewAllUsers(SessionInstance().currentUser())) {
                                 @helper.MenuLink("Benutzer", routes.UserController.showUsers(), "/users")
                             }
-                            <a href="#">Gruppen</a>
+                            @helper.MenuLink("Gruppen", routes.GroupController.showOwnMemberships(), "/groups")
                             <a href="#">Dateien</a>
                             @helper.MenuLink("Sessions", routes.UserController.showActiveUserSessions())
                         </div>
