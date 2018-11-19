@@ -202,7 +202,7 @@ public class GroupController extends Controller {
 
     public Result showGroupMembers(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Group group = groupManager.getGroup(groupId);
-        Set<User> members = group.getMembers();
+        List<User> members = group.getMembers();
         return ok(views.html.groups.GroupMembers.render(group, asScala(members)));
     }
 }

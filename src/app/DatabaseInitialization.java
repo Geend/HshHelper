@@ -51,9 +51,9 @@ public class DatabaseInitialization {
         g1.setIsAllGroup(true);
         g2.setIsAdminGroup(true);
 
-        g1.setMembers(Stream.of(u1, u2, u3, u4).collect(Collectors.toSet()));
-        g2.setMembers(Stream.of(u1).collect(Collectors.toSet()));
-        g3.setMembers(Stream.of(u1, u2, u3).collect(Collectors.toSet()));
+        g1.setMembers(Stream.of(u1, u2, u3, u4).collect(Collectors.toList()));
+        g2.setMembers(Stream.of(u1).collect(Collectors.toList()));
+        g3.setMembers(Stream.of(u1, u2, u3).collect(Collectors.toList()));
 
         u1.save();
         u2.save();

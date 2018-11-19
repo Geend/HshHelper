@@ -24,7 +24,8 @@ public class Group extends Model {
             CascadeType.PERSIST,
             CascadeType.REMOVE
     }, mappedBy = "groups")
-    private Set<User> members = new HashSet<>();
+    @OrderBy("username")
+    private List<User> members = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "group",
@@ -85,11 +86,11 @@ public class Group extends Model {
         isAllGroup = allGroup;
     }
 
-    public Set<User> getMembers() {
+    public List<User> getMembers() {
         return members;
     }
 
-    public void setMembers(Set<User> members) {
+    public void setMembers(List<User> members) {
         this.members = members;
     }
 
