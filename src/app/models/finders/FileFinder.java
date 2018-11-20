@@ -32,7 +32,6 @@ public class FileFinder extends Finder<Long, File> {
     }
 
     public Set<File> byUserHasUserPermission(User user){
-
         return this.query()
                 .where()
                 .eq("userPermissions.user", user)
@@ -83,4 +82,5 @@ public class FileFinder extends Finder<Long, File> {
     public List<File> getFilesByOwner(Long userId) {
         return this.query().where().eq("owner_id", userId).findList();
     }
+
 }

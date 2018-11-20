@@ -1,10 +1,11 @@
 @import views.TemplateEnvironment
 @import policyenforcement.session.SessionManager.SessionInstance
 @import views.TemplateEnvironment
-@(title : String)(content : Html)
+@(title: String, searchForm: Form[dtos.SearchQueryDto] = null)(content: Html)
 
 
-<!DOCTYPE html>
+
+    <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
     <head>
         <meta charset="UTF-8">
@@ -14,17 +15,17 @@
     <body>
         <div class="main">
             <div class="logout">
-                @helper.form(action = routes.LoginController.logout()) {
-                    Angemeldet als @SessionInstance().currentUser().getUsername
-                    @if(SessionInstance().currentUser().isAdmin) {
-                        (Administrator)
-                    }
-                    -
-                    <a href="#">Einstellungen</a>
-                    -
-                    @helper.CSRF.formField
-                    <button type="submit" class="linkBtn">Logout</button>
+            @helper.form(action = routes.LoginController.logout()) {
+                Angemeldet als @SessionInstance().currentUser().getUsername
+                @if(SessionInstance().currentUser().isAdmin) {
+                    (Administrator)
                 }
+                -
+                <a href="#">Einstellungen</a>
+                -
+                @helper.CSRF.formField
+                <button type="submit" class="linkBtn">Logout</button>
+            }
             </div>
 
             <div class="header">
@@ -32,14 +33,21 @@
                     <h1><a href="@routes.HomeController.index()">HsHelper</a></h1>
                 </div>
                 <div class="searchControl">
-                    <form method="GET" action="/search">
+                    @helper.form(action = routes.FileController.searchFiles()) {
                         <div class="query">
-                            <input type="text" name="q" value="" />
+                        @if(searchForm != null) {
+                            <input type="text" id="query" name="query" value="@searchForm.field("query").getValue.get()" />
+
+                        } else {
+                            <input type="text" id="query" name="query" value="" />
+
+                        }
                         </div>
                         <div class="submit">
                             <input type="submit" id="search_submit" value="Suchen" />
                         </div>
-                    </form>
+                        @helper.CSRF.formField
+                    }
                 </div>
             </div>
 
@@ -60,13 +68,13 @@
                     <div class="box groups">
                         <h2>Mitgliedschaften</h2>
                         <div class="groupList menu">
-                            @for(group <- SessionInstance().currentUser().getGroups.asScala) {
-                                @helper.MenuLink(
-                                    group.getName,
-                                    routes.GroupController.showGroupFiles(group.getGroupId),
-                                    "/groups/"+group.getGroupId  // alias
-                                )
-                            }
+                        @for(group <- SessionInstance().currentUser().getGroups.asScala) {
+                            @helper.MenuLink(
+                                group.getName,
+                                routes.GroupController.showGroupFiles(group.getGroupId),
+                                "/groups/" + group.getGroupId // alias
+                            )
+                        }
                         </div>
                     </div>
 
@@ -75,8 +83,8 @@
                         <p>
                             Session endet in 5 Minuten<br>
                             Aktive Sessions: <a href="@routes.UserController.showActiveUserSessions()">
-                                @SessionInstance().sessionsByUser(SessionInstance().currentUser()).size()
-                            </a><br>
+                        @SessionInstance().sessionsByUser(SessionInstance().currentUser()).size()
+                        </a><br>
                             Quota:  <a href="@routes.FileController.showQuotaUsage()">@TemplateEnvironment.GetMainManager().getQuotaUsage()</a>
                         </p>
                     </div>
@@ -91,7 +99,7 @@
 
             <div class="footer">
                 <div class="copyright">
-                        &copy; Philip, Julius, Torben, Dennis
+                            &copy; Philip, Julius, Torben, Dennis
                 </div>
 
                 <div class="links">

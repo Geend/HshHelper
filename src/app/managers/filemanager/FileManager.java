@@ -15,6 +15,7 @@ import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FileManager {
     private final FileFinder fileFinder;
@@ -34,24 +35,25 @@ public class FileManager {
         this.sessionManager = sessionManager;
     }
 
+
     private void checkQuota(User user, String filename, String comment, byte[] data) throws QuotaExceededException {
         UserQuota uq = fileFinder.getUsedQuota(user.getUserId());
         uq.addFile(filename, comment, data);
 
-        if(user.getQuotaLimit() <= uq.getTotalUsage()) {
+        if (user.getQuotaLimit() <= uq.getTotalUsage()) {
             throw new QuotaExceededException();
         }
     }
 
     public TempFile createTempFile(byte[] filedata) throws QuotaExceededException {
-        try(Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
+        try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
             User user = sessionManager.currentUser();
 
             checkQuota(user, "", "", filedata);
 
             TempFile tf = new TempFile(
-                user,
-                filedata
+                    user,
+                    filedata
             );
 
             tf.save();
@@ -66,18 +68,18 @@ public class FileManager {
             User user = sessionManager.currentUser();
 
             Optional<TempFile> tempFile = tempFileFinder.byIdOptional(tempFileId);
-            if(!tempFile.isPresent()){
+            if (!tempFile.isPresent()) {
                 throw new IllegalArgumentException("TempFile doesn't exist");
             }
 
-            if(!policy.CanAccessTempFile(user, tempFile.get())) {
+            if (!policy.CanAccessTempFile(user, tempFile.get())) {
                 throw new UnauthorizedException();
             }
 
             checkQuota(user, filename, comment, new byte[]{});
 
             Optional<File> existingFile = fileFinder.byFileName(user.getUserId(), filename);
-            if(existingFile.isPresent()) {
+            if (existingFile.isPresent()) {
                 throw new FilenameAlreadyExistsException();
             }
 
@@ -121,7 +123,6 @@ public class FileManager {
     }
 
 
-
     public UserQuota getCurrentQuotaUsage() {
         User user = sessionManager.currentUser();
         return fileFinder.getUsedQuota(user.getUserId());
@@ -131,11 +132,11 @@ public class FileManager {
 
         Optional<File> file = fileFinder.byIdOptional(fileId);
 
-        if(!file.isPresent())
+        if (!file.isPresent())
             throw new InvalidArgumentException();
 
 
-        if(!policy.CanReadFile(sessionManager.currentUser(), file.get()))
+        if (!policy.CanReadFile(sessionManager.currentUser(), file.get()))
             throw new UnauthorizedException();
 
         return file.get();
@@ -147,10 +148,10 @@ public class FileManager {
 
         Optional<File> fileOptional = fileFinder.byIdOptional(fileId);
 
-        if(!fileOptional.isPresent())
+        if (!fileOptional.isPresent())
             throw new InvalidArgumentException();
 
-        if(!policy.CanWriteFile(user, fileOptional.get()))
+        if (!policy.CanWriteFile(user, fileOptional.get()))
             throw new UnauthorizedException();
 
 
@@ -158,7 +159,7 @@ public class FileManager {
 
         file.setComment(comment);
 
-        if(data != null) {
+        if (data != null) {
             file.setData(data);
         }
 
@@ -172,11 +173,22 @@ public class FileManager {
         editFile(fileId, comment, null);
     }
 
-    public void removeTempFiles(){
+    public void removeTempFiles() {
         User user = sessionManager.currentUser();
         List<TempFile> tempFiles = tempFileFinder.getFilesByOwner(user.getUserId());
 
         tempFiles.forEach(ebeanServer::delete);
 
+    }
+
+    public List<File> searchFile(String query) {
+        return accessibleFiles().stream().filter(x -> like(x.getName(), query)).collect(Collectors.toList());
+    }
+
+    private boolean like(String str, String expr) {
+        str = str.toLowerCase();
+        return str.startsWith(expr) ||
+                str.endsWith(expr) ||
+                str.contains(expr);
     }
 }

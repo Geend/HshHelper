@@ -33,6 +33,7 @@ public class FileController extends Controller {
     private final Form<UploadFileMetaDto> uploadFileMetaForm;
 
     private final Form<EditFileDto> editFileForm;
+    private final Form<SearchQueryDto> searchFileForm;
 
 
     private final SessionManager sessionManager;
@@ -42,6 +43,7 @@ public class FileController extends Controller {
     public FileController(SessionManager sessionManager, FileManager fileManager, FormFactory formFactory) {
         this.uploadFileMetaForm = formFactory.form(UploadFileMetaDto.class);
         this.editFileForm = formFactory.form(EditFileDto.class);
+        this.searchFileForm = formFactory.form(SearchQueryDto.class);
         this.sessionManager = sessionManager;
         this.fileManager = fileManager;
     }
@@ -56,6 +58,7 @@ public class FileController extends Controller {
     public Result showSharedFiles() {
         User user = sessionManager.currentUser();
         // TODO: Durch qry ersetzen!
+
         List<File> files = user.getOwnedFiles().stream().filter(x -> x.getGroupPermissions().size() > 0 || x.getUserPermissions().size() > 0).collect(Collectors.toList());
         return ok(views.html.file.SharedFiles.render(asScala(files)));
     }
@@ -196,11 +199,22 @@ public class FileController extends Controller {
     }
 
     public Result removeTempFiles() {
-
         fileManager.removeTempFiles();
-
         return redirect(routes.FileController.showQuotaUsage());
     }
 
+    public Result searchFiles(){
+
+        Form<SearchQueryDto> boundForm = searchFileForm.bindFromRequest("query");
+
+        if(boundForm.hasErrors()){
+
+        }
+
+        String query = boundForm.get().getQuery();
+
+        List<File> files = fileManager.searchFile(query);
+        return ok(views.html.file.SearchResult.render(asScala(files), boundForm));
+    }
 
 }

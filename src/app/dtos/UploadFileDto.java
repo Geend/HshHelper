@@ -1,6 +1,7 @@
 package dtos;
 
 public class UploadFileDto {
+    //TODO: Add filename regex constraint
     private String filename;
     private String comment;
 

@@ -52,6 +52,7 @@ GET         /files/:fileId                                             controlle
 GET         /files/:fileId/download                                    controllers.FileController.downloadFile(fileId: Long)
 POST        /files/edit                                                controllers.FileController.editFile
 POST        /files/removeTempFiles                                     controllers.FileController.removeTempFiles
+POST        /files/search                                              controllers.FileController.searchFiles
 
 # FileController - End
 

@@ -2,6 +2,7 @@ package dtos;
 
 public class UploadFileMetaDto {
     private Long tempFileId;
+    //TODO: Add filename regex constraint
     private String filename;
     private String comment;
 
