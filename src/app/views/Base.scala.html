@@ -1,9 +1,8 @@
 @import policyenforcement.session.SessionManager.SessionInstance
+@import views.TemplateEnvironment
 @(title : String)(content : Html)
 
-@quotaInfo() = {
-    80% verbraucht (10MB übrig)
-}
+@mainManager = {TemplateEnvironment.GetMainManager()};
 
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
@@ -79,7 +78,7 @@
                             Aktive Sessions: <a href="@routes.UserController.showActiveUserSessions()">
                                 @SessionInstance().sessionsByUser(SessionInstance().currentUser()).size()
                             </a><br>
-                            Quota:  <a href="@routes.FileController.showQuotaUsage()">@quotaInfo()</a>
+                            Quota:  <a href="@routes.FileController.showQuotaUsage()">@TemplateEnvironment.GetMainManager().getQuotaUsage()</a>
                         </p>
                     </div>
                 </div>
