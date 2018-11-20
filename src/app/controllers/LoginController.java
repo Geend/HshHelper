@@ -11,6 +11,7 @@ import policyenforcement.session.Authentication;
 
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.Optional;
 
 public class LoginController extends Controller {
@@ -34,7 +35,7 @@ public class LoginController extends Controller {
     }
 
     @Authentication.NotAllowed
-    public Result login() {
+    public Result login() throws IOException {
         Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password");
         if (boundForm.hasErrors()) {
             return badRequest(views.html.login.Login.render(boundForm, false));
@@ -73,7 +74,7 @@ public class LoginController extends Controller {
 
     // TODO: Sollte man nach password reset eingelogged sein?!
     @Authentication.NotAllowed
-    public Result changePasswordAfterReset() {
+    public Result changePasswordAfterReset() throws IOException {
         Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat");
         if (boundForm.hasErrors()) {
             return ok(views.html.login.ChangePasswordAfterReset.render(boundForm, false));

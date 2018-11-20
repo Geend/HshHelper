@@ -24,6 +24,9 @@ libraryDependencies += javaJdbc % Test
 libraryDependencies += "com.typesafe.play" %% "play-mailer" % "6.0.1"
 libraryDependencies += "com.typesafe.play" %% "play-mailer-guice" % "6.0.1"
 
+// https://mvnrepository.com/artifact/com.github.ua-parser/uap-java
+libraryDependencies += "com.github.ua-parser" % "uap-java" % "1.4.0"
+
 libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
 // Testing libraries for dealing with CompletionStage...
 libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
