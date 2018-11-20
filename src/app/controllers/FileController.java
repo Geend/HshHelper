@@ -126,15 +126,6 @@ public class FileController extends Controller {
         }
     }
 
-    public Result listFiles() {
-        String files = "";
-        for (File f : fileManager.accessibleFiles()) {
-            files += f.getName() + "<br>";
-        }
-
-        return ok(files);
-    }
-
     public Result showQuotaUsage() {
         UserQuota uq = fileManager.getCurrentQuotaUsage();
         UserQuotaDto dto = new UserQuotaDto(

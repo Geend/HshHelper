@@ -44,7 +44,6 @@ GET         /files/shared                                              controlle
 GET         /files/thirdParty                                          controllers.FileController.showThirdPartyFiles
 
 
-GET         /files/all                                                 controllers.FileController.listFiles
 GET         /files/upload                                              controllers.FileController.showUploadFileForm
 POST        /files/upload                                              controllers.FileController.uploadFile
 POST        /files/upload/store                                        controllers.FileController.storeFile
