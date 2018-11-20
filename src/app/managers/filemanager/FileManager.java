@@ -14,8 +14,7 @@ import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class FileManager {
     private final FileFinder fileFinder;
@@ -97,66 +96,31 @@ public class FileManager {
         }
     }
 
-    public List<File> ownedFiles() {
-        User user = sessionManager.currentUser();
-        return fileFinder.getFilesByOwner(user.getUserId());
-    }
 
     public List<File> accessibleFiles() {
         User user = sessionManager.currentUser();
 
-        return fileFinder.query()
-                .where()
-                .or()
-                    .eq("owner", user)
-                    .and()
-                        .eq("userPermissions.user", user)
-                            .or()
-                                .eq("userPermissions.canRead", true)
-                                .eq("userPermissions.canWrite", true)
-                            .endOr()
-                    .endAnd()
-                    .and()
-                        .eq("groupPermissions.group.members", user)
-                        .and()
-                            .or()
-                                .eq("groupPermissions.canRead", true)
-                                .eq("groupPermissions.canWrite", true)
-                            .endOr()
-                        .endAnd()
-                    .endAnd()
-                .endOr()
-                .findList();
+        Set<File> result = new HashSet<>();
+        result.addAll(user.getOwnedFiles());
+        result.addAll(fileFinder.byUserHasGroupPermission(user));
+        result.addAll(fileFinder.byUserHasGroupPermission(user));
+
+        return new ArrayList<>(result);
+
     }
 
     public List<File> sharedWithCurrentUserFiles() {
         User user = sessionManager.currentUser();
 
-        return fileFinder.query()
-                .where()
-                .and()
-                    .ne("owner", user)
-                    .or()
-                        .and()
-                            .eq("userPermissions.user", user)
-                            .or()
-                                .eq("userPermissions.canRead", true)
-                                .eq("userPermissions.canWrite", true)
-                            .endOr()
-                        .endAnd()
-                        .and()
-                            .eq("groupPermissions.group.members", user)
-                            .and()
-                                .or()
-                                    .eq("groupPermissions.canRead", true)
-                                    .eq("groupPermissions.canWrite", true)
-                                .endOr()
-                            .endAnd()
-                        .endAnd()
-                    .endOr()
-                .endAnd()
-                .findList();
+        Set<File> result = new HashSet<>();
+        result.addAll(fileFinder.byUserHasGroupPermission(user));
+        result.addAll(fileFinder.byUserHasGroupPermission(user));
+        result.removeAll(user.getOwnedFiles());
+
+        return new ArrayList<>(result);
     }
+
+
 
     public UserQuota getCurrentQuotaUsage() {
         User user = sessionManager.currentUser();

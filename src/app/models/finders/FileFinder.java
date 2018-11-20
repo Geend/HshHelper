@@ -8,6 +8,7 @@ import models.User;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class FileFinder extends Finder<Long, File> {
 
@@ -28,6 +29,29 @@ public class FileFinder extends Finder<Long, File> {
                 .eq("name", fileName)
                 .eq("owner_id", ownerId)
                 .findOneOrEmpty();
+    }
+
+    public Set<File> byUserHasUserPermission(User user){
+
+        return this.query()
+                .where()
+                .eq("userPermissions.user", user)
+                .or()
+                    .eq("userPermissions.canRead", true)
+                    .eq("userPermissions.canWrite", true)
+                .endOr()
+                .findSet();
+    }
+
+    public Set<File> byUserHasGroupPermission(User user){
+        return this.query()
+                .where()
+                .eq("groupPermissions.group.members", user)
+                .or()
+                    .eq("groupPermissions.canRead", true)
+                    .eq("groupPermissions.canWrite", true)
+                .endOr()
+                .findSet();
     }
 
     public UserQuota getUsedQuota(Long userId) {
