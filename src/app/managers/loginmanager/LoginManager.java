@@ -11,8 +11,11 @@ import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
 import policyenforcement.ext.loginFirewall.Strategy;
 import policyenforcement.session.SessionManager;
+import ua_parser.Client;
+import ua_parser.Parser;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.List;
 
 public class LoginManager {
@@ -30,7 +33,7 @@ public class LoginManager {
         this.hashHelper = hashHelper;
     }
 
-    private User authenticate(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidLoginException {
+    private User authenticate(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidLoginException, IOException {
         Authentification.Result auth = authentification.Perform(
             username,
             password
@@ -66,11 +69,11 @@ public class LoginManager {
             throw new InvalidLoginException();
         }
 
-        String userAgent = request.getHeaders().get("User-Agent").get();
+        String userAgentString = request.getHeaders().get("User-Agent").get();
         LoginAttempt attempt = new LoginAttempt();
         attempt.setUser(auth.user());
         attempt.setAddress(request.remoteAddress());
-        attempt.setClientName(userAgent);
+        attempt.setClientName(this.getUserAgentDisplayString(userAgentString));
         attempt.setDateTime(DateTime.now());
         attempt.save();
 
@@ -83,7 +86,13 @@ public class LoginManager {
         return auth.user();
     }
 
-    public void login(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException {
+    private String getUserAgentDisplayString(String userAgentString) throws IOException {
+        Parser uaParser = new Parser();
+        Client c = uaParser.parse(userAgentString);
+        return String.format("%s: %s (s)", c.device.family, c.userAgent.family, c.userAgent.major);
+    }
+
+    public void login(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException, IOException {
         User authenticatedUser = this.authenticate(username, password, captchaToken);
 
         if(authenticatedUser.getIsPasswordResetRequired()) {
@@ -93,7 +102,7 @@ public class LoginManager {
         sessionManager.startNewSession(authenticatedUser);
     }
 
-    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken) throws InvalidLoginException, CaptchaRequiredException {
+    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken) throws InvalidLoginException, CaptchaRequiredException, IOException {
         User authenticatedUser = this.authenticate(username, currentPassword, captchaToken);
 
         authenticatedUser.setIsPasswordResetRequired(false);
