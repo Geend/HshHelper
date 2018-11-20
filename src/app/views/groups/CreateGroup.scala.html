@@ -1,14 +1,15 @@
 @import dtos.CreateGroupDto
 @(form: Form[CreateGroupDto])
 
-@Main("Create Group") {
-    @bootstrapHelper.form(routes.GroupController.createGroup(),
-        form,
-        scala.collection.Map(
-            "name" -> Input(InputType.Text,
-                label = "Gruppenname",
-                placeholder = "Gruppennamen hier eintragen")
-        ),
-        button = bootstrapHelper.button("Create Group")
-    )
+@Base("Gruppe erstellen") {
+    @helper.form(action = routes.GroupController.createGroup()) {
+        <div class="inputForm">
+            @helper.TextInput(form("name"), "Gruppenname")
+        </div>
+        <div class="inputControls">
+            <input type="submit" value="Gruppe erstellen" />
+        </div>
+
+        @helper.CSRF.formField
+    }
 }

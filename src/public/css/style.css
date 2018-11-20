@@ -55,6 +55,10 @@ a {
     cursor: default;
 }
 
+form {
+    display: inline;
+}
+
 /*
     Logout
  */
@@ -247,6 +251,7 @@ a {
 
 .content p {
     padding: 10px;
+    line-height: 1.5em;
 }
 .content hr {
     border: 0;
@@ -328,15 +333,12 @@ a {
     text-align: right;
 }
 
+
 .content .inline-menu {
     padding: 10px;
     background: #f0f0f0;
     box-sizing: border-box;
     margin-bottom: 10px;
-}
-
-.content .inline-menu a {
-    padding: 5px;
 }
 
 .content .inline-menu a.active {
@@ -347,12 +349,106 @@ a {
     padding: 10px;
     background: #f7f7f7;
     font-weight: bold;
+    margin-bottom: 10px;
+    line-height: 1.4em;
 }
 
 .content .message.error {
     padding: 10px;
     background: #fae6e6;
     font-weight: bold;
+}
+
+.content .message.notice {
+    background: #f7f2dc;
+    font-weight: normal;
+}
+
+.content .message.success {
+    background: #e2f7dc;
+    font-weight: normal;
+}
+
+.content .inputForm {
+    display: table;
+    width: 100%;
+}
+
+.content .inputForm .element {
+    display: table-row;
+    width: 100%;
+}
+
+.content .inputForm .element:first-of-type > div {
+    border-top: solid 1px #dedede;
+}
+
+.content .inputForm .element > div {
+    display: table-cell;
+    padding:10px 15px 10px 10px;
+    border-bottom: solid 1px #dedede;
+}
+
+.content .inputForm .element .label {
+    width: 1px;
+    font-weight: bold;
+}
+
+.content .inputForm .element .label label {
+    cursor: pointer;
+}
+
+.content .inputForm .element .input {
+    width: 100%;
+    padding-right: 0;
+}
+
+.content .inputForm .element .input input, .content .inputForm .element .input select {
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.content .inputControls {
+    width: 100%;
+    padding: 10px;
+}
+
+.content .inputControls input {
+    padding:5px;
+}
+
+.content .inputForm .element .input .help {
+    color:#666;
+    width:100%;
+    padding: 4px 0 0 0;
+    display: block;
+}
+
+.content .inputForm .element .input .errors {
+    color:#da0000;
+    width:100%;
+    padding: 4px 0 0 0;
+    display: none;
+}
+
+.content .inputForm .element.error .input .errors {
+    display: block;
+}
+
+.content li {
+    padding:6px 0;
+}
+
+.content .max200PxHigh {
+    max-height: 200px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+.content .noTopSpace {
+    padding-top: 0;
+    margin-top: 0;
 }
 
     /*

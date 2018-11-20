@@ -1,0 +1,12 @@
+@import policyenforcement.session.SessionManager.SessionInstance
+@(group : Group)
+
+@if(policyenforcement.Policy.instance.CanDeleteGroup(SessionInstance().currentUser(), group)) {
+    @helper.form(action = routes.GroupController.deleteGroup()) {
+        @helper.CSRF.formField
+        <input type="hidden" name="groupId" value="@group.getGroupId" />
+        <button type="submit" class="linkBtn">Gruppe Löschen</button>
+    }
+} else {
+    <button type="submit" class="linkBtn" disabled>Gruppe Löschen</button>
+}

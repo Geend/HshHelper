@@ -33,6 +33,11 @@ public class User extends Model {
     )
     private List<Group> ownerOf = new ArrayList<>();
 
+    @OneToMany(
+            mappedBy = "owner",
+            cascade = CascadeType.ALL
+    )
+    private List<File> ownedFiles = new ArrayList<>();
 
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
@@ -47,19 +52,12 @@ public class User extends Model {
     private List<Group> groups = new ArrayList<>();
 
 
-    @OneToMany(
-            mappedBy = "user",
-            cascade = CascadeType.ALL
-    )
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserPermission> userPermissions = new ArrayList<>();
 
-    @OneToMany(
-            mappedBy = "owner",
-            cascade = CascadeType.ALL
-    )
-    private List<File> ownFiles = new ArrayList<>();
-
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OrderBy("dateTime")
+    private List<LoginAttempt> loginAttempts = new ArrayList<>();
 
     public User(
             String username,
@@ -74,6 +72,17 @@ public class User extends Model {
         this.quotaLimit = quotaLimit;
     }
 
+    public List<File> getOwnedFiles() {
+        return ownedFiles;
+    }
+
+    public List<LoginAttempt> getLoginAttempts() {
+        return loginAttempts;
+    }
+
+    public void setLoginAttempts(List<LoginAttempt> loginAttempts) {
+        this.loginAttempts = loginAttempts;
+    }
 
     public boolean isAdmin() {
         return this.groups.stream().anyMatch(x -> x.getIsAdminGroup());
@@ -151,15 +160,6 @@ public class User extends Model {
         this.userPermissions = userPermissions;
     }
 
-    public List<File> getOwnFiles() {
-        return ownFiles;
-    }
-
-    public void setOwnFiles(List<File> ownFiles) {
-        this.ownFiles = ownFiles;
-    }
-
-    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

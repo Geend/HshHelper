@@ -22,6 +22,8 @@
                         (Administrator)
                     }
                     -
+                    <a href="#">Einstellungen</a>
+                    -
                     @helper.CSRF.formField
                     <button type="submit" class="linkBtn">Logout</button>
                 }
@@ -51,8 +53,8 @@
                             @if(policyenforcement.Policy.instance.CanViewAllUsers(SessionInstance().currentUser())) {
                                 @helper.MenuLink("Benutzer", routes.UserController.showUsers(), "/users")
                             }
-                            <a href="#">Gruppen</a>
-                            <a href="#">Dateien</a>
+                            @helper.MenuLink("Gruppen", routes.GroupController.showOwnMemberships(), "/groups")
+                            @helper.MenuLink("Dateien", routes.FileController.showOwnFiles(), "/files")
                             @helper.MenuLink("Sessions", routes.UserController.showActiveUserSessions())
                         </div>
                     </div>

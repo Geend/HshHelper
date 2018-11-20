@@ -1,0 +1,48 @@
+@import dtos.UserIdDto
+@(group : Group, availableUsers : Seq[User], form : Form[UserIdDto])
+
+@formatPermission(permission : GroupPermission) = {
+    @if(permission.getCanRead) {
+        Lesend
+        @if(permission.getCanWrite) {
+            und Schreibend
+        }
+    } else {
+        @if(permission.getCanWrite) {
+            Schreibend
+        }
+    }
+}
+
+@Base("Benutzer hinzufügen - "+group.getName+" (Gruppe)") {
+    <div class="message notice">
+        Sie sind im Begriff, der Gruppe @group.getName ein neues Mitglied hinzuzufügen!<br>
+        <b>Das neue Mitglied wird <u>unmittelbar</u> über die folgenden Rechte verfügen:</b>
+        <div class="max200PxHigh">
+            <ul>
+                @if(group.getIsAdminGroup) {
+                    <li>Administrator-Privilegien</li>
+                }
+                <li>Ansicht aller anderen Gruppenmitglieder</li>
+                @for(permission <- group.getGroupPermissions) {
+                    <li>Zugriff auf die Datei <i>@permission.getFile.getName</i> (@formatPermission(permission))</li>
+                }
+                <li>Zugriff auf alle Dateien, die in Zukunft mit der Gruppe geteilt werden</li>
+                <li>Möglichkeit, Dateien mit der Gruppe zu teilen</li>
+            </ul>
+        </div>
+    </div>
+
+    @helper.form(action = routes.GroupController.addGroupMember(group.getGroupId)) {
+        <div class="inputForm">
+            @helper.SelectInput(form("userId"), "Benutzer", availableUsers.map(
+                user => user.getUserId.toString -> user.getUsername
+            ))
+        </div>
+        <div class="inputControls">
+            <input type="submit" value="Benutzer hinzufügen" />
+        </div>
+
+        @helper.CSRF.formField
+    }
+}

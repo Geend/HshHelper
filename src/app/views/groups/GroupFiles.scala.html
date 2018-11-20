@@ -1,18 +1,5 @@
 @(group : Group, files : Seq[File])
 
-@Base(group.getName + " (Gruppe)") {
-
-    <div class="inline-menu lr noBorder">
-        <div class="left">
-            <span class="title">Ansicht:</span>
-            @helper.MenuLink("Dateien", routes.GroupController.showGroupFiles(group.getGroupId))
-            -
-            @helper.MenuLink("Mitglieder", routes.GroupController.showGroupMembers(group.getGroupId))
-        </div>
-        <div class="right">
-            <a href="#">+ Datei hinzufügen</a>
-        </div>
-    </div>
-
+@GroupBase(group) {
     @helper.FilesTable(files)
 }

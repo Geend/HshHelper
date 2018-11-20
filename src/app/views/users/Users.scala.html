@@ -2,7 +2,6 @@
 @(users : Seq[User])
 
 @Base("Benutzer") {
-
     <div class="inline-menu lr">
         <div class="left">
             <span class="title">Ansicht:</span>
@@ -11,7 +10,7 @@
             @helper.MenuLink("Administratoren", routes.UserController.showAdminUsers())
         </div>
         <div class="right">
-            @helper.MenuLink("+ Benutzer erstellen", routes.UserController.createUser())
+            @helper.MenuLink("Benutzer erstellen", routes.UserController.createUser())
         </div>
     </div>
 

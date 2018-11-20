@@ -2,6 +2,7 @@ package policyenforcement.session;
 
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import models.LoginAttempt;
 import models.User;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -121,7 +122,6 @@ public class SessionManager {
 
         return result;
     }
-
 
     public boolean hasActiveSession() {
         return currentSession() != null;

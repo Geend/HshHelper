@@ -8,6 +8,7 @@ import managers.filemanager.QuotaExceededException;
 import models.File;
 import models.TempFile;
 import dtos.*;
+import models.User;
 import models.finders.UserQuota;
 import play.data.Form;
 import play.data.FormFactory;
@@ -21,6 +22,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
+
+import static play.libs.Scala.asScala;
 
 @Singleton
 @Authentication.Required
@@ -40,6 +44,17 @@ public class FileController extends Controller {
         this.sessionManager = sessionManager;
         this.fileManager = fileManager;
     }
+
+
+    public Result showOwnFiles() {
+        User user = sessionManager.currentUser();
+        List<File> files = user.getOwnedFiles();
+        return ok(views.html.file.Files.render(asScala(files)));
+    }
+
+
+
+
 
 
     public Result changePermissionsForFile() {

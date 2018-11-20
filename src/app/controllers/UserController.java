@@ -137,10 +137,9 @@ public class UserController extends Controller {
 
     @Authentication.Required
     public Result showActiveUserSessions() {
-        List<Session> activeSessions = sessionManager.sessionsByUser(
-            sessionManager.currentUser()
-        );
-        return ok(views.html.users.UserSessions.render(asScala(activeSessions)));
+        User currentUser = sessionManager.currentUser();
+        List<Session> activeSessions = sessionManager.sessionsByUser(currentUser);
+        return ok(views.html.users.UserSessions.render(asScala(activeSessions), asScala(currentUser.getLoginAttempts())));
     }
 
     @Authentication.Required

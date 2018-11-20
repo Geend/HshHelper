@@ -2,7 +2,7 @@
 @import dtos.DeleteSessionDto
 @import policyenforcement.session.SessionManager.SessionInstance
 @import policyenforcement.session.Session
-@(sessions: Seq[Session])
+@(sessions: Seq[Session], loginattempts: Seq[LoginAttempt])
 
 @Base("Sessionübersicht") {
     <h2>Aktive Sessions</h2>
@@ -44,25 +44,19 @@
                 <td>User-Agent</td>
             </tr>
         </thead>
-
         <tbody>
-            <tr>
-                <td>17.11.2018 - 21:19:53</td>
-                <td>123.123.123.21</td>
-                <td>Google Chrome</td>
-            </tr>
 
+        @for(loginAttempt <- loginattempts) {
             <tr>
-                <td>15.11.2018 - 21:19:53</td>
-                <td>21.22.1.21</td>
-                <td>iOS Safari</td>
+                <td>
+                    <nobr>
+                    @loginAttempt.getDateTime().toString("dd.MM.yyyy - hh:mm:ss")
+                    </nobr>
+                </td>
+                <td>@loginAttempt.getAddress()</td>
+                <td>@loginAttempt.getClientName()</td>
             </tr>
-
-            <tr>
-                <td>12.11.2018 - 21:19:53</td>
-                <td>21.22.1.2</td>
-                <td>Firefox</td>
-            </tr>
+        }
         </tbody>
     </table>
 }
