@@ -2,7 +2,7 @@ import com.google.inject.AbstractModule;
 import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import play.Logger;
-import play.mvc.Http;
+import views.TemplateEnvironment;
 
 import javax.inject.Provider;
 
@@ -13,6 +13,8 @@ public class StartModule extends AbstractModule {
         bind(LoginFwInitialization.class).asEagerSingleton();
         bind(SessionInitialization.class).asEagerSingleton();
         bind(EbeanServer.class).toProvider(new EbeanServerProvider());
+
+        requestStaticInjection(TemplateEnvironment.class);
     }
 
     public class EbeanServerProvider implements Provider<EbeanServer> {
