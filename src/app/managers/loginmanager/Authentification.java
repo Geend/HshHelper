@@ -15,7 +15,7 @@ public class Authentification {
         private boolean userExists;
         private User user;
 
-        private Result(boolean success, boolean userExists, User user) {
+        public Result(boolean success, boolean userExists, User user) {
             this.success = success;
             this.userExists = userExists;
             this.user = user;

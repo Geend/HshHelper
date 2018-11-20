@@ -2,6 +2,7 @@ package managers.loginmanager;
 
 import extension.HashHelper;
 import extension.RecaptchaHelper;
+import io.ebean.EbeanServer;
 import models.LoginAttempt;
 import models.User;
 import models.finders.LoginAttemptFinder;
@@ -20,26 +21,36 @@ import java.util.List;
 
 public class LoginManager {
 
+    private final EbeanServer ebeanSever;
     private Authentification authentification;
     private Firewall loginFirewall;
     private SessionManager sessionManager;
     private HashHelper hashHelper;
+    private LoginAttemptFinder loginAttemptFinder;
 
     @Inject
-    public LoginManager(Authentification authentification, Firewall loginFirewall, SessionManager sessionManager, HashHelper hashHelper){
+    public LoginManager(
+            Authentification authentification,
+            Firewall loginFirewall,
+            SessionManager sessionManager,
+            HashHelper hashHelper,
+            EbeanServer ebeanServer,
+            LoginAttemptFinder loginAttemptFinder)
+    {
+        this.loginAttemptFinder = loginAttemptFinder;
+        this.ebeanSever = ebeanServer;
         this.authentification = authentification;
         this.loginFirewall = loginFirewall;
         this.sessionManager = sessionManager;
         this.hashHelper = hashHelper;
     }
 
-    private User authenticate(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidLoginException, IOException {
+    private User authenticate(String username, String password, String captchaToken, Http.Request request) throws CaptchaRequiredException, InvalidLoginException, IOException {
         Authentification.Result auth = authentification.Perform(
             username,
             password
         );
-        Http.Request request = Http.Context.current().request();
-        Long uid = null;
+        Long uid;
         if(auth.userExists()) {
             uid = auth.user().getUserId();
         } else {
@@ -59,7 +70,7 @@ public class LoginManager {
         }
 
         if(strategy.equals(Strategy.VERIFY)) {
-            if(!RecaptchaHelper.IsValidResponse(captchaToken, Http.Context.current().request().remoteAddress())) {
+            if(!RecaptchaHelper.IsValidResponse(captchaToken, request.remoteAddress())) {
                 throw new CaptchaRequiredException();
             }
         }
@@ -75,12 +86,11 @@ public class LoginManager {
         attempt.setAddress(request.remoteAddress());
         attempt.setClientName(this.getUserAgentDisplayString(userAgentString));
         attempt.setDateTime(DateTime.now());
-        attempt.save();
+        this.ebeanSever.save(attempt);
 
-        LoginAttemptFinder finder = new LoginAttemptFinder();
-        List<LoginAttempt> attempts = finder.all();
+        List<LoginAttempt> attempts = loginAttemptFinder.all();
         for(int i = 5; i < attempts.size(); i++) {
-            attempts.get(i).delete();
+            this.ebeanSever.delete(attempts.get(i));
         }
 
         return auth.user();
@@ -92,8 +102,8 @@ public class LoginManager {
         return String.format("%s: %s (s)", c.device.family, c.userAgent.family, c.userAgent.major);
     }
 
-    public void login(String username, String password, String captchaToken) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException, IOException {
-        User authenticatedUser = this.authenticate(username, password, captchaToken);
+    public void login(String username, String password, String captchaToken, Http.Request request) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException, IOException {
+        User authenticatedUser = this.authenticate(username, password, captchaToken, request);
 
         if(authenticatedUser.getIsPasswordResetRequired()) {
             throw new PasswordChangeRequiredException();
@@ -102,12 +112,12 @@ public class LoginManager {
         sessionManager.startNewSession(authenticatedUser);
     }
 
-    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken) throws InvalidLoginException, CaptchaRequiredException, IOException {
-        User authenticatedUser = this.authenticate(username, currentPassword, captchaToken);
+    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken, Http.Request request) throws InvalidLoginException, CaptchaRequiredException, IOException {
+        User authenticatedUser = this.authenticate(username, currentPassword, captchaToken, request);
 
         authenticatedUser.setIsPasswordResetRequired(false);
         authenticatedUser.setPasswordHash(hashHelper.hashPassword(newPassword));
-        authenticatedUser.save();
+        this.ebeanSever.save(authenticatedUser);
     }
 
     public void logout() {

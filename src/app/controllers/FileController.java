@@ -184,11 +184,11 @@ public class FileController extends Controller {
 
         try {
             if (file == null) {
-                fileManager.editFile(sessionManager.currentUser(), editFileDto.getFileId(), editFileDto.getComment());
+                fileManager.editFile(editFileDto.getFileId(), editFileDto.getComment());
             } else {
                 try {
                     byte[] data = Files.readAllBytes(file.getFile().toPath());
-                    fileManager.editFile(sessionManager.currentUser(), editFileDto.getFileId(), editFileDto.getComment(), data);
+                    fileManager.editFile(editFileDto.getFileId(), editFileDto.getComment(), data);
 
                 } catch (IOException e) {
                     //TODO
@@ -202,6 +202,13 @@ public class FileController extends Controller {
         }
         return showFile(editFileDto.getFileId());
 
+    }
+
+    public Result removeTempFiles() {
+
+        fileManager.removeTempFiles();
+
+        return redirect(routes.FileController.showQuotaUsage());
     }
 
 
