@@ -6,6 +6,7 @@ import dtos.UserLoginDto;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import policyenforcement.session.Authentication;
 
@@ -51,8 +52,8 @@ public class LoginController extends Controller {
             loginManager.login(
                     loginData.getUsername(),
                     loginData.getPassword(),
-                    loginData.getRecaptcha()
-            );
+                    loginData.getRecaptcha(),
+                    Http.Context.current().request());
         } catch (CaptchaRequiredException e) {
             boundForm = boundForm.withGlobalError("Complete the Captcha!");
             return badRequest(views.html.login.Login.render(boundForm, true));
@@ -91,8 +92,8 @@ public class LoginController extends Controller {
                     changePasswordData.getUsername(),
                     changePasswordData.getCurrentPassword(),
                     changePasswordData.getPassword(),
-                    changePasswordData.getRecaptcha()
-            );
+                    changePasswordData.getRecaptcha(),
+                    Http.Context.current().request());
         } catch (InvalidLoginException e) {
             boundForm = boundForm.withGlobalError("Invalid Login Data!");
             return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, false));

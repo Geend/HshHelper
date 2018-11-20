@@ -1,210 +1,301 @@
 package managers.loginmanager;
 
 import extension.HashHelper;
+import io.ebean.EbeanServer;
 import models.User;
+import models.finders.LoginAttemptFinder;
 import models.finders.UserFinder;
 import org.junit.*;
-import play.Application;
 import play.mvc.Http;
-import play.test.Helpers;
 import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
 import policyenforcement.ext.loginFirewall.Strategy;
-import policyenforcement.session.InternalSession;
 import policyenforcement.session.SessionManager;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.io.IOException;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class LoginManagerTest {
-    public static Application app;
-    public static User lydia;
-    public static User annika;
-    public static HashHelper hashHelper = new HashHelper();
-
-    @AfterClass
-    public static void stopApp() {
-        Helpers.stop(app);
-    }
-
-    @BeforeClass
-    public static void setupGlobal() {
-        app = Helpers.fakeApplication();
-        Helpers.start(app);
-    }
-
-    UserFinder userFinder;
-    LoginManager loginManager;
-    Firewall firewall;
-    SessionManager sessionManager;
-    Authentification authentification;
-
-    Firewall alwaysCaptchaFirewall;
-    Firewall alwaysBannedFirewall;
+    private HashHelper defaultHashHelper;
+    private UserFinder defaultUserFinder;
+    private Firewall defaultFirewall;
+    private SessionManager defaultSessionManager;
+    private Authentification defaultAuthentification;
+    private EbeanServer defaultEbeanServer;
+    private Instance defaultFirewallInstance;
+    private LoginAttemptFinder defaultLoginAttemptFinder;
+    private Http.Headers defaultHeaders;
+    private Http.Request defaultRequest;
 
     @Before
-    public void setup() {
-        userFinder = new UserFinder();
-        firewall = new Firewall();
-        sessionManager = new SessionManager();
-        authentification = new Authentification(userFinder, hashHelper);
-        loginManager = new LoginManager(authentification, firewall, sessionManager, hashHelper);
-
-        Instance alwaysBannedInstance = mock(Instance.class);
-        when(alwaysBannedInstance.getStrategy()).thenReturn(Strategy.BLOCK);
-        when(alwaysBannedInstance.getStrategy(anyLong())).thenReturn(Strategy.BLOCK);
-
-        alwaysBannedFirewall = mock(Firewall.class);
-        when(alwaysBannedFirewall.get(anyString())).thenReturn(alwaysBannedInstance);
-
-        Instance alwaysCaptchaInstance = mock(Instance.class);
-        when(alwaysCaptchaInstance.getStrategy()).thenReturn(Strategy.VERIFY);
-        when(alwaysCaptchaInstance.getStrategy(anyLong())).thenReturn(Strategy.VERIFY);
-
-        alwaysCaptchaFirewall = mock(Firewall.class);
-        when(alwaysCaptchaFirewall.get(anyString())).thenReturn(alwaysCaptchaInstance);
-
-        Http.Request request = Helpers.fakeRequest("GET", "/").remoteAddress("1.2.23.4").build();
-        Http.Context.current.set(Helpers.httpContext(request));
-
-
-        // PW reset nicht required
-        lydia = new User("lydia", "hsh.helper+lydia@gmail.com", hashHelper.hashPassword("lydia"), false, 10);
-        lydia.save();
-
-        // PW reset required
-        annika = new User("annika", "hsh.helper+annika@gmail.com", hashHelper.hashPassword("annika"), true, 10);
-        annika.save();
-    }
-
-    @After
-    public void teardown() {
-        InternalSession.db().createSqlUpdate("DELETE FROM internal_session").execute();
-        lydia.delete();
-        annika.delete();
+    public void init() {
+        this.defaultHeaders = mock(Http.Headers.class);
+        this.defaultRequest = mock(Http.Request.class);
+        when(defaultRequest.remoteAddress()).thenReturn("127.0.0.1");
+        when(defaultRequest.getHeaders()).thenReturn(this.defaultHeaders);
+        when(this.defaultHeaders.get("User-Agent")).thenReturn(Optional.of("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:63.0) Gecko/20100101 Firefox/63.0"));
+        this.defaultLoginAttemptFinder = mock(LoginAttemptFinder.class);
+        this.defaultUserFinder = mock(UserFinder.class);
+        this.defaultFirewall = mock(Firewall.class);
+        this.defaultSessionManager = mock(SessionManager.class);
+        this.defaultAuthentification = mock(Authentification.class);
+        this.defaultHashHelper = mock(HashHelper.class);
+        this.defaultEbeanServer = mock(EbeanServer.class);
+        this.defaultFirewallInstance = mock(Instance.class);
+        when(this.defaultFirewallInstance.getStrategy(any(Long.class))).thenReturn(Strategy.BYPASS);
+        when(defaultFirewall.get(any(String.class))).thenReturn(this.defaultFirewallInstance);
     }
 
     @Test
-    public void successfulLogin() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException {
-        loginManager.login(
-                "lydia", "lydia", ""
-        );
+    public void successfulLogin() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        when(authenticatedUser.getUserId()).thenReturn(5l);
+        Authentification auth = mock(Authentification.class);
+        SessionManager sessionManager = mock(SessionManager.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        LoginManager sut = new LoginManager(
+                auth,
+                this.defaultFirewall,
+                sessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.login("lydia", "lydia", "", this.defaultRequest);
+        verify(sessionManager).startNewSession(authenticatedUser);
     }
 
     @Test(expected = PasswordChangeRequiredException.class)
-    public void successfulLoginResetRequired() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException {
-        loginManager.login(
-                "annika", "annika", ""
-        );
+    public void successfulLoginResetRequired() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        when(authenticatedUser.getUserId()).thenReturn(5l);
+        when(authenticatedUser.getIsPasswordResetRequired()).thenReturn(true);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        LoginManager sut = new LoginManager(
+                auth,
+                this.defaultFirewall,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.login("lydia", "lydia", "", this.defaultRequest);
     }
 
     @Test(expected = InvalidLoginException.class)
-    public void failedLogin() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException {
-        loginManager.login(
-                "lydia", "lydiaxxxxxxxxx", ""
-        );
+    public void failedLogin() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        when(authenticatedUser.getUserId()).thenReturn(5l);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        LoginManager sut = new LoginManager(
+                auth,
+                this.defaultFirewall,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.login("lydia", "lydia", "", this.defaultRequest);
     }
+
 
     @Test
-    public void successfulChangePassword() throws InvalidLoginException, CaptchaRequiredException {
-        loginManager.changePassword(
-                "annika", "annika", "neuesPw", ""
-        );
-
-        User newAnnika = userFinder.byId(annika.getUserId());
-
-        assertThat(
-            newAnnika.getIsPasswordResetRequired(),
-            is(false)
-        );
-
-        assertTrue(
-            hashHelper.checkHash(
-                "neuesPw",
-                newAnnika.getPasswordHash()
-            )
-        );
+    public void successfulChangePassword() throws InvalidLoginException, CaptchaRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        when(authenticatedUser.getUserId()).thenReturn(5l);
+        when(authenticatedUser.getIsPasswordResetRequired()).thenReturn(true);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        HashHelper hashHelper = mock(HashHelper.class);
+        when(hashHelper.hashPassword(any(String.class))).thenReturn("hashed");
+        EbeanServer s = mock(EbeanServer.class);
+        LoginManager sut = new LoginManager(
+                auth,
+                this.defaultFirewall,
+                this.defaultSessionManager,
+                hashHelper,
+                s,
+                this.defaultLoginAttemptFinder);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
+        verify(authenticatedUser).setIsPasswordResetRequired(false);
+        verify(authenticatedUser).setPasswordHash("hashed");
+        verify(s).save(authenticatedUser);
     }
 
     @Test(expected = InvalidLoginException.class)
-    public void failedChangePassword() throws InvalidLoginException, CaptchaRequiredException {
-        loginManager.changePassword(
-                "annika", "xx", "neuesPw", ""
-        );
+    public void failedChangePassword() throws InvalidLoginException, CaptchaRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        when(authenticatedUser.getUserId()).thenReturn(5l);
+        when(authenticatedUser.getIsPasswordResetRequired()).thenReturn(true);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        LoginManager sut = new LoginManager(
+                auth,
+                this.defaultFirewall,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
     }
 
     @Test(expected = CaptchaRequiredException.class)
-    public void validLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException {
-        LoginManager lm = new LoginManager(authentification, alwaysCaptchaFirewall, sessionManager, hashHelper);
-        lm.login(
-                "lydia", "lydia", ""
-        );
+    public void validLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        Instance i = mock(Instance.class);
+        Firewall fw = mock(Firewall.class);
+        when(fw.get(any(String.class))).thenReturn(i);
+        when(i.getStrategy(any(Long.class))).thenReturn(Strategy.VERIFY);
+        LoginManager sut = new LoginManager(
+                auth,
+                fw,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.login("lydia", "lydia", "", this.defaultRequest);
     }
+
 
     @Test(expected = CaptchaRequiredException.class)
-    public void invalidLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException {
-        LoginManager lm = new LoginManager(authentification, alwaysCaptchaFirewall, sessionManager, hashHelper);
-        lm.login(
-            "lydia", "lydiaxxxxxx", ""
-        );
+    public void invalidLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        Instance i = mock(Instance.class);
+        Firewall fw = mock(Firewall.class);
+        when(fw.get(any(String.class))).thenReturn(i);
+        when(i.getStrategy(any(Long.class))).thenReturn(Strategy.VERIFY);
+        LoginManager sut = new LoginManager(
+                auth,
+                fw,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.login("lydia", "lydia", "", this.defaultRequest);
+    }
+
+
+    @Test(expected = InvalidLoginException.class)
+    public void validLoginBanned() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        Instance i = mock(Instance.class);
+        Firewall fw = mock(Firewall.class);
+        when(fw.get(any(String.class))).thenReturn(i);
+        when(i.getStrategy(any(Long.class))).thenReturn(Strategy.BLOCK);
+        LoginManager sut = new LoginManager(
+                auth,
+                fw,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.login("lydia", "lydia", "", this.defaultRequest);
     }
 
     @Test(expected = InvalidLoginException.class)
-    public void validLoginBanned() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException {
-        LoginManager lm = new LoginManager(authentification, alwaysBannedFirewall, sessionManager, hashHelper);
-        lm.login(
-                "lydia", "lydia", ""
-        );
+    public void invalidLoginBannedWithCorrectLogin() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        Instance i = mock(Instance.class);
+        Firewall fw = mock(Firewall.class);
+        when(fw.get(any(String.class))).thenReturn(i);
+        when(i.getStrategy(any(Long.class))).thenReturn(Strategy.BLOCK);
+        LoginManager sut = new LoginManager(
+                auth,
+                fw,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.login("lydia", "lydia", "", this.defaultRequest);
     }
 
-    @Test(expected = InvalidLoginException.class)
-    public void invalidLoginBanned() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException {
-        LoginManager lm = new LoginManager(authentification, alwaysBannedFirewall, sessionManager, hashHelper);
-        lm.login(
-                "lydia", "lydiaxxxx", ""
-        );
-    }
 
     @Test(expected = CaptchaRequiredException.class)
-    public void validPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException {
-        LoginManager lm = new LoginManager(authentification, alwaysCaptchaFirewall, sessionManager, hashHelper);
-        lm.changePassword(
-                "annika", "annika", "neuesPw", ""
-        );
+    public void validPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        Instance i = mock(Instance.class);
+        Firewall fw = mock(Firewall.class);
+        when(fw.get(any(String.class))).thenReturn(i);
+        when(i.getStrategy(any(Long.class))).thenReturn(Strategy.VERIFY);
+        LoginManager sut = new LoginManager(
+                auth,
+                fw,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
     }
+
 
     @Test(expected = CaptchaRequiredException.class)
-    public void invalidPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException {
-        LoginManager lm = new LoginManager(authentification, alwaysCaptchaFirewall, sessionManager, hashHelper);
-        lm.changePassword(
-                "annika", "annixxka", "neuesPw", ""
-        );
+    public void invalidPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        Instance i = mock(Instance.class);
+        Firewall fw = mock(Firewall.class);
+        when(fw.get(any(String.class))).thenReturn(i);
+        when(i.getStrategy(any(Long.class))).thenReturn(Strategy.VERIFY);
+        LoginManager sut = new LoginManager(
+                auth,
+                fw,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
     }
+
 
     @Test(expected = InvalidLoginException.class)
-    public void validPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException {
-        LoginManager lm = new LoginManager(authentification, alwaysBannedFirewall, sessionManager, hashHelper);
-        lm.changePassword(
-                "annika", "annika", "neuesPw", ""
-        );
+    public void validPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        Instance i = mock(Instance.class);
+        Firewall fw = mock(Firewall.class);
+        when(fw.get(any(String.class))).thenReturn(i);
+        when(i.getStrategy(any(Long.class))).thenReturn(Strategy.BLOCK);
+        LoginManager sut = new LoginManager(
+                auth,
+                fw,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
     }
+
 
     @Test(expected = InvalidLoginException.class)
-    public void invalidPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException {
-        LoginManager lm = new LoginManager(authentification, alwaysBannedFirewall, sessionManager, hashHelper);
-        lm.changePassword(
-                "annika", "annikxxxa", "neuesPw", ""
-        );
-    }
-
-    public void nulledUsernameDoesntFail() throws PasswordChangeRequiredException, CaptchaRequiredException, InvalidLoginException {
-        loginManager.login(
-            null, "123", ""
-        );
+    public void invalidPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException {
+        User authenticatedUser = mock(User.class);
+        Authentification auth = mock(Authentification.class);
+        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        Instance i = mock(Instance.class);
+        Firewall fw = mock(Firewall.class);
+        when(fw.get(any(String.class))).thenReturn(i);
+        when(i.getStrategy(any(Long.class))).thenReturn(Strategy.BLOCK);
+        LoginManager sut = new LoginManager(
+                auth,
+                fw,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
     }
 }

@@ -8,6 +8,7 @@ import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import models.Group;
 import models.User;
+import models.finders.FileFinder;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import org.junit.*;
@@ -43,6 +44,9 @@ public class GroupManagerTests {
 
     @Mock
     Policy policy;
+
+    @Mock
+    FileFinder defaultFileFinder;
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -92,7 +96,7 @@ public class GroupManagerTests {
         peter.setGroups(Stream.of(all, petersGroup).collect(Collectors.toList()));
         klaus.setGroups(Stream.of(all).collect(Collectors.toList()));
 
-        gm = new GroupManager(groupFinder, userFinder, defaultServer, sessionManager, policy);
+        gm = new GroupManager(groupFinder, userFinder, defaultServer, sessionManager, policy, defaultFileFinder);
     }
 
     @Test
