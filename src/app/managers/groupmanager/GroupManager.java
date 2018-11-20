@@ -5,8 +5,10 @@ import managers.UnauthorizedException;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
+import models.File;
 import models.Group;
 import models.User;
+import models.finders.FileFinder;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import policyenforcement.Policy;
@@ -22,10 +24,12 @@ public class GroupManager {
     private final UserFinder userFinder;
     private final EbeanServer ebeanServer;
     private final SessionManager sessionManager;
+    private final FileFinder fileFinder;
     private final Policy policy;
 
     @Inject
-    public GroupManager(GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer, SessionManager sessionManager, Policy policy) {
+    public GroupManager(GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer, SessionManager sessionManager, Policy policy, FileFinder fileFinder) {
+        this.fileFinder = fileFinder;
         this.groupFinder = groupFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
@@ -48,6 +52,19 @@ public class GroupManager {
 
             tx.commit();
         }
+    }
+
+    public List<File> getGroupFiles(Group group) throws UnauthorizedException, InvalidArgumentException {
+        return fileFinder.query()
+                .where()
+                .and()
+                .eq("groupPermissions.group", group)
+                .or()
+                .eq("groupPermissions.canRead", true)
+                .eq("groupPermissions.canWrite", true)
+                .endOr()
+                .endAnd()
+                .findList();
     }
 
     public List<Group> getAllGroups() throws InvalidArgumentException, UnauthorizedException {

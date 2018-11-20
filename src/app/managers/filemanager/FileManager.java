@@ -102,19 +102,6 @@ public class FileManager {
         return fileFinder.getFilesByOwner(user.getUserId());
     }
 
-    public List<File> getGroupFiles(Group group) throws UnauthorizedException, InvalidArgumentException {
-        return fileFinder.query()
-                .where()
-                .and()
-                .eq("groupPermissions.group", group)
-                .or()
-                    .eq("groupPermissions.canRead", true)
-                    .eq("groupPermissions.canWrite", true)
-                .endOr()
-                .endAnd()
-                .findList();
-    }
-
     public List<File> accessibleFiles() {
         User user = sessionManager.currentUser();
 

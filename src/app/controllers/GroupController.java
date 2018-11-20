@@ -2,7 +2,6 @@ package controllers;
 
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
-import managers.filemanager.FileManager;
 import managers.groupmanager.GroupManager;
 import managers.groupmanager.GroupNameAlreadyExistsException;
 import models.File;
@@ -11,12 +10,9 @@ import models.User;
 import dtos.CreateGroupDto;
 import dtos.DeleteGroupDto;
 import dtos.UserIdDto;
-import models.finders.GroupFinder;
-import models.finders.UserFinder;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
 import policyenforcement.session.Authentication;
 import policyenforcement.session.SessionManager;
@@ -24,7 +20,6 @@ import policyenforcement.session.SessionManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
 
@@ -38,17 +33,15 @@ public class GroupController extends Controller {
 
     private final GroupManager groupManager;
     private final SessionManager sessionManager;
-    private final FileManager fileManager;
 
     @Inject
-    public GroupController(FormFactory formFactory, GroupManager groupManager, SessionManager sessionManager, FileManager fileManager) {
+    public GroupController(FormFactory formFactory, GroupManager groupManager, SessionManager sessionManager) {
         this.groupForm = formFactory.form(CreateGroupDto.class);
         this.removeGroupUserForm = formFactory.form(UserIdDto.class);
         this.addUserToGroupForm = formFactory.form(UserIdDto.class);
         this.deleteGroupForm = formFactory.form(DeleteGroupDto.class);
         this.groupManager = groupManager;
         this.sessionManager = sessionManager;
-        this.fileManager = fileManager;
     }
 
     public Result showAddMemberForm(Long groupId) throws UnauthorizedException, InvalidArgumentException {
@@ -116,7 +109,7 @@ public class GroupController extends Controller {
 
     public Result showGroupFiles(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Group group = groupManager.getGroup(groupId);
-        List<File> sharedWithGroup = fileManager.getGroupFiles(group);
+        List<File> sharedWithGroup = groupManager.getGroupFiles(group);
         return ok(views.html.groups.GroupFiles.render(group, asScala(sharedWithGroup)));
     }
 
