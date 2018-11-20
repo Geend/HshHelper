@@ -177,4 +177,12 @@ public class FileManager {
     public void editFile(User currentUser, Long fileId, String comment) throws QuotaExceededException, UnauthorizedException, InvalidArgumentException {
         editFile(currentUser, fileId, comment, null);
     }
+
+    public void removeTempFiles(){
+        User user = sessionManager.currentUser();
+        List<TempFile> tempFiles = tempFileFinder.getFilesByOwner(user.getUserId());
+
+        tempFiles.forEach(ebeanServer::delete);
+
+    }
 }

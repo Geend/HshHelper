@@ -203,5 +203,12 @@ public class FileController extends Controller {
 
     }
 
+    public Result removeTempFiles() {
+
+        fileManager.removeTempFiles();
+
+        return redirect(routes.FileController.showQuotaUsage());
+    }
+
 
 }

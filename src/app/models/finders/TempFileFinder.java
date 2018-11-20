@@ -4,6 +4,7 @@ import io.ebean.Finder;
 import models.File;
 import models.TempFile;
 
+import java.util.List;
 import java.util.Optional;
 
 public class TempFileFinder extends Finder<Long, TempFile> {
@@ -16,4 +17,9 @@ public class TempFileFinder extends Finder<Long, TempFile> {
         }
         return Optional.of(f);
     }
+
+    public List<TempFile> getFilesByOwner(Long userId) {
+        return this.query().where().eq("owner_id", userId).findList();
+    }
+
 }

@@ -52,6 +52,8 @@ GET         /files/quota                                               controlle
 GET         /files/:fileId                                             controllers.FileController.showFile(fileId: Long)
 GET         /files/:fileId/download                                    controllers.FileController.downloadFile(fileId: Long)
 POST        /files/edit                                                controllers.FileController.editFile
+POST        /files/removeTempFiles                                     controllers.FileController.removeTempFiles
+
 # FileController - End
 
 
