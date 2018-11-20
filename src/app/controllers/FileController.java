@@ -61,7 +61,8 @@ public class FileController extends Controller {
     }
 
     public Result showThirdPartyFiles() {
-        return ok("");
+        List<File> files = fileManager.sharedWithCurrentUserFiles();
+        return ok(views.html.file.Files.render(asScala(files)));
     }
 
 

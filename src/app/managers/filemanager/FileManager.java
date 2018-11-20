@@ -129,6 +129,35 @@ public class FileManager {
                 .findList();
     }
 
+    public List<File> sharedWithCurrentUserFiles() {
+        User user = sessionManager.currentUser();
+
+        return fileFinder.query()
+                .where()
+                .and()
+                    .ne("owner", user)
+                    .or()
+                        .and()
+                            .eq("userPermissions.user", user)
+                            .or()
+                                .eq("userPermissions.canRead", true)
+                                .eq("userPermissions.canWrite", true)
+                            .endOr()
+                        .endAnd()
+                        .and()
+                            .eq("groupPermissions.group.members", user)
+                            .and()
+                                .or()
+                                    .eq("groupPermissions.canRead", true)
+                                    .eq("groupPermissions.canWrite", true)
+                                .endOr()
+                            .endAnd()
+                        .endAnd()
+                    .endOr()
+                .endAnd()
+                .findList();
+    }
+
     public UserQuota getCurrentQuotaUsage() {
         User user = sessionManager.currentUser();
         return fileFinder.getUsedQuota(user.getUserId());
