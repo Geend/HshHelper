@@ -48,7 +48,11 @@
 
         @for(loginAttempt <- loginattempts) {
             <tr>
-                <td>@loginAttempt.getDateTime()</td>
+                <td>
+                    <nobr>
+                    @loginAttempt.getDateTime().toString("dd.MM.yyyy - hh:mm:ss")
+                    </nobr>
+                </td>
                 <td>@loginAttempt.getAddress()</td>
                 <td>@loginAttempt.getClientName()</td>
             </tr>
