@@ -102,7 +102,7 @@ public class FileManager {
 
         Set<File> result = new HashSet<>();
         result.addAll(user.getOwnedFiles());
-        result.addAll(fileFinder.byUserHasGroupPermission(user));
+        result.addAll(fileFinder.byUserHasUserPermission(user));
         result.addAll(fileFinder.byUserHasGroupPermission(user));
 
         return new ArrayList<>(result);
@@ -113,7 +113,7 @@ public class FileManager {
         User user = sessionManager.currentUser();
 
         Set<File> result = new HashSet<>();
-        result.addAll(fileFinder.byUserHasGroupPermission(user));
+        result.addAll(fileFinder.byUserHasUserPermission(user));
         result.addAll(fileFinder.byUserHasGroupPermission(user));
         result.removeAll(user.getOwnedFiles());
 
