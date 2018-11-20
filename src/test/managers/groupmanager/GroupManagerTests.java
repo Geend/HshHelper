@@ -131,13 +131,13 @@ public class GroupManagerTests {
 
     @Test
     public void canRemoveGroupMember() throws UnauthorizedException, InvalidArgumentException {
-        when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
-        when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
-        when(sessionManager.currentUser()).thenReturn(admin);
+        when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
+        when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
+        when(sessionManager.currentUser()).thenReturn(peter);
 
-        gm.removeGroupMember(klausId, allId);
-        verify(defaultServer).save(all);
-        assertThat(all.getMembers()).containsExactlyInAnyOrder(admin, peter);
+        gm.removeGroupMember(adminId, petersGrpId);
+        verify(defaultServer).save(petersGroup);
+        assertThat(petersGroup.getMembers()).containsExactlyInAnyOrder(peter);
     }
 
     @Test

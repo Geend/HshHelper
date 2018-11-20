@@ -109,6 +109,11 @@ public class Policy {
             return false;
         }
 
+        //Can't remove from the "all" group, because every user needs te be a member of it
+        if(group.getIsAllGroup()){
+            return false;
+        }
+
         if(group.getOwner().equals(toBeDeleted)) {
             return false;
         }
@@ -129,6 +134,11 @@ public class Policy {
     }
 
     public boolean CanGenerallyAddGroupMember(User currentUser, Group group) {
+        //Can't remove from the "all" group, because every user needs te be a member of it
+        if(group.getIsAllGroup()){
+            return false;
+        }
+
         if(currentUser.isAdmin()) {
             return true;
         }
@@ -142,6 +152,11 @@ public class Policy {
 
     public boolean CanAddSpecificGroupMember(User currentUser, Group group, User toBeAdded) {
         if(currentUser == null) {
+            return false;
+        }
+
+        //Can't add to the "all" group. Every user is alread in there.
+        if(group.getIsAllGroup()){
             return false;
         }
 
