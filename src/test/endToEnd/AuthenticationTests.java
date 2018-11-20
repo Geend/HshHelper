@@ -22,14 +22,10 @@ import play.test.TestServer;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static play.test.Helpers.fakeApplication;
 
 @RunWith(Enclosed.class)
@@ -154,11 +150,11 @@ public class AuthenticationTests {
                     { "POST", "/logout", Http.Status.SEE_OTHER },    // controllers.LoginController.logout
                     { "GET", "/changePasswordAfterReset", Http.Status.OK },    // controllers.LoginController.showChangePasswordAfterResetForm
                     { "POST", "/changePasswordAfterReset", Http.Status.OK },    // controllers.LoginController.changePasswordAfterReset
-                    { "GET", "/user/groups", Http.Status.SEE_OTHER },    // controllers.GroupController.showOwnGroups
+                    { "GET", "/groups/own", Http.Status.SEE_OTHER },    // controllers.GroupController.showOwnGroups
                     { "GET", "/groups/create", Http.Status.SEE_OTHER },    // controllers.GroupController.showCreateGroupForm
                     { "POST", "/groups/create", Http.Status.SEE_OTHER },    // controllers.GroupController.createGroup
                     { "GET", "/groups/1", Http.Status.SEE_OTHER },    // controllers.GroupController.showGroup(groupId : Long)
-                    { "POST", "/groups/1/delete", Http.Status.SEE_OTHER },    // controllers.GroupController.deleteOwnGroup(groupId : Long)
+                    { "POST", "/groups/deleteGroup", Http.Status.SEE_OTHER },    // controllers.GroupController.deleteOwnGroup(groupId : Long)
                     { "POST", "/groups/1/members/remove", Http.Status.SEE_OTHER },    // controllers.GroupController.removeGroupMember(groupId : Long)
                     { "POST", "/groups/1/members/add", Http.Status.SEE_OTHER },    // controllers.GroupController.addGroupMember(groupId : Long)
                     { "GET", "/sessions", Http.Status.SEE_OTHER },    // controllers.UserController.showActiveUserSessions()
