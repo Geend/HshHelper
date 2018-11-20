@@ -82,4 +82,12 @@ public class File extends Model {
     public Long getTotalSize() {
         return this.dataSize + this.name.length() + this.comment.length();
     }
+
+    public List<UserPermission> getUserPermissions() {
+        return userPermissions;
+    }
+
+    public List<GroupPermission> getGroupPermissions() {
+        return groupPermissions;
+    }
 }

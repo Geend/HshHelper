@@ -1,0 +1,19 @@
+@()(content : Html)
+
+@Base("Dateien") {
+    <div class="inline-menu lr">
+        <div class="left">
+            <span class="title">Ansicht:</span>
+            @helper.MenuLink("Eigene Dateien", routes.FileController.showOwnFiles())
+            -
+            @helper.MenuLink("Geteilte Dateien", routes.FileController.showSharedFiles())
+            -
+            @helper.MenuLink("Fremde Dateien", routes.FileController.showThirdPartyFiles())
+        </div>
+        <div class="right">
+            <a href="@routes.FileController.showUploadFileForm()">Datei hochladen</a>
+        </div>
+    </div>
+
+    @content
+}

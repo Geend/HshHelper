@@ -23,6 +23,7 @@ import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
 
@@ -52,6 +53,16 @@ public class FileController extends Controller {
         return ok(views.html.file.Files.render(asScala(files)));
     }
 
+    public Result showSharedFiles() {
+        User user = sessionManager.currentUser();
+        // TODO: Durch qry ersetzen!
+        List<File> files = user.getOwnedFiles().stream().filter(x -> x.getGroupPermissions().size() > 0 || x.getUserPermissions().size() > 0).collect(Collectors.toList());
+        return ok(views.html.file.SharedFiles.render(asScala(files)));
+    }
+
+    public Result showThirdPartyFiles() {
+        return ok("");
+    }
 
 
 

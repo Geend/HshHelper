@@ -87,6 +87,14 @@ public class DatabaseInitialization {
         f3.save();
 
 
+        File f4 = new File();
+        f4.setName("admin2.txt");
+        f4.setComment("blablabla");
+        f4.setOwner(u1);
+        f4.setData(new byte[]{1,2,1,2});
+        f4.save();
+
+
         UserPermission up1 = new UserPermission();
         up1.setUser(u2);
         up1.setFile(f3);
@@ -100,6 +108,20 @@ public class DatabaseInitialization {
         up2.setCanRead(true);
         up2.setCanWrite(true);
         up2.save();
+
+        UserPermission up3 = new UserPermission();
+        up3.setUser(u2);
+        up3.setFile(f1);
+        up3.setCanRead(false);
+        up3.setCanWrite(true);
+        up3.save();
+
+        UserPermission up4 = new UserPermission();
+        up4.setUser(u2);
+        up4.setFile(f4);
+        up4.setCanRead(false);
+        up4.setCanWrite(true);
+        up4.save();
 
         GroupPermission gp1 = new GroupPermission();
         gp1.setGroup(g1);

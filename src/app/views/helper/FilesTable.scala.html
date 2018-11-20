@@ -38,7 +38,7 @@
         <tbody>
         @for(file <- files) {
             <tr @classname(file)>
-                <td class="name"><b><a href="@routes.FileController.showFile(file.getFileId)">admin.txt</a></b></td>
+                <td class="name"><b><a href="@routes.FileController.showFile(file.getFileId)">@file.getName</a></b></td>
                 <td>@file.getComment</td>
                 <td>@file.getOwner.getUsername</td>
                 <td>@extension.FileSizeFormatter.humanReadableByteCount(file.getTotalSize)</td>

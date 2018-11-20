@@ -291,6 +291,14 @@ form {
     width: 100%;
 }
 
+.content .permissionTable .file {
+    color: #666;
+}
+
+.content .permissionTable .rightBound {
+    text-align: right;
+}
+
 .fileTableLegend {
     width: 100%;
     margin-top: 10px;

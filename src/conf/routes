@@ -40,6 +40,8 @@ POST        /groups/:groupId/members/add                               controlle
 
 # FileController - Start
 GET         /files/own                                                 controllers.FileController.showOwnFiles
+GET         /files/shared                                              controllers.FileController.showSharedFiles
+GET         /files/thirdParty                                          controllers.FileController.showThirdPartyFiles
 
 
 GET         /files/all                                                 controllers.FileController.listFiles

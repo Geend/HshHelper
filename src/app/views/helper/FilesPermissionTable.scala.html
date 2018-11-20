@@ -1,0 +1,49 @@
+@import policyenforcement.Policy
+@import policyenforcement.session.SessionManager.SessionInstance
+@(files : Seq[File])
+
+@permissions(canRead : Boolean, canWrite : Boolean) = {
+    @if(canRead) {
+        Read
+        @if(canWrite) {
+            / Write
+        }
+    } else {
+        @if(canWrite) {
+            Write
+        }
+    }
+}
+
+@if(files.nonEmpty) {
+    <table class="permissionTable">
+        @for(file <- files) {
+            <thead>
+                <tr class="file">
+                    <td><a href="@routes.FileController.showFile(file.getFileId)"><b>@file.getName</b></a></td>
+                    <td  colspan="2">Berechtigungen</td>
+                </tr>
+            </thead>
+
+            @for(groupPermission <- file.getGroupPermissions()) {
+                <tr>
+                    <td>Gruppe: @groupPermission.getGroup.getName</td>
+                    <td>@permissions(groupPermission.getCanRead, groupPermission.getCanWrite)</td>
+                    <td  class="rightBound"><a href="#">Ändern</a> | <a href="#">Entfernen</a></td>
+                </tr>
+            }
+
+            @for(userPermission <- file.getUserPermissions()) {
+                <tr>
+                    <td>User: @userPermission.getUser.getUsername</td>
+                    <td>@permissions(userPermission.getCanRead, userPermission.getCanWrite)</td>
+                    <td class="rightBound"><a href="#">Ändern</a> | <a href="#">Entfernen</a></td>
+                </tr>
+            }
+        }
+    </table>
+} else {
+    <div class="message error">
+        Keine Dateien vorhanden!
+    </div>
+}
