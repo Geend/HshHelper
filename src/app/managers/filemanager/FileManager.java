@@ -149,14 +149,15 @@ public class FileManager {
     }
 
 
-    public void editFile(User currentUser, Long fileId, String comment, byte[] data) throws InvalidArgumentException, UnauthorizedException, QuotaExceededException {
+    public void editFile(Long fileId, String comment, byte[] data) throws InvalidArgumentException, UnauthorizedException, QuotaExceededException {
+        User user = sessionManager.currentUser();
 
         Optional<File> fileOptional = fileFinder.byIdOptional(fileId);
 
         if(!fileOptional.isPresent())
             throw new InvalidArgumentException();
 
-        if(!policy.CanWriteFile(currentUser, fileOptional.get()))
+        if(!policy.CanWriteFile(user, fileOptional.get()))
             throw new UnauthorizedException();
 
 
@@ -169,13 +170,13 @@ public class FileManager {
         }
 
 
-        checkQuota(currentUser, file.getName(), file.getComment(), file.getData());
+        checkQuota(user, file.getName(), file.getComment(), file.getData());
 
         ebeanServer.save(file);
     }
 
-    public void editFile(User currentUser, Long fileId, String comment) throws QuotaExceededException, UnauthorizedException, InvalidArgumentException {
-        editFile(currentUser, fileId, comment, null);
+    public void editFile(Long fileId, String comment) throws QuotaExceededException, UnauthorizedException, InvalidArgumentException {
+        editFile(fileId, comment, null);
     }
 
     public void removeTempFiles(){
