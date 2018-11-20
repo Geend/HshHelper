@@ -1,8 +1,8 @@
+@import views.TemplateEnvironment
 @import policyenforcement.session.SessionManager.SessionInstance
 @import views.TemplateEnvironment
 @(title : String)(content : Html)
 
-@mainManager = {TemplateEnvironment.GetMainManager()};
 
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
@@ -12,7 +12,6 @@
         <link rel="stylesheet" href="@routes.Assets.at("css/style.css")">
     </head>
     <body>
-
         <div class="main">
             <div class="logout">
                 @helper.form(action = routes.LoginController.logout()) {
