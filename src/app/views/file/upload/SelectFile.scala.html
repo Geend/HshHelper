@@ -2,6 +2,7 @@
 @(error : String)
 
 @Main("Datei Hochladen"){
+    @*
     @bootstrapHelper.center("Datei auswählen") {
         @if(error) {
             <div>@error</div>
@@ -15,4 +16,5 @@
             </p>
         }
     }
+    *@
 }

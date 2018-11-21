@@ -31,6 +31,7 @@ import static play.libs.Scala.asScala;
 @Authentication.Required
 public class FileController extends Controller {
     private final Form<UploadFileMetaDto> uploadFileMetaForm;
+    private final Form<UploadFileDto> uploadFileForm;
     private final Form<DeleteFileDto> deleteFileForm;
     private final Form<EditFileDto> editFileForm;
     private final Form<SearchQueryDto> searchFileForm;
@@ -41,6 +42,7 @@ public class FileController extends Controller {
 
     @Inject
     public FileController(SessionManager sessionManager, FileManager fileManager, FormFactory formFactory) {
+        this.uploadFileForm = formFactory.form(UploadFileDto.class);
         this.uploadFileMetaForm = formFactory.form(UploadFileMetaDto.class);
         this.editFileForm = formFactory.form(EditFileDto.class);
         this.deleteFileForm = formFactory.form(DeleteFileDto.class);
@@ -79,16 +81,9 @@ public class FileController extends Controller {
         return redirect(routes.FileController.showOwnFiles());
     }
 
-
-
-
-
-    public Result changePermissionsForFile() {
-        return ok("test");
-    }
-
     public Result showUploadFileForm() {
-        return ok(views.html.file.upload.SelectFile.render(null));
+        UploadFileDto uploadFileDto = this.fileManager.createUploadFileDto();
+        return ok(views.html.file.UploadFile.render(this.uploadFileForm, uploadFileDto));
     }
 
     public Result uploadFile() {

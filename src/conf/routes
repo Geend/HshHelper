@@ -46,12 +46,13 @@ POST        /files/delete                                              controlle
 
 GET         /files/upload                                              controllers.FileController.showUploadFileForm
 POST        /files/upload                                              controllers.FileController.uploadFile
-POST        /files/upload/store                                        controllers.FileController.storeFile
+#POST        /files/upload/store                                        controllers.FileController.storeFile
+#POST        /files/removeTempFiles                                     controllers.FileController.removeTempFiles
+
 GET         /files/quota                                               controllers.FileController.showQuotaUsage
 GET         /files/:fileId                                             controllers.FileController.showFile(fileId: Long)
 GET         /files/:fileId/download                                    controllers.FileController.downloadFile(fileId: Long)
 POST        /files/edit                                                controllers.FileController.editFile
-POST        /files/removeTempFiles                                     controllers.FileController.removeTempFiles
 POST        /files/search                                              controllers.FileController.searchFiles
 
 # FileController - End

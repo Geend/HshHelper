@@ -1,6 +1,7 @@
 @(form: Form[dtos.UploadFileMetaDto])
 
 @Main("Datei Hochladen"){
+    @*
     @bootstrapHelper.center("Metadaten angeben") {
         @bootstrapHelper.form(
             routes.FileController.storeFile(),
@@ -16,4 +17,5 @@
             button = bootstrapHelper.button("Datei speichern")
         )
     }
+    *@
 }

@@ -1,5 +1,8 @@
 package managers.filemanager;
 
+import dtos.GroupPermissionDto;
+import dtos.UploadFileDto;
+import dtos.UserPermissionDto;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.*;
@@ -35,6 +38,22 @@ public class FileManager {
         this.sessionManager = sessionManager;
     }
 
+    public UploadFileDto createUploadFileDto() {
+        User currentUser = this.sessionManager.currentUser();
+        UploadFileDto result = new UploadFileDto();
+        List<UserPermissionDto> userPermissions = this.userFinder
+                .all()
+                .stream()
+                .map(x -> new UserPermissionDto(x.getUserId(), x.getUsername(), PermissionLevel.NONE))
+                .collect(Collectors.toList());
+        List<GroupPermissionDto> groupPermissions = currentUser.getGroups()
+                .stream()
+                .map(x -> new GroupPermissionDto(x.getGroupId(), x.getName(), PermissionLevel.NONE))
+                .collect(Collectors.toList());
+        result.setUserPermissions(userPermissions);
+        result.setGroupPermissions(groupPermissions);
+        return result;
+    }
 
     private void checkQuota(User user, String filename, String comment, byte[] data) throws QuotaExceededException {
         UserQuota uq = fileFinder.getUsedQuota(user.getUserId());
@@ -121,7 +140,6 @@ public class FileManager {
 
         return new ArrayList<>(result);
     }
-
 
     public UserQuota getCurrentQuotaUsage() {
         User user = sessionManager.currentUser();
