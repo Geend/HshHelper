@@ -199,6 +199,12 @@ public class PolicyTests {
         Remove user from Group
      */
     @Test
+    public void noUserCanBeRemovedFromAllGroup() {
+        boolean actual = Policy.instance.CanRemoveGroupMember(admin, allGroup, peter);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
     public void ownerCannotBeRemovedFromGroup() {
         boolean actual = Policy.instance.CanRemoveGroupMember(peter, petersGroup, peter);
         assertThat(actual).isFalse();
