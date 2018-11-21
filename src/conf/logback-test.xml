@@ -1,0 +1,7 @@
+<configuration>
+    <!-- Suppress logback complaining about multiple logback-test.xml files -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+    <root level="OFF" />
+
+</configuration>

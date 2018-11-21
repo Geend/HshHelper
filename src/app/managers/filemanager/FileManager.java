@@ -10,6 +10,7 @@ import models.finders.FileFinder;
 import models.finders.TempFileFinder;
 import models.finders.UserFinder;
 import models.finders.UserQuota;
+import play.Logger;
 import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 
@@ -24,6 +25,8 @@ public class FileManager {
     private final EbeanServer ebeanServer;
     private final Policy policy;
     private final SessionManager sessionManager;
+
+    private static final Logger.ALogger logger = Logger.of(FileManager.class);
 
     @Inject
     public FileManager(FileFinder fileFinder, TempFileFinder tempFileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy, SessionManager sessionManager) {
@@ -41,6 +44,7 @@ public class FileManager {
         uq.addFile(filename, comment, data);
 
         if (user.getQuotaLimit() <= uq.getTotalUsage()) {
+            logger.error(user.getUsername() + " tried to exceed quota");
             throw new QuotaExceededException();
         }
     }
@@ -69,10 +73,12 @@ public class FileManager {
 
             Optional<TempFile> tempFile = tempFileFinder.byIdOptional(tempFileId);
             if (!tempFile.isPresent()) {
+                logger.error(user.getUsername() + " tried to access the tempfile " + tempFile.get().getFileId() + "but it does not exist");
                 throw new IllegalArgumentException("TempFile doesn't exist");
             }
 
             if (!policy.CanAccessTempFile(user, tempFile.get())) {
+                logger.error(user.getUsername() + " tried to access the tempfile " + tempFile.get().getFileId());
                 throw new UnauthorizedException();
             }
 
@@ -80,6 +86,7 @@ public class FileManager {
 
             Optional<File> existingFile = fileFinder.byFileName(user.getUserId(), filename);
             if (existingFile.isPresent()) {
+                logger.error(user.getUsername() + " tried to create file with name " + filename + " but that name already exists");
                 throw new FilenameAlreadyExistsException();
             }
 
@@ -93,6 +100,7 @@ public class FileManager {
             tempFile.get().delete();
 
             tx.commit();
+            logger.info(user.getUsername() + " uploaded file " + filename);
 
             return file;
         }
@@ -136,9 +144,12 @@ public class FileManager {
             throw new InvalidArgumentException();
 
 
-        if (!policy.CanReadFile(sessionManager.currentUser(), file.get()))
+        if (!policy.CanReadFile(sessionManager.currentUser(), file.get())) {
+            logger.error(sessionManager.currentUser().getUsername() + " tried to access file " + file.get().getName() + " but he is not authorized");
             throw new UnauthorizedException();
+        }
 
+        logger.info(sessionManager.currentUser().getUsername() + " is accessing file " + file.get().getName());
         return file.get();
     }
 
@@ -159,11 +170,13 @@ public class FileManager {
         if (!fileOptional.isPresent())
             throw new InvalidArgumentException();
 
-        if (!policy.CanWriteFile(user, fileOptional.get()))
+        if (!policy.CanWriteFile(user, fileOptional.get())) {
+            logger.error(user.getUsername() + " tried to overwrite file " + fileOptional.get().getName() + " but he is not authorized");
             throw new UnauthorizedException();
-
+        }
 
         File file = fileOptional.get();
+        String oldComment = file.getComment();
 
         file.setComment(comment);
 
@@ -175,6 +188,12 @@ public class FileManager {
         checkQuota(user, file.getName(), file.getComment(), file.getData());
 
         ebeanServer.save(file);
+        logger.info(user.getUsername() + " changed the file " + file.getName() + ".");
+        logger.info("\t old comment: " + oldComment);
+        logger.info("\t new comment: " + comment);
+        if (data != null) {
+            logger.info("\t file also changed");
+        }
     }
 
     public void editFile(Long fileId, String comment) throws QuotaExceededException, UnauthorizedException, InvalidArgumentException {
@@ -186,7 +205,7 @@ public class FileManager {
         List<TempFile> tempFiles = tempFileFinder.getFilesByOwner(user.getUserId());
 
         tempFiles.forEach(ebeanServer::delete);
-
+        logger.info("Deleted all tempfiles of user " + user.getUsername());
     }
 
     public List<File> searchFile(String query) {

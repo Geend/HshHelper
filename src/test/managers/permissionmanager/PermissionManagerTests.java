@@ -60,6 +60,13 @@ public class PermissionManagerTests {
         when(defaultGroupPermissionFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(GroupPermission.class)));
         when(defaultUserPermissionFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(UserPermission.class)));
         when(defaultFileFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(File.class)));
+
+        // Mocks to satisfy logger object accesses during tests
+        when(this.defaultSessionManager.currentUser().getUsername()).thenReturn("");
+        when(this.defaultGroupPermissionFinder.byIdOptional(0l).get().getGroup()).thenReturn(mock(Group.class));
+        when(this.defaultGroupPermissionFinder.byIdOptional(0l).get().getGroup().getName()).thenReturn("");
+        when(this.defaultUserPermissionFinder.byIdOptional(0l).get().getUser()).thenReturn(mock(User.class));
+        when(this.defaultUserPermissionFinder.byIdOptional(0l).get().getUser().getUsername()).thenReturn("");
     }
 
     @Test
@@ -128,6 +135,11 @@ public class PermissionManagerTests {
         UserPermission up = mock(UserPermission.class);
         UserPermissionFinder upf = mock(UserPermissionFinder.class);
         when(upf.byIdOptional(0l)).thenReturn(Optional.of(up));
+
+        // satisfy the logger
+        when(up.getUser()).thenReturn(mock(User.class));
+        when(up.getUser().getUsername()).thenReturn("");
+
         EbeanServer s = mock(EbeanServer.class);
         PermissionManager permissionManager = new PermissionManager(
                 upf,
@@ -149,6 +161,11 @@ public class PermissionManagerTests {
         GroupPermission gp = mock(GroupPermission.class);
         GroupPermissionFinder gpf = mock(GroupPermissionFinder.class);
         when(gpf.byIdOptional(0l)).thenReturn(Optional.of(gp));
+
+        // satisfy the logger
+        when(gp.getGroup()).thenReturn(mock(Group.class));
+        when(gp.getGroup().getName()).thenReturn("");
+
         EbeanServer s = mock(EbeanServer.class);
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
@@ -230,6 +247,7 @@ public class PermissionManagerTests {
     public void DeleteGroupPermissionIsAuthorizedTest() throws UnauthorizedException, InvalidArgumentException {
         Policy spec = mock(Policy.class);
         when(spec.CanDeleteGroupPermission(any(User.class), any(GroupPermission.class))).thenReturn(false);
+
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
                 this.defaultGroupPermissionFinder,
@@ -247,6 +265,11 @@ public class PermissionManagerTests {
         GroupPermission permission = mock(GroupPermission.class);
         GroupPermissionFinder groupPermissionFinder = mock(GroupPermissionFinder.class);
         when(groupPermissionFinder.byIdOptional(0l)).thenReturn(Optional.of(permission));
+
+        // satisfy the logger
+        when(permission.getGroup()).thenReturn(mock(Group.class));
+        when(permission.getGroup().getName()).thenReturn("");
+
         EbeanServer s = mock(EbeanServer.class);
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
@@ -267,6 +290,10 @@ public class PermissionManagerTests {
         UserPermission permission = mock(UserPermission.class);
         UserPermissionFinder userPermissionFinder = mock(UserPermissionFinder.class);
         when(userPermissionFinder.byIdOptional(0l)).thenReturn(Optional.of(permission));
+
+        // satisfy the logger
+        when(permission.getUser()).thenReturn(mock(User.class));
+        when(permission.getUser().getUsername()).thenReturn("");
 
         EbeanServer s = mock(EbeanServer.class);
         PermissionManager permissionManager = new PermissionManager(
