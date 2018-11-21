@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.booleanThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -622,6 +623,24 @@ public class PolicyTests {
     public void normalUserCantReadFile(){
         boolean actual = Policy.instance.CanReadFile(horst, klausFile);
         assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonOwnerCantViewFilePermissions() {
+        boolean actual = Policy.instance.CanViewFilePermissions(horst, klausFile);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonOwnerAdminCantViewFilePermissions() {
+        boolean actual = Policy.instance.CanViewFilePermissions(admin, klausFile);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void ownerCanViewFilePermissions() {
+        boolean actual = Policy.instance.CanViewFilePermissions(klaus, klausFile);
+        assertThat(actual).isTrue();
     }
 
     /*

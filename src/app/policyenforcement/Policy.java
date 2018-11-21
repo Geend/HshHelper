@@ -330,4 +330,16 @@ public class Policy {
 
         return false;
     }
+
+    public boolean CanViewFilePermissions(User currentUser, File file) {
+        if(currentUser == null) {
+            return false;
+        }
+
+        if(file.getOwner().equals(currentUser)) {
+            return true;
+        }
+
+        return false;
+    }
 }
