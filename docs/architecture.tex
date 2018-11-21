@@ -105,8 +105,22 @@ Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als C
 
 \section{Play Cookies}
 \label{play:cookies}
-Play verwendet ein \enquote{\gls{jwt}} als Session Cookie mit dem Namen \linebreak\textit{PLAY\_SESSION}. Es ist durch eine HMAC-SHA256 Signatur gegen Manipulationen geschützt. Das Cookie wird durch HsH-Helfer für die Implementierung des Session-Konzepts genutzt. Außerdem sind im JWT das aktuell gültige CSRF Token und zwei Zeitstempel enthalten.
-
+Das Play Framework nutzt zur Persistierung eines Cookies in dem Client-Browser das \enquote{\gls{jwt}}-Format.
+Ein \gls{jwt} besteht aus 3 Teilen: einem Header, einer Payload sowie einer Signatur, siehe \ref{jwtformat}.
+Jeder dieser Teile ist ein namenloses JSON-Objekt.
+Innerhalb des Headers ist gelistet, welcher Algorithmus genutzt wurde, um das JWT zu signieren.
+Die Payload ist ein einfaches JSON-Objekt, in welchem Daten gespeichert werden können, die zu signieren sind.
+Diese Daten werden innerhalb des JWT-Formats als \enquote{Claims} bezeichnet.
+Zusätzlich werden innerhalb dieser Payload persistiert, zu welchem Zeitpunkt das JWT erstellt wurde, ab welchem Zeitpunkt es gültig ist und wann es ausläuft.
+% TODO: Vllt erwähnen, wie HMAC-SHA256 funktioniert?
+Für die Signatur werden Header sowie Payload durch \enquote{base64url} kodiert und dann zusammen mit einem Punkt als Trennelement konkateniert. Die dadurch entstehende Zeichenkette wird zusammen mit einem geheimen Schlüssel an den kryptografischen Signatur-Algorithmus weitergegeben, der zuvor im Header genannt wird.
+Play verwendet standardmäßig zur Signierung den HMAC-SHA256 Algorithmus.
+Dadurch kann die Integrität der Claims geprüft werden und zeitgleich können sie authentifiziert werden.
+Um das JWT nun bilden zu können, werden alle 3 Teile durch \enquote{base64url} seperat kodiert und durch einen Punkt getrennt und konkateniert: \texttt{encodeBase64Url(header) + '.' + encodeBase64Url(payload) + '.' + encodeBase64Url(signature)}.
+\par
+Bei Werkseinstellungen verwendet Play ein Cookie namens \textit{PLAY\_SESSION}, in dessen Payload ein zusätzliches JSON-Objekt namens \texttt{data} sowie die Zeitstempel für Erstellungsdatum sowie Beginn der Gültigkeit gespeichert sind.
+In dem JSON-Objekt \texttt{data} persistiert Play das CSRF-Token, erlaubt einer Applikation allerdings dort auch Daten abzulegen.
+Wie später zu sehen ist, baut unser Session-Konzept darauf auf.
 
 Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, was allerdings in der aktuellen Iteration keinerlei Anwendung findet. Der Error-Handling-Code verwendet zwar den Flash-Scope um Fehlermeldungen über eine Klassengrenze hinweg verfügbar zu machen, diese Daten werden aber innerhalb einer Anfrage direkt wieder gelesen und landen somit niemals beim Client.
 
@@ -122,14 +136,19 @@ Dies hat sich allerdings bei einem Test als falsch herausgestellt. Das Flash Coo
 Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 
 \begin{itemize}
-	\item Der private Schlüssel zum signieren der Play Cookies
+	\item Der private Schlüssel zum Signieren der Play Cookies
 	\item Der private Schlüssel für reCAPTCHA
 	\item Der öffentliche Schlüssel für reCAPTCHA
 	\item Zugangsdaten für den E-Mail Server
 	\item Zugangsdaten für die Datenbank
 \end{itemize}
 
-Diese werden in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Teammitglieder persistiert, welche nicht versioniert wird. Die \texttt{application.conf} bindet diese Datei mit dem \texttt{include}-Statement ein und somit werden die Schlüssel in der Anwendung verwendet. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind, aber Anwendungseinstellungen jedoch schon.
+Der öffentliche reCAPTCHA-Schlüssel wird benötigt, damit der reCAPTCHA-Service auf unserer Seite angezeigt werden kann sowie um die Antwort des Nutzers verschlüsselt an den reCAPTCHA-Server zu schicken.
+Nach dem Ausfüllen eines reCAPTCHAs durch einen Nutzer, wird seine verschlüsselte Antwort zusammen mit dem privaten Schlüssel an den reCAPTCHA-Service geschickt.
+Dieser Schlüssel authorisiert unsere Applikation zur Kommunikation mit dem reCAPTCHA-Service, dient aber zeitgleich zur Verifikation, dass unser Server, und keine andere Entität, die Antwort verifizieren möchte.
+Das gilt natürlich nur, wenn der private Schlüssel für den reCAPTCHA-Service geheim gehalten wird.
+\par
+Daher werden alle Schlüssel sowie Zugangsdaten in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Teammitglieder persistiert, welche nicht versioniert wird. Die \texttt{application.conf} bindet diese Datei mit dem \texttt{include}-Statement ein und somit werden die Schlüssel in der Anwendung verwendet. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind, aber Anwendungseinstellungen jedoch schon.
 
 \chapter{Sicherheitsmaßnahmen}
 
@@ -160,11 +179,16 @@ Integraler Bestandteil unserer Anwendung ist eine Session-Funktionalität. Theor
 
 Die Annotation bewirkt, dass der korrospondierende Request \underline{vor} Erreichen der dazugehörigen Controller-Methode abgefangen wird und einer Prüfung unterzogen wird, ob der Absender authentifiziert ist. Ist dies nicht der Fall, wird die weitere Ausführung abgebrochen und der Nutzer auf die Login-Seite weitergeleitet. Ansonsten wird der Request an den entsprechenden Controller weitergereicht.
 
-Zur Umsetzung dieser Funktionalität setzen wir auf dem Session-Konzept von Play auf. Wird eine neue Session initialisiert, wird ein dazugehöriger Eintrag in der Datenbank erstellt. Dieser beinhaltet das Initialisierungsdatum, die dazugehörige IP-Adresse und User-ID sowie eine kryptografisch sichere \enquote{\gls{uuid}} als Identifikator. Die UUID wird in der Play-Session persistiert. Ein Angreifer kann aufgrund der JWT-Signatur nicht beliebige UUIDs an unsere Anwendung schicken.
+Zur Umsetzung dieser Funktionalität setzen wir auf dem Session-Konzept von Play auf.
+Initialisiert ein Nutzer eine neue Session, so persistieren wir seine IP-Adresse, seine User-ID, das Initialisierungsdatum und eine kryptografisch sicheren \enquote{\gls{uuid}} als Identifikator dieser neuen Session in unserer Datenbank. \linebreak
+Um diese Session sicher beim Client speichern zu können, verwenden wir das bereits genannte Cookie \textit{PLAY\_SESSION}.
+Innerhalb des Payloads dieses JWT befindet sich ein JSON-Objekt namens \enquote{data} hinterlegt, zu welchem man weitere Applikationsdaten als Schlüssel-Wert-Paare hinzufügen kann.
+Das machen wir uns zu eigen und persistieren das Schlüssel-Wert-Paar \texttt{\"HsHSession\": \"UUID\"}, durch welches wir den Nutzer authentisieren können.
+Wir verlassen uns daher nicht auf die Existenz dieses Cookies, sondern nutzen dieses nur, um einen signierten Speicher innerhalb des Client-Browsers verwenden zu können.
 
 Die UUID selbst dient als 2nd Layer of Defense: Sollte die JWT-Signatur geknackt werden, muss der Angreifer noch eine in der Datenbank enthaltene UUID erraten. Selbst wenn er diese Hürde meistert, muss er noch die dazugehörige IP-Addresse kennen, sowie über diese auf unsere Anwendung zugreifen können und dies in einem engen Zeitfenster schaffen, da die Lifetime einer Session begrenzt ist.
 
-Die Anwendung verfügt über eine Ansicht, die dem Nutzer sämtliche \enquote{aktive} Sessions anzeigt und ihm die Möglichkeit bietet, diese nach Bedarf einzeln zu entfernen. Ein Logout-Vorgang führt ebenfalls zur Entfernung der korrospondierenden Session. Um eine Vermüllung der Datenbank zu vermeiden, läuft im Hintergrund ein Prozess, der in festen Zeitintervallen Sessions aus der Datenbank entfernt, die \enquote{veraltet} sind, denn wenn der Benutzer sich nicht ausloggt, sondern einfach den Browser schließt, kann unsere Anwendung keine Kenntnis davon erlangen.
+Die Anwendung verfügt über eine Ansicht, die dem Nutzer sämtliche eigene, \enquote{aktive} Sessions anzeigt und ihm die Möglichkeit bietet, diese nach Bedarf einzeln zu entfernen. Ein Logout-Vorgang führt ebenfalls zur Entfernung der korrospondierenden Session. Um eine Vermüllung der Datenbank zu vermeiden, läuft im Hintergrund ein Prozess, der in festen Zeitintervallen Sessions aus der Datenbank entfernt, die \enquote{veraltet} sind, denn wenn der Benutzer sich nicht ausloggt, sondern einfach den Browser schließt, kann unsere Anwendung keine Kenntnis davon erlangen.
 
 \section{Content Security Policy}
 Play verwendet standardmäßig eine sehr restriktive Content Security Policy, die XSS-Angriffe maßgeblich erschwert: Inline-Javascript wird vom Client-Browser grundsätzlich blockiert, es ist lediglich möglich, ein externes Script in eine HTML-Seite einzubinden, das jedoch von der gleichen Top-Level-Domain stammen muss. Zugleich muss dieses Script explizit Javascript als Content-Type im HTTP-Header benennen.
@@ -224,6 +248,7 @@ Für einige Parameter gibt es festgelegte Constraints, die in allen entsprechend
 Im Sinne von Ka-Ping Yee, der innerhalb seines Papers \citetitle{Yee.UserInteraction} \autocite{Yee.UserInteraction} zehn Designprinzipien beschrieben hat, die Benutzer bei Bedienung eines sicheren Systems benutzerfreundlich unterstützen sollen, haben wir mithilfe dieser neuen Funktionalität das Designprinzip \enquote{Revocability} abgebildet. \par
 Ein Nutzer ist in der Lage, seine eigenen, aktiven Sessions in tabellarischer Form zu betrachten.
 Während dieser Ansicht kann der Nutzer einzelne Sessions invalidieren, sofern er es für nötig hält.
+Wir halten das für eine nützliche Zusatzfunktionalität, da ein Nutzer unsere Applikation von verschiedenen Geräten nutzen kann.
 
 \chapter{Verworfene Entwürfe}
 
@@ -259,5 +284,32 @@ Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine
 
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis
+
+\begin{appendices}
+
+\begin{lstlisting}[label=jwtformat, caption={Aufbau eines JSON Web Token},captionpos=b]
+Header:
+{
+	"alg" : "HS256",
+	"typ" : "JWT"
+}
+Payload:
+{
+	"data" : {
+		csrfToken": "e80706be9dfc0a7bf0e7246374be6dc3fa42001e-1542826455895-98a06066234c951115dbd75e"
+	},
+	"nbf": 1542826455, // not before
+	"iat"  1542826455, // issued at timestamp
+	"exp": 1642863567  // expiration time
+}
+Signatur:
+HMAC-SHA256(
+	encodeBase64Url(header) + '.' +
+	encodeBase64Url(payload),
+	secret
+)
+\end{lstlisting}
+
+\end{appendices}
 
 \end{document}

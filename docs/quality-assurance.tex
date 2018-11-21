@@ -226,7 +226,7 @@ Da dieses Werkzeug in Betracht auf Sicherheitslücken von berühmten Sicherheits
 
 \subsubsection{Hardkodierte Passwörter}
 
-In unserer Testklasse \texttt{UserManagerTest} verwenden wir ein hardkodiertes Passwort, um zu überprüfen, ob ein Nutzer sein Passwort ändern kann, zu sehen in Quellcode \ref{lst:staticanalysis-hardcoded-pw}.
+In unserer Testklasse \texttt{UserManagerTest} verwenden wir ein hardkodiertes Passwort, um zu überprüfen, ob während des \enquote{Passwort zurücksetzen}-Prozeses für einen Nutzer ein temporäres Passwort erstellt werden kann, zu sehen in Quellcode \ref{lst:staticanalysis-hardcoded-pw}.
 Das sehen wir nicht als sicherheitsrelevanten Fehler an und ignorieren diesen daher.
 
 \subsubsection{Query Injections}
@@ -289,7 +289,7 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
   \hline
   \textbf{Fehler} & \textbf{Methode} & \textbf{Zeit (std.)} \\ \hline
   reCAPTCHA nicht lösbar in Firefox & Manueller Test & 1 \\ \hline
-  \texttt{NullPointerException} beim Validieren des \enquote{Passwort ändern}-Formulars & Funktionaler Test der Controllermethode & 0.5 \\ \hline
+  \texttt{NullPointerException} beim Validieren des \enquote{Passwort nach Zurücksetzung ändern}-Formulars & Funktionaler Test der Controllermethode & 0.5 \\ \hline
   Löschen eines Nutzers führte nicht zum Löschen seiner Gruppe & Funktionaler Test der Controllermethode & 0.5 \\ \hline
   Bootstrap-Helper-Methoden zur Erstellung eines Formulars haben Felder nicht mit bestehenden Daten befüllt & Aufgefallen während eines Reviews & 0.25 \\ \hline
   \enquote{Nutzer erstellen}-Prozess konnte von einem \enquote{Nicht-Administrator} ausgeführt werden & Autorisierungstests & 0.5 \\ \hline

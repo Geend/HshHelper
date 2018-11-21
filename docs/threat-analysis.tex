@@ -392,7 +392,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
   \item Einbau eines Captchas
-  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den \enquote{Passwort ändern}-Prozess anzustoßen. Der Link muss einen geheimen Token beinhalten, der nur HsH-Helfer und dem Empfänger der E-Mail bekannt ist. Das temporäre Passwort wird erst generiert, sobald auf den Link geklickt wird.
+  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den \enquote{Passwort nach Zurücksetzung ändern}-Prozess anzustoßen. Der Link muss einen geheimen Token beinhalten, der nur HsH-Helfer und dem Empfänger der E-Mail bekannt ist. Das temporäre Passwort wird erst generiert, sobald auf den Link geklickt wird.
   \end{itemize}
 \end{itemize}
 
@@ -419,7 +419,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \end{itemize}
 \end{itemize}
 
-\subsubsection{Mögliche Angriffe auf den \enquote{Passwort ändern}-Prozess}
+\subsubsection{Mögliche Angriffe auf den \enquote{Passwort nach Zurücksetzung ändern}-Prozess}
 
 % This is subject to change if we implement the link-based mitigation
 Da dieser Prozess dem Loginprozess gleicht, treten hier die selben Lücken auf.
@@ -498,11 +498,16 @@ Um zu verhindern, dass unsere Seite in einem \texttt{<frame>}, \texttt{<iframe>}
 \begin{sloppypar}
 \texttt{X-XSS-Protection: 1; mode=block}
 \end{sloppypar}
-Durch den Header \texttt{X-XSS-Protection} wird der Browser (Chrome, Safari, Internet Explorer und Opera) angewiesen, eine \enquote{reflected XSS}-Erkennung zu versuchen. Dieses Feature ist für älteren Browser interessant, die noch kein CSP implementieren. Durch den Modus \enquote{block} wird das Laden der Seite abgebrochen.
+Durch den Header \texttt{X-XSS-Protection} wird der Browser (Chrome, Safari, Internet Explorer und Opera) angewiesen, eine \enquote{reflected XSS}-Erkennung zu versuchen.
+Dieses Feature ist für älteren Browser interessant, die noch kein CSP implementieren.
+Durch den Modus \enquote{block} wird das Laden der Seite abgebrochen.
+Dieser Header dient daher als zusätzliches Auffangnetz, im Fachjargon oftmals \enquote{Defense in Depth} oder \enquote{castle approach} genannt, aber nicht als ausreichender Schutz.
+Leider ist dies relativ einfach auszuhebeln oder sogar zu missbrauchen, daher fordern wir in unseren Annahmen explizit ein Ausschluss älterer Browser.
 Die oben genannten Browser verwenden hierfür ein Blacklisting verschiedener Tags sowie gefährlicher Zeichen, bei welchen der \enquote{XSS-Auditor} anspringt und die potentielle XSS-Payload herausfiltert.
-Solch ein Blacklisting ist allerdings aufgrund verschiedener Möglichkeiten zum Deformieren des Payloads ziemlich unsicher.
-Dieser Header dient daher als zusätzliches Auffangnetz, aber nicht als ausreichender Schutz.
-\footnote{Siehe \url{https://blog.innerht.ml/the-misunderstood-x-xss-protection/}}
+\footnote{Siehe \url{https://blog.innerht.ml/the-misunderstood-x-xss-protection/} für generelle Erklärung und Beispiel des Angriffs zum Entfernen der JQuery-Bibliothek}
+Solch ein Blacklisting ist allerdings aufgrund verschiedener Möglichkeiten zum Deformieren des Payloads einfach auszuhebeln.
+Darüber hinaus kann der XSS-Auditor auch missbraucht werden, um bestimmte JavaScript-Bibliotheken von einer Seite zu entfernen.
+Chrome's/Chromium's XSS-Auditor\footnote{\url{https://bugs.chromium.org/p/chromium/issues/detail?id=825675}} entfernt beispielsweise \texttt{<script>}-Tags in dem HTML, wenn sie zeitgleich im Request-Query-String gefunden werden.
 
 \subsection{X-Content-Type-Options}
 \begin{sloppypar}
