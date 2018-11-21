@@ -687,6 +687,17 @@ public class PolicyTests {
         assertThat(actual).isFalse();
     }
 
+    @Test
+    public void ownerCanDeleteFile() {
+        boolean actual = Policy.instance.CanDeleteFile(klaus, klausFile);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void normalUserCannotDeleteFile() {
+        boolean actual = Policy.instance.CanDeleteFile(horst, klausFile);
+        assertThat(actual).isFalse();
+    }
     /*
         Zugriff auf Temporäre Datei
      */

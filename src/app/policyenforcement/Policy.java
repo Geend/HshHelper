@@ -254,6 +254,16 @@ public class Policy {
         return false;
     }
 
+    public boolean CanDeleteFile(User user, File file) {
+        if(user == null || file == null)
+            return false;
+
+        if(file.getOwner().equals(user))
+            return true;
+
+        return false;
+    }
+
     public boolean CanDeleteGroupPermission(User user, GroupPermission groupPermission) {
         if(user == null || groupPermission == null)
             return false;

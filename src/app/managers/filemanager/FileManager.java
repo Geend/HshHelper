@@ -157,8 +157,13 @@ public class FileManager {
         User user = sessionManager.currentUser();
         File file = getFile(fileId);
 
-        // TODO: implement policy check -> can delete file
+        if (!policy.CanDeleteFile(user, file)) {
+            logger.error(user.getUsername() + " tried to delete file " + file.getName() + " but he is not authorized");
+            throw new UnauthorizedException("Du bist nicht autorisiert, diese Datei zu löschen.");
+        }
+
         ebeanServer.delete(file);
+        logger.info(user.getUsername() + " deleted file " + file.getName());
     }
 
 
