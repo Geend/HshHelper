@@ -105,19 +105,19 @@ Um garantieren zu können, dass unsere Autorisierung funktioniert, haben wir ein
 \subsection{Penetrationstests}
 
 \subsubsection{Funktionalität der CSRF Tokens}
-Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationstest durchgeführt. Im ersten Schritt wurde dazu einfach das CSRF-Token aus dem HTML der Form gelöscht. Diese Anfrage wird wie erwartet vom Server mit einer von Play vorgefertigten \enquote{\texttt{Unauthorized}} Seite beantwortet. In einem weiteren Schritt wurde mit Curl eine Anfrage erstellt, in welcher lediglich Benutzername und Passwort, aber kein CSRF-Token enthalten war. Diese Anfrage wurde vom Server ohne Beanstandung akzeptiert. Der Grund hierfür ist, dass das CSRF-Token weder im Cookie noch als Form-Daten an den Server übermittelt wird. Auch die \texttt{RequireCSRFCheck}-Annotation schafft hierfür keine Abhilfe. Die Möglichkeit für CSRF-Angriff besteht, wenn folgende Bedingungen gelten:
+Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationstest durchgeführt. Im ersten Schritt wurde dazu einfach das CSRF-Token aus dem HTML des Formulars gelöscht. Diese Anfrage wird wie erwartet vom Server mit einer von Play vorgefertigten \enquote{\texttt{Unauthorized}} Seite beantwortet. In einem weiteren Schritt wurde mit Curl eine Anfrage erstellt, in welcher lediglich Benutzername und Passwort, aber kein CSRF-Token enthalten war. Diese Anfrage wurde vom Server ohne Beanstandung akzeptiert. Der Grund hierfür ist, dass das CSRF-Token weder im Cookie noch als Formularwert an den Server übermittelt wird. Auch die \texttt{RequireCSRFCheck}-Annotation schafft hierfür keine Abhilfe. Die Möglichkeit für CSRF-Angriff besteht, wenn folgende Bedingungen gelten:
 
   \begin{itemize}
     \item Das Play-Session-Cookie wird nicht für die Session-Implementierung der Anwendung verwendet.
     \item Das Play-Session-Cookie ist nicht vorhanden.
   \end{itemize}
 
-Lockt man ein Opfer auf eine Seite, auf welcher sich ein vom Angreifer erstelltes Form befindet, so kann durch einen Klick beispielsweise ein Nutzer aus einer Gruppe gelöscht werden, indem bei der Anfrage das CSRF-Token weggelassen wird.
+Lockt man ein Opfer auf eine Seite, auf welcher sich ein vom Angreifer erstelltes Formular befindet, so kann durch einen Klick beispielsweise ein Nutzer aus einer Gruppe gelöscht werden, indem bei der Anfrage das CSRF-Token weggelassen wird.
 
 Ein konkretes Angriffsszenario in dieser Anwendung wäre der Login. Das Opfer muss dazu keinerlei Cookies von der HsH-Helfer Seite im Browser haben. Dies kann gegeben sein, wenn es seine Cookies gelöscht hat oder den \enquote{Incognito}-Modus im Browser verwendet. Ein Angreifer kann nun das Opfer auf eine von ihm präparierte Seite locken, wo durch das Klicken auf einen Link ein Login-Formular abgeschickt wird. Somit ist das Opfer angemeldet unter einem Benutzeraccount, welcher auch dem Angreifer bekannt ist. Ist das Opfer nun unvorsichtig und verifiziert den aktuellen Benutzeraccount nicht, lädt es möglicherweise unter einem Benutzeraccount Dateien hoch, auf welchen der Angreifer Zugriff hat.
 
 \subsubsection{CSRF-Angriff}
-Im Rahmen eines Penetrationstests wurde herausgefunden, dass die von Play generierten CSRF-Tokens keine Nonces darstellen beziehungsweise beliebig oft verwendet werden können. Sie werden mit einem in der Play-Session persistierten Wert abgeglichen und auf Authentizität geprüft. Dieser Vergleichswert wird dann gesetzt, wenn der Nutzer erstmalig eine Seite aufruft, die über ein Form verfügt.
+Im Rahmen eines Penetrationstests wurde herausgefunden, dass die von Play generierten CSRF-Tokens keine Nonces darstellen beziehungsweise beliebig oft verwendet werden können. Sie werden mit einem in der Play-Session persistierten Wert abgeglichen und auf Authentizität geprüft. Dieser Vergleichswert wird dann gesetzt, wenn der Nutzer erstmalig eine Seite aufruft, die über ein Formular verfügt.
 
 Es wurde herausgefunden, dass unser Session-Konzept diesen Wert nicht berücksichtigt: Meldet sich ein Nutzer an, wird der CSRF-Vergleichswert beim Login gesetzt, beim Logout jedoch nicht wieder entfernt. Bei einer Situation, bei der sich zwei Nutzer den gleichen physischen Computer beziehungsweise Browser teilen und sich nacheinander anmelden, würden beide Nutzer den gleichen CSRF-Vergleichswert verwenden. In der Folge könnte der erste Nutzer den Zweiten angreifen, da er valide CSRF-Tokens des Zweiten - basierend auf dem gleichen Vergleichswert - kennt.
 
@@ -141,10 +141,10 @@ Die aktuelle Version unserer Login-Firewall wurde einem Review durch zwei Person
 % (vgl. [verweis auf das architektur Dokument)
 Die Login-Firewall wurde angepasst und es wurde ein weiteres Review für die finale Version der Anwendung geplant, in dem geprüft werden soll, ob alle möglichen Login-Kombinationen für einen Außenstehenden \enquote{gleich} sind, um ein solches Informationsleck zu verhindern.
 
-\subsection{Eingabevalidierung von Forms}
-Um Daten aus übermittelten Forms zu empfangen, nutzt unsere Anwendung DTOs, die mit Play-Constraint-Annotations versehen sind. Über diese Annotations wird sichergestellt, dass diese Daten einem bestimmten Format entsprechen, z.B. eine valide E-Mail Adresse darstellen. Diese Validierung wurde durch eine Person einem zweistündigen Review unterzogen.
+\subsection{Eingabevalidierung der HTML-Formulare}
+Um Daten aus übermittelten Formularen zu empfangen, nutzt unsere Anwendung DTOs, die mit Play-Constraint-Annotations versehen sind. Über diese Annotations wird sichergestellt, dass diese Daten einem bestimmten Format entsprechen, z.B. eine valide E-Mail Adresse darstellen. Diese Validierung wurde durch eine Person einem zweistündigen Review unterzogen.
 
-Im Zuge des Reviews wurde festgestellt, dass das vorhandene Design Race Condition begünstigt. Die Validierungen im DTO waren nicht ausdrücklich auf \enquote{statische} Tests begrenzt. Es wurden teilweise Validierungen vorgenommen, die Datenbankzugriffe beinhaltet haben, beispielsweise die Prüfung der Existenz eines Benutzernames. Wird im Controller die Form-Validierung\footnote{boundForm.hasErrors()} aufgerufen, ist die im DTO vorgenommene Validierung sowie der Controller-Code nicht Teil einer Transaktion. D.h. wenn die Form-Validation meldet, dass der Nutzername noch nicht existiert, ist dieser Zustand nicht mehr garantiert, wenn der Benutzer tatsächlich angelegt wird.
+Im Zuge des Reviews wurde festgestellt, dass das vorhandene Design Race Condition begünstigt. Die Validierungen im DTO waren nicht ausdrücklich auf \enquote{statische} Tests begrenzt. Es wurden teilweise Validierungen vorgenommen, die Datenbankzugriffe beinhaltet haben, beispielsweise die Prüfung der Existenz eines Benutzernames. Wird im Controller die Formular-Validierung\footnote{boundForm.hasErrors()} aufgerufen, ist die im DTO vorgenommene Validierung sowie der Controller-Code nicht Teil einer Transaktion. D.h. wenn die Formular-Validation meldet, dass der Nutzername noch nicht existiert, ist dieser Zustand nicht mehr garantiert, wenn der Benutzer tatsächlich angelegt wird.
 
 Auch wenn dies im vorliegenden Fall aufgrund der Unique-Constraints in der Datenbank kein Sicherheitsproblem darstellt, haben wir uns dazu entschlossen, von einem solchen Design abzusehen. Ein Design, was in derartiger Weise Race Conditions begünstigt, ist objektiv schlecht. In den DTOs finden inzwischen nur noch \enquote{statische} Tests statt. Diese Entscheidung hat zur Entstehung der Manager-Klassen geführt. Diese bieten Methoden, die transaktionssicher sind und werfen beispielsweise eine Exception, wenn der Nutzer bereits existiert.
 % (vgl. [TODO: Verweis zu der Erklärung wie wir von Controller macht alles zu den Manager Klassen gelangt sind])
@@ -226,7 +226,7 @@ Da dieses Werkzeug in Betracht auf Sicherheitslücken von berühmten Sicherheits
 
 \subsubsection{Hardkodierte Passwörter}
 
-In unserer Testklasse \texttt{UserManagerTest} verwenden wir ein hardkodiertes Passwort, um zu überprüfen, ob ein Nutzer sein Passwort ändern kann, zu sehen in Quellcode \ref{lst:staticanalysis-hardcoded-pw}.
+In unserer Testklasse \texttt{UserManagerTest} verwenden wir ein hardkodiertes Passwort, um zu überprüfen, ob während des \enquote{Passwort zurücksetzen}-Prozeses für einen Nutzer ein temporäres Passwort erstellt werden kann, zu sehen in Quellcode \ref{lst:staticanalysis-hardcoded-pw}.
 Das sehen wir nicht als sicherheitsrelevanten Fehler an und ignorieren diesen daher.
 
 \subsubsection{Query Injections}
@@ -289,7 +289,7 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
   \hline
   \textbf{Fehler} & \textbf{Methode} & \textbf{Zeit (std.)} \\ \hline
   reCAPTCHA nicht lösbar in Firefox & Manueller Test & 1 \\ \hline
-  \texttt{NullPointerException} beim Validieren des \enquote{Passwort ändern}-Formulars & Funktionaler Test der Controllermethode & 0.5 \\ \hline
+  \texttt{NullPointerException} beim Validieren des \enquote{Passwort nach Zurücksetzung ändern}-Formulars & Funktionaler Test der Controllermethode & 0.5 \\ \hline
   Löschen eines Nutzers führte nicht zum Löschen seiner Gruppe & Funktionaler Test der Controllermethode & 0.5 \\ \hline
   Bootstrap-Helper-Methoden zur Erstellung eines Formulars haben Felder nicht mit bestehenden Daten befüllt & Aufgefallen während eines Reviews & 0.25 \\ \hline
   \enquote{Nutzer erstellen}-Prozess konnte von einem \enquote{Nicht-Administrator} ausgeführt werden & Autorisierungstests & 0.5 \\ \hline
@@ -309,7 +309,10 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
 \printglossary[title=Glossar,toctitle=Glossar,type=main]
 
 %\addcontentsline{toc}{chapter}{\listfigurename}
-\listoffigures      % Abbildungsverzeichnis
+% Insert list of figures, if a figure has been added to document
+\iftotalfigures
+  \listoffigures
+\fi
 
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis

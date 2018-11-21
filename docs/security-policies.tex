@@ -68,6 +68,7 @@
   \item Zertifikate sind grundsätzlich vertrauenswürdig. Certificate Authorities stellen keine Zertifikate für missbräuchliche Zwecke aus.
   \item Die Quelle der kryptografisch-sicheren Zufallszahlen versiegt nicht (\texttt{/dev/random} (Linux), Cryptography API: Next Generation (Windows) \autocite{Windows.SecureRandom}).
   \item Der gewählte Datentyp \texttt{Long} der Identifikatoren in der \enquote{h2-Datenbank} ist für den Benutzungskontext des HsH-Helfers ausreichend lang.
+  \item Nutzer des HsH-Helfers verwenden moderne, aktuelle Browser, die spezifische sicherheitsrelevante HTTP-Header unterstützen (Browser nach 2013 für CSP).
 \end{itemize}
 
 \chapter{Akteure}
@@ -153,7 +154,7 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
 
 \label{security-policies:new_policies}
 \begin{itemize}
-  \item Nutzer [U+, GM, GO, A] können nur mit dem System interagieren, wenn sie authentisiert sind (AK2-14).
+  \item Nutzer [U+, GM, GO, A] können nur mit dem System interagieren, wenn sie authentisiert sind (AK2-4, sowie AK6-14).
   \item Nutzer [U+, GM, GO, A] können nur Gruppen sehen, dessen Mitglied sie sind (AK14).
   \item Ausschließlich Administratoren [A] können alle Gruppen sehen (AK14).
   \item Nutzer [GO] dürfen nur Mitglieder zu einer Gruppe hinzufügen, wenn sie der Besitzer dieser Gruppe sind (AK11).
@@ -163,10 +164,11 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
   \item Kein Nutzer, auch nicht Administrator, [-] kann die Sessions anderer Nutzer betrachten oder zerstören (AK7-8).
   \item Passwörter eines Nutzer können von keinem Nutzer [-] ausgelesen werden.
   \item Ein Administrator [A] hat nur schreibenden Zugriff auf ein Nutzerkonto durch das Löschen (AK4). Ihm ist nicht möglich, andere Informationen aus dem Nutzerkonto zu lesen oder zu ändern.
+  \item Der initiale Benutzer "admin" kann nicht gelöscht werden.
+  \item Ein Nutzer [U+, GM, GO, A] darf nur dann gelöscht werden, wenn er weder Owner der Gruppe Alle oder Administratoren ist.
   \item Ein Nutzer [-] muss nur ein reCAPTCHA lösen, wenn er sich mehrmals hintereinander fehlerhaft eingeloggt hat (AK1).
   \item Die E-Mail eines Nutzerkontos ist einzigartig, so dass die Erstellung zweier Nutzerkonten mit der selben E-Mail-Adresse nicht möglich ist (AK3).
   \item Ein Nutzer [U-] muss zusätzlich ein reCAPTCHA lösen, um sein Passwort zurücksetzen lassen zu können (AK5).
-  \item Ein Nutzer [U+, GM, GO, A] darf nur dann gelöscht werden, wenn er weder Owner der Gruppe Alle oder Administratoren ist.
 \end{itemize}
 
 \printbibliography
@@ -178,6 +180,10 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
 \printacronyms[title=Abkürzungsverzeichnis,toctitle=Abkürzungsverzeichnis]
 \printglossary[title=Glossar,toctitle=Glossar,type=main]
 
+% Insert list of figures, if a figure has been added to document
+\iftotalfigures
+  \listoffigures
+\fi
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis
 
