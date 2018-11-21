@@ -37,7 +37,7 @@
                     <td>@user.getOwnedFiles.size()</td>
                     <td class="right">
                         @if(policyenforcement.Policy.instance.CanDeleteUser(SessionInstance().currentUser(), user)) {
-                            @helper.form(action = routes.UserController.deleteUser()) {
+                            @helper.form(action = routes.UserController.showConfirmDeleteForm()) {
                                 @helper.CSRF.formField
                                 <input type="hidden" name="userId" value="@user.getUserId" />
                                 <button type="submit" class="linkBtn">Löschen</button>

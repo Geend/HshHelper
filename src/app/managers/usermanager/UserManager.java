@@ -131,4 +131,23 @@ public class UserManager {
                 .setBodyText("Your temp password is " + tempPassword);
         mailerClient.send(email);
     }
+
+    public UserMetaInfo getUserMetaInfo(Long userId) throws UnauthorizedException {
+        Optional<User> optUser = userFinder.byIdOptional(userId);
+        if(!optUser.isPresent()) {
+            throw new IllegalArgumentException();
+        }
+
+        User user = optUser.get();
+
+        if(!policy.CanViewUserMetaInfo(sessionManager.currentUser(), user)) {
+            throw new UnauthorizedException();
+        }
+
+        return new UserMetaInfo(
+            user.getUsername(),
+            user.getOwnedFiles().size(),
+            user.getOwnerOf().size()
+        );
+    }
 }

@@ -2,10 +2,7 @@ package controllers;
 
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
-import managers.usermanager.EmailAlreadyExistsException;
-import managers.usermanager.UserManager;
-import managers.usermanager.UsernameAlreadyExistsException;
-import managers.usermanager.UsernameCannotBeAdmin;
+import managers.usermanager.*;
 import models.User;
 import dtos.*;
 import play.data.Form;
@@ -58,6 +55,20 @@ public class UserController extends Controller {
         users = users.stream().filter(User::isAdmin).collect(Collectors.toList());
         return ok(views.html.users.Users.render(asScala(users)));
     }
+
+    @Authentication.Required
+    public Result showConfirmDeleteForm() throws UnauthorizedException, InvalidArgumentException {
+        Form<UserIdDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
+        if (boundForm.hasErrors()) {
+            return badRequest();
+        }
+
+        Long userToDeleteId = boundForm.get().getUserId();
+        UserMetaInfo info = userManager.getUserMetaInfo(userToDeleteId);
+
+        return ok(views.html.users.DeleteUserConfirmation.render(info, userToDeleteId));
+    }
+
 
     @Authentication.Required
     public Result deleteUser() throws UnauthorizedException, InvalidArgumentException {

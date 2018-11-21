@@ -342,4 +342,16 @@ public class Policy {
 
         return false;
     }
+
+    public boolean CanViewUserMetaInfo(User currentUser, User toBeViewed) {
+        if(currentUser == null) {
+            return false;
+        }
+
+        if(currentUser.isAdmin()) {
+            return true;
+        }
+
+        return false;
+    }
 }

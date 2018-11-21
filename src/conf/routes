@@ -13,6 +13,7 @@ POST        /users/create                                              controlle
 GET         /users/create                                              controllers.UserController.showCreateUserForm
 GET         /users/all                                                 controllers.UserController.showUsers
 GET         /users/admins                                              controllers.UserController.showAdminUsers
+POST        /users/confirmDelete                                       controllers.UserController.showConfirmDeleteForm
 POST        /users/delete                                              controllers.UserController.deleteUser
 GET         /resetpassword                                             controllers.UserController.showResetUserPasswordForm
 POST        /resetpassword                                             controllers.UserController.resetUserPassword
