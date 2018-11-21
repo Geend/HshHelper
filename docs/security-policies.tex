@@ -125,6 +125,13 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
   \item \textbf{AK12:} Nutzer aus einer Gruppe entfernen [GO, A]
   \item \textbf{AK13:} Gruppen anzeigen lassen [U+, GM, GO, A]
   \item \textbf{AK14:} Mitglieder einer Gruppe sehen [GM, GO, A]
+  \item \textbf{AK15:} \textcolor{red}{Eine Datei hochladen [U+, GM, GO, A]}
+  \item \textbf{AK16:} \textcolor{red}{Eine Datei löschen [U+, GM, GO, A]}
+  \item \textbf{AK17:} \textcolor{red}{Auf eine Datei zugreifen [U+, GM, GO, A]}
+  \item \textbf{AK18:} \textcolor{red}{Dateiinhalt und/oder -kommentar verändern [U+, GM, GO, A]}
+  \item \textbf{AK19:} \textcolor{red}{Dateien anzeigen lassen [U+, GM, GO, A]}
+  \item \textbf{AK20:} \textcolor{red}{Nutzerberechtigungen einer Datei ändern [U+, GM, GO, A]}
+  \item \textbf{AK21:} \textcolor{red}{Gruppenberechtigungen einer Datei ändern [U+, GM, GO, A]}
 \end{itemize}
 
 \chapter{Richtlinien}
@@ -149,12 +156,19 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
       AK12        & \greencheckmark & \greencheckmark  & \redxmark & \redxmark \\ \hline
       AK13       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark \\ \hline
       AK14       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark \\ \hline
+      AK15       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark \\ \hline
+      AK16       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark \\ \hline
+      AK17       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark \\ \hline
+      AK18       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark \\ \hline
+      AK19       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark \\ \hline
+      AK20       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark \\ \hline
+      AK21       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark \\ \hline
   \end{tabularx}
 \end{table}
 
 \label{security-policies:new_policies}
 \begin{itemize}
-  \item Nutzer [U+, GM, GO, A] können nur mit dem System interagieren, wenn sie authentisiert sind (AK2-4, sowie AK6-14).
+  \item Nutzer [U+, GM, GO, A] können nur mit dem System interagieren, wenn sie authentisiert sind (AK2-4, sowie AK6-21).
   \item Nutzer [U+, GM, GO, A] können nur Gruppen sehen, dessen Mitglied sie sind (AK14).
   \item Ausschließlich Administratoren [A] können alle Gruppen sehen (AK14).
   \item Nutzer [GO] dürfen nur Mitglieder zu einer Gruppe hinzufügen, wenn sie der Besitzer dieser Gruppe sind (AK11).
