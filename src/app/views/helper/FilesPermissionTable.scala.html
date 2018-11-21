@@ -2,18 +2,6 @@
 @import policyenforcement.session.SessionManager.SessionInstance
 @(files : Seq[File])
 
-@permissions(canRead : Boolean, canWrite : Boolean) = {
-    @if(canRead) {
-        Read
-        @if(canWrite) {
-            / Write
-        }
-    } else {
-        @if(canWrite) {
-            Write
-        }
-    }
-}
 
 @if(files.nonEmpty) {
     <table class="permissionTable">
@@ -28,7 +16,7 @@
             @for(groupPermission <- file.getGroupPermissions()) {
                 <tr>
                     <td>Gruppe: @groupPermission.getGroup.getName</td>
-                    <td>@permissions(groupPermission.getCanRead, groupPermission.getCanWrite)</td>
+                    <td>@helper.PermissionFormat(groupPermission.getCanRead, groupPermission.getCanWrite)</td>
                     <td  class="rightBound"><a href="#">Ändern</a> | <a href="#">Entfernen</a></td>
                 </tr>
             }
@@ -36,7 +24,7 @@
             @for(userPermission <- file.getUserPermissions()) {
                 <tr>
                     <td>User: @userPermission.getUser.getUsername</td>
-                    <td>@permissions(userPermission.getCanRead, userPermission.getCanWrite)</td>
+                    <td>@helper.PermissionFormat(userPermission.getCanRead, userPermission.getCanWrite)</td>
                     <td class="rightBound"><a href="#">Ändern</a> | <a href="#">Entfernen</a></td>
                 </tr>
             }

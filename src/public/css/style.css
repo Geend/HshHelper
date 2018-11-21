@@ -21,7 +21,7 @@ body {
     color:#303030
 }
 
-input {
+input, textarea {
     font-family: 'Roboto', sans-serif;
     font-size:14px;
     box-sizing: border-box;
@@ -239,9 +239,6 @@ form {
     border-bottom: solid 1px #ea8f4c;
 }
 
-.content h2:first-of-type {
-    margin: 0;
-}
 
 .content h2 {
     margin: 25px 0 0 0;
@@ -249,10 +246,11 @@ form {
     font-size: 16px;
 }
 
-.content p {
+.content > p, .content > div {
     padding: 10px;
     line-height: 1.5em;
 }
+
 .content hr {
     border: 0;
     height: 1px;
@@ -316,14 +314,6 @@ form {
 
 .fileTableLegend > div.title {
     font-weight: bold;
-}
-
-.fileTableLegend > div.ownFile {
-    background: #edfaeb;
-}
-
-.fileTableLegend > div.thirdPartyFile {
-    background: #faebeb;
 }
 
 .content .inline-menu.lr {
@@ -457,6 +447,20 @@ form {
 .content .noTopSpace {
     padding-top: 0;
     margin-top: 0;
+}
+
+.content .trustworthy {
+    background: #edfaeb;
+}
+
+.content .potentiallyDangerous {
+    background: #faebeb;
+}
+
+.content .fileComment textarea {
+    width: 100%;
+    height: 125px;
+    padding: 5px;
 }
 
     /*

@@ -1,29 +1,74 @@
 @import dtos.EditFileDto
+@import views.TemplateEnvironment
 @(file:File, changeFileForm:Form[EditFileDto])
 
-@Main("Datei"){
+@Base(file.getName + " (Datei)") {
+    <div @helper.TrustworthyFileClass(file)>
+        Dateiname: @file.getName<br>
+        Größe: 12 MB<br>
+        Eigentümer: @file.getOwner.getUsername<br>
+        Geschrieben von: -Username- am 21.12.2019<br>
+        <a href="@routes.FileController.downloadFile(file.getFileId)"><b>Download</b></a> -
 
-    <p>
-        Datei: @file.getName
-    </p>
-
-    @bootstrapHelper.form(
-        routes.FileController.editFile(),
-        changeFileForm,
-        scala.collection.Map(
-            "fileId" -> Input(InputType.Hidden),
-            "comment" -> Input(InputType.Text,
-                label = "Kommentar",
-                placeholder = "Kommentar eingeben"),
-
-            "data" -> Input(InputType.File,
-                label = "Datei")
-        ),
-        button = bootstrapHelper.button("Datei speichern")
-    )
+        @helper.form(action = routes.FileController.deleteFile()) {
+            <input type="hidden" name="fileId" value="@file.getFileId" />
+            <button type="submit" class="linkBtn">Datei löschen</button>
+            @helper.CSRF.formField
+        }
+    </div>
 
 
-    <p>
-        <a href="@routes.FileController.downloadFile(file.getFileId)">Download</a>
-    </p>
+    <h2>Kommentar</h2>
+    @if(TemplateEnvironment.GetPolicy.CanWriteFile(TemplateEnvironment.GetMainManager().currentUser(), file)) {
+        @helper.form(action = routes.GroupController.createGroup()) {
+            <div class="inputForm">
+                <div class="fileComment">
+                    <textarea></textarea>
+                </div>
+            </div>
+            <div class="inputControls">
+                <input type="submit" value="Ändern" />
+            </div>
+            @helper.CSRF.formField
+        }
+    } else {
+        <form>
+            <div class="inputForm">
+                <div class="fileComment">
+                    <textarea disabled="disabled">@file.getComment</textarea>
+                </div>
+            </div>
+        </form>
+    }
+
+    <h2>Berechtigungen</h2>
+    @if(file.getGroupPermissions.isEmpty && file.getUserPermissions.isEmpty) {
+        <p>Keine Berechtigungen gesetzt</p>
+    } else {
+        <table>
+            <thead>
+                <tr>
+                    <td>Bezugsobjekt</td>
+                    <td>Berechtigung</td>
+                    <td></td>
+                </tr>
+            </thead>
+
+            @for(groupPermission <- file.getGroupPermissions) {
+                <tr>
+                    <td>Gruppe: @groupPermission.getGroup.getName</td>
+                    <td>@helper.PermissionFormat(groupPermission.getCanRead, groupPermission.getCanWrite)</td>
+                    <td><a href="#">Ändern</a> - <a href="#">Entfernen</a></td>
+                </tr>
+            }
+
+            @for(userPermission <- file.getUserPermissions) {
+                <tr>
+                    <td>User: @userPermission.getUser.getUsername</td>
+                    <td>@helper.PermissionFormat(userPermission.getCanRead, userPermission.getCanWrite)</td>
+                    <td><a href="#">Ändern</a> - <a href="#">Entfernen</a></td>
+                </tr>
+            }
+        </table>
+    }
 }

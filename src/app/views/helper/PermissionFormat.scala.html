@@ -1,0 +1,12 @@
+@(canRead : Boolean, canWrite : Boolean)
+
+@if(canRead) {
+    Read
+    @if(canWrite) {
+        / Write
+    }
+} else {
+    @if(canWrite) {
+        Write
+    }
+}

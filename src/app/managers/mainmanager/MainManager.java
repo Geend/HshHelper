@@ -29,6 +29,10 @@ public class MainManager {
         return String.format("%s %% aufgebraucht. (%s, von %s belegt)", percentage, formatSize(totalUsage), formatSize(userQuotaLimit));
     }
 
+    public User currentUser() {
+        return sessionManager.currentUser();
+    }
+
     private String formatSize(double sizeInByte) {
         String[] names = new String[8];
         names[0] = "Byte";

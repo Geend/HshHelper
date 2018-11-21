@@ -31,7 +31,7 @@ import static play.libs.Scala.asScala;
 @Authentication.Required
 public class FileController extends Controller {
     private final Form<UploadFileMetaDto> uploadFileMetaForm;
-
+    private final Form<DeleteFileDto> deleteFileForm;
     private final Form<EditFileDto> editFileForm;
     private final Form<SearchQueryDto> searchFileForm;
 
@@ -43,6 +43,7 @@ public class FileController extends Controller {
     public FileController(SessionManager sessionManager, FileManager fileManager, FormFactory formFactory) {
         this.uploadFileMetaForm = formFactory.form(UploadFileMetaDto.class);
         this.editFileForm = formFactory.form(EditFileDto.class);
+        this.deleteFileForm = formFactory.form(DeleteFileDto.class);
         this.searchFileForm = formFactory.form(SearchQueryDto.class);
         this.sessionManager = sessionManager;
         this.fileManager = fileManager;
@@ -58,7 +59,6 @@ public class FileController extends Controller {
     public Result showSharedFiles() {
         User user = sessionManager.currentUser();
         // TODO: Durch qry ersetzen!
-
         List<File> files = user.getOwnedFiles().stream().filter(x -> x.getGroupPermissions().size() > 0 || x.getUserPermissions().size() > 0).collect(Collectors.toList());
         return ok(views.html.file.SharedFiles.render(asScala(files)));
     }
@@ -66,6 +66,17 @@ public class FileController extends Controller {
     public Result showThirdPartyFiles() {
         List<File> files = fileManager.sharedWithCurrentUserFiles();
         return ok(views.html.file.Files.render(asScala(files)));
+    }
+
+    public Result deleteFile() throws UnauthorizedException, InvalidArgumentException {
+        Form<DeleteFileDto> boundForm = deleteFileForm.bindFromRequest();
+        if (boundForm.hasErrors()) {
+            return badRequest();
+        }
+
+        fileManager.deleteFile(boundForm.get().getFileId());
+
+        return redirect(routes.FileController.showOwnFiles());
     }
 
 

@@ -142,6 +142,14 @@ public class FileManager {
         return file.get();
     }
 
+    public void deleteFile(long fileId) throws UnauthorizedException, InvalidArgumentException {
+        User user = sessionManager.currentUser();
+        File file = getFile(fileId);
+
+        // TODO: implement policy check -> can delete file
+        ebeanServer.delete(file);
+    }
+
 
     public void editFile(Long fileId, String comment, byte[] data) throws InvalidArgumentException, UnauthorizedException, QuotaExceededException {
         User user = sessionManager.currentUser();

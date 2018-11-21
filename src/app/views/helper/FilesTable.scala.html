@@ -2,25 +2,11 @@
 @import policyenforcement.session.SessionManager.SessionInstance
 @(files : Seq[File])
 
-@classname(file : File) = {
-    @if(file.getOwner.equals(SessionInstance().currentUser())) {
-        class="ownFile"
-    } else {
-        class="thirdPartyFile"
-    }
-}
-
 @permissions(file : File) = {
-    @if(Policy.instance.CanReadFile(SessionInstance().currentUser(), file)) {
-        Read
-        @if(Policy.instance.CanWriteFile(SessionInstance().currentUser(), file)) {
-            / Write
-        }
-    } else {
-        @if(Policy.instance.CanWriteFile(SessionInstance().currentUser(), file)) {
-            Write
-        }
-    }
+    @helper.PermissionFormat(
+        Policy.instance.CanReadFile(SessionInstance().currentUser(), file),
+        Policy.instance.CanWriteFile(SessionInstance().currentUser(), file)
+    )
 }
 
 @if(files.nonEmpty) {
@@ -37,7 +23,7 @@
 
         <tbody>
         @for(file <- files) {
-            <tr @classname(file)>
+            <tr @helper.TrustworthyFileClass(file)>
                 <td class="name"><b><a href="@routes.FileController.showFile(file.getFileId)">@file.getName</a></b></td>
                 <td>@file.getComment</td>
                 <td>@file.getOwner.getUsername</td>
@@ -50,8 +36,8 @@
 
     <div class="fileTableLegend">
         <div class="title">Legende:</div>
-        <div class="ownFile">Selbst geschriebene Dateien</div>
-        <div class="thirdPartyFile">Von anderen geschriebene Dateien</div>
+        <div class="trustworthy">Selbst geschriebene Dateien</div>
+        <div class="potentiallyDangerous">Von anderen geschriebene Dateien</div>
     </div>
 } else {
     <div class="message error">

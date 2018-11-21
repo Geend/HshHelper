@@ -42,7 +42,7 @@ POST        /groups/:groupId/members/add                               controlle
 GET         /files/own                                                 controllers.FileController.showOwnFiles
 GET         /files/shared                                              controllers.FileController.showSharedFiles
 GET         /files/thirdParty                                          controllers.FileController.showThirdPartyFiles
-
+POST        /files/delete                                              controllers.FileController.deleteFile
 
 GET         /files/upload                                              controllers.FileController.showUploadFileForm
 POST        /files/upload                                              controllers.FileController.uploadFile
