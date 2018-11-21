@@ -12,6 +12,7 @@ import models.User;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import models.finders.UserFinderQueryOptions;
+import play.Logger;
 import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
 import policyenforcement.Policy;
@@ -29,6 +30,8 @@ public class UserManager {
     private final EbeanServer ebeanServer;
     private final Policy policy;
     private final SessionManager sessionManager;
+
+    private static final Logger.ALogger logger = Logger.of(UserManager.class);
 
     @Inject
     public UserManager(
@@ -55,6 +58,7 @@ public class UserManager {
         User currentUser = sessionManager.currentUser();
 
         if(!this.policy.CanCreateUser(currentUser)) {
+            logger.error(currentUser + " tried to create a user but he is not authorized");
             throw new UnauthorizedException();
         }
 
@@ -63,15 +67,18 @@ public class UserManager {
         String passwordHash = hashHelper.hashPassword(plaintextPassword);
         User newUser;
         if(Objects.equals(username.toLowerCase(), "admin")) {
+            logger.info(currentUser + " tried to create user with the name \"admin\"");
             throw new UsernameCannotBeAdmin();
         }
 
         Group allGroup = this.groupFinder.getAllGroup();
         try(Transaction tx = this.ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
             if(userFinder.byName(username).isPresent()) {
+                logger.error(currentUser + " tried to create user " + username + " but this username already exists");
                 throw new UsernameAlreadyExistsException();
             }
             if(userFinder.byEmail(email, UserFinderQueryOptions.CaseInsensitive).isPresent()) {
+                logger.error(currentUser + " tried to create user " + username + " but " + email + " already exists");
                 throw new EmailAlreadyExistsException();
             }
             newUser = new User(username,
@@ -85,6 +92,7 @@ public class UserManager {
 
             this.ebeanServer.save(newUser);
             tx.commit();
+            logger.info(currentUser + " created user " + username);
         }
         return plaintextPassword;
     }
@@ -97,15 +105,18 @@ public class UserManager {
             throw new InvalidArgumentException("Dieser User existiert nicht.");
 
         if(!this.policy.CanDeleteUser(currentUser, userToDelete.get())) {
+            logger.error(currentUser + " tried to delete a user but he is not authorized");
             throw new UnauthorizedException();
         }
         ebeanServer.delete(userToDelete.get());
+        logger.info(currentUser + " deleted user " + userToDelete.get().getUsername());
     }
 
     public List<User> getAllUsers() throws UnauthorizedException {
         User currentUser = sessionManager.currentUser();
 
         if(!this.policy.CanViewAllUsers(currentUser)) {
+            logger.error(currentUser + " tried to access all users but he is not authorized");
             throw new UnauthorizedException();
         }
         return this.userFinder.all();
@@ -130,6 +141,7 @@ public class UserManager {
                 .addTo(user.getEmail())
                 .setBodyText("Your temp password is " + tempPassword);
         mailerClient.send(email);
+        logger.info("Created a new temp pw and send mail for user " + user.getUsername());
     }
 
     public UserMetaInfo getUserMetaInfo(Long userId) throws UnauthorizedException {
