@@ -11,6 +11,7 @@ public class File extends Model {
     @Id
     private Long fileId;
     private String name;
+    @Lob
     private String comment;
 
     @Lob
