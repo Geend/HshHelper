@@ -1,16 +1,12 @@
 package managers.filemanager;
 
 import dtos.GroupPermissionDto;
-import dtos.UploadFileDto;
 import dtos.UserPermissionDto;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.*;
-import io.ebean.annotation.TxIsolation;
-import managers.groupmanager.GroupManager;
 import models.*;
 import models.finders.FileFinder;
-import models.finders.TempFileFinder;
 import models.finders.UserFinder;
 import models.finders.UserQuota;
 import policyenforcement.Policy;
@@ -22,37 +18,36 @@ import java.util.stream.Collectors;
 
 public class FileManager {
     private final FileFinder fileFinder;
-    private final TempFileFinder tempFileFinder;
     private final UserFinder userFinder;
     private final EbeanServer ebeanServer;
     private final Policy policy;
     private final SessionManager sessionManager;
 
     @Inject
-    public FileManager(FileFinder fileFinder, TempFileFinder tempFileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy, SessionManager sessionManager) {
+    public FileManager(FileFinder fileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy, SessionManager sessionManager) {
         this.fileFinder = fileFinder;
-        this.tempFileFinder = tempFileFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
         this.policy = policy;
         this.sessionManager = sessionManager;
     }
 
-    public UploadFileDto createUploadFileDto() {
+    public List<GroupPermissionDto> getGroupPermissionDtosForCreate() {
         User currentUser = this.sessionManager.currentUser();
-        UploadFileDto result = new UploadFileDto();
+        List<GroupPermissionDto> groupPermissions = currentUser.getGroups()
+                .stream()
+                .map(x -> new GroupPermissionDto(x.getGroupId(), x.getName(), PermissionLevel.NONE))
+                .collect(Collectors.toList());
+        return groupPermissions;
+    }
+
+    public List<UserPermissionDto> getUserPermissionDtosForCreate() {
         List<UserPermissionDto> userPermissions = this.userFinder
                 .all()
                 .stream()
                 .map(x -> new UserPermissionDto(x.getUserId(), x.getUsername(), PermissionLevel.NONE))
                 .collect(Collectors.toList());
-        List<GroupPermissionDto> groupPermissions = currentUser.getGroups()
-                .stream()
-                .map(x -> new GroupPermissionDto(x.getGroupId(), x.getName(), PermissionLevel.NONE))
-                .collect(Collectors.toList());
-        result.setUserPermissions(userPermissions);
-        result.setGroupPermissions(groupPermissions);
-        return result;
+        return userPermissions;
     }
 
     private void checkQuota(User user, String filename, String comment, byte[] data) throws QuotaExceededException {
@@ -64,24 +59,7 @@ public class FileManager {
         }
     }
 
-    public TempFile createTempFile(byte[] filedata) throws QuotaExceededException {
-        try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
-            User user = sessionManager.currentUser();
-
-            checkQuota(user, "", "", filedata);
-
-            TempFile tf = new TempFile(
-                    user,
-                    filedata
-            );
-
-            tf.save();
-            tx.commit();
-
-            return tf;
-        }
-    }
-
+    /*
     public File storeFile(Long tempFileId, String filename, String comment) throws QuotaExceededException, FilenameAlreadyExistsException, UnauthorizedException {
         try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
             User user = sessionManager.currentUser();
@@ -116,6 +94,7 @@ public class FileManager {
             return file;
         }
     }
+    */
 
 
     public List<File> accessibleFiles() {
@@ -197,14 +176,6 @@ public class FileManager {
 
     public void editFile(Long fileId, String comment) throws QuotaExceededException, UnauthorizedException, InvalidArgumentException {
         editFile(fileId, comment, null);
-    }
-
-    public void removeTempFiles() {
-        User user = sessionManager.currentUser();
-        List<TempFile> tempFiles = tempFileFinder.getFilesByOwner(user.getUserId());
-
-        tempFiles.forEach(ebeanServer::delete);
-
     }
 
     public List<File> searchFile(String query) {

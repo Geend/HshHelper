@@ -1,4 +1,4 @@
-@(form: Form[dtos.UploadFileDto], dto: dtos.UploadFileDto)
+@(form: Form[dtos.UploadFileDto], userPermissionDtos: Seq[dtos.UserPermissionDto], groupPermissionDtos: Seq[dtos.GroupPermissionDto])
 
 @Base("Datei Hochladen") {
     @helper.form(action = routes.FileController.uploadFile(), 'enctype -> "multipart/form-data") {
@@ -28,7 +28,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @for(group <- dto.getGroupPermissions()) {
+                            @for(group <- groupPermissionDtos) {
                                 <tr>
                                     <td>@group.getGroupName()</td>
                                     <td>
@@ -59,7 +59,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        @for(group <- dto.getUserPermissions()) {
+                        @for(group <- userPermissionDtos) {
                             <tr>
                                 <td>@group.getUsername()</td>
                                 <td>

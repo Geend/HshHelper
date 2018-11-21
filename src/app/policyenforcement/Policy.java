@@ -318,16 +318,4 @@ public class Policy {
 
         return false;
     }
-
-    public boolean CanAccessTempFile(User currentUser, TempFile tempFile) {
-        if(currentUser == null || tempFile == null) {
-            return false;
-        }
-
-        if(currentUser.equals(tempFile.getOwner())) {
-            return true;
-        }
-
-        return false;
-    }
 }

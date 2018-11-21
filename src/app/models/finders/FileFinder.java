@@ -61,19 +61,10 @@ public class FileFinder extends Finder<Long, File> {
         qry.setParameter("owner_id", userId);
         SqlRow filesRow = qry.findOne();
 
-        qry = this.db().createSqlQuery(
-            "SELECT IFNULL(SUM(LENGTH(data)), ZERO()) AS dataSum FROM temp_files "+
-            "WHERE owner_id = :owner_id"
-        );
-        qry.setParameter("owner_id", userId);
-        SqlRow tempFilesRow = qry.findOne();
-
-
         UserQuota quota = new UserQuota();
         quota.setNameUsage(filesRow.getLong("nameSum"));
         quota.setCommentUsage(filesRow.getLong("commentSum"));
         quota.setFileContentUsage(filesRow.getLong("dataSum"));
-        quota.setTempFileContentUsage(tempFilesRow.getLong("dataSum"));
 
 
         return quota;

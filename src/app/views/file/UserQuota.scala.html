@@ -20,7 +20,6 @@
         Dateinamen: @percent(quota.getUsedTitleQuotaPercent()) (@humanReadableByteCount(quota.getTotalUsedTitleQuota))<br>
         Kommentare: @percent(quota.getUsedCommentQuotaPercent()) (@humanReadableByteCount(quota.getTotalUsedCommentQuota))<br>
         Dateiinhalte: @percent(quota.getUsedFileDataQuotaPercent()) (@humanReadableByteCount(quota.getTotalUsedFileDataQuota))<br>
-        Temporäre Dateien: @percent(quota.getUsedTempFilesQuotaPercent()) (@humanReadableByteCount(quota.getTotalTempFilesQuota)) -
             @*
         @helper.form(action = routes.FileController.removeTempFiles()) {
             @helper.CSRF.formField
