@@ -26,7 +26,8 @@ POST        /sessions/delete                                           controlle
 GET         /groups/membership                                         controllers.GroupController.showOwnMemberships
 GET         /groups/own                                                controllers.GroupController.showOwnGroups
 GET         /groups/all                                                controllers.GroupController.showAllGroups
-POST        /groups/deleteGroup                                        controllers.GroupController.deleteGroup
+POST        /groups/confirmDelete                                      controllers.GroupController.confirmDelete
+POST        /groups/delete                                             controllers.GroupController.deleteGroup
 GET         /groups/create                                             controllers.GroupController.showCreateGroupForm
 POST        /groups/create                                             controllers.GroupController.createGroup
 

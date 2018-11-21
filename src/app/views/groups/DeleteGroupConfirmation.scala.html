@@ -1,0 +1,22 @@
+@(toBeDeletedGroup : Group)
+
+@Base("Gruppe löschen") {
+    <div class="message notice">
+        <b>Sie sind im Begriff die Gruppe <u>@toBeDeletedGroup.getName</u> zu löschen.</b><br>
+        Die Aktion ist irreversibel.<br>
+        Von dieser Aktion sind @toBeDeletedGroup.getMembers.size() Gruppenmitgliedschaften und @toBeDeletedGroup.getGroupPermissions.size() geteilte Dateien betroffen.<br>
+        Die Gruppenmitglieder verlieren unmittelbar den Zugriff auf die Dateien, sofern sie nicht selbst Eigentümer der Dateien sind.
+    </div>
+
+    <div class="inputControls">
+        @helper.form(action = routes.GroupController.showGroup(toBeDeletedGroup.getGroupId)) {
+            <input type="submit" value="Abbrechen" />
+        }
+
+        @helper.form(action = routes.GroupController.deleteGroup()) {
+            @helper.CSRF.formField
+            <input type="hidden" name="groupId" value="@toBeDeletedGroup.getGroupId" />
+            <input type="submit" value="@toBeDeletedGroup.getName Löschen" />
+        }
+    </div>
+}
