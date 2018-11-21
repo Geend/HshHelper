@@ -18,6 +18,8 @@
         <thead>
             <tr>
                 <td>Benutzername</td>
+                <td>Gruppen</td>
+                <td>Dateien</td>
                 <td></td>
             </tr>
         </thead>
@@ -31,6 +33,8 @@
                             (Administrator)
                         }
                     </td>
+                    <td>@user.getOwnerOf.size()</td>
+                    <td>@user.getOwnedFiles.size()</td>
                     <td class="right">
                         @if(policyenforcement.Policy.instance.CanDeleteUser(SessionInstance().currentUser(), user)) {
                             @helper.form(action = routes.UserController.deleteUser()) {
