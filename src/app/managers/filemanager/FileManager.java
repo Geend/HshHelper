@@ -48,8 +48,9 @@ public class FileManager {
     }
 
     public List<UserPermissionDto> getUserPermissionDtosForCreate() {
+        User currentUser = this.sessionManager.currentUser();
         List<UserPermissionDto> userPermissions = this.userFinder
-                .all()
+                .findAllButThis(currentUser.getUserId())
                 .stream()
                 .map(x -> new UserPermissionDto(x.getUserId(), x.getUsername(), PermissionLevel.NONE))
                 .collect(Collectors.toList());
