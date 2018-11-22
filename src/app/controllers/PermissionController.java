@@ -91,7 +91,13 @@ public class PermissionController extends Controller {
             return badRequest();
         }
         EditUserPermissionDto dto = boundForm.get();
-        this.manager.editUserPermission(dto.getUserPermissionId(), dto.getPermissionLevel());
+
+        // permission = none -> delete
+        if(!dto.getPermissionLevel().equals(PermissionLevel.NONE)) {
+            this.manager.editUserPermission(dto.getUserPermissionId(), dto.getPermissionLevel());
+        } else {
+            this.manager.deleteUserPermission(dto.getUserPermissionId());
+        }
 
         if(!StringUtils.isEmpty(dto.getReturnUrl())) {
             return redirect(dto.getReturnUrl());
@@ -135,7 +141,12 @@ public class PermissionController extends Controller {
         }
 
         EditGroupPermissionDto dto = boundForm.get();
-        this.manager.editGroupPermission(dto.getGroupPermissionId(), dto.getPermissionLevel());
+
+        if(!dto.getPermissionLevel().equals(PermissionLevel.NONE)) {
+            this.manager.editGroupPermission(dto.getGroupPermissionId(), dto.getPermissionLevel());
+        } else {
+            this.manager.deleteGroupPermission(dto.getGroupPermissionId());
+        }
 
         if(!StringUtils.isEmpty(dto.getReturnUrl())) {
             return redirect(dto.getReturnUrl());
