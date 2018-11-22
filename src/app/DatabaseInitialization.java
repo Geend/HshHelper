@@ -80,7 +80,7 @@ public class DatabaseInitialization {
 
         File f3 = new File();
         f3.setName("klaus.txt");
-        f3.setComment("xaxax");
+        f3.setComment("xaxaxxaxaxxaxaxxaxax xaxax xaxax xaxax");
         f3.setOwner(u3);
         f3.setData(new byte[]{1,2,1,2});
         f3.save();

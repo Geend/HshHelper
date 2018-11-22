@@ -1,0 +1,21 @@
+@import managers.usermanager.UserMetaInfo
+@(toBeDeletedUserMeta : UserMetaInfo, userId : Long)
+
+@Base("Benutzer löschen") {
+    <div class="message notice">
+        <b>Sie sind im Begriff den Benutzer <u>@toBeDeletedUserMeta.getUsername</u> zu löschen.</b><br>
+        Die Aktion ist irreversibel und löscht @toBeDeletedUserMeta.getOwnedGroups Gruppen und @toBeDeletedUserMeta.getOwnedFiles Dateien, die dem Benutzer gehören.
+    </div>
+
+    <div class="inputControls">
+        @helper.form(action = routes.UserController.showUsers()) {
+            <input type="submit" value="Abbrechen" />
+        }
+
+        @helper.form(action = routes.UserController.deleteUser()) {
+            @helper.CSRF.formField
+            <input type="hidden" name="userId" value="@userId" />
+            <input type="submit" value="@toBeDeletedUserMeta.getUsername Löschen" />
+        }
+    </div>
+}

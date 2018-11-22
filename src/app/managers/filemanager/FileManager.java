@@ -13,6 +13,7 @@ import models.finders.FileFinder;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import models.finders.UserQuota;
+import play.Logger;
 import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 
@@ -27,6 +28,8 @@ public class FileManager {
     private final EbeanServer ebeanServer;
     private final Policy policy;
     private final SessionManager sessionManager;
+
+    private static final Logger.ALogger logger = Logger.of(FileManager.class);
 
     @Inject
     public FileManager(FileFinder fileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy, SessionManager sessionManager, GroupFinder groupFinder) {
@@ -62,6 +65,7 @@ public class FileManager {
         uq.addFile(filename, comment, data);
 
         if (user.getQuotaLimit() <= uq.getTotalUsage()) {
+            logger.error(user.getUsername() + " tried to exceed quota");
             throw new QuotaExceededException();
         }
     }
@@ -109,45 +113,8 @@ public class FileManager {
 
             tx.commit();
         }
+        logger.info(currentUser.getUsername() + " added a file");
     }
-
-    /*
-    public File storeFile(Long tempFileId, String filename, String comment) throws QuotaExceededException, FilenameAlreadyExistsException, UnauthorizedException {
-        try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
-            User user = sessionManager.currentUser();
-
-            Optional<TempFile> tempFile = tempFileFinder.byIdOptional(tempFileId);
-            if (!tempFile.isPresent()) {
-                throw new IllegalArgumentException("TempFile doesn't exist");
-            }
-
-            if (!policy.CanAccessTempFile(user, tempFile.get())) {
-                throw new UnauthorizedException();
-            }
-
-            checkQuota(user, filename, comment, new byte[]{});
-
-            Optional<File> existingFile = fileFinder.byFileName(user.getUserId(), filename);
-            if (existingFile.isPresent()) {
-                throw new FilenameAlreadyExistsException();
-            }
-
-            File file = new File();
-            file.setOwner(user);
-            file.setComment(comment);
-            file.setName(filename);
-            file.setData(tempFile.get().getData());
-            file.save();
-
-            tempFile.get().delete();
-
-            tx.commit();
-
-            return file;
-        }
-    }
-    */
-
 
     public List<File> accessibleFiles() {
         User user = sessionManager.currentUser();
@@ -185,9 +152,12 @@ public class FileManager {
             throw new InvalidArgumentException();
 
 
-        if (!policy.CanReadFile(sessionManager.currentUser(), file.get()))
+        if (!policy.CanReadFile(sessionManager.currentUser(), file.get())) {
+            logger.error(sessionManager.currentUser().getUsername() + " tried to access file " + file.get().getName() + " but he is not authorized");
             throw new UnauthorizedException();
+        }
 
+        logger.info(sessionManager.currentUser().getUsername() + " is accessing file " + file.get().getName());
         return file.get();
     }
 
@@ -195,8 +165,13 @@ public class FileManager {
         User user = sessionManager.currentUser();
         File file = getFile(fileId);
 
-        // TODO: implement policy check -> can delete file
+        if (!policy.CanDeleteFile(user, file)) {
+            logger.error(user.getUsername() + " tried to delete file " + file.getName() + " but he is not authorized");
+            throw new UnauthorizedException("Du bist nicht autorisiert, diese Datei zu löschen.");
+        }
+
         ebeanServer.delete(file);
+        logger.info(user.getUsername() + " deleted file " + file.getName());
     }
 
 
@@ -208,11 +183,13 @@ public class FileManager {
         if (!fileOptional.isPresent())
             throw new InvalidArgumentException();
 
-        if (!policy.CanWriteFile(user, fileOptional.get()))
+        if (!policy.CanWriteFile(user, fileOptional.get())) {
+            logger.error(user.getUsername() + " tried to overwrite file " + fileOptional.get().getName() + " but he is not authorized");
             throw new UnauthorizedException();
-
+        }
 
         File file = fileOptional.get();
+        String oldComment = file.getComment();
 
         file.setComment(comment);
 
@@ -224,6 +201,12 @@ public class FileManager {
         checkQuota(user, file.getName(), file.getComment(), file.getData());
 
         ebeanServer.save(file);
+        logger.info(user.getUsername() + " changed the file " + file.getName() + ".");
+        logger.info("\t old comment: " + oldComment);
+        logger.info("\t new comment: " + comment);
+        if (data != null) {
+            logger.info("\t file also changed");
+        }
     }
 
     public void editFile(Long fileId, String comment) throws QuotaExceededException, UnauthorizedException, InvalidArgumentException {

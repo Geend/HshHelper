@@ -119,6 +119,18 @@ public class GroupController extends Controller {
         return ok(views.html.groups.GroupMembers.render(group, asScala(members)));
     }
 
+    public Result confirmDelete() throws UnauthorizedException, InvalidArgumentException {
+        Form<DeleteGroupDto> form = deleteGroupForm.bindFromRequest();
+
+        if (form.hasErrors()) {
+            return badRequest();
+        }
+
+        Group group = groupManager.getGroup(form.get().getGroupId());
+        return ok(views.html.groups.DeleteGroupConfirmation.render(group));
+    }
+
+
     public Result deleteGroup() throws UnauthorizedException, InvalidArgumentException {
         Form<DeleteGroupDto> form = deleteGroupForm.bindFromRequest();
 

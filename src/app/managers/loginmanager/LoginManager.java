@@ -7,6 +7,7 @@ import models.LoginAttempt;
 import models.User;
 import models.finders.LoginAttemptFinder;
 import org.joda.time.DateTime;
+import play.Logger;
 import play.mvc.Http;
 import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
@@ -27,6 +28,9 @@ public class LoginManager {
     private SessionManager sessionManager;
     private HashHelper hashHelper;
     private LoginAttemptFinder loginAttemptFinder;
+    private final RecaptchaHelper recaptchaHelper;
+
+    private static final Logger.ALogger logger = Logger.of(LoginManager.class);
 
     @Inject
     public LoginManager(
@@ -35,7 +39,8 @@ public class LoginManager {
             SessionManager sessionManager,
             HashHelper hashHelper,
             EbeanServer ebeanServer,
-            LoginAttemptFinder loginAttemptFinder)
+            LoginAttemptFinder loginAttemptFinder,
+            RecaptchaHelper recaptchaHelper)
     {
         this.loginAttemptFinder = loginAttemptFinder;
         this.ebeanSever = ebeanServer;
@@ -43,6 +48,7 @@ public class LoginManager {
         this.loginFirewall = loginFirewall;
         this.sessionManager = sessionManager;
         this.hashHelper = hashHelper;
+        this.recaptchaHelper = recaptchaHelper;
     }
 
     private User authenticate(String username, String password, String captchaToken, Http.Request request) throws CaptchaRequiredException, InvalidLoginException, IOException {
@@ -66,17 +72,20 @@ public class LoginManager {
         Strategy strategy = fw.getStrategy(uid);
 
         if(strategy.equals(Strategy.BLOCK)) {
+            logger.error(request.remoteAddress() + " is blocked from logging in.");
             throw new InvalidLoginException();
         }
 
         if(strategy.equals(Strategy.VERIFY)) {
-            if(!RecaptchaHelper.IsValidResponse(captchaToken, request.remoteAddress())) {
+            if(!recaptchaHelper.IsValidResponse(captchaToken, request.remoteAddress())) {
+                logger.error(request.remoteAddress() + " has tried to login in without a valid reCAPTCHA.");
                 throw new CaptchaRequiredException();
             }
         }
 
         if(!auth.success()) {
             fw.fail(uid);
+            logger.error(request.remoteAddress() + " failed to login on " + uid);
             throw new InvalidLoginException();
         }
 
@@ -106,10 +115,12 @@ public class LoginManager {
         User authenticatedUser = this.authenticate(username, password, captchaToken, request);
 
         if(authenticatedUser.getIsPasswordResetRequired()) {
+            logger.error(authenticatedUser.getUsername() + " needs to change his password.");
             throw new PasswordChangeRequiredException();
         }
 
         sessionManager.startNewSession(authenticatedUser);
+        logger.info(authenticatedUser.getUsername() + " has logged in.");
     }
 
     public void changePassword(String username, String currentPassword, String newPassword, String captchaToken, Http.Request request) throws InvalidLoginException, CaptchaRequiredException, IOException {
@@ -118,6 +129,7 @@ public class LoginManager {
         authenticatedUser.setIsPasswordResetRequired(false);
         authenticatedUser.setPasswordHash(hashHelper.hashPassword(newPassword));
         this.ebeanSever.save(authenticatedUser);
+        logger.info(authenticatedUser.getUsername() + " changed his password.");
     }
 
     public void logout() {

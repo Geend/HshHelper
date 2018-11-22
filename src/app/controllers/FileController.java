@@ -170,7 +170,7 @@ public class FileController extends Controller {
 
     public Result downloadFile(long fileId) throws UnauthorizedException, InvalidArgumentException {
         File file = fileManager.getFile(fileId);
-        return ok(file.getData()).as("application/octet-stream").withHeader("Content-Disposition", "attatchment; filename=" + file.getName());
+        return ok(file.getData()).as("application/octet-stream").withHeader("Content-Disposition", "attachment; filename=" + file.getName());
     }
 
     public Result editFile() throws UnauthorizedException, InvalidArgumentException {

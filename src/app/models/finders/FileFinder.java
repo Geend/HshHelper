@@ -5,6 +5,7 @@ import io.ebean.SqlQuery;
 import io.ebean.SqlRow;
 import models.File;
 import models.User;
+import play.Logger;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +56,7 @@ public class FileFinder extends Finder<Long, File> {
 
     public UserQuota getUsedQuota(Long userId) {
         SqlQuery qry = this.db().createSqlQuery(
-            "SELECT IFNULL(SUM(LENGTH(name)), ZERO()) AS nameSum, SUM(LENGTH(comment)) AS commentSum, SUM(LENGTH(data)) AS dataSum FROM files "+
+            "SELECT IFNULL(SUM(LENGTH(name)), ZERO()) AS nameSum, IFNULL(SUM(LENGTH(comment)), ZERO()) AS commentSum, IFNULL(SUM(LENGTH(data)), ZERO()) AS dataSum FROM files "+
             "WHERE owner_id = :owner_id"
         );
         qry.setParameter("owner_id", userId);

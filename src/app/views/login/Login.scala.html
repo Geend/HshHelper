@@ -1,10 +1,11 @@
 @import dtos.UserLoginDto
+@import views.TemplateEnvironment
 @(form: Form[UserLoginDto], captchaRequired: Boolean)
 
 
 @captcha() = {
     @if(captchaRequired) {
-        @extension.RecaptchaHelper.CaptchaField()
+        @TemplateEnvironment.getRecaptchaHelper.CaptchaField()
         <br>
     }
 }

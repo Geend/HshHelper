@@ -1,5 +1,6 @@
 package managers.usermanager;
 
+import extension.RecaptchaHelper;
 import managers.UnauthorizedException;
 import extension.HashHelper;
 import extension.PasswordGenerator;
@@ -48,10 +49,11 @@ public class CreateUserUsernameNotAdminTests {
         EbeanServer defaultServer = mock(EbeanServer.class);
         Policy spec = mock(Policy.class);
         SessionManager sessionManager = mock(SessionManager.class);
+        RecaptchaHelper recaptchaHelper = mock(RecaptchaHelper.class);
         when(spec.CanCreateUser(any())).thenReturn(true);
         when(userFinder.byName(any())).thenReturn(Optional.empty());
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, spec, sessionManager);
+        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, spec, sessionManager, recaptchaHelper);
         sut.createUser(this.username, "test@test.de", 5);
     }
 }

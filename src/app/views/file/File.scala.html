@@ -41,34 +41,36 @@
         </form>
     }
 
-    <h2>Berechtigungen</h2>
-    @if(file.getGroupPermissions.isEmpty && file.getUserPermissions.isEmpty) {
-        <p>Keine Berechtigungen gesetzt</p>
-    } else {
-        <table>
-            <thead>
-                <tr>
-                    <td>Bezugsobjekt</td>
-                    <td>Berechtigung</td>
-                    <td></td>
-                </tr>
-            </thead>
+    @if(TemplateEnvironment.GetPolicy().CanViewFilePermissions(TemplateEnvironment.GetMainManager().currentUser(), file)) {
+        <h2>Berechtigungen</h2>
+        @if(file.getGroupPermissions.isEmpty && file.getUserPermissions.isEmpty) {
+            <p>Keine Berechtigungen gesetzt</p>
+        } else {
+            <table>
+                <thead>
+                    <tr>
+                        <td>Bezugsobjekt</td>
+                        <td>Berechtigung</td>
+                        <td></td>
+                    </tr>
+                </thead>
 
-            @for(groupPermission <- file.getGroupPermissions) {
-                <tr>
-                    <td>Gruppe: @groupPermission.getGroup.getName</td>
-                    <td>@helper.PermissionFormat(groupPermission.getCanRead, groupPermission.getCanWrite)</td>
-                    <td><a href="#">Ändern</a> - <a href="#">Entfernen</a></td>
-                </tr>
-            }
+                @for(groupPermission <- file.getGroupPermissions) {
+                    <tr>
+                        <td>Gruppe: @groupPermission.getGroup.getName</td>
+                        <td>@helper.PermissionFormat(groupPermission.getCanRead, groupPermission.getCanWrite)</td>
+                        <td><a href="#">Ändern</a> - <a href="#">Entfernen</a></td>
+                    </tr>
+                }
 
-            @for(userPermission <- file.getUserPermissions) {
-                <tr>
-                    <td>User: @userPermission.getUser.getUsername</td>
-                    <td>@helper.PermissionFormat(userPermission.getCanRead, userPermission.getCanWrite)</td>
-                    <td><a href="#">Ändern</a> - <a href="#">Entfernen</a></td>
-                </tr>
-            }
-        </table>
+                @for(userPermission <- file.getUserPermissions) {
+                    <tr>
+                        <td>User: @userPermission.getUser.getUsername</td>
+                        <td>@helper.PermissionFormat(userPermission.getCanRead, userPermission.getCanWrite)</td>
+                        <td><a href="#">Ändern</a> - <a href="#">Entfernen</a></td>
+                    </tr>
+                }
+            </table>
+        }
     }
 }
