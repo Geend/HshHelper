@@ -9,6 +9,14 @@
     )
 }
 
+@truncateComment(comment: String) = {
+    @if(comment.length < 20) {
+        @comment
+    } else {
+        @comment.take(20).concat("...")
+    }
+}
+
 @if(files.nonEmpty) {
     <table class="fileTable">
         <thead>
@@ -25,7 +33,7 @@
         @for(file <- files) {
             <tr @helper.TrustworthyFileClass(file)>
                 <td class="name"><b><a href="@routes.FileController.showFile(file.getFileId)">@file.getName</a></b></td>
-                <td>@file.getComment</td>
+                <td>@truncateComment(file.getComment)</td>
                 <td>@file.getOwner.getUsername</td>
                 <td>@extension.FileSizeFormatter.humanReadableByteCount(file.getTotalSize)</td>
                 <td>@permissions(file)</td>
