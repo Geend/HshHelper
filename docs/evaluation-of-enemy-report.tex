@@ -1,0 +1,59 @@
+% arara: pdflatex: { shell: true, draft: true }
+% arara: makeglossaries
+% arara: biber
+% arara: pdflatex: { shell: true, synctex: true }
+% arara: pdflatex: { shell: true, synctex: true }
+
+\documentclass[12pt,DIV14,BCOR10mm,a4paper,parskip=half-,headsepline,headinclude,english,ngerman,bibliography=totocnumbered]{scrreprt}
+
+\usepackage{hshhelper_base}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}    % hier gehts los
+  \thispagestyle{empty} % Titelseite
+\includegraphics[width=0.2\textwidth]{Wortmarke_WI_schwarz}
+
+   {  ~ \sffamily
+  \vfill
+  {\Huge\bfseries Bewertung des Sicherheitsuntersuchungsberichts der Gruppe B}
+  \bigskip
+
+  {\Large
+  Dennis Grabowski, Julius Zint, Philip Matesanz, Torben Voltmer \\[2ex]
+  Masterprojekt \enquote{Entwicklung und Analyse einer sicheren \\Web-Anwendung} \\
+  Wintersemester 18/19
+ \\[5ex]
+   \today }
+}
+ \vfill
+
+  ~ \hfill
+  \includegraphics[height=0.3\paperheight]{H_WI_Pantone1665}
+
+\vspace*{-3cm}
+
+\tableofcontents  % Inhaltsverzeichnis
+
+\printbibliography
+
+% Can be used to add a list of acronyms with their description
+%\glsaddall
+%\deftranslation{to=German}{Acronyms}{Abkürzungsverzeichnis}
+%\deftranslation{to=German}{Glossary}{Glossar}
+\printacronyms[title=Abkürzungsverzeichnis,toctitle=Abkürzungsverzeichnis]
+\printglossary[title=Glossar,toctitle=Glossar,type=main]
+
+%\addcontentsline{toc}{chapter}{\listfigurename}
+% Insert list of figures, if a figure has been added to document
+\iftotalfigures
+  \listoffigures
+\fi
+
+%s\addcontentsline{toc}{chapter}{\listtablename}
+% \listoftables       % Tabellenverzeichnis
+
+\begin{appendices}
+
+\end{appendices}
+
+\end{document}
