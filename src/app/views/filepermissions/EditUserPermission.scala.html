@@ -1,26 +1,35 @@
 @import dtos.{EditUserPermissionDto, UserPermissionIdDto}
-@(dto: EditUserPermissionDto, editForm: Form[EditUserPermissionDto], deleteForm: Form[UserPermissionIdDto])
+@(dto : EditUserPermissionDto, editForm: Form[EditUserPermissionDto])
 
-@Main("HsH-Helfer: Gruppenberechtigung bearbeiten") {
-    @bootstrapHelper.center("Bearbeiten") {
-        @bootstrapHelper.form(
-            routes.PermissionController.editUserPermission(),
-            editForm,
-            scala.collection.Map(
-                "userPermissionId" -> Input(InputType.Hidden),
-                "permissionLevel" -> Input(InputType.Select,
-                    value = Right(play.libs.Scala.asScala(dto.getPossiblePermissions()).map(permissionLevel => permissionLevel.toString -> permissionLevel.toString)),
-                    label = "Berechtigung")
-            ),
-            button = bootstrapHelper.button("Speichern")
-        )
-    }
-    @bootstrapHelper.center("Löschen") {
-        @bootstrapHelper.form(
-            routes.PermissionController.deleteUserPermission(),
-            deleteForm,
-            scala.collection.Map("userPermissionId" -> Input(InputType.Hidden)),
-            button = bootstrapHelper.button("Berechtigung löschen")
-        )
+@Base("Benutzerberechtigung bearbeiten") {
+    @helper.form(action = routes.PermissionController.editUserPermission()) {
+        <div class="inputForm">
+            <div class="element">
+                <div class="label">Benutzer:</div>
+                <div class="input">
+                @dto.getUsername
+                </div>
+            </div>
+
+            <div class="element">
+                <div class="label">Datei:</div>
+                <div class="input">
+                    <a href="@routes.FileController.showFile(dto.getFileId)">@dto.getFilename</a>
+                </div>
+            </div>
+
+            @helper.SelectInput(
+                editForm("permissionLevel"),
+                "Level",
+                PermissionLevel.values().map(permissionLevel => permissionLevel.toString -> permissionLevel.toString))
+        </div>
+        <div class="inputControls">
+            <input type="submit" value="Berechtigung setzen" />
+        </div>
+
+        <input type="hidden" value="@dto.getUserPermissionId" name="userPermissionId" />
+        <input type="hidden" value="@dto.getReturnUrl" name="returnUrl" />
+
+        @helper.CSRF.formField
     }
 }

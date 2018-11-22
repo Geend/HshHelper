@@ -62,51 +62,6 @@ public class PermissionManagerTests {
         when(defaultFileFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(File.class)));
     }
 
-    @Test
-    public void getAllGrantedPermissions() {
-        ArrayList<File> userFiles = new ArrayList<>();
-        File f = mock(File.class);
-        when(f.getFileId()).thenReturn(55l);
-        userFiles.add(f);
-        FileFinder fileFinder = mock(FileFinder.class);
-        when(fileFinder.getFilesByOwner(any(Long.class))).thenReturn(userFiles);
-
-        Group g = mock(Group.class);
-        User u = mock(User.class);
-        GroupPermission gp = mock(GroupPermission.class);
-        UserPermission up = mock(UserPermission.class);
-        when(gp.getGroupPermissionId()).thenReturn(50l);
-        when(up.getUserPermissionId()).thenReturn(100l);
-        when(gp.getCanRead()).thenReturn(true);
-        when(up.getCanWrite()).thenReturn(true);
-        when(gp.getGroup()).thenReturn(g);
-        when(up.getUser()).thenReturn(u);
-        ArrayList<GroupPermission> groupPermissionsForFile = new ArrayList<>();
-        groupPermissionsForFile.add(gp);
-        ArrayList<UserPermission> userPermissionsForFile = new ArrayList<>();
-        userPermissionsForFile.add(up);
-
-        GroupPermissionFinder groupPermFinder = mock(GroupPermissionFinder.class);
-        UserPermissionFinder userPermFinder = mock(UserPermissionFinder.class);
-        when(groupPermFinder.findForFileId(55l)).thenReturn(groupPermissionsForFile);
-        when(userPermFinder.findForFileId(55l)).thenReturn(userPermissionsForFile);
-
-        PermissionManager permissionManager = new PermissionManager(
-                userPermFinder,
-                groupPermFinder,
-                fileFinder,
-                this.defaultGroupFinder,
-                this.defaultUserFinder,
-                this.defaultEbeanServer,
-                this.defaultPolicy,
-                this.defaultSessionManager);
-
-        List<PermissionEntryDto> grantedPermissions = permissionManager.getAllGrantedPermissions();
-        assertEquals(grantedPermissions.size(), 2);
-        assertTrue(grantedPermissions.stream().anyMatch(x -> x.getIsGroupPermission() && x.getGroupOrUserIdentifier() == 50l));
-        assertTrue(grantedPermissions.stream().anyMatch(x -> !x.getIsGroupPermission() && x.getGroupOrUserIdentifier() == 100l));
-    }
-
     @Test(expected = UnauthorizedException.class)
     public void ShowEditUserPermissionIsAuthorizesTest() throws InvalidDataException, UnauthorizedException, InvalidArgumentException {
         Policy spec = mock(Policy.class);
@@ -167,11 +122,19 @@ public class PermissionManagerTests {
 
     @Test
     public void ShowEditUserPermissionDataTest() throws InvalidDataException, UnauthorizedException, InvalidArgumentException {
+        File file = mock(File.class);
+        when(file.getFileId()).thenReturn(123321L);
+        when(file.getName()).thenReturn("xx.txt");
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("abc");
+
         UserPermissionFinder userFinder = mock(UserPermissionFinder.class);
         UserPermission p = mock(UserPermission.class);
         when(p.getCanRead()).thenReturn(true);
         when(p.getCanWrite()).thenReturn(false);
         when(p.getUserPermissionId()).thenReturn(55l);
+        when(p.getFile()).thenReturn(file);
+        when(p.getUser()).thenReturn(user);
         when(userFinder.byIdOptional(0l)).thenReturn(Optional.of(p));
         PermissionManager permissionManager = new PermissionManager(
                 userFinder,
@@ -185,15 +148,27 @@ public class PermissionManagerTests {
         EditUserPermissionDto result = permissionManager.getUserPermissionForEdit(0l);
         assertEquals((long)result.getUserPermissionId(), 55l);
         assertEquals(result.getPermissionLevel(), PermissionLevel.READ);
+        assertEquals((long)result.getFileId(), 123321L);
+        assertEquals(result.getFilename(), "xx.txt");
+        assertEquals(result.getUsername(), "abc");
     }
 
     @Test
     public void ShowEditGroupPermissionDataTest() throws InvalidDataException, UnauthorizedException, InvalidArgumentException {
+        File file = mock(File.class);
+        when(file.getFileId()).thenReturn(123321L);
+        when(file.getName()).thenReturn("xx.txt");
+        Group group = mock(Group.class);
+        when(group.getGroupId()).thenReturn(3333L);
+        when(group.getName()).thenReturn("abc");
+
         GroupPermissionFinder groupFinder = mock(GroupPermissionFinder.class);
         GroupPermission p = mock(GroupPermission.class);
         when(p.getCanRead()).thenReturn(true);
         when(p.getCanWrite()).thenReturn(false);
         when(p.getGroupPermissionId()).thenReturn(55l);
+        when(p.getFile()).thenReturn(file);
+        when(p.getGroup()).thenReturn(group);
         when(groupFinder.byIdOptional(0l)).thenReturn(Optional.of(p));
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
@@ -207,6 +182,10 @@ public class PermissionManagerTests {
         EditGroupPermissionDto result = permissionManager.getGroupPermissionForEdit(0l);
         assertEquals((long)result.getGroupPermissionId(), 55l);
         assertEquals(result.getPermissionLevel(), PermissionLevel.READ);
+        assertEquals((long)result.getFileId(), 123321L);
+        assertEquals(result.getFilename(), "xx.txt");
+        assertEquals((long)result.getGroupId(), 3333L);
+        assertEquals(result.getGroupName(), "abc");
     }
 
 

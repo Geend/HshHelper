@@ -52,6 +52,32 @@ public class PermissionManager {
         this.requestErrorMessage = "Fehler bei der Verarbeitung der Anfrage. Haben sie ungültige Informationen eingegeben?";
     }
 
+    public GroupPermission getGroupPermission(Long groupPermissionId) throws InvalidArgumentException, UnauthorizedException {
+        User user = this.sessionManager.currentUser();
+        Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
+
+        if (!permission.isPresent())
+            throw new InvalidArgumentException();
+
+        if (!policy.CanViewGroupPermission(user, permission.get()))
+            throw new UnauthorizedException();
+
+        return permission.get();
+    }
+
+    public UserPermission getUserPermission(Long userPermissionId) throws UnauthorizedException, InvalidArgumentException {
+        User user = this.sessionManager.currentUser();
+        Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
+
+        if (!permission.isPresent())
+            throw new InvalidArgumentException();
+
+        if (!policy.CanViewUserPermission(user, permission.get()))
+            throw new UnauthorizedException();
+
+        return permission.get();
+    }
+
     //
     //  group permissions
     //
@@ -83,9 +109,16 @@ public class PermissionManager {
         if (!policy.CanEditGroupPermission(user, permission.get()))
             throw new UnauthorizedException();
 
-        PermissionLevel permissionLevel = this.fromReadWrite(permission.get().getCanRead(), permission.get().getCanWrite());
-        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
-        return new EditGroupPermissionDto(permission.get().getGroupPermissionId(), permissionLevel, possiblePermissions);
+        GroupPermission gp = permission.get();
+
+        return new EditGroupPermissionDto(
+            gp.getGroupPermissionId(),
+            fromReadWrite(gp.getCanRead(), gp.getCanWrite()),
+            gp.getGroup().getGroupId(),
+            gp.getGroup().getName(),
+            gp.getFile().getFileId(),
+            gp.getFile().getName()
+        );
     }
 
     public void deleteGroupPermission(Long groupPermissionId) throws InvalidArgumentException, UnauthorizedException {
@@ -117,7 +150,14 @@ public class PermissionManager {
 
         PermissionLevel permissionLevel = this.fromReadWrite(permission.get().getCanRead(), permission.get().getCanWrite());
         List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
-        return new EditUserPermissionDto(permission.get().getUserPermissionId(), permissionLevel, possiblePermissions);
+
+        return new EditUserPermissionDto(
+                permission.get().getUserPermissionId(),
+                permissionLevel, possiblePermissions,
+                permission.get().getUser().getUsername(),
+                permission.get().getFile().getFileId(),
+                permission.get().getFile().getName()
+        );
     }
 
     public void deleteUserPermission(Long userPermissionId) throws InvalidArgumentException, UnauthorizedException {
@@ -147,45 +187,6 @@ public class PermissionManager {
         permission.get().setCanWrite(c.canWrite);
         permission.get().setCanRead(c.canRead);
         this.ebeanServer.save(permission.get());
-    }
-
-    //
-    //  all permissions
-    //
-
-    public List<PermissionEntryDto> getAllGrantedPermissions() {
-        User user = this.sessionManager.currentUser();
-        Integer index = 0;
-        ArrayList<PermissionEntryDto> result = new ArrayList<>();
-        List<File> ownedFiles = this.fileFinder.getFilesByOwner(user.getUserId());
-        for (File ownedFile : ownedFiles) {
-            List<GroupPermission> groupPermissionsForFile = this.groupPermissionFinder.findForFileId(ownedFile.getFileId());
-            String fileName = ownedFile.getName();
-            for (GroupPermission groupPermission : groupPermissionsForFile) {
-                String permissionString = this.getPermissionString(groupPermission.getCanRead(), groupPermission.getCanWrite());
-                result.add(new PermissionEntryDto(
-                        index++,
-                        "Group",
-                        groupPermission.getGroup().getName(),
-                        permissionString,
-                        true,
-                        fileName,
-                        groupPermission.getGroupPermissionId()));
-            }
-            List<UserPermission> userPermissions = this.userPermissionFinder.findForFileId(ownedFile.getFileId());
-            for (UserPermission userPermission : userPermissions) {
-                String permissionString = this.getPermissionString(userPermission.getCanRead(), userPermission.getCanWrite());
-                result.add(new PermissionEntryDto(
-                        index++,
-                        "User",
-                        userPermission.getUser().getUsername(),
-                        permissionString,
-                        false,
-                        fileName,
-                        userPermission.getUserPermissionId()));
-            }
-        }
-        return result;
     }
 
     //
@@ -279,6 +280,10 @@ public class PermissionManager {
                 break;
             case WRITE:
                 result.canRead = false;
+                result.canWrite = true;
+                break;
+            case READWRITE:
+                result.canRead = true;
                 result.canWrite = true;
                 break;
             default:

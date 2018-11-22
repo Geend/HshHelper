@@ -1,5 +1,9 @@
 @import dtos.EditFileDto
 @import views.TemplateEnvironment
+@import views.html.file.btn.DeleteUserPermissionBtn
+@import views.html.file.btn.DeleteGroupPermissionBtn
+@import views.html.file.btn.EditGroupPermissionBtn
+@import views.html.file.btn.EditUserPermissionBtn
 @(file:File, changeFileForm:Form[EditFileDto])
 
 @Base(file.getName + " (Datei)") {
@@ -59,7 +63,7 @@
                     <tr>
                         <td>Gruppe: @groupPermission.getGroup.getName</td>
                         <td>@helper.PermissionFormat(groupPermission.getCanRead, groupPermission.getCanWrite)</td>
-                        <td><a href="#">Ändern</a> - <a href="#">Entfernen</a></td>
+                        <td>@EditGroupPermissionBtn(groupPermission) - @DeleteGroupPermissionBtn(groupPermission)</td>
                     </tr>
                 }
 
@@ -67,7 +71,7 @@
                     <tr>
                         <td>User: @userPermission.getUser.getUsername</td>
                         <td>@helper.PermissionFormat(userPermission.getCanRead, userPermission.getCanWrite)</td>
-                        <td><a href="#">Ändern</a> - <a href="#">Entfernen</a></td>
+                        <td>@EditUserPermissionBtn(userPermission) - @DeleteUserPermissionBtn(userPermission)</td>
                     </tr>
                 }
             </table>
