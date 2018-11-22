@@ -28,6 +28,7 @@ public class LoginManager {
     private SessionManager sessionManager;
     private HashHelper hashHelper;
     private LoginAttemptFinder loginAttemptFinder;
+    private final RecaptchaHelper recaptchaHelper;
 
     private static final Logger.ALogger logger = Logger.of(LoginManager.class);
 
@@ -38,7 +39,8 @@ public class LoginManager {
             SessionManager sessionManager,
             HashHelper hashHelper,
             EbeanServer ebeanServer,
-            LoginAttemptFinder loginAttemptFinder)
+            LoginAttemptFinder loginAttemptFinder,
+            RecaptchaHelper recaptchaHelper)
     {
         this.loginAttemptFinder = loginAttemptFinder;
         this.ebeanSever = ebeanServer;
@@ -46,6 +48,7 @@ public class LoginManager {
         this.loginFirewall = loginFirewall;
         this.sessionManager = sessionManager;
         this.hashHelper = hashHelper;
+        this.recaptchaHelper = recaptchaHelper;
     }
 
     private User authenticate(String username, String password, String captchaToken, Http.Request request) throws CaptchaRequiredException, InvalidLoginException, IOException {
@@ -74,7 +77,7 @@ public class LoginManager {
         }
 
         if(strategy.equals(Strategy.VERIFY)) {
-            if(!RecaptchaHelper.IsValidResponse(captchaToken, request.remoteAddress())) {
+            if(!recaptchaHelper.IsValidResponse(captchaToken, request.remoteAddress())) {
                 logger.error(request.remoteAddress() + " has tried to login in without a valid reCAPTCHA.");
                 throw new CaptchaRequiredException();
             }

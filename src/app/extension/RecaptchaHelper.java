@@ -15,7 +15,7 @@ public class RecaptchaHelper {
                 "<div class=\"g-recaptcha\" data-sitekey=\""+rcPublicKey+"\"></div>");
     }
 
-    public static boolean IsValidResponse(String response, String remoteIp) {
+    public boolean IsValidResponse(String response, String remoteIp) {
         if(StringUtils.isEmpty(response))
             return false;
 

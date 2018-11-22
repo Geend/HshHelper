@@ -2,12 +2,14 @@ package controllers;
 
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import managers.loginmanager.CaptchaRequiredException;
 import managers.usermanager.*;
 import models.User;
 import dtos.*;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import policyenforcement.Policy;
 import policyenforcement.session.Authentication;
@@ -18,6 +20,7 @@ import scala.collection.Seq;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
@@ -134,13 +137,22 @@ public class UserController extends Controller {
         if (boundForm.hasErrors()) {
             return ok(views.html.users.ResetUserPassword.render(boundForm));
         }
-        ResetUserPasswordDto resetUserPasswordDto = boundForm.get();
-        try {
-            this.userManager.resetPassword(resetUserPasswordDto.getUsername());
-        } catch (InvalidArgumentException e) {
-            //Ignore the exception in order to not reveal potential usernames.
+
+        ResetUserPasswordDto resetUserPasswordData = boundForm.get();
+        Optional<String> recaptchaData = boundForm.field("g-recaptcha-response").getValue();
+        if(recaptchaData.isPresent()) {
+            resetUserPasswordData.setRecaptcha(recaptchaData.get());
         }
 
+        ResetUserPasswordDto resetUserPasswordDto = boundForm.get();
+        try {
+            this.userManager.resetPassword(resetUserPasswordDto.getUsername(), resetUserPasswordData.getRecaptcha(), Http.Context.current().request());
+        } catch (InvalidArgumentException e) {
+            //Ignore the exception in order to not reveal potential usernames.
+        } catch (CaptchaRequiredException e) {
+            boundForm = boundForm.withGlobalError("Complete the captcha!");
+            return badRequest(views.html.users.ResetUserPassword.render(boundForm));
+        }
 
         return ok(views.html.users.ResetUserPasswordResult.render());
     }
