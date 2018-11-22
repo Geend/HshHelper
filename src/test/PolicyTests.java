@@ -93,10 +93,6 @@ public class PolicyTests {
         petersGroupFileAdminGroupPermission = new GroupPermission(petersGroupFile, adminGroup, false, false);
         adminGroup.getGroupPermissions().add(petersGroupFileAdminGroupPermission);
 
-
-        klausFileKlausGroupPermission = new GroupPermission(petersGroupFile, adminGroup, true, false);
-        klausGroup.getGroupPermissions().add(klausFileKlausGroupPermission);
-
         klausTempFile = new TempFile(
             klaus,
             new byte[]{}
@@ -643,6 +639,42 @@ public class PolicyTests {
         assertThat(actual).isTrue();
     }
 
+    @Test
+    public void nonOwnerCantViewUserPermission() {
+        boolean actual = Policy.instance.CanViewUserPermission(horst, klausFilePeterUserPermission);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonOwnerAdminCantViewUserPermission() {
+        boolean actual = Policy.instance.CanViewUserPermission(admin, klausFilePeterUserPermission);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void ownerCanViewUserPermission() {
+        boolean actual = Policy.instance.CanViewUserPermission(klaus, klausFilePeterUserPermission);
+        assertThat(actual).isTrue();
+    }
+
+
+    @Test
+    public void nonOwnerCantViewGroupPermission() {
+        boolean actual = Policy.instance.CanViewGroupPermission(horst, petersGroupFilePetersGroupPermission);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void nonOwnerAdminCantViewGroupPermission() {
+        boolean actual = Policy.instance.CanViewGroupPermission(admin, petersGroupFilePetersGroupPermission);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void ownerCanViewGroupPermission() {
+        boolean actual = Policy.instance.CanViewGroupPermission(peter, petersGroupFilePetersGroupPermission);
+        assertThat(actual).isTrue();
+    }
     /*
      File Write PersmissionTest
   */
