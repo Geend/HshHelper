@@ -1,14 +1,84 @@
-@import dtos.UploadFileDto
-@()
+@(form: Form[dtos.UploadFileDto], userPermissionDtos: Seq[dtos.UserPermissionDto], groupPermissionDtos: Seq[dtos.GroupPermissionDto])
 
-@Main("Datei Hochladen"){
-    @bootstrapHelper.center("Datei auswählen") {
-        @helper.form(action = routes.FileController.uploadFile(), 'enctype -> "multipart/form-data") {
-            @helper.CSRF.formField
-            <input type="file" name="file">
-            <p>
-                <input type="submit">
-            </p>
-        }
+@Base("Datei Hochladen") {
+    @helper.form(action = routes.FileController.uploadFile(), 'enctype -> "multipart/form-data") {
+        @helper.CSRF.formField
+        <div class="inputForm">
+            @helper.TextInput(form("filename"), "Dateiname")
+            @helper.TextInput(form("comment"), "Kommentar")
+            <div class="element" >
+                <div class="label">
+                    <label>Datei:</label>
+                </div>
+                <div class="input">
+                    <input type="file" name="file">
+                </div>
+            </div>
+
+            <div class="element" >
+                <div class="label">
+                    <label>Gruppenrechte:</label>
+                </div>
+                <div class="input">
+                    <table class="fileTable">
+                        <thead>
+                            <tr>
+                                <td class="name">Gruppenname</td>
+                                <td>Rechte</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for(group <- groupPermissionDtos) {
+                                <tr>
+                                    <td>@group.getGroupName()</td>
+                                    <td>
+                                        <select name="group_@group.getGroupId()">
+                                            <option value="None" selected="selected">Keine</option>
+                                            <option value="Read">Lesen</option>
+                                            <option value="Write">Schreiben</option>
+                                            <option value="ReadAndWrite">Lesen und Schreiben</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="element" >
+                <div class="label">
+                    <label>Nutzerrechte:</label>
+                </div>
+                <div class="input">
+                    <table class="fileTable">
+                        <thead>
+                            <tr>
+                                <td class="name">Nutzername</td>
+                                <td>Rechte</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @for(group <- userPermissionDtos) {
+                            <tr>
+                                <td>@group.getUsername()</td>
+                                <td>
+                                    <select name="user_@group.getUserId()">
+                                        <option value="None" selected="selected">Keine</option>
+                                        <option value="Read">Lesen</option>
+                                        <option value="Write">Schreiben</option>
+                                        <option value="ReadAndWrite">Lesen und Schreiben</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="inputControls">
+            <input type="submit" value="Datei hochladen" />
+        </div>
     }
 }

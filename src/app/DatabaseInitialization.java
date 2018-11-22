@@ -29,7 +29,6 @@ public class DatabaseInitialization {
             stmt.execute("TRUNCATE TABLE users");
             stmt.execute("TRUNCATE TABLE groups");
             stmt.execute("TRUNCATE TABLE files");
-            stmt.execute("TRUNCATE TABLE temp_files");
             stmt.execute("TRUNCATE TABLE group_permissions");
             stmt.execute("TRUNCATE TABLE user_permissions");
             stmt.execute("TRUNCATE TABLE internal_session");
@@ -81,7 +80,7 @@ public class DatabaseInitialization {
 
         File f3 = new File();
         f3.setName("klaus.txt");
-        f3.setComment("xaxax");
+        f3.setComment("xaxaxxaxaxxaxaxxaxax xaxax xaxax xaxax");
         f3.setOwner(u3);
         f3.setData(new byte[]{1,2,1,2});
         f3.save();
@@ -129,12 +128,6 @@ public class DatabaseInitialization {
         gp1.setCanRead(true);
         gp1.setCanWrite(false);
         gp1.save();
-
-        TempFile tf = new TempFile();
-        tf.setCreated(DateTime.now());
-        tf.setOwner(u1);
-        tf.setData(new byte[]{});
-        tf.save();
 
         Logger.info("DatabaseInitialization - Prepare DB; Done adding new users and groups");
     }

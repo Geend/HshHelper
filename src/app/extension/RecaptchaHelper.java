@@ -2,24 +2,33 @@ package extension;
 
 import ch.compile.recaptcha.ReCaptchaVerify;
 import ch.compile.recaptcha.model.SiteVerifyResponse;
+import com.typesafe.config.Config;
 import org.apache.commons.lang3.StringUtils;
-import play.Play;
 import play.twirl.api.Html;
 
+import javax.inject.Inject;
 import java.io.IOException;
 
 public class RecaptchaHelper {
-    public static Html CaptchaField() {
-        String rcPublicKey = Play.application().configuration().getString("recaptcha.publicKey");
+
+    private final Config config;
+
+    @Inject
+    public RecaptchaHelper(Config config) {
+        this.config = config;
+    }
+
+    public Html CaptchaField() {
+        String rcPublicKey = config.getString("recaptcha.publicKey");
         return  new Html("<script src='https://www.google.com/recaptcha/api.js'></script>"+
                 "<div class=\"g-recaptcha\" data-sitekey=\""+rcPublicKey+"\"></div>");
     }
 
-    public static boolean IsValidResponse(String response, String remoteIp) {
+    public boolean IsValidResponse(String response, String remoteIp) {
         if(StringUtils.isEmpty(response))
             return false;
 
-        String rcPrivateKey = Play.application().configuration().getString("recaptcha.privateKey");
+        String rcPrivateKey = config.getString("recaptcha.privateKey");
 
         ReCaptchaVerify reCaptchaVerify = new ReCaptchaVerify(rcPrivateKey);
         SiteVerifyResponse siteVerifyResponse = null;

@@ -9,7 +9,6 @@ public class UserQuotaDto {
     private Long totalUsedTitleQuota;
     private Long totalUsedCommentQuota;
     private Long totalUsedFileDataQuota;
-    private Long totalTempFilesQuota;
 
     private Double usedQuotaPercent;
     private Double freeQuotaPercent;
@@ -17,16 +16,14 @@ public class UserQuotaDto {
     private Double usedTitleQuotaPercent;
     private Double usedCommentQuotaPercent;
     private Double usedFileDataQuotaPercent;
-    private Double usedTempFilesQuotaPercent;
 
-    public UserQuotaDto(Long totalQuota, Long totalUsedTitleQuota, Long totalUsedCommentQuota, Long totalUsedFileDataQuota, Long totalTempFilesQuota) {
+    public UserQuotaDto(Long totalQuota, Long totalUsedTitleQuota, Long totalUsedCommentQuota, Long totalUsedFileDataQuota) {
         this.totalQuota = totalQuota;
         this.totalUsedTitleQuota = totalUsedTitleQuota;
         this.totalUsedCommentQuota = totalUsedCommentQuota;
         this.totalUsedFileDataQuota = totalUsedFileDataQuota;
-        this.totalTempFilesQuota = totalTempFilesQuota;
 
-        this.totalUsedQuota = this.totalUsedTitleQuota + this.totalUsedCommentQuota + this.totalUsedFileDataQuota + this.totalTempFilesQuota;
+        this.totalUsedQuota = this.totalUsedTitleQuota + this.totalUsedCommentQuota + this.totalUsedFileDataQuota;
         this.totalFreeQuota = this.totalQuota - this.totalUsedQuota;
 
         this.usedQuotaPercent = this.totalUsedQuota.doubleValue() / this.totalQuota.doubleValue();
@@ -35,7 +32,6 @@ public class UserQuotaDto {
         this.usedTitleQuotaPercent = this.totalUsedTitleQuota.doubleValue() / this.totalQuota.doubleValue();
         this.usedCommentQuotaPercent = this.totalUsedCommentQuota.doubleValue() / this.totalQuota.doubleValue();
         this.usedFileDataQuotaPercent = this.totalUsedFileDataQuota.doubleValue() / this.totalQuota.doubleValue();
-        this.usedTempFilesQuotaPercent = this.totalTempFilesQuota.doubleValue() / this.totalQuota.doubleValue();
     }
 
     public Long getTotalQuota() {
@@ -62,10 +58,6 @@ public class UserQuotaDto {
         return totalUsedFileDataQuota;
     }
 
-    public Long getTotalTempFilesQuota() {
-        return totalTempFilesQuota;
-    }
-
     public Double getUsedQuotaPercent() {
         return usedQuotaPercent;
     }
@@ -84,9 +76,5 @@ public class UserQuotaDto {
 
     public Double getUsedFileDataQuotaPercent() {
         return usedFileDataQuotaPercent;
-    }
-
-    public Double getUsedTempFilesQuotaPercent() {
-        return usedTempFilesQuotaPercent;
     }
 }

@@ -1,15 +1,19 @@
 package managers.filemanager;
 
+import dtos.GroupPermissionDto;
+import dtos.UserPermissionDto;
+import extension.CanReadWrite;
+import extension.PermissionLevelConverter;
+import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.*;
-import io.ebean.annotation.TxIsolation;
-import managers.groupmanager.GroupManager;
 import models.*;
 import models.finders.FileFinder;
-import models.finders.TempFileFinder;
+import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import models.finders.UserQuota;
+import play.Logger;
 import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 
@@ -18,86 +22,99 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class FileManager {
+    private final GroupFinder groupFinder;
     private final FileFinder fileFinder;
-    private final TempFileFinder tempFileFinder;
     private final UserFinder userFinder;
     private final EbeanServer ebeanServer;
     private final Policy policy;
     private final SessionManager sessionManager;
 
+    private static final Logger.ALogger logger = Logger.of(FileManager.class);
+
     @Inject
-    public FileManager(FileFinder fileFinder, TempFileFinder tempFileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy, SessionManager sessionManager) {
+    public FileManager(FileFinder fileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy, SessionManager sessionManager, GroupFinder groupFinder) {
+        this.groupFinder = groupFinder;
         this.fileFinder = fileFinder;
-        this.tempFileFinder = tempFileFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
         this.policy = policy;
         this.sessionManager = sessionManager;
     }
 
+    public List<GroupPermissionDto> getGroupPermissionDtosForCreate() {
+        User currentUser = this.sessionManager.currentUser();
+        List<GroupPermissionDto> groupPermissions = currentUser.getGroups()
+                .stream()
+                .map(x -> new GroupPermissionDto(x.getGroupId(), x.getName(), PermissionLevel.NONE))
+                .collect(Collectors.toList());
+        return groupPermissions;
+    }
+
+    public List<UserPermissionDto> getUserPermissionDtosForCreate() {
+        User currentUser = this.sessionManager.currentUser();
+        List<UserPermissionDto> userPermissions = this.userFinder
+                .findAllButThis(currentUser.getUserId())
+                .stream()
+                .map(x -> new UserPermissionDto(x.getUserId(), x.getUsername(), PermissionLevel.NONE))
+                .collect(Collectors.toList());
+        return userPermissions;
+    }
 
     private void checkQuota(User user, String filename, String comment, byte[] data) throws QuotaExceededException {
         UserQuota uq = fileFinder.getUsedQuota(user.getUserId());
         uq.addFile(filename, comment, data);
 
         if (user.getQuotaLimit() <= uq.getTotalUsage()) {
+            logger.error(user.getUsername() + " tried to exceed quota");
             throw new QuotaExceededException();
         }
     }
 
-    public TempFile createTempFile(byte[] filedata) throws QuotaExceededException {
+    public void createFile(
+            String filename,
+            String comment,
+            byte[] data,
+            List<UserPermissionDto> initialUserPermissions,
+            List<GroupPermissionDto> initialGroupPermissions) throws FilenameAlreadyExistsException, QuotaExceededException, UnauthorizedException {
+        User currentUser = this.sessionManager.currentUser();
         try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
-            User user = sessionManager.currentUser();
-
-            checkQuota(user, "", "", filedata);
-
-            TempFile tf = new TempFile(
-                    user,
-                    filedata
-            );
-
-            tf.save();
-            tx.commit();
-
-            return tf;
-        }
-    }
-
-    public File storeFile(Long tempFileId, String filename, String comment) throws QuotaExceededException, FilenameAlreadyExistsException, UnauthorizedException {
-        try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
-            User user = sessionManager.currentUser();
-
-            Optional<TempFile> tempFile = tempFileFinder.byIdOptional(tempFileId);
-            if (!tempFile.isPresent()) {
-                throw new IllegalArgumentException("TempFile doesn't exist");
-            }
-
-            if (!policy.CanAccessTempFile(user, tempFile.get())) {
-                throw new UnauthorizedException();
-            }
-
-            checkQuota(user, filename, comment, new byte[]{});
-
-            Optional<File> existingFile = fileFinder.byFileName(user.getUserId(), filename);
+            Optional<File> existingFile = fileFinder.byFileName(currentUser.getUserId(), filename);
             if (existingFile.isPresent()) {
                 throw new FilenameAlreadyExistsException();
             }
 
+            checkQuota(currentUser, filename, comment, new byte[]{});
+
             File file = new File();
-            file.setOwner(user);
+            file.setOwner(currentUser);
             file.setComment(comment);
             file.setName(filename);
-            file.setData(tempFile.get().getData());
-            file.save();
+            file.setData(data);
+            this.ebeanServer.save(file);
 
-            tempFile.get().delete();
+            for(GroupPermissionDto groupDto: initialGroupPermissions) {
+                Group g = this.groupFinder.byId(groupDto.getGroupId());
+                if(!this.policy.CanCreateGroupPermission(file, currentUser, g)) {
+                    throw new UnauthorizedException();
+                }
+                CanReadWrite c = PermissionLevelConverter.ToReadWrite(groupDto.getPermissionLevel());
+                GroupPermission groupPermission = new GroupPermission(file, g, c.isCanRead(), c.isCanWrite());
+                this.ebeanServer.save(groupPermission);
+            }
+            for(UserPermissionDto userDto: initialUserPermissions) {
+                User u = this.userFinder.byId(userDto.getUserId());
+                if(!this.policy.CanCreateUserPermission(file, currentUser)) {
+                    throw new UnauthorizedException();
+                }
+                CanReadWrite c = PermissionLevelConverter.ToReadWrite(userDto.getPermissionLevel());
+                UserPermission userPermission = new UserPermission(file, u, c.isCanRead(), c.isCanWrite());
+                this.ebeanServer.save(userPermission);
+            }
 
             tx.commit();
-
-            return file;
         }
+        logger.info(currentUser.getUsername() + " added a file");
     }
-
 
     public List<File> accessibleFiles() {
         User user = sessionManager.currentUser();
@@ -122,7 +139,6 @@ public class FileManager {
         return new ArrayList<>(result);
     }
 
-
     public UserQuota getCurrentQuotaUsage() {
         User user = sessionManager.currentUser();
         return fileFinder.getUsedQuota(user.getUserId());
@@ -136,9 +152,12 @@ public class FileManager {
             throw new InvalidArgumentException();
 
 
-        if (!policy.CanReadFile(sessionManager.currentUser(), file.get()))
+        if (!policy.CanReadFile(sessionManager.currentUser(), file.get())) {
+            logger.error(sessionManager.currentUser().getUsername() + " tried to access file " + file.get().getName() + " but he is not authorized");
             throw new UnauthorizedException();
+        }
 
+        logger.info(sessionManager.currentUser().getUsername() + " is accessing file " + file.get().getName());
         return file.get();
     }
 
@@ -146,8 +165,13 @@ public class FileManager {
         User user = sessionManager.currentUser();
         File file = getFile(fileId);
 
-        // TODO: implement policy check -> can delete file
+        if (!policy.CanDeleteFile(user, file)) {
+            logger.error(user.getUsername() + " tried to delete file " + file.getName() + " but he is not authorized");
+            throw new UnauthorizedException("Du bist nicht autorisiert, diese Datei zu löschen.");
+        }
+
         ebeanServer.delete(file);
+        logger.info(user.getUsername() + " deleted file " + file.getName());
     }
 
 
@@ -159,11 +183,13 @@ public class FileManager {
         if (!fileOptional.isPresent())
             throw new InvalidArgumentException();
 
-        if (!policy.CanWriteFile(user, fileOptional.get()))
+        if (!policy.CanWriteFile(user, fileOptional.get())) {
+            logger.error(user.getUsername() + " tried to overwrite file " + fileOptional.get().getName() + " but he is not authorized");
             throw new UnauthorizedException();
-
+        }
 
         File file = fileOptional.get();
+        String oldComment = file.getComment();
 
         file.setComment(comment);
 
@@ -175,18 +201,16 @@ public class FileManager {
         checkQuota(user, file.getName(), file.getComment(), file.getData());
 
         ebeanServer.save(file);
+        logger.info(user.getUsername() + " changed the file " + file.getName() + ".");
+        logger.info("\t old comment: " + oldComment);
+        logger.info("\t new comment: " + comment);
+        if (data != null) {
+            logger.info("\t file also changed");
+        }
     }
 
     public void editFile(Long fileId, String comment) throws QuotaExceededException, UnauthorizedException, InvalidArgumentException {
         editFile(fileId, comment, null);
-    }
-
-    public void removeTempFiles() {
-        User user = sessionManager.currentUser();
-        List<TempFile> tempFiles = tempFileFinder.getFilesByOwner(user.getUserId());
-
-        tempFiles.forEach(ebeanServer::delete);
-
     }
 
     public List<File> searchFile(String query) {

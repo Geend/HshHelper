@@ -173,7 +173,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   		\item DNS manipulieren
   	\end{itemize}
   \item Risiko: Mittel
-  \item Gegenmaßnahmen: Authentifizierung des Servers durch Zertifikate (HTTPS mit HSTS)
+  \item Mögliche Gegenmaßnahmen: Authentifizierung des Servers durch Zertifikate (HTTPS mit HSTS)
   \end{itemize}
 
   \hypertarget{threat2}{}
@@ -188,7 +188,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   	\end{itemize}
   \item Möglichkeiten: Man-in-the-Middle-Angriff
   \item Risiko: Mittel
-  \item Gegenmaßnahmen: Verschlüsselung durch HTTPS mit HSTS oder SecureCookie
+  \item Mögliche Gegenmaßnahmen: Verschlüsselung durch HTTPS mit HSTS oder SecureCookie
   \end{itemize}
 
   \hypertarget{threat3}{}
@@ -197,7 +197,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Mehrfach-Ausführung geschützter Aktionen
   \item Möglichkeiten (Bezogen auf unsere Anwendung): Keine
   \item Risiko: Note
-  \item Gegenmaßnahmen: HTTPS %/ CSRF-Token
+  \item Mögliche Gegenmaßnahmen: HTTPS %/ CSRF-Token
   \end{itemize}
 
   \hypertarget{threat4}{}
@@ -210,7 +210,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
 	\end{itemize}
   \item Möglichkeiten: Leitung splicen und Man-In-The-Middle durchführen
   \item Risiko: Mittel
-  \item Gegenmaßnahmen: HTTPS
+  \item Mögliche Gegenmaßnahmen: HTTPS
   \end{itemize}
 
   \hypertarget{threat5}{}
@@ -223,7 +223,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
    \end{itemize}
   \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HsH-Helfer Domain ausgestellt werden. Für HsH-Helfer Benutzer ist das nicht sofort einsehbar\footnote{Bereits geschehen durch türkischen Geheimdienst: \url{https://arstechnica.com/information-technology/2013/01/turkish-government-agency-spoofed-google-certificate-accidentally/}}.
   \item Risiko: Gering
-  \item Gegenmaßnahmen: HTTP Public Key Pinning (HPKP)
+  \item Mögliche Gegenmaßnahmen: HTTP Public Key Pinning (HPKP)
   \end{itemize}
 
   \hypertarget{threat6}{}
@@ -232,7 +232,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Ausführung von JavaScript im HsH-Helfer Kontext eines Benutzers
   \item Möglichkeiten: Eingaben, die ausgegeben werden, ohne Eingabevalidierung oder Ausgabecodierung auszuführen
   \item Risiko: Hoch
-  \item Gegenmaßnahmen:
+  \item Mögliche Gegenmaßnahmen:
 	\begin{itemize}
 		\item Eingabevalidierung (Kleinbuchstaben und Zahlen, valide E-Mail-Adressen)
 		\item X-XSS-Protection (vgl. \ref{x:xss:protection})
@@ -248,7 +248,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Unzulässiges Lesen und Schreiben von Datenbankinhalten
   \item Möglichkeiten: Inline-SQL Queries ohne Seperation of Data and Code
   \item Risiko: Hoch
-  \item Gegenmaßnahmen:
+  \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
     \item Die H2 Einstellung \texttt{ALLOW\_LITERALS=NONE} verwenden
     \item Nur PreparedStatements benutzen
@@ -262,7 +262,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Durch SQL Injection erbeutete Hashes in Plaintext verwandeln
   \item Möglichkeiten: Rainbowtables
   \item Risiko: Gering
-  \item Gegenmaßnahmen:
+  \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
     \item Passwörter nur gehashed mit Salt speichern
     \item Passwörter zusätzlich mit Pepper hashen
@@ -279,7 +279,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
           \item Einem Administrator einen Request unterjubeln, durch welchen er einen Nutzer erstellt
   \end{itemize}
   \item Risiko: Hoch
-  \item Gegenmaßnahmen: CSRF-Tokens bei Requests prüfen
+  \item Mögliche Gegenmaßnahmen: CSRF-Tokens bei Requests prüfen
   \end{itemize}
 
   \hypertarget{threat10}{}
@@ -288,7 +288,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Client spoofen um Aktionen auszuführen, für die der gespoofte Client autorisiert ist
   \item Möglichkeiten: Cookie fälschen
   \item Risiko: Hoch
-  \item Gegenmaßnahmen:
+  \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
     \item Signieren des Cookies durch privaten Schlüssel,
     \item Verwendung von UUID,
@@ -303,7 +303,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Anderen Nutzer in rechtliche Schwierigkeiten bringen
   \item Möglichkeiten: Eintragen illegaler Namen bei Benutzernamen oder Gruppenmane
   \item Risiko: Gering
-  \item Gegenmaßnahmen: Logging von IP + Zeit, Action, User
+  \item Mögliche Gegenmaßnahmen: Logging von IP + Zeit, Action, User
   \end{itemize}
 
   \hypertarget{threat12}{}
@@ -312,7 +312,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Beispielsweise um einen Denial-of-Service-Angriff auf einen Nutzer durchzuführen
   \item Möglichkeiten: Beispielsweise Nutzer löscht andere Nutzer
   \item Risiko: Mittelmäßig - Hoch
-  \item Gegenmaßnahmen: Autorisierung erzwingen und prüfen bei jeder Operation
+  \item Mögliche Gegenmaßnahmen: Autorisierung erzwingen und prüfen bei jeder Operation
   \end{itemize}
 
   \hypertarget{threat13}{}
@@ -321,7 +321,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Brute-Forcing ermöglichen
   \item Möglichkeiten: 2captcha.com bietet diesen Service für 2.99\$ für 1000 reCAPTCHAs
   \item Risiko: Gering
-  \item Gegenmaßnahmen: Zwei-Faktor-Authentisierung
+  \item Mögliche Gegenmaßnahmen: Zwei-Faktor-Authentisierung
   \end{itemize}
 
   \hypertarget{threat14}{}
@@ -330,7 +330,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Verfügbarkeit der Anwendung beeinträchtigen
   \item Möglichkeiten: Botnetzwerk oder Booter-Service verwenden
   \item Risiko: Mittel
-  \item Gegenmaßnahmen: Cloudflare/Incapsula/Akamai Secure Shield verwenden
+  \item Mögliche Gegenmaßnahmen: Cloudflare/Incapsula/Akamai Secure Shield verwenden
   \end{itemize}
 
   %\item \textcolor{red}{Elevation of privilege -> Frage an Peine. ?}
@@ -348,7 +348,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: DOS der Applikation
   \item Möglichkeiten: Durch überlange Passwörter eine ressourcenintensive Hash-Operation in Gang setzen
   \item Risiko: Hoch
-  \item Gegenmaßnahmen:
+  \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
   \item Passwort-Länge mittels Eingabevalidierung beschränken
   \item Verwendung von bcrypt (lässt nur 72 Zeichen lange Passwörter zu, Laufzeit ist für alle Eingabelängen konstant)
@@ -361,7 +361,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Herausfinden, ob ein Benutzer mit einem bestimmten Username existiert
   \item Möglichkeiten: Durch Messen der Antwortszeiten des Servers können Rückschlüsse darüber gezogen werden, welcher Code ausgeführt wurde (zB Hashing/DB-Zugriff)
   \item Risiko: Mittel
-  \item Gegenmaßnahmen: Loginprozess für jeden Fall gleich ablaufen lassen
+  \item Mögliche Gegenmaßnahmen: Loginprozess für jeden Fall gleich ablaufen lassen
   \end{itemize}
 
   \hypertarget{threat17}{}
@@ -370,7 +370,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Unautorisierter Zugriff auf ein fremdes Benutzerkonto
   \item Möglichkeiten: Beispielsweise durch Wörterbuchattacken
   \item Risiko: Hoch
-  \item Gegenmaßnahmen:
+  \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
       \item Login nur möglich, wenn Captcha gelöst wird
       \item IP Sperre bei auffälligem Verhalten
@@ -389,10 +389,10 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Denial-of-Service-Angriff auf einen individuellen Nutzer
   \item Möglichkeiten: Wiederholtes Absenden des Request mit richtigen Nutzernamen generiert bei jedem Request ein neues temporäres Passwort. Selbst wenn der Benutzer das temporäre Passwort ändert, wird er es nicht schaffen sich anzumelden, da dann bereits die Generierung ein neues temporäres Passwort vom Angreifer erzwungen wurde.
   \item Risiko: Hoch
-  \item Gegenmaßnahmen:
+  \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
   \item Einbau eines Captchas
-  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den \enquote{Passwort ändern}-Prozess anzustoßen. Der Link muss einen geheimen Token beinhalten, der nur HsH-Helfer und dem Empfänger der E-Mail bekannt ist. Das temporäre Passwort wird erst generiert, sobald auf den Link geklickt wird.
+  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den \enquote{Passwort nach Zurücksetzung ändern}-Prozess anzustoßen. Der Link muss einen geheimen Token beinhalten, der nur HsH-Helfer und dem Empfänger der E-Mail bekannt ist. Das temporäre Passwort wird erst generiert, sobald auf den Link geklickt wird.
   \end{itemize}
 \end{itemize}
 
@@ -402,7 +402,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Herausfinden, ob ein Benutzer mit einem bestimmten Username existiert
   \item Möglichkeiten: Durch Messen der Antwortszeiten des Servers können Rück\-schlüsse darüber gezogen werden, welcher Code ausgeführt wurde (E-Mail-Versand)
   \item Risiko: Mittel
-  \item Gegenmaßnahmen:
+  \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
     \item \enquote{Passwort zurücksetzen lassen}-Prozess in konstanter Länge ablaufen lassen, ggf. durch Absenden einer E-Mail an eine Dummy-E-Mail-Adresse
     \item E-Mail-Versand asynchron durchführen
@@ -415,11 +415,11 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck: Verbrauch der vorhandenen Resourcen seines E-Mail-Kontos
   \item Möglichkeiten: Wiederholtes Absenden des Formulars durch Angabe seines Nutzernamens
   \item Risiko: Hoch
-  \item Gegenmaßnahmen: Nutzer muss Captcha lösen, bevor Prozess angestoßen werden darf
+  \item Mögliche Gegenmaßnahmen: Nutzer muss Captcha lösen, bevor Prozess angestoßen werden darf
   \end{itemize}
 \end{itemize}
 
-\subsubsection{Mögliche Angriffe auf den \enquote{Passwort ändern}-Prozess}
+\subsubsection{Mögliche Angriffe auf den \enquote{Passwort nach Zurücksetzung ändern}-Prozess}
 
 % This is subject to change if we implement the link-based mitigation
 Da dieser Prozess dem Loginprozess gleicht, treten hier die selben Lücken auf.
@@ -440,7 +440,7 @@ Ausweislich der Aufgabenstellung sollen wir eine sichere Verbindung annehmen.
 
 \section{Vorzunehmende Gegenmaßnahmen}
 
-In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahmen, die wir geplant haben umzusetzen, entnommen werden.
+In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahmen entnommen werden, die wir planen umzusetzen.
 
 \begin{table*}[hbt!]
   \captionof{table}{Auflistung aller vorzunehmenden Gegenmaßnahmen mit Referenz auf Angriff, der verhindert/erschwert wird. Status beschreibt bereits durchgeführte Implementation.}
@@ -470,7 +470,6 @@ In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahme
     Verbieten schwacher Passwörter & \linktothreat{threat17}{T17} & \redxmark \\ \hline
     Captcha zwischenschalten, um Massenrequests entgegenzuwirken & \linktothreat{threat17}{T17}, \linktothreat{threat18}{T18}, \linktothreat{threat20}{T20} & \greencheckmark \\ \hline
     IP-Adresse bei auffälligem Verhalten sperren & \linktothreat{threat17}{T17} & \greencheckmark \\ \hline
-    Aussperrung alter Browserversionen & \linktothreat{threat6}{T6} & \redxmark \\ \hline
     \enquote{Content Security Policy}-Header nutzen & \linktothreat{threat6}{T6} & \greencheckmark \\ \hline
     \enquote{X-XSS-Protection}-Header nutzen & \linktothreat{threat6}{T6}&  \greencheckmark \\ \hline
   \end{tabularx}
@@ -499,7 +498,16 @@ Um zu verhindern, dass unsere Seite in einem \texttt{<frame>}, \texttt{<iframe>}
 \begin{sloppypar}
 \texttt{X-XSS-Protection: 1; mode=block}
 \end{sloppypar}
-Durch den Header \texttt{X-XSS-Protection} wird der Browser angewiesen, eine XSS Erkennung zu versuchen. Dieses Feature ist für älteren Browser interessant, die noch kein CSP implementieren. Durch den Modus \enquote{block} wird das Laden der Seite abgebrochen, sobald ein XSS Versuch erkannt wird.
+Durch den Header \texttt{X-XSS-Protection} wird der Browser (Chrome, Safari, Internet Explorer und Opera) angewiesen, eine \enquote{reflected XSS}-Erkennung zu versuchen.
+Dieses Feature ist für älteren Browser interessant, die noch kein CSP implementieren.
+Durch den Modus \enquote{block} wird das Laden der Seite abgebrochen.
+Dieser Header dient daher als zusätzliches Auffangnetz, im Fachjargon oftmals \enquote{Defense in Depth} oder \enquote{castle approach} genannt, aber nicht als ausreichender Schutz.
+Leider ist dies relativ einfach auszuhebeln oder sogar zu missbrauchen, daher fordern wir in unseren Annahmen explizit ein Ausschluss älterer Browser.
+Die oben genannten Browser verwenden hierfür ein Blacklisting verschiedener Tags sowie gefährlicher Zeichen, bei welchen der \enquote{XSS-Auditor} anspringt und die potentielle XSS-Payload herausfiltert.
+\footnote{Siehe \url{https://blog.innerht.ml/the-misunderstood-x-xss-protection/} für generelle Erklärung und Beispiel des Angriffs zum Entfernen der JQuery-Bibliothek}
+Solch ein Blacklisting ist allerdings aufgrund verschiedener Möglichkeiten zum Deformieren des Payloads einfach auszuhebeln.
+Darüber hinaus kann der XSS-Auditor auch missbraucht werden, um bestimmte JavaScript-Bibliotheken von einer Seite zu entfernen.
+Chrome's/Chromium's XSS-Auditor\footnote{\url{https://bugs.chromium.org/p/chromium/issues/detail?id=825675}} entfernt beispielsweise \texttt{<script>}-Tags in dem HTML, wenn sie zeitgleich im Request-Query-String gefunden werden.
 
 \subsection{X-Content-Type-Options}
 \begin{sloppypar}
@@ -530,7 +538,10 @@ Dieser Header ist dem \enquote{X-XSS-Protection}-Header vorzuziehen.
 \printglossary[title=Glossar,toctitle=Glossar,type=main]
 
 %\addcontentsline{toc}{chapter}{\listfigurename}
-\listoffigures      % Abbildungsverzeichnis
+% Insert list of figures, if a figure has been added to document
+\iftotalfigures
+  \listoffigures
+\fi
 
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis

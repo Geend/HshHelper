@@ -219,8 +219,6 @@ public class Policy {
         return false;
     }
 
-
-
     public boolean CanReadFile(User user, File file){
         if(user == null || file == null)
             return false;
@@ -249,6 +247,16 @@ public class Policy {
             return true;
 
         if(user.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanWrite)))
+            return true;
+
+        return false;
+    }
+
+    public boolean CanDeleteFile(User user, File file) {
+        if(user == null || file == null)
+            return false;
+
+        if(file.getOwner().equals(user))
             return true;
 
         return false;
@@ -315,18 +323,6 @@ public class Policy {
 
         if(group.getMembers().contains(user))
             return true;
-
-        return false;
-    }
-
-    public boolean CanAccessTempFile(User currentUser, TempFile tempFile) {
-        if(currentUser == null || tempFile == null) {
-            return false;
-        }
-
-        if(currentUser.equals(tempFile.getOwner())) {
-            return true;
-        }
 
         return false;
     }

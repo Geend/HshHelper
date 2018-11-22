@@ -35,9 +35,6 @@ public class PolicyTests {
     private static GroupPermission petersGroupFilePetersGroupPermission;
     private static GroupPermission petersGroupFileAdminGroupPermission;
 
-    private static TempFile klausTempFile;
-
-
     /*
         adminGroup:
             admin, adminTwo
@@ -93,10 +90,9 @@ public class PolicyTests {
         petersGroupFileAdminGroupPermission = new GroupPermission(petersGroupFile, adminGroup, false, false);
         adminGroup.getGroupPermissions().add(petersGroupFileAdminGroupPermission);
 
-        klausTempFile = new TempFile(
-            klaus,
-            new byte[]{}
-        );
+
+        klausFileKlausGroupPermission = new GroupPermission(petersGroupFile, adminGroup, true, false);
+        klausGroup.getGroupPermissions().add(klausFileKlausGroupPermission);
     }
 
     @Before
@@ -194,6 +190,12 @@ public class PolicyTests {
     /*
         Remove user from Group
      */
+    @Test
+    public void noUserCanBeRemovedFromAllGroup() {
+        boolean actual = Policy.instance.CanRemoveGroupMember(admin, allGroup, peter);
+        assertThat(actual).isFalse();
+    }
+
     @Test
     public void ownerCannotBeRemovedFromGroup() {
         boolean actual = Policy.instance.CanRemoveGroupMember(peter, petersGroup, peter);
@@ -713,27 +715,17 @@ public class PolicyTests {
         assertThat(actual).isFalse();
     }
 
-    /*
-        Zugriff auf Temporäre Datei
-     */
     @Test
-    public void adminCannotAccessTempFile() {
-        boolean actual = Policy.instance.CanAccessTempFile(admin, klausTempFile);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void nonAdminNonOwnerCannotAccessTempFile() {
-        boolean actual = Policy.instance.CanAccessTempFile(peter, klausTempFile);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void ownerCanAccessTempFile() {
-        boolean actual = Policy.instance.CanAccessTempFile(klaus, klausTempFile);
+    public void ownerCanDeleteFile() {
+        boolean actual = Policy.instance.CanDeleteFile(klaus, klausFile);
         assertThat(actual).isTrue();
     }
 
+    @Test
+    public void normalUserCannotDeleteFile() {
+        boolean actual = Policy.instance.CanDeleteFile(horst, klausFile);
+        assertThat(actual).isFalse();
+    }
     /*
         Zugriff auf Berechtigungen
      */

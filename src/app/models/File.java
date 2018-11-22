@@ -11,6 +11,7 @@ public class File extends Model {
     @Id
     private Long fileId;
     private String name;
+    @Lob
     private String comment;
 
     @Lob
@@ -21,10 +22,18 @@ public class File extends Model {
     @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
     private User owner;
 
-    @OneToMany(mappedBy = "file", fetch = FetchType.EAGER)
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            mappedBy = "file",
+            fetch = FetchType.EAGER
+    )
     private List<UserPermission> userPermissions;
 
-    @OneToMany(mappedBy = "file", fetch = FetchType.EAGER)
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            mappedBy = "file",
+            fetch = FetchType.EAGER
+    )
     private List<GroupPermission> groupPermissions;
 
     public File() {
