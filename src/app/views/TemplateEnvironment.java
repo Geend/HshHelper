@@ -1,5 +1,6 @@
 package views;
 
+import extension.RecaptchaHelper;
 import managers.mainmanager.MainManager;
 import policyenforcement.Policy;
 
@@ -12,11 +13,18 @@ public class TemplateEnvironment {
     @Inject
     static MainManager mainManager;
 
+    @Inject
+    static RecaptchaHelper recaptchaHelper;
+
     public static Policy GetPolicy() {
         return policy;
     }
 
     public static MainManager GetMainManager() {
         return mainManager;
+    }
+
+    public static RecaptchaHelper getRecaptchaHelper() {
+        return recaptchaHelper;
     }
 }
