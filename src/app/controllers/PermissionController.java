@@ -23,6 +23,7 @@ import policyenforcement.session.SessionManager;
 import scala.collection.Seq;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
 
@@ -152,56 +153,57 @@ public class PermissionController extends Controller {
         creating permissions
      */
 
-    public Result showCreateGroupPermission()
-    {
-        return renderCreateGroupPermissionForm(createGroupPermissionForm);
+    public Result showCreateGroupPermission(Long fileId) throws UnauthorizedException, InvalidArgumentException {
+        File file = manager.getFile(fileId);
+        List<Group> ownGroups = sessionManager.currentUser().getGroups();
+        // Gruppen mit bestehenden Berechtigungen filtern!
+        ownGroups.removeAll(file.getGroupPermissions().stream().map(GroupPermission::getGroup).collect(Collectors.toList()));
+        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
+
+        return ok(views.html.filepermissions.CreateGroupPermission.render(createGroupPermissionForm, asScala(ownGroups), asScala(possiblePermissions), file));
     }
+
+    public Result showCreateUserPermission(Long fileId) throws UnauthorizedException, InvalidArgumentException {
+        File file = manager.getFile(fileId);
+        List<User> allOtherUsers = manager.getAllOtherUsers(sessionManager.currentUser().userId);
+        // Benutzer mit bestehenden berechtigungen filtern!
+        allOtherUsers.removeAll(file.getUserPermissions().stream().map(UserPermission::getUser).collect(Collectors.toList()));
+        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
+
+        return ok(views.html.filepermissions.CreateUserPermission.render(createUserPermissionForm, asScala(allOtherUsers), asScala(possiblePermissions), file));
+    }
+
 
     public Result createGroupPermission() throws UnauthorizedException, InvalidArgumentException {
         Form<CreateGroupPermissionDto> boundForm = createGroupPermissionForm.bindFromRequest("fileId", "groupId", "permissionLevel");
-
         if (boundForm.hasErrors()) {
-            return renderCreateGroupPermissionForm(boundForm);
+            return badRequest();
         }
 
         CreateGroupPermissionDto createUserPermissionDto = boundForm.get();
 
-        manager.createGroupPermission(createUserPermissionDto.getFileId(), createUserPermissionDto.getGroupId(), createUserPermissionDto.getPermissionLevel());
-        return redirect(routes.HomeController.index());
+        // None-Permission -> implicit abort
+        if(!createUserPermissionDto.getPermissionLevel().equals(PermissionLevel.NONE)) {
+            manager.createGroupPermission(createUserPermissionDto.getFileId(), createUserPermissionDto.getGroupId(), createUserPermissionDto.getPermissionLevel());
+        }
+
+        return redirect(routes.FileController.showFile(createUserPermissionDto.getFileId()));
     }
 
-    public Result showCreateUserPermission()
-    {
-        return renderShowCreateUserPermissionForm(createUserPermissionForm);
-    }
 
     public Result createUserPermission() throws UnauthorizedException, InvalidArgumentException {
         Form<CreateUserPermissionDto> boundForm = createUserPermissionForm.bindFromRequest("fileId", "userId", "permissionLevel");
-
         if (boundForm.hasErrors()) {
-            return renderShowCreateUserPermissionForm(boundForm);
+            return badRequest();
         }
 
         CreateUserPermissionDto createUserPermissionDto = boundForm.get();
 
-        manager.createUserPermission(createUserPermissionDto.getFileId(), createUserPermissionDto.getUserId(), createUserPermissionDto.getPermissionLevel());
-        return redirect(routes.HomeController.index());
+        // None-Permission -> implicit abort
+        if(!createUserPermissionDto.getPermissionLevel().equals(PermissionLevel.NONE)) {
+            manager.createUserPermission(createUserPermissionDto.getFileId(), createUserPermissionDto.getUserId(), createUserPermissionDto.getPermissionLevel());
+        }
+
+        return redirect(routes.FileController.showFile(createUserPermissionDto.getFileId()));
     }
-
-    private Result renderCreateGroupPermissionForm(Form<CreateGroupPermissionDto> form){
-        List<File> ownFiles = manager.getUserFiles(sessionManager.currentUser().userId);
-        List<Group> ownGroups = sessionManager.currentUser().getGroups();
-        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
-
-        return ok(views.html.filepermissions.CreateGroupPermission.render(form, asScala(ownFiles), asScala(ownGroups), asScala(possiblePermissions)));
-    }
-
-    private Result renderShowCreateUserPermissionForm(Form<CreateUserPermissionDto> form){
-        List<File> ownFiles = manager.getUserFiles(sessionManager.currentUser().userId);
-        List<User> allOtherUsers = manager.getAllOtherUsers(sessionManager.currentUser().userId);
-        List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
-
-        return ok(views.html.filepermissions.CreateUserPermission.render(form, asScala(ownFiles), asScala(allOtherUsers), asScala(possiblePermissions)));
-    }
-
 }

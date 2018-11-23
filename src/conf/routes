@@ -48,8 +48,6 @@ POST        /files/delete                                              controlle
 
 GET         /files/upload                                              controllers.FileController.showUploadFileForm
 POST        /files/upload                                              controllers.FileController.uploadFile
-#POST        /files/upload/store                                        controllers.FileController.storeFile
-#POST        /files/removeTempFiles                                     controllers.FileController.removeTempFiles
 
 GET         /files/quota                                               controllers.FileController.showQuotaUsage
 GET         /files/:fileId                                             controllers.FileController.showFile(fileId: Long)
@@ -65,6 +63,8 @@ POST        /permissions/editUserPermission                           controller
 POST        /permissions/editUserPermission/submit                    controllers.PermissionController.editUserPermission()
 POST        /permissions/editGroupPermission                          controllers.PermissionController.showEditGroupPermissionForm()
 POST        /permissions/editGroupPermission/submit                   controllers.PermissionController.editGroupPermission()
+GET         /permissions/createUserPermission/:fileId                 controllers.PermissionController.showCreateUserPermission(fileId : Long)
+GET         /permissions/createGroupPermission/:fileId                controllers.PermissionController.showCreateGroupPermission(fileId : Long)
 # PermissionController - END
 
 
@@ -76,9 +76,9 @@ GET         /badrequest                                                controlle
 
 POST        /permissions/deletegrouppermission/                        controllers.PermissionController.deleteGroupPermission()
 POST        /permissions/deleteuserpermission/                         controllers.PermissionController.deleteUserPermission()
-GET         /permissions/creategrouppermission/                        controllers.PermissionController.showCreateGroupPermission()
+#GET         /permissions/creategrouppermission/                        controllers.PermissionController.showCreateGroupPermission()
 POST        /permissions/creategrouppermission/                        controllers.PermissionController.createGroupPermission()
-GET         /permissions/createuserpermission/                         controllers.PermissionController.showCreateUserPermission()
+#GET         /permissions/createuserpermission/                         controllers.PermissionController.showCreateUserPermission()
 POST        /permissions/createuserpermission/                         controllers.PermissionController.createUserPermission()
 
 

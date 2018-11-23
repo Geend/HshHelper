@@ -1,22 +1,31 @@
-@(form: Form[dtos.CreateGroupPermissionDto], ownFiles: Seq[File], allGroups: Seq[Group], possiblePermissions: Seq[PermissionLevel])
+@(form: Form[dtos.CreateGroupPermissionDto], allGroups: Seq[Group], possiblePermissions: Seq[PermissionLevel], relevantFile : File)
 
-@Main("HsH-Helfer: Gruppen Berechtigung erstellen"){
-    @bootstrapHelper.center("Einen neue Gruppen Berechtigung erstellen") {
-        @bootstrapHelper.form(
-            routes.PermissionController.createGroupPermission(),
-            form,
-            scala.collection.Map(
-                "fileId" -> Input(InputType.Select,
-                    value = Right(ownFiles.map(file => file.getFileId().toString() -> file.getName())),
-                    label = "Datei wählen"),
-                "groupId" -> Input(InputType.Select,
-                    value = Right(allGroups.map(user => user.getGroupId().toString -> user.getName())),
-                    label = "Gruppe wählen"),
-                "permissionLevel" -> Input(InputType.Select,
-                    value = Right(possiblePermissions.map(permissionLevel => permissionLevel.toString -> permissionLevel.toString)),
-                    label = "Berechtigung")
-            ),
-            button = bootstrapHelper.button("Gruppen Berechtigung erstellen")
-        )
+@Base("Gruppenberechtigung erstellen"){
+    @helper.form(action = routes.PermissionController.createGroupPermission()) {
+        <div class="inputForm">
+            <div class="element">
+                <div class="label">Datei:</div>
+                <div class="input">
+                    <a href="@routes.FileController.showFile(relevantFile.getFileId)">@relevantFile.getName</a>
+                </div>
+            </div>
+
+            @helper.SelectInput(
+                form("groupId"),
+                "Gruppe",
+                allGroups.map(user => user.getGroupId().toString -> user.getName()))
+
+            @helper.SelectInput(
+                form("permissionLevel"),
+                "Level",
+                PermissionLevel.values().map(permissionLevel => permissionLevel.toString -> permissionLevel.toString))
+        </div>
+        <div class="inputControls">
+            <input type="submit" value="Berechtigung erstellen" />
+        </div>
+
+        <input type="hidden" value="@relevantFile.getFileId" name="fileId" />
+
+        @helper.CSRF.formField
     }
 }

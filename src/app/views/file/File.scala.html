@@ -76,5 +76,15 @@
                 }
             </table>
         }
+
+        <div class="inputControls">
+            @helper.form(action = routes.PermissionController.showCreateGroupPermission(file.getFileId)) {
+                <input type="submit" value="Neue Gruppenberechtigung" />
+            }
+
+            @helper.form(action = routes.PermissionController.showCreateUserPermission(file.getFileId)) {
+                <input type="submit" value="Neue Benutzerberechtigung" />
+            }
+        </div>
     }
 }

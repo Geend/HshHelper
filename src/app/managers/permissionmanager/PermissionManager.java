@@ -3,13 +3,13 @@ package managers.permissionmanager;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.EbeanServer;
+import managers.filemanager.FileManager;
 import models.*;
 import models.File;
 import models.GroupPermission;
 import models.UserPermission;
 import dtos.EditGroupPermissionDto;
 import dtos.EditUserPermissionDto;
-import dtos.PermissionEntryDto;
 import models.finders.*;
 import models.finders.FileFinder;
 import models.finders.GroupPermissionFinder;
@@ -31,6 +31,7 @@ public class PermissionManager {
     private final EbeanServer ebeanServer;
     private final Policy policy;
     private final String requestErrorMessage;
+    private final FileManager fileManager;
 
     private static final Logger.ALogger logger = Logger.of(PermissionManager.class);
 
@@ -43,7 +44,7 @@ public class PermissionManager {
             UserFinder userFinder,
             EbeanServer ebeanServer,
             Policy policy,
-            SessionManager sessionManager) {
+            SessionManager sessionManager, FileManager fileManager) {
         this.sessionManager = sessionManager;
         this.userPermissionFinder = userPermissionFinder;
         this.groupPermissionFinder = groupPermissionFinder;
@@ -52,6 +53,7 @@ public class PermissionManager {
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
         this.policy = policy;
+        this.fileManager = fileManager;
         this.requestErrorMessage = "Fehler bei der Verarbeitung der Anfrage. Haben sie ungültige Informationen eingegeben?";
     }
 
@@ -281,11 +283,14 @@ public class PermissionManager {
         return userFinder.findAllButThis(userId);
     }
 
-    public List<File> getUserFiles(Long userId) {
-        return fileFinder.getFilesByOwner(userId);
+    public File getFile(Long fileId) throws UnauthorizedException, InvalidArgumentException {
+        return fileManager.getFile(fileId);
     }
 
     private PermissionLevel fromReadWrite(boolean canRead, boolean canWrite) throws InvalidDataException {
+        if(canRead && canWrite) {
+            return PermissionLevel.READWRITE;
+        }
         if(canWrite) {
             return PermissionLevel.WRITE;
         }
@@ -314,16 +319,6 @@ public class PermissionManager {
                 throw new InvalidArgumentException("Permission Level ungültig");
         }
         return result;
-    }
-
-    private String getPermissionString(boolean canRead, boolean canWrite) {
-        if (canWrite) {
-            return "write";
-        } else if (canRead) {
-            return "read";
-        } else {
-            return "none";
-        }
     }
 
     class CanReadWrite
