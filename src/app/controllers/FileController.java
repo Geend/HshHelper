@@ -10,6 +10,7 @@ import models.GroupPermission;
 import models.PermissionLevel;
 import models.User;
 import models.finders.UserQuota;
+import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -38,6 +39,7 @@ public class FileController extends Controller {
     private final Form<EditFileDto> editFileForm;
     private final Form<SearchQueryDto> searchFileForm;
     private final Form<EditFileCommentDto> editFileCommentDtoForm;
+    private final Form<EditFileContentDto> editFileContentDtoForm;
 
 
     private final SessionManager sessionManager;
@@ -51,6 +53,7 @@ public class FileController extends Controller {
         this.deleteFileForm = formFactory.form(DeleteFileDto.class);
         this.searchFileForm = formFactory.form(SearchQueryDto.class);
         this.editFileCommentDtoForm = formFactory.form(EditFileCommentDto.class);
+        this.editFileContentDtoForm = formFactory.form(EditFileContentDto.class);
 
         this.sessionManager = sessionManager;
         this.fileManager = fileManager;
@@ -164,7 +167,7 @@ public class FileController extends Controller {
             file.getComment()
         );
 
-        return ok(views.html.file.File.render(file, editFileCommentDtoForm.fill(fileCommentDto)));
+        return ok(views.html.file.File.render(file, editFileContentDtoForm, editFileCommentDtoForm.fill(fileCommentDto)));
     }
 
 
@@ -178,11 +181,50 @@ public class FileController extends Controller {
         if (boundForm.hasErrors()) {
             EditFileCommentDto data = boundForm.get();
             File file = fileManager.getFile(data.getFileId());
-            return ok(views.html.file.File.render(file, boundForm));
+            return badRequest(views.html.file.File.render(file, editFileContentDtoForm, boundForm));
         }
 
         EditFileCommentDto data = boundForm.get();
-        fileManager.editFileComment(data.getFileId(), data.getComment());
+
+        try {
+            fileManager.editFileComment(data.getFileId(), data.getComment());
+        } catch (QuotaExceededException ex) {
+            boundForm = boundForm.withError("comment", "Kommentar zu lang (Quota überschritten)");
+            File file = fileManager.getFile(data.getFileId());
+            return badRequest(views.html.file.File.render(file, editFileContentDtoForm, boundForm));
+        }
+
+
+        return redirect(routes.FileController.showFile(boundForm.get().getFileId()));
+    }
+
+    public Result editFileContent() throws UnauthorizedException, InvalidArgumentException, QuotaExceededException, IOException {
+        Form<EditFileContentDto> boundForm = editFileContentDtoForm.bindFromRequest();
+        if (boundForm.hasErrors()) {
+            EditFileContentDto formData = boundForm.get();
+            File actualFile = fileManager.getFile(formData.getFileId());
+            return ok(views.html.file.File.render(actualFile, boundForm, editFileCommentDtoForm));
+        }
+
+        EditFileContentDto data = boundForm.get();
+        Http.MultipartFormData<java.io.File> body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart<java.io.File> file = body.getFile("file");
+
+        if(StringUtils.isEmpty(file.getFilename())) {
+            boundForm = boundForm.withError("file", "Bitte Datei auswählen!");
+            File actualFile = fileManager.getFile(data.getFileId());
+            return badRequest(views.html.file.File.render(actualFile, boundForm, editFileCommentDtoForm));
+        }
+
+        byte[] fileData = Files.readAllBytes(file.getFile().toPath());
+
+        try {
+            fileManager.editFileContent(data.getFileId(), fileData);
+        } catch (QuotaExceededException ex) {
+            boundForm = boundForm.withError("file", "Datei zu groß (Quota überschritten)");
+            File actualFile = fileManager.getFile(data.getFileId());
+            return badRequest(views.html.file.File.render(actualFile, boundForm, editFileCommentDtoForm));
+        }
 
         return redirect(routes.FileController.showFile(boundForm.get().getFileId()));
     }

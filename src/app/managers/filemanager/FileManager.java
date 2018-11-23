@@ -200,7 +200,9 @@ public class FileManager {
             file.setData(data);
             ebeanServer.save(file);
 
-            this.checkQuota(user);
+            // Wir müssen die Quota vom Owner checken, nicht die vom aktuellen user.
+            // Nur quota vom owner wird erhöht!
+            this.checkQuota(file.getOwner());
 
             tx.commit();
         }
@@ -224,7 +226,9 @@ public class FileManager {
             file.setComment(comment);
             ebeanServer.save(file);
 
-            this.checkQuota(user);
+            // Wir müssen die Quota vom Owner checken, nicht die vom aktuellen user.
+            // Nur quota vom owner wird erhöht!
+            this.checkQuota(file.getOwner());
 
             tx.commit();
         }

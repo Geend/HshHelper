@@ -1,0 +1,6 @@
+@import views.html.helper.FieldConstructor
+@import views.html.helper.FieldConstructorTpl
+@import views.html.helper.inputFile
+@(field : play.api.data.Field)
+@implicitField = @{ FieldConstructor(FieldConstructorStandaloneTpl.f) }
+@inputFile(field)

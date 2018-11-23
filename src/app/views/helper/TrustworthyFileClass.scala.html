@@ -2,7 +2,7 @@
 @(file : File)
 
 @if(file.getOwner.equals(SessionInstance().currentUser())) {
-    class="trustworthy"
+    trustworthy
 } else {
-    class="potentiallyDangerous"
+    potentiallyDangerous
 }

@@ -31,7 +31,7 @@
 
         <tbody>
         @for(file <- files) {
-            <tr @helper.TrustworthyFileClass(file)>
+            <tr class="@helper.TrustworthyFileClass(file)">
                 <td class="name"><b><a href="@routes.FileController.showFile(file.getFileId)">@file.getName</a></b></td>
                 <td>@truncateComment(file.getComment)</td>
                 <td>@file.getOwner.getUsername</td>

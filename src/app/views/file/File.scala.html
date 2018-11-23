@@ -5,22 +5,48 @@
 @import views.html.file.btn.EditGroupPermissionBtn
 @import views.html.file.btn.EditUserPermissionBtn
 @import dtos.EditFileCommentDto
-@(file:File, editFileCommentForm : Form[EditFileCommentDto])
+@import dtos.EditFileContentDto
+@import views.html.helper.StandaloneFileInput
+@import views.html.helper.FileInput
+@(file:File, editFileContentForm : Form[EditFileContentDto], editFileCommentForm : Form[EditFileCommentDto])
 
 @Base(file.getName + " (Datei)") {
-    <div @helper.TrustworthyFileClass(file)>
-        Dateiname: @file.getName<br>
-        Größe: 12 MB<br>
-        Eigentümer: @file.getOwner.getUsername<br>
-        Geschrieben von: -Username- am 21.12.2019<br>
-        <a href="@routes.FileController.downloadFile(file.getFileId)"><b>Download</b></a> -
+    <div class="left_right">
+        <div class="left">
+            <div class="fileMeta @helper.TrustworthyFileClass(file)">
+                Dateiname: @file.getName<br>
+                Größe: 12 MB<br>
+                Eigentümer: @file.getOwner.getUsername<br>
+                Geschrieben von: -Username- am 21.12.2019<br>
+                <a href="@routes.FileController.downloadFile(file.getFileId)"><b>Download</b></a> -
 
-        @helper.form(action = routes.FileController.deleteFile()) {
-            <input type="hidden" name="fileId" value="@file.getFileId" />
-            <button type="submit" class="linkBtn">Datei löschen</button>
-            @helper.CSRF.formField
+                @helper.form(action = routes.FileController.deleteFile()) {
+                    <input type="hidden" name="fileId" value="@file.getFileId" />
+                    <button type="submit" class="linkBtn">Datei löschen</button>
+                    @helper.CSRF.formField
+                }
+            </div>
+        </div>
+
+        @if(TemplateEnvironment.GetPolicy().CanWriteFile(TemplateEnvironment.GetMainManager().currentUser(), file)) {
+            <div class="right">
+                <h2 class="noTopSpace">Datei Überschreiben</h2>
+
+                @helper.form(action = routes.FileController.editFileContent(), 'enctype -> "multipart/form-data") {
+                    @helper.CSRF.formField
+                    <input type="hidden" name="fileId" value="@file.getFileId" />
+
+                    <div class="inputForm">
+                        @FileInput(editFileContentForm("file"), "Datei")
+                    </div>
+                    <div class="inputControls">
+                        <input type="submit" value="Überschreiben" />
+                    </div>
+                }
+            </div>
         }
     </div>
+
 
 
     <h2>Kommentar</h2>
