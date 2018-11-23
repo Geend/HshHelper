@@ -35,7 +35,7 @@
                 <td class="name"><b><a href="@routes.FileController.showFile(file.getFileId)">@file.getName</a></b></td>
                 <td>@truncateComment(file.getComment)</td>
                 <td>@file.getOwner.getUsername</td>
-                <td>@extension.FileSizeFormatter.humanReadableByteCount(file.getTotalSize)</td>
+                <td>@extension.FileSizeFormatter.FormatSize(file.getTotalSize)</td>
                 <td>@permissions(file)</td>
             </tr>
         }

@@ -1,5 +1,5 @@
 @import dtos.UserQuotaDto
-@import extension.FileSizeFormatter.humanReadableByteCount
+@import extension.FileSizeFormatter.FormatSize
 @(quota : UserQuotaDto)
 
 @percent(value : Double) = {
@@ -8,18 +8,18 @@
 
 @Base("Quota") {
     <p>
-        <b>Zugewiesener Speicher: @humanReadableByteCount(quota.getTotalQuota)</b><br>
+        <b>Zugewiesener Speicher: @FormatSize(quota.getTotalQuota)</b><br>
     </p>
     <hr>
     <p>
-        Freier Speicher: @percent(quota.getFreeQuotaPercent()) (@humanReadableByteCount(quota.getTotalFreeQuota))<br>
-        Belegter Speicher: @percent(quota.getUsedQuotaPercent()) (@humanReadableByteCount(quota.getTotalUsedQuota))<br>
+        Freier Speicher: @percent(quota.getFreeQuotaPercent()) (@FormatSize(quota.getTotalFreeQuota))<br>
+        Belegter Speicher: @percent(quota.getUsedQuotaPercent()) (@FormatSize(quota.getTotalUsedQuota))<br>
     </p>
     <hr>
     <p>
-        Dateinamen: @percent(quota.getUsedTitleQuotaPercent()) (@humanReadableByteCount(quota.getTotalUsedTitleQuota))<br>
-        Kommentare: @percent(quota.getUsedCommentQuotaPercent()) (@humanReadableByteCount(quota.getTotalUsedCommentQuota))<br>
-        Dateiinhalte: @percent(quota.getUsedFileDataQuotaPercent()) (@humanReadableByteCount(quota.getTotalUsedFileDataQuota))<br>
+        Dateinamen: @percent(quota.getUsedTitleQuotaPercent()) (@FormatSize(quota.getTotalUsedTitleQuota))<br>
+        Kommentare: @percent(quota.getUsedCommentQuotaPercent()) (@FormatSize(quota.getTotalUsedCommentQuota))<br>
+        Dateiinhalte: @percent(quota.getUsedFileDataQuotaPercent()) (@FormatSize(quota.getTotalUsedFileDataQuota))<br>
             @*
         @helper.form(action = routes.FileController.removeTempFiles()) {
             @helper.CSRF.formField

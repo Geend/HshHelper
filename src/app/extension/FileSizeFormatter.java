@@ -1,15 +1,31 @@
 package extension;
 
 public class FileSizeFormatter {
-    public static String humanReadableByteCount(long bytes) {
-        return humanReadableByteCount(bytes, true);
+    public static String FormatSize(long sizeInByte) {
+        return FormatSize((double)sizeInByte);
     }
 
-    public static String humanReadableByteCount(long bytes, boolean si) {
-        int unit = si ? 1000 : 1024;
-        if (bytes < unit) return bytes + " B";
-        int exp = (int) (Math.log(bytes) / Math.log(unit));
-        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
-        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+    public static String FormatSize(double sizeInByte) {
+        String[] names = new String[8];
+        names[0] = "Byte";
+        names[1] = "Kilobyte";
+        names[2] = "Megabyte";
+        names[3] = "Gigabyte";
+        names[4] = "Terabyte";
+        names[5] = "Petabyte";
+        names[6] = "Exabyte";
+        names[7] = "Zettabyte";
+
+        int finalIndex = 0;
+        for(int i = 0; i < 6; i++) {
+            if(sizeInByte > 1000) {
+                sizeInByte = sizeInByte / 1000.0;
+                finalIndex++;
+            }
+            else {
+                break;
+            }
+        }
+        return String.format("%s %s", sizeInByte, names[finalIndex]);
     }
 }

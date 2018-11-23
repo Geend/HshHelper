@@ -8,6 +8,8 @@ import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 
+import static extension.FileSizeFormatter.FormatSize;
+
 public class MainManager {
     private UserFinder userFinder;
     private FileFinder fileFinder;
@@ -26,34 +28,10 @@ public class MainManager {
         double totalUsage = userQuota.getTotalUsage();
         double userQuotaLimit = currentUser.getQuotaLimit();
         int percentage = (int)((100.0 / userQuotaLimit) * totalUsage);
-        return String.format("%s %% aufgebraucht. (%s, von %s belegt)", percentage, formatSize(totalUsage), formatSize(userQuotaLimit));
+        return String.format("%s %% aufgebraucht. (%s, von %s belegt)", percentage, FormatSize(totalUsage), FormatSize(userQuotaLimit));
     }
 
     public User currentUser() {
         return sessionManager.currentUser();
-    }
-
-    private String formatSize(double sizeInByte) {
-        String[] names = new String[8];
-        names[0] = "Byte";
-        names[1] = "Kilobyte";
-        names[2] = "Megabyte";
-        names[3] = "Gigabyte";
-        names[4] = "Terabyte";
-        names[5] = "Petabyte";
-        names[6] = "Exabyte";
-        names[7] = "Zettabyte";
-
-        int finalIndex = 0;
-        for(int i = 0; i < 6; i++) {
-            if(sizeInByte > 1000) {
-                sizeInByte = sizeInByte / 1000.0;
-                finalIndex++;
-            }
-            else {
-                break;
-            }
-        }
-        return String.format("%s %s", sizeInByte, names[finalIndex]);
     }
 }
