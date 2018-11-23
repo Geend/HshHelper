@@ -34,7 +34,7 @@
 
         @if(TemplateEnvironment.GetPolicy().CanWriteFile(TemplateEnvironment.GetMainManager().currentUser(), file)) {
             <div class="right">
-                <h2 class="noTopSpace">Datei Überschreiben</h2>
+                <h2 class="noTopSpace">Datei überschreiben</h2>
 
                 @helper.form(action = routes.FileController.editFileContent(), 'enctype -> "multipart/form-data") {
                     @helper.CSRF.formField
