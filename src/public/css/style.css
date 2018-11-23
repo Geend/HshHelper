@@ -265,6 +265,7 @@ form {
     border:0;
     box-sizing: border-box;
     border-bottom: solid 1px #bfbfbf;
+    white-space: nowrap;
 }
 
 .content table thead td {
