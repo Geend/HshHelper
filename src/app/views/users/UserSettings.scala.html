@@ -6,7 +6,7 @@
 
 @Base("Benutzer-Einstellungen") {
 
-    <h2>Sessions Timeout</h2>
+    <h2>Session-Timeout</h2>
     @helper.form(action = routes.UserController.changeUserSessionTimeout()) {
         <div class="inputForm">
         @helper.TextInput(sessionTimeoutForm("valueInMinutes"), "Timeout (in min)")
