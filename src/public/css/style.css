@@ -485,13 +485,13 @@ form {
     display: table-cell;
     width: 50%;
     padding-right: 10px;
-    border-right: solid 1px #dedede;
 }
 
 .content .left_right .right {
     display: table-cell;
     width: 50%;
     padding-left: 10px;
+    border-left: solid 1px #dedede;
 }
 
 .content .fileMeta {
