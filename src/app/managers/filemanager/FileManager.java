@@ -69,16 +69,6 @@ public class FileManager {
         }
     }
 
-    private void checkQuota(User user, String filename, String comment, byte[] data) throws QuotaExceededException {
-        UserQuota uq = fileFinder.getUsedQuota(user.getUserId());
-        //uq.addFile(filename, comment, data);
-
-        if (user.getQuotaLimit() <= uq.getTotalUsage()) {
-            logger.error(user.getUsername() + " tried to exceed quota");
-            throw new QuotaExceededException();
-        }
-    }
-
     public void createFile(
             String filename,
             String comment,
@@ -92,8 +82,6 @@ public class FileManager {
                 throw new FilenameAlreadyExistsException();
             }
 
-            checkQuota(currentUser, filename, comment, new byte[]{});
-
             File file = new File();
             file.setOwner(currentUser);
             file.setComment(comment);
@@ -102,6 +90,8 @@ public class FileManager {
             file.setWrittenBy(currentUser);
             file.setWrittenByDt(DateTime.now());
             this.ebeanServer.save(file);
+
+            this.checkQuota(currentUser);
 
             for(GroupPermissionDto groupDto: initialGroupPermissions) {
                 Group g = this.groupFinder.byId(groupDto.getGroupId());
