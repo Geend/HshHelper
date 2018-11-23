@@ -193,7 +193,7 @@ public class FileManager {
                 throw new InvalidArgumentException();
 
             if (!policy.CanWriteFile(user, fileOptional.get())) {
-                logger.error(user.getUsername() + " tried to overwrite file " + fileOptional.get().getName() + " but he is not authorized");
+                logger.error(user.getUsername() + " tried to change the content file with id " + fileId + " but he is not authorized");
                 throw new UnauthorizedException();
             }
 
@@ -209,6 +209,8 @@ public class FileManager {
 
             tx.commit();
         }
+
+        logger.info(user.getUsername() + " has changed the content of file with id " + fileId);
     }
 
     public void editFileComment(Long fileId, String comment) throws InvalidArgumentException, UnauthorizedException, QuotaExceededException {
@@ -221,7 +223,7 @@ public class FileManager {
                 throw new InvalidArgumentException();
 
             if (!policy.CanWriteFile(user, fileOptional.get())) {
-                logger.error(user.getUsername() + " tried to overwrite file " + fileOptional.get().getName() + " but he is not authorized");
+                logger.error(user.getUsername() + " tried to change the comment of file with id " + fileId + " but he is not authorized");
                 throw new UnauthorizedException();
             }
 
@@ -235,6 +237,8 @@ public class FileManager {
 
             tx.commit();
         }
+
+        logger.info(user.getUsername() + " has changed the comment of file with id " + fileId);
     }
 
     public List<File> searchFile(String query) {
