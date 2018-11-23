@@ -13,6 +13,7 @@ import models.finders.FileFinder;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import models.finders.UserQuota;
+import org.joda.time.DateTime;
 import play.Logger;
 import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
@@ -198,6 +199,8 @@ public class FileManager {
 
             File file = fileOptional.get();
             file.setData(data);
+            file.setWrittenBy(user);
+            file.setWrittenByDt(DateTime.now());
             ebeanServer.save(file);
 
             // Wir müssen die Quota vom Owner checken, nicht die vom aktuellen user.

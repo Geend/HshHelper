@@ -1,7 +1,7 @@
 @import policyenforcement.session.SessionManager.SessionInstance
 @(file : File)
 
-@if(file.getOwner.equals(SessionInstance().currentUser())) {
+@if(file.getWrittenBy.equals(SessionInstance().currentUser())) {
     trustworthy
 } else {
     potentiallyDangerous

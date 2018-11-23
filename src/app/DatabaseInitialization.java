@@ -69,6 +69,8 @@ public class DatabaseInitialization {
         f1.setComment("blablabla");
         f1.setOwner(u1);
         f1.setData(new byte[]{1,2,1,2});
+        f1.setWrittenBy(u1);
+        f1.setWrittenByDt(DateTime.now());
         f1.save();
 
         File f2 = new File();
@@ -76,6 +78,8 @@ public class DatabaseInitialization {
         f2.setComment("blabasdasdlabla");
         f2.setOwner(u2);
         f2.setData(new byte[]{1,2,1,2});
+        f2.setWrittenBy(u2);
+        f2.setWrittenByDt(DateTime.now());
         f2.save();
 
         File f3 = new File();
@@ -83,6 +87,8 @@ public class DatabaseInitialization {
         f3.setComment("xaxaxxaxaxxaxaxxaxax xaxax xaxax xaxax");
         f3.setOwner(u3);
         f3.setData(new byte[]{1,2,1,2});
+        f3.setWrittenBy(u3);
+        f3.setWrittenByDt(DateTime.now());
         f3.save();
 
 
@@ -91,6 +97,8 @@ public class DatabaseInitialization {
         f4.setComment("blablabla");
         f4.setOwner(u1);
         f4.setData(new byte[]{1,2,1,2});
+        f4.setWrittenBy(u1);
+        f4.setWrittenByDt(DateTime.now());
         f4.save();
 
 

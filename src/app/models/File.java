@@ -1,6 +1,7 @@
 package models;
 
 import io.ebean.Model;
+import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import java.util.List;
@@ -21,6 +22,13 @@ public class File extends Model {
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
     private User owner;
+
+
+    @ManyToOne
+    @JoinColumn(name = "written_by_id", referencedColumnName = "user_id")
+    private User writtenBy;
+
+    private DateTime writtenByDt;
 
     @OneToMany(
             cascade = CascadeType.ALL,
@@ -45,6 +53,8 @@ public class File extends Model {
         this.data = data;
         this.dataSize = (long) data.length;
         this.owner = owner;
+        this.writtenBy = owner;
+        this.writtenByDt = DateTime.now();
     }
 
     public Long getFileId() {
@@ -102,5 +112,21 @@ public class File extends Model {
 
     public Long getDataSize() {
         return dataSize;
+    }
+
+    public User getWrittenBy() {
+        return writtenBy;
+    }
+
+    public void setWrittenBy(User writtenBy) {
+        this.writtenBy = writtenBy;
+    }
+
+    public DateTime getWrittenByDt() {
+        return writtenByDt;
+    }
+
+    public void setWrittenByDt(DateTime writtenByDt) {
+        this.writtenByDt = writtenByDt;
     }
 }
