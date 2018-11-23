@@ -99,4 +99,8 @@ public class File extends Model {
     public List<GroupPermission> getGroupPermissions() {
         return groupPermissions;
     }
+
+    public Long getDataSize() {
+        return dataSize;
+    }
 }
