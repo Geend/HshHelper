@@ -19,12 +19,15 @@
                 Größe: @FormatSize(file.getDataSize())<br>
                 Eigentümer: @file.getOwner.getUsername<br>
                 Geschrieben von: @file.getWrittenBy.getUsername am @file.getWrittenByDt.toString("dd.MM.yyyy - HH:mm:ss")<br>
-                <a href="@routes.FileController.downloadFile(file.getFileId)"><b>Download</b></a> -
+                <a href="@routes.FileController.downloadFile(file.getFileId)"><b>Download</b></a>
 
-                @helper.form(action = routes.FileController.deleteFile()) {
-                    <input type="hidden" name="fileId" value="@file.getFileId" />
-                    <button type="submit" class="linkBtn">Datei löschen</button>
-                    @helper.CSRF.formField
+                @if(TemplateEnvironment.GetPolicy().CanDeleteFile(TemplateEnvironment.GetMainManager().currentUser(), file)) {
+                    -
+                    @helper.form(action = routes.FileController.deleteFile()) {
+                        <input type="hidden" name="fileId" value="@file.getFileId" />
+                        <button type="submit" class="linkBtn">Datei löschen</button>
+                        @helper.CSRF.formField
+                    }
                 }
             </div>
         </div>
