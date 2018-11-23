@@ -29,12 +29,6 @@ public class UserQuota {
         this.fileContentUsage = fileContentUsage;
     }
 
-    public void addFile(String name, String comment, byte[] data) {
-        this.nameUsage += name.length();
-        this.commentUsage += comment.length();
-        this.fileContentUsage += data.length;
-    }
-
     public long getTotalUsage() {
         return nameUsage +commentUsage+fileContentUsage;
     }

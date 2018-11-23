@@ -37,6 +37,7 @@ public class FileController extends Controller {
     private final Form<DeleteFileDto> deleteFileForm;
     private final Form<EditFileDto> editFileForm;
     private final Form<SearchQueryDto> searchFileForm;
+    private final Form<EditFileCommentDto> editFileCommentDtoForm;
 
 
     private final SessionManager sessionManager;
@@ -49,6 +50,8 @@ public class FileController extends Controller {
         this.editFileForm = formFactory.form(EditFileDto.class);
         this.deleteFileForm = formFactory.form(DeleteFileDto.class);
         this.searchFileForm = formFactory.form(SearchQueryDto.class);
+        this.editFileCommentDtoForm = formFactory.form(EditFileCommentDto.class);
+
         this.sessionManager = sessionManager;
         this.fileManager = fileManager;
     }
@@ -155,22 +158,33 @@ public class FileController extends Controller {
 
     public Result showFile(long fileId) throws UnauthorizedException, InvalidArgumentException {
         File file = fileManager.getFile(fileId);
-        boolean isOwner = file.getOwner().equals(sessionManager.currentUser());
 
+        EditFileCommentDto fileCommentDto = new EditFileCommentDto(
+            file.getFileId(),
+            file.getComment()
+        );
 
-        EditFileDto editFileDto = new EditFileDto();
-        editFileDto.setFileId(fileId);
-        editFileDto.setComment(file.getComment());
-        Form<EditFileDto> form = editFileForm.fill(editFileDto);
-
-
-        return ok(views.html.file.File.render(file, form));
+        return ok(views.html.file.File.render(file, editFileCommentDtoForm.fill(fileCommentDto)));
     }
 
 
     public Result downloadFile(long fileId) throws UnauthorizedException, InvalidArgumentException {
         File file = fileManager.getFile(fileId);
         return ok(file.getData()).as("application/octet-stream").withHeader("Content-Disposition", "attachment; filename=" + file.getName());
+    }
+
+    public Result editFileComment() throws UnauthorizedException, InvalidArgumentException, QuotaExceededException {
+        Form<EditFileCommentDto> boundForm = editFileCommentDtoForm.bindFromRequest();
+        if (boundForm.hasErrors()) {
+            EditFileCommentDto data = boundForm.get();
+            File file = fileManager.getFile(data.getFileId());
+            return ok(views.html.file.File.render(file, boundForm));
+        }
+
+        EditFileCommentDto data = boundForm.get();
+        fileManager.editFileComment(data.getFileId(), data.getComment());
+
+        return redirect(routes.FileController.showFile(boundForm.get().getFileId()));
     }
 
     public Result editFile() throws UnauthorizedException, InvalidArgumentException {

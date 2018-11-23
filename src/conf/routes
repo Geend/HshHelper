@@ -57,6 +57,7 @@ GET         /files/quota                                      controllers.FileCo
 GET         /files/:fileId                                    controllers.FileController.showFile(fileId: Long)
 GET         /files/:fileId/download                           controllers.FileController.downloadFile(fileId: Long)
 POST        /files/edit                                       controllers.FileController.editFile
+POST        /files/editComment                                controllers.FileController.editFileComment
 POST        /files/search                                     controllers.FileController.searchFiles
 # FileController - End
 
