@@ -1,0 +1,62 @@
+@import policyenforcement.session.Session
+@import dtos.DeleteSessionDto
+@import policyenforcement.session.SessionManager.SessionInstance
+@import policyenforcement.session.Session
+@(sessions: Seq[Session], loginattempts: Seq[LoginAttempt])
+
+@Base("Sessionübersicht") {
+    <h2 class="noTopSpace">Aktive Sessions</h2>
+    <table>
+        <thead>
+            <tr>
+                <td>Erstellungsdatum</td>
+                <td>Verwendete IP</td>
+                <td></td>
+            </tr>
+        </thead>
+
+        <tbody>
+            @for(session <- sessions) {
+                <tr>
+                    <td>@session.getIssuedAt.toString("dd.MM.yyyy - HH:mm:ss")</td>
+                    <td>@session.getRemoteAddress</td>
+                    <td>
+                        @if(policyenforcement.Policy.instance.CanDeleteSession(SessionInstance().currentUser(), session)) {
+                            @helper.form(action = routes.UserController.deleteUserSession()) {
+                                @helper.CSRF.formField
+                                <input type="hidden" name="sessionId" value="@session.getSessionKey" />
+                                <button type="submit" class="linkBtn">Session zerstören</button>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+    <h2>Letzte erfolgreiche Logins</h2>
+    <table>
+        <thead>
+            <tr>
+                <td>Zeitpunkt</td>
+                <td>Verwendete IP</td>
+                <td>User-Agent</td>
+            </tr>
+        </thead>
+        <tbody>
+
+        @for(loginAttempt <- loginattempts) {
+            <tr>
+                <td>
+                    <nobr>
+                    @loginAttempt.getDateTime().toString("dd.MM.yyyy - hh:mm:ss")
+                    </nobr>
+                </td>
+                <td>@loginAttempt.getAddress()</td>
+                <td>@loginAttempt.getClientName()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
