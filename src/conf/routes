@@ -19,6 +19,8 @@ GET         /resetpassword                                    controllers.UserCo
 POST        /resetpassword                                    controllers.UserController.resetUserPassword
 GET         /sessions                                         controllers.UserController.showActiveUserSessions()
 POST        /sessions/delete                                  controllers.UserController.deleteUserSession()
+GET         /settings                                         controllers.UserController.showUserSettings
+POST        /settings/sessionTimeout                          controllers.UserController.changeUserSessionTimeout
 # UserController - End
 
 
