@@ -229,41 +229,6 @@ public class FileController extends Controller {
         return redirect(routes.FileController.showFile(boundForm.get().getFileId()));
     }
 
-    public Result editFile() throws UnauthorizedException, InvalidArgumentException {
-
-        Form<EditFileDto> boundForm = editFileForm.bindFromRequest("fileId", "comment");
-        if (boundForm.hasErrors()) {
-            return badRequest();
-        }
-
-        EditFileDto editFileDto = boundForm.get();
-
-
-        Http.MultipartFormData<java.io.File> body = request().body().asMultipartFormData();
-        Http.MultipartFormData.FilePart<java.io.File> file = body.getFile("data");
-
-        try {
-            if (file == null) {
-                fileManager.editFile(editFileDto.getFileId(), editFileDto.getComment());
-            } else {
-                try {
-                    byte[] data = Files.readAllBytes(file.getFile().toPath());
-                    fileManager.editFile(editFileDto.getFileId(), editFileDto.getComment(), data);
-
-                } catch (IOException e) {
-                    //TODO
-                }
-
-            }
-
-
-        } catch (QuotaExceededException e) {
-            return badRequest("Quota überschritten!");
-        }
-        return showFile(editFileDto.getFileId());
-
-    }
-
     public Result searchFiles(){
 
         Form<SearchQueryDto> boundForm = searchFileForm.bindFromRequest("query");

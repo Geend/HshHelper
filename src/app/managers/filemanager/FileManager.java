@@ -237,50 +237,6 @@ public class FileManager {
         }
     }
 
-
-
-
-
-
-
-    public void editFile(Long fileId, String comment, byte[] data) throws InvalidArgumentException, UnauthorizedException, QuotaExceededException {
-        User user = sessionManager.currentUser();
-
-        Optional<File> fileOptional = fileFinder.byIdOptional(fileId);
-
-        if (!fileOptional.isPresent())
-            throw new InvalidArgumentException();
-
-        if (!policy.CanWriteFile(user, fileOptional.get())) {
-            logger.error(user.getUsername() + " tried to overwrite file " + fileOptional.get().getName() + " but he is not authorized");
-            throw new UnauthorizedException();
-        }
-
-        File file = fileOptional.get();
-        String oldComment = file.getComment();
-
-        file.setComment(comment);
-
-        if (data != null) {
-            file.setData(data);
-        }
-
-
-        checkQuota(user, file.getName(), file.getComment(), file.getData());
-
-        ebeanServer.save(file);
-        logger.info(user.getUsername() + " changed the file " + file.getName() + ".");
-        logger.info("\t old comment: " + oldComment);
-        logger.info("\t new comment: " + comment);
-        if (data != null) {
-            logger.info("\t file also changed");
-        }
-    }
-
-    public void editFile(Long fileId, String comment) throws QuotaExceededException, UnauthorizedException, InvalidArgumentException {
-        editFile(fileId, comment, null);
-    }
-
     public List<File> searchFile(String query) {
         return accessibleFiles().stream().filter(x -> like(x.getName(), query)).collect(Collectors.toList());
     }
