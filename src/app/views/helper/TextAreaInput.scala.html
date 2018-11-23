@@ -1,0 +1,6 @@
+@import views.html.helper.FieldConstructor
+@import views.html.helper.FieldConstructorTpl
+@import views.html.helper.textarea
+@(field : play.api.data.Field, label : String)
+@implicitField = @{ FieldConstructor(FieldConstructorTpl.f) }
+@textarea(field, '_label -> label)

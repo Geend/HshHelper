@@ -5,7 +5,7 @@
         @helper.CSRF.formField
         <div class="inputForm">
             @helper.TextInput(form("filename"), "Dateiname")
-            @helper.TextInput(form("comment"), "Kommentar")
+            @helper.TextAreaInput(form("comment"), "Kommentar")
             <div class="element" >
                 <div class="label">
                     <label>Datei:</label>
