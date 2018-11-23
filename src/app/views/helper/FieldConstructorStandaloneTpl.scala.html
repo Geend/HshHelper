@@ -1,0 +1,5 @@
+@(elements: helper.FieldElements)
+
+@elements.input
+<span class="errors">@elements.errors.mkString(", ")</span>
+<span class="help">@elements.infos.mkString(", ")</span>

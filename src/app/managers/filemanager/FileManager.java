@@ -60,9 +60,17 @@ public class FileManager {
         return userPermissions;
     }
 
+    private void checkQuota(User user) throws QuotaExceededException {
+        UserQuota uq = fileFinder.getUsedQuota(user.getUserId());
+        if (user.getQuotaLimit() <= uq.getTotalUsage()) {
+            logger.error(user.getUsername() + " tried to exceed quota");
+            throw new QuotaExceededException();
+        }
+    }
+
     private void checkQuota(User user, String filename, String comment, byte[] data) throws QuotaExceededException {
         UserQuota uq = fileFinder.getUsedQuota(user.getUserId());
-        uq.addFile(filename, comment, data);
+        //uq.addFile(filename, comment, data);
 
         if (user.getQuotaLimit() <= uq.getTotalUsage()) {
             logger.error(user.getUsername() + " tried to exceed quota");
@@ -173,6 +181,59 @@ public class FileManager {
         ebeanServer.delete(file);
         logger.info(user.getUsername() + " deleted file " + file.getName());
     }
+
+    public void editFileContent(Long fileId, byte[] data) throws QuotaExceededException, UnauthorizedException, InvalidArgumentException {
+        User user = sessionManager.currentUser();
+
+        try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
+            Optional<File> fileOptional = fileFinder.byIdOptional(fileId);
+
+            if (!fileOptional.isPresent())
+                throw new InvalidArgumentException();
+
+            if (!policy.CanWriteFile(user, fileOptional.get())) {
+                logger.error(user.getUsername() + " tried to overwrite file " + fileOptional.get().getName() + " but he is not authorized");
+                throw new UnauthorizedException();
+            }
+
+            File file = fileOptional.get();
+            file.setData(data);
+            ebeanServer.save(file);
+
+            this.checkQuota(user);
+
+            tx.commit();
+        }
+    }
+
+    public void editFileComment(Long fileId, String comment) throws InvalidArgumentException, UnauthorizedException, QuotaExceededException {
+        User user = sessionManager.currentUser();
+
+        try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
+            Optional<File> fileOptional = fileFinder.byIdOptional(fileId);
+
+            if (!fileOptional.isPresent())
+                throw new InvalidArgumentException();
+
+            if (!policy.CanWriteFile(user, fileOptional.get())) {
+                logger.error(user.getUsername() + " tried to overwrite file " + fileOptional.get().getName() + " but he is not authorized");
+                throw new UnauthorizedException();
+            }
+
+            File file = fileOptional.get();
+            file.setComment(comment);
+            ebeanServer.save(file);
+
+            this.checkQuota(user);
+
+            tx.commit();
+        }
+    }
+
+
+
+
+
 
 
     public void editFile(Long fileId, String comment, byte[] data) throws InvalidArgumentException, UnauthorizedException, QuotaExceededException {

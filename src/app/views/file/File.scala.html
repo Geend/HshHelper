@@ -4,7 +4,8 @@
 @import views.html.file.btn.DeleteGroupPermissionBtn
 @import views.html.file.btn.EditGroupPermissionBtn
 @import views.html.file.btn.EditUserPermissionBtn
-@(file:File, changeFileForm:Form[EditFileDto])
+@import dtos.EditFileCommentDto
+@(file:File, editFileCommentForm : Form[EditFileCommentDto])
 
 @Base(file.getName + " (Datei)") {
     <div @helper.TrustworthyFileClass(file)>
@@ -24,15 +25,16 @@
 
     <h2>Kommentar</h2>
     @if(TemplateEnvironment.GetPolicy.CanWriteFile(TemplateEnvironment.GetMainManager().currentUser(), file)) {
-        @helper.form(action = routes.GroupController.createGroup()) {
+        @helper.form(action = routes.FileController.editFileComment()) {
             <div class="inputForm">
                 <div class="fileComment">
-                    <textarea></textarea>
+                    @helper.StandaloneTextAreaInput(editFileCommentForm("comment"))
                 </div>
             </div>
             <div class="inputControls">
                 <input type="submit" value="Ändern" />
             </div>
+            <input type="hidden" name="fileId" value="@file.getFileId" />
             @helper.CSRF.formField
         }
     } else {
