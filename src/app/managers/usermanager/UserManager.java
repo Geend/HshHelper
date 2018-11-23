@@ -173,4 +173,14 @@ public class UserManager {
             user.getOwnerOf().size()
         );
     }
+
+    public String getUsername(Long userId) {
+        Optional<User> optUser = userFinder.byIdOptional(userId);
+        if(!optUser.isPresent()) {
+            throw new IllegalArgumentException();
+        }
+
+        User user = optUser.get();
+        return user.getUsername();
+    }
 }

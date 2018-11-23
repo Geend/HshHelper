@@ -56,8 +56,16 @@ GET         /files/:fileId                                             controlle
 GET         /files/:fileId/download                                    controllers.FileController.downloadFile(fileId: Long)
 POST        /files/edit                                                controllers.FileController.editFile
 POST        /files/search                                              controllers.FileController.searchFiles
-
 # FileController - End
+
+
+
+# PermissionController - START
+POST        /permissions/editUserPermission                           controllers.PermissionController.showEditUserPermissionForm()
+POST        /permissions/editUserPermission/submit                    controllers.PermissionController.editUserPermission()
+POST        /permissions/editGroupPermission                          controllers.PermissionController.showEditGroupPermissionForm()
+POST        /permissions/editGroupPermission/submit                   controllers.PermissionController.editGroupPermission()
+# PermissionController - END
 
 
 
@@ -65,13 +73,9 @@ POST        /files/search                                              controlle
 GET         /forbidden                                                 controllers.ErrorController.showForbiddenMessage()
 GET         /badrequest                                                controllers.ErrorController.showBadRequestMessage()
 
-GET         /permissions/list                                          controllers.PermissionController.listGrantedPermissions
-GET         /permissions/editgrouppermission/:groupPermissionId        controllers.PermissionController.showEditGroupPermission(groupPermissionId: Long)
-POST        /permissions/editgrouppermission/                          controllers.PermissionController.editGroupPermission()
-POST        /permissions/edituserpermission/                           controllers.PermissionController.editUserPermission()
+
 POST        /permissions/deletegrouppermission/                        controllers.PermissionController.deleteGroupPermission()
 POST        /permissions/deleteuserpermission/                         controllers.PermissionController.deleteUserPermission()
-GET         /permissions/edituserpermission/:userPermissionId          controllers.PermissionController.showEditUserPermission(userPermissionId: Long)
 GET         /permissions/creategrouppermission/                        controllers.PermissionController.showCreateGroupPermission()
 POST        /permissions/creategrouppermission/                        controllers.PermissionController.createGroupPermission()
 GET         /permissions/createuserpermission/                         controllers.PermissionController.showCreateUserPermission()

@@ -339,6 +339,30 @@ public class Policy {
         return false;
     }
 
+    public boolean CanViewUserPermission(User currentUser, UserPermission permission) {
+        if(currentUser == null) {
+            return false;
+        }
+
+        if(permission.getFile().getOwner().equals(currentUser)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean CanViewGroupPermission(User currentUser, GroupPermission permission) {
+        if(currentUser == null) {
+            return false;
+        }
+
+        if(permission.getFile().getOwner().equals(currentUser)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean CanViewUserMetaInfo(User currentUser, User toBeViewed) {
         if(currentUser == null) {
             return false;

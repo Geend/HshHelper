@@ -1,5 +1,9 @@
 @import policyenforcement.Policy
 @import policyenforcement.session.SessionManager.SessionInstance
+@import views.html.file.btn.DeleteGroupPermissionBtn
+@import views.html.file.btn.DeleteUserPermissionBtn
+@import views.html.file.btn.EditGroupPermissionBtn
+@import views.html.file.btn.EditUserPermissionBtn
 @(files : Seq[File])
 
 
@@ -17,7 +21,7 @@
                 <tr>
                     <td>Gruppe: @groupPermission.getGroup.getName</td>
                     <td>@helper.PermissionFormat(groupPermission.getCanRead, groupPermission.getCanWrite)</td>
-                    <td  class="rightBound"><a href="#">Ändern</a> | <a href="#">Entfernen</a></td>
+                    <td  class="rightBound">@EditGroupPermissionBtn(groupPermission) - @DeleteGroupPermissionBtn(groupPermission)</td>
                 </tr>
             }
 
@@ -25,7 +29,7 @@
                 <tr>
                     <td>User: @userPermission.getUser.getUsername</td>
                     <td>@helper.PermissionFormat(userPermission.getCanRead, userPermission.getCanWrite)</td>
-                    <td class="rightBound"><a href="#">Ändern</a> | <a href="#">Entfernen</a></td>
+                    <td class="rightBound">@EditUserPermissionBtn(userPermission) - @DeleteUserPermissionBtn(userPermission)</td>
                 </tr>
             }
         }

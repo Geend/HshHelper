@@ -1,0 +1,13 @@
+@import policyenforcement.session.SessionManager.SessionInstance
+@(userPermission: UserPermission)
+
+@if(policyenforcement.Policy.instance.CanEditUserPermission(SessionInstance().currentUser(), userPermission)) {
+    @helper.form(action = routes.PermissionController.showEditUserPermissionForm()) {
+        @helper.CSRF.formField
+        <input type="hidden" name="returnUrl" value="@request().uri()" />
+        <input type="hidden" name="userPermissionId" value="@userPermission.getUserPermissionId" />
+        <button type="submit" class="linkBtn">Ändern</button>
+    }
+} else {
+    <button type="submit" class="linkBtn" disabled>Ändern</button>
+}

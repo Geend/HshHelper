@@ -1,18 +1,10 @@
 package dtos;
 
-import play.data.validation.Constraints;
-
-public class UserPermissionIdDto {
-    @Constraints.Required
+public class ShowEditUserPermissionFormDto {
     private Long userPermissionId;
-
     private String returnUrl;
 
-    public UserPermissionIdDto() {
-    }
-
-    public UserPermissionIdDto(@Constraints.Required Long userPermissionId) {
-        this.userPermissionId = userPermissionId;
+    public ShowEditUserPermissionFormDto() {
     }
 
     public Long getUserPermissionId() {
@@ -31,4 +23,3 @@ public class UserPermissionIdDto {
         this.returnUrl = returnUrl;
     }
 }
-
