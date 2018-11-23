@@ -529,13 +529,14 @@ body.base1CBody {
 .base1C {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: start;
     width: 100%;
     height: 100vh;
 }
 
 .base1C .box {
     max-width: 550px;
+    margin-top: 50px;
 }
 
 .base1C h1 {
