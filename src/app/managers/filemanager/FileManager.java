@@ -99,6 +99,8 @@ public class FileManager {
             file.setComment(comment);
             file.setName(filename);
             file.setData(data);
+            file.setWrittenBy(currentUser);
+            file.setWrittenByDt(DateTime.now());
             this.ebeanServer.save(file);
 
             for(GroupPermissionDto groupDto: initialGroupPermissions) {
