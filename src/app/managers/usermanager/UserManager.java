@@ -8,6 +8,7 @@ import extension.PasswordGenerator;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
+import managers.loginmanager.Authentification;
 import managers.loginmanager.CaptchaRequiredException;
 import models.Group;
 import models.User;
@@ -198,5 +199,18 @@ public class UserManager {
 
         ebeanServer.save(user);
 
+    }
+
+    public void changeUserPassword(String currentPassword, String newPassword) throws UnauthorizedException {
+        User user = sessionManager.currentUser();
+
+
+        if(!hashHelper.checkHash(currentPassword, user.getPasswordHash())){
+            throw new UnauthorizedException();
+        }
+
+        user.setPasswordHash(hashHelper.hashPassword(newPassword));
+
+        ebeanServer.save(user);
     }
 }

@@ -21,6 +21,7 @@ GET         /sessions                                         controllers.UserCo
 POST        /sessions/delete                                  controllers.UserController.deleteUserSession()
 GET         /settings                                         controllers.UserController.showUserSettings()
 POST        /settings/sessionTimeout                          controllers.UserController.changeUserSessionTimeout()
+POST        /settings/changePassword                          controllers.UserController.changeUserPassword()
 
 # UserController - End
 
