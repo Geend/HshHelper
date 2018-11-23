@@ -1,5 +1,7 @@
 package extension;
 
+import java.util.Locale;
+
 public class FileSizeFormatter {
     public static String FormatSize(long sizeInByte) {
         return FormatSize((double)sizeInByte);
@@ -26,6 +28,6 @@ public class FileSizeFormatter {
                 break;
             }
         }
-        return String.format("%s %s", sizeInByte, names[finalIndex]);
+        return String.format(Locale.US,"%.1f %s", sizeInByte, names[finalIndex]);
     }
 }
