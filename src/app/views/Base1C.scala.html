@@ -1,0 +1,23 @@
+@(title: String)(content: Html)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>@title - HsHelper</title>
+        <link rel="stylesheet" href="@routes.Assets.at("css/style.css")">
+    </head>
+    <body class="base1CBody">
+
+        <div class="base1C">
+            <div class="box">
+                <h1>HsHelper</h1>
+                <div class="content">
+                    <h2>@title</h2>
+                    @content
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
