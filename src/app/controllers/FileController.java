@@ -227,7 +227,7 @@ public class FileController extends Controller {
         Form<SearchQueryDto> boundForm = searchFileForm.bindFromRequest("query");
 
         if(boundForm.hasErrors()){
-
+            return ok(views.html.file.SearchResult.render(asScala(new ArrayList<File>()), boundForm));
         }
 
         String query = boundForm.get().getQuery();

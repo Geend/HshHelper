@@ -12,6 +12,8 @@ public class ConstraintValues {
     public static final String GROUPNAME_REGEX = "[a-z][a-z0-9.]+";
 
 
-    public static final int SESSION_TIMEOUT_HOURS = 2;
+    public static final int MIN_SESSION_TIMEOUT_MINUTES = 5;
+
+    public static final int MAX_SESSION_TIMEOUT_HOURS = 24;
 
 }

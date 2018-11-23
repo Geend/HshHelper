@@ -2,10 +2,10 @@ package policyenforcement.session;
 
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
-import models.LoginAttempt;
 import models.User;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 import play.Logger;
 import play.mvc.Http;
 import policyenforcement.ConstraintValues;
@@ -56,7 +56,7 @@ public class SessionManager {
             if(dbs != null && dbs.getUser() != null) {
                 // IP Addressen müssen matchen && InternalSession darf nicht zu alt sein!
                 if(dbs.getRemoteAddress().equals(ctx.request().remoteAddress()) &&
-                        dbs.getIssuedAt().plusHours(ConstraintValues.SESSION_TIMEOUT_HOURS).isAfterNow()) {
+                        dbs.getIssuedAt().plusMinutes(dbs.getUser().getSessionTimeoutInMinutes()).isAfterNow()) {
                     session = dbs;
                 }
             }
@@ -129,13 +129,19 @@ public class SessionManager {
 
     public void garbageCollect() {
         int deletedSessions = InternalSession.finder.query().where()
-            .lt("issuedAt", DateTime.now().minusHours(ConstraintValues.SESSION_TIMEOUT_HOURS))
+            .lt("issuedAt", DateTime.now().minusHours(ConstraintValues.MAX_SESSION_TIMEOUT_HOURS))
             .delete();
 
         Logger.info("REWRITE/ Delete "+deletedSessions+" Sessions");
     }
 
     public int getSessionTimeoutHours() {
-        return ConstraintValues.SESSION_TIMEOUT_HOURS;
+        return ConstraintValues.MAX_SESSION_TIMEOUT_HOURS;
+    }
+
+    public int remainingSessionTime(){
+        Minutes timeDifference = Minutes.minutesBetween(currentSession().getIssuedAt(), DateTime.now());
+        return currentUser().getSessionTimeoutInMinutes() - timeDifference.getMinutes();
+
     }
 }

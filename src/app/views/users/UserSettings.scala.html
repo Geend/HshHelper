@@ -1,0 +1,21 @@
+@import policyenforcement.session.Session
+@import dtos.DeleteSessionDto
+@import policyenforcement.session.SessionManager.SessionInstance
+@import policyenforcement.session.Session
+@( sessionTimeoutForm: Form[dtos.ChangeUserSessionTimeoutDto])
+
+@Base("Benutzer-Einstellungen") {
+
+    @helper.form(action = routes.UserController.changeUserSessionTimeout()) {
+        <div class="inputForm">
+            @helper.TextInput(sessionTimeoutForm("valueInMinutes"), "Timeout (in min)")
+
+        </div>
+        <div class="inputControls">
+            <input type="submit" value="Speichern" />
+        </div>
+
+        @helper.CSRF.formField
+    }
+
+}

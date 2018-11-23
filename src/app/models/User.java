@@ -3,8 +3,8 @@ package models;
 import javax.persistence.*;
 
 import io.ebean.Model;
-import org.joda.time.DateTime;
 import play.data.validation.Constraints;
+import policyenforcement.ConstraintValues;
 
 import java.util.*;
 
@@ -59,6 +59,10 @@ public class User extends Model {
     @OrderBy("dateTime")
     private List<LoginAttempt> loginAttempts = new ArrayList<>();
 
+
+
+    private int sessionTimeoutInMinutes;
+
     public User(
             String username,
             String email,
@@ -70,6 +74,7 @@ public class User extends Model {
         this.passwordHash = passwordHash;
         this.passwordResetRequired = passwordResetRequired;
         this.quotaLimit = quotaLimit;
+        this.sessionTimeoutInMinutes = ConstraintValues.MAX_SESSION_TIMEOUT_HOURS * 60;
     }
 
     public List<File> getOwnedFiles() {
@@ -158,6 +163,15 @@ public class User extends Model {
 
     public void setUserPermissions(List<UserPermission> userPermissions) {
         this.userPermissions = userPermissions;
+    }
+
+
+    public int getSessionTimeoutInMinutes() {
+        return sessionTimeoutInMinutes;
+    }
+
+    public void setSessionTimeoutInMinutes(int sessionTimeoutInMinutes) {
+        this.sessionTimeoutInMinutes = sessionTimeoutInMinutes;
     }
 
     @Override
