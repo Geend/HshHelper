@@ -2,13 +2,14 @@
 @import dtos.DeleteSessionDto
 @import policyenforcement.session.SessionManager.SessionInstance
 @import policyenforcement.session.Session
-@( sessionTimeoutForm: Form[dtos.ChangeUserSessionTimeoutDto])
+@(sessionTimeoutForm: Form[dtos.ChangeUserSessionTimeoutDto], changePasswordForm: Form[dtos.ChangeOwnPasswordDto])
 
 @Base("Benutzer-Einstellungen") {
 
+    <h2 class="noTopSpace">Sessions Timeout</h2>
     @helper.form(action = routes.UserController.changeUserSessionTimeout()) {
         <div class="inputForm">
-            @helper.TextInput(sessionTimeoutForm("valueInMinutes"), "Timeout (in min)")
+        @helper.TextInput(sessionTimeoutForm("valueInMinutes"), "Timeout (in min)")
 
         </div>
         <div class="inputControls">
@@ -18,4 +19,18 @@
         @helper.CSRF.formField
     }
 
+    <h2 class="noTopSpace">Passwort ändern</h2>
+    @helper.form(action = routes.UserController.changeUserPassword()) {
+        <div class="inputForm">
+            @helper.PasswordInput(changePasswordForm("currentPassword"), "Aktuelles Passwort")
+            @helper.PasswordInput(changePasswordForm("newPassword"), "Neues Passwort")
+            @helper.PasswordInput(changePasswordForm("newPasswordRepeat"), "Neues Passwort")
+
+        </div>
+        <div class="inputControls">
+            <input type="submit" value="Speichern" />
+        </div>
+
+        @helper.CSRF.formField
+    }
 }

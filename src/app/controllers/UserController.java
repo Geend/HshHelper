@@ -11,6 +11,7 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Security;
 import policyenforcement.Policy;
 import policyenforcement.session.Authentication;
 import policyenforcement.session.Session;
@@ -33,6 +34,8 @@ public class UserController extends Controller {
     private final Form<DeleteSessionDto> deleteSessionForm;
     private final Form<UserIdDto> deleteUserForm;
     private final Form<ChangeUserSessionTimeoutDto> changeUserSessionTimeoutForm;
+    private final Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
+
     private final SessionManager sessionManager;
 
 
@@ -44,6 +47,7 @@ public class UserController extends Controller {
         this.deleteSessionForm = formFactory.form(DeleteSessionDto.class);
         this.deleteUserForm = formFactory.form(UserIdDto.class);
         this.changeUserSessionTimeoutForm = formFactory.form(ChangeUserSessionTimeoutDto.class);
+        this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
         this.sessionManager = sessionManager;
     }
 
@@ -176,12 +180,12 @@ public class UserController extends Controller {
 
 
     @Authentication.Required
-    public Result showUserSettings() throws InvalidArgumentException, UnauthorizedException {
+    public Result showUserSettings() {
         ChangeUserSessionTimeoutDto changeUserSessionTimeoutDto = new ChangeUserSessionTimeoutDto();
         changeUserSessionTimeoutDto.setValueInMinutes((int) sessionManager.currentUser().getSessionTimeoutInMinutes());
         Form<ChangeUserSessionTimeoutDto> filledForm = changeUserSessionTimeoutForm.fill(changeUserSessionTimeoutDto);
 
-        return ok(views.html.users.UserSettings.render(filledForm));
+        return ok(views.html.users.UserSettings.render(filledForm, changeOwnPasswordForm));
     }
 
     @Authentication.Required
@@ -198,5 +202,18 @@ public class UserController extends Controller {
         return redirect(routes.UserController.showUserSettings());
     }
 
+
+    @Authentication.Required
+    public Result changeUserPassword() throws UnauthorizedException {
+        Form<ChangeOwnPasswordDto> boundForm = changeOwnPasswordForm.bindFromRequest();
+
+        if(boundForm.hasErrors()){
+            return redirect(routes.UserController.showUserSettings());
+        }
+
+        userManager.changeUserPassword(boundForm.get().getCurrentPassword(), boundForm.get().getNewPassword());
+
+        return redirect(routes.UserController.showUserSettings());
+    }
 
 }

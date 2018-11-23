@@ -8,34 +8,49 @@ import static policyenforcement.ConstraintValues.MAX_PASSWORD_LENGTH;
 @Constraints.Validate
 public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationError>{
 
-    @Constraints.Required
-    @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
-    private String password;
 
     @Constraints.Required
     @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
-    private String passwordRepeat;
+    private String currentPassword;
 
-    public String getPassword() {
-        return password;
+
+    @Constraints.Required
+    @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
+    private String newPassword;
+
+    @Constraints.Required
+    @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
+    private String newPasswordRepeat;
+
+
+    public String getCurrentPassword() {
+        return currentPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
     }
 
-    public String getPasswordRepeat() {
-        return passwordRepeat;
+    public String getNewPassword() {
+        return newPassword;
     }
 
-    public void setPasswordRepeat(String passwordRepeat) {
-        this.passwordRepeat = passwordRepeat;
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public String getNewPasswordRepeat() {
+        return newPasswordRepeat;
+    }
+
+    public void setNewPasswordRepeat(String newPasswordRepeat) {
+        this.newPasswordRepeat = newPasswordRepeat;
     }
 
     @Override
     public ValidationError validate() {
 
-        if(!password.equals(passwordRepeat)){
+        if(!newPassword.equals(newPasswordRepeat)){
             return new ValidationError("passwordRepeat", "Passwords do not match");
         }
         return null;
