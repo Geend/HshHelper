@@ -32,6 +32,7 @@ public class UserController extends Controller {
     private final Form<ResetUserPasswordDto> resetUserPasswordForm;
     private final Form<DeleteSessionDto> deleteSessionForm;
     private final Form<UserIdDto> deleteUserForm;
+    private final Form<ChangeUserSessionTimeoutDto> changeUserSessionTimeoutForm;
     private final SessionManager sessionManager;
 
 
@@ -42,6 +43,7 @@ public class UserController extends Controller {
         this.resetUserPasswordForm = formFactory.form(ResetUserPasswordDto.class);
         this.deleteSessionForm = formFactory.form(DeleteSessionDto.class);
         this.deleteUserForm = formFactory.form(UserIdDto.class);
+        this.changeUserSessionTimeoutForm = formFactory.form(ChangeUserSessionTimeoutDto.class);
         this.sessionManager = sessionManager;
     }
 
@@ -81,7 +83,7 @@ public class UserController extends Controller {
         }
         Long userToDeleteId = boundForm.get().getUserId();
 
-        this.userManager.deleteUser( userToDeleteId);
+        this.userManager.deleteUser(userToDeleteId);
 
         return redirect(routes.UserController.showUsers());
     }
@@ -140,7 +142,7 @@ public class UserController extends Controller {
 
         ResetUserPasswordDto resetUserPasswordData = boundForm.get();
         Optional<String> recaptchaData = boundForm.field("g-recaptcha-response").getValue();
-        if(recaptchaData.isPresent()) {
+        if (recaptchaData.isPresent()) {
             resetUserPasswordData.setRecaptcha(recaptchaData.get());
         }
 
@@ -171,4 +173,30 @@ public class UserController extends Controller {
         sessionManager.destroySessionOfCurrentUser(bf.get().getSessionId());
         return redirect(routes.UserController.showActiveUserSessions());
     }
+
+
+    @Authentication.Required
+    public Result showUserSettings() throws InvalidArgumentException, UnauthorizedException {
+        ChangeUserSessionTimeoutDto changeUserSessionTimeoutDto = new ChangeUserSessionTimeoutDto();
+        changeUserSessionTimeoutDto.setValueInMinutes((int) sessionManager.currentUser().getSessionTimeoutInMinutes());
+        Form<ChangeUserSessionTimeoutDto> filledForm = changeUserSessionTimeoutForm.fill(changeUserSessionTimeoutDto);
+
+        return ok(views.html.users.UserSettings.render(filledForm));
+    }
+
+    @Authentication.Required
+    public Result changeUserSessionTimeout() throws UnauthorizedException, InvalidArgumentException {
+        Form<ChangeUserSessionTimeoutDto> boundForm = changeUserSessionTimeoutForm.bindFromRequest("valueInMinutes");
+
+        if(boundForm.hasErrors())
+        {
+            return redirect(routes.UserController.showUserSettings());
+        }
+
+        userManager.changeUserSessionTimeout(boundForm.get().getValueInMinutes());
+
+        return redirect(routes.UserController.showUserSettings());
+    }
+
+
 }

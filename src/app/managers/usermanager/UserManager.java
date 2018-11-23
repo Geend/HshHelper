@@ -183,4 +183,20 @@ public class UserManager {
         User user = optUser.get();
         return user.getUsername();
     }
+
+    public void changeUserSessionTimeout(Integer valueInMinutes) throws UnauthorizedException, InvalidArgumentException {
+        User user = sessionManager.currentUser();
+
+        if(!policy.CanChangeUserTimeoutValue(user)){
+            throw new UnauthorizedException();
+        }
+        if(valueInMinutes == null){
+            throw new InvalidArgumentException();
+        }
+
+        user.setSessionTimeoutInMinutes(valueInMinutes);
+
+        ebeanServer.save(user);
+
+    }
 }

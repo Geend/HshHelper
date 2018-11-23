@@ -374,4 +374,12 @@ public class Policy {
 
         return false;
     }
+
+    public boolean CanChangeUserTimeoutValue(User user) {
+        if(user == null){
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -21,7 +21,7 @@
                     (Administrator)
                 }
                 -
-                <a href="#">Einstellungen</a>
+                <a href="@routes.UserController.showUserSettings()">Einstellungen</a>
                 -
                 @helper.CSRF.formField
                 <button type="submit" class="linkBtn">Logout</button>
@@ -81,7 +81,7 @@
                     <div class="box sessionInfo">
                         <h2>Session-Information</h2>
                         <p>
-                            Session endet in 5 Minuten<br>
+                            Session endet in @SessionInstance().remainingSessionTime() Minuten<br>
                             Aktive Sessions: <a href="@routes.UserController.showActiveUserSessions()">
                         @SessionInstance().sessionsByUser(SessionInstance().currentUser()).size()
                         </a><br>
