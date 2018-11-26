@@ -258,6 +258,13 @@ So ist ihm auch möglich, eine Session, die gegebenfalls von einer bösartigen Q
 Ähnlich wie die zuvor genannte Zusatzfunktionalität soll diese Funktionalität dazu dienen, dem Nutzer zu ermöglichen, mehr Information und somit mehr Klarheit über die Aktivität seines Kontos zu erhalten.
 Auch diese Funktionalität bildet das Designprinzip \enquote{Visibility} ab.
 
+\section{Nutzer kann einsehen, welcher Nutzer zuletzt eine Datei überschrieben hat}
+
+Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch überschreiben kann, ist es nicht klar ersichtlich, ob der Inhalt dieser Datei von eigentlichem Besitzer kommt.
+Deswegen haben wir ebenfalls eine Funktionalität eingebaut, durch welche der Benutzer sehen kann, welcher Nutzer die letzte Schreiboperation auf dieser Datei durchgeführt hat.
+Wir denken, dass dem Nutzer dadurch klarer ist, ob er dem Inhalt einer Datei vertrauen kann.
+% TODO: Check for the right design principle. Is this identifiability?
+
 \chapter{Verworfene Entwürfe}
 
 \section{Trennung der Zuständigkeiten des Controllers}
