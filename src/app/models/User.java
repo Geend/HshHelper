@@ -193,5 +193,8 @@ public class User extends Model {
         return Objects.hash(userId, username);
     }
 
-
+    @Override
+    public String toString() {
+        return username + " (id: " + userId + ")";
+    }
 }

@@ -129,4 +129,9 @@ public class File extends Model {
     public void setWrittenByDt(DateTime writtenByDt) {
         this.writtenByDt = writtenByDt;
     }
+
+    @Override
+    public String toString() {
+        return name + " (id: " + fileId + ")";
+    }
 }
