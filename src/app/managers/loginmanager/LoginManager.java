@@ -20,6 +20,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 
+import static policyenforcement.ConstraintValues.SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS;
+
 public class LoginManager {
 
     private final EbeanServer ebeanSever;
@@ -97,11 +99,6 @@ public class LoginManager {
         attempt.setDateTime(DateTime.now());
         this.ebeanSever.save(attempt);
 
-        List<LoginAttempt> attempts = loginAttemptFinder.all();
-        for(int i = 5; i < attempts.size(); i++) {
-            this.ebeanSever.delete(attempts.get(i));
-        }
-
         return auth.user();
     }
 
@@ -134,5 +131,12 @@ public class LoginManager {
 
     public void logout() {
         sessionManager.destroyCurrentSession();
+    }
+
+    public void deleteOldLoginRecords() {
+        int deletedSessions = loginAttemptFinder.query().where()
+                .lt("dateTime",DateTime.now().minusDays(SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS)).delete();
+
+        Logger.info("Deleted "+deletedSessions+" Login-Logs");
     }
 }

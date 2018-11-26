@@ -12,6 +12,7 @@ public class StartModule extends AbstractModule {
         bind(DatabaseInitialization.class).asEagerSingleton();
         bind(LoginFwInitialization.class).asEagerSingleton();
         bind(SessionInitialization.class).asEagerSingleton();
+        bind(LoginManagerInitialization.class).asEagerSingleton();
         bind(EbeanServer.class).toProvider(new EbeanServerProvider());
 
         requestStaticInjection(TemplateEnvironment.class);

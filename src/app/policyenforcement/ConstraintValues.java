@@ -19,4 +19,6 @@ public class ConstraintValues {
 
     public static final int MAX_SESSION_TIMEOUT_HOURS = 24;
 
+    public static final int SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS = 60;
+
 }
