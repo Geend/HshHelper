@@ -118,12 +118,12 @@ public class LoginManager {
         User authenticatedUser = this.authenticate(username, password, captchaToken, request);
 
         if(authenticatedUser.getIsPasswordResetRequired()) {
-            logger.error(authenticatedUser.getUsername() + " needs to change his password.");
+            logger.error(authenticatedUser.getUsername() + " (userid " + authenticatedUser.getUserId() + ") needs to change his password.");
             throw new PasswordChangeRequiredException();
         }
 
         sessionManager.startNewSession(authenticatedUser);
-        logger.info(authenticatedUser.getUsername() + " has logged in.");
+        logger.info(authenticatedUser.getUsername() + " (userid " + authenticatedUser.getUserId() + ") has logged in.");
     }
 
     public void changePassword(String username, String currentPassword, String newPassword, String captchaToken, Http.Request request) throws InvalidLoginException, CaptchaRequiredException, IOException {
@@ -132,7 +132,7 @@ public class LoginManager {
         authenticatedUser.setIsPasswordResetRequired(false);
         authenticatedUser.setPasswordHash(hashHelper.hashPassword(newPassword));
         this.ebeanSever.save(authenticatedUser);
-        logger.info(authenticatedUser.getUsername() + " changed his password.");
+        logger.info(authenticatedUser.getUsername() + " (userid " + authenticatedUser.getUserId() + ") changed his password.");
     }
 
     public void logout() {

@@ -62,7 +62,7 @@ public class UserManager {
         User currentUser = sessionManager.currentUser();
 
         if(!sessionManager.currentPolicy().canCreateUser()) {
-            logger.error(currentUser + " tried to create a user but he is not authorized");
+            logger.error(currentUser + " (userid " + currentUser.getUserId() + ") tried to create a user but he is not authorized");
             throw new UnauthorizedException();
         }
 
@@ -71,18 +71,18 @@ public class UserManager {
         String passwordHash = hashHelper.hashPassword(plaintextPassword);
         User newUser;
         if(Objects.equals(username.toLowerCase(), "admin")) {
-            logger.info(currentUser + " tried to create user with the name \"admin\"");
+            logger.info(currentUser + " (userid " + currentUser.getUserId() + ") tried to create user with the name \"admin\"");
             throw new UsernameCannotBeAdmin();
         }
 
         Group allGroup = this.groupFinder.getAllGroup();
         try(Transaction tx = this.ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
             if(userFinder.byName(username).isPresent()) {
-                logger.error(currentUser + " tried to create user " + username + " but this username already exists");
+                logger.error(currentUser + " (userid " + currentUser.getUserId() + ") tried to create user " + username + " but this username already exists");
                 throw new UsernameAlreadyExistsException();
             }
             if(userFinder.byEmail(email, UserFinderQueryOptions.CaseInsensitive).isPresent()) {
-                logger.error(currentUser + " tried to create user " + username + " but " + email + " already exists");
+                logger.error(currentUser + " (userid " + currentUser.getUserId() + ") tried to create user " + username + " but " + email + " already exists");
                 throw new EmailAlreadyExistsException();
             }
             newUser = new User(username,
@@ -96,7 +96,7 @@ public class UserManager {
 
             this.ebeanServer.save(newUser);
             tx.commit();
-            logger.info(currentUser + " created user " + username);
+            logger.info(currentUser + " (userid " + currentUser.getUserId() + ") created user " + username);
         }
         return plaintextPassword;
     }
@@ -109,18 +109,18 @@ public class UserManager {
             throw new InvalidArgumentException("Dieser User existiert nicht.");
 
         if(!sessionManager.currentPolicy().canDeleteUser(userToDelete.get())) {
-            logger.error(currentUser + " tried to delete a user but he is not authorized");
+            logger.error(currentUser + " (userid " + currentUser.getUserId() + ") tried to delete a user but he is not authorized");
             throw new UnauthorizedException();
         }
         ebeanServer.delete(userToDelete.get());
-        logger.info(currentUser + " deleted user " + userToDelete.get().getUsername());
+        logger.info(currentUser + " (userid " + currentUser.getUserId() + ") deleted user " + userToDelete.get().getUsername());
     }
 
     public List<User> getAllUsers() throws UnauthorizedException {
         User currentUser = sessionManager.currentUser();
 
         if(!sessionManager.currentPolicy().canViewAllUsers()) {
-            logger.error(currentUser + " tried to access all users but he is not authorized");
+            logger.error(currentUser + " (userid " + currentUser.getUserId() + ") tried to access all users but he is not authorized");
             throw new UnauthorizedException();
         }
         return this.userFinder.all();
@@ -150,7 +150,7 @@ public class UserManager {
                 .addTo(user.getEmail())
                 .setBodyText("Your temp password is " + tempPassword);
         mailerClient.send(email);
-        logger.info("Created a new temp pw and send mail for user " + user.getUsername());
+       logger.info("Created a new temp pw and send mail for user " + user.getUsername() + " (userid " + user.getUserId() + ")");
     }
 
     public UserMetaInfo getUserMetaInfo(Long userId) throws UnauthorizedException, InvalidArgumentException {
