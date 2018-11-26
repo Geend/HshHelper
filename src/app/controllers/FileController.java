@@ -135,10 +135,10 @@ public class FileController extends Controller {
             this.fileManager.createFile(uploadFileDto.getFilename(), uploadFileDto.getComment(), data, userPermissions, groupPermissions);
 
             return redirect(routes.FileController.showOwnFiles());
-        } catch (NoFileSubmittedOnUploadException _) {
+        } catch (NoFileSubmittedOnUploadException e) {
             boundForm = boundForm.withError("file", "Bitte wählen Sie eine Datei zum Upload aus.");
             return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
-        } catch(QuotaExceededException _) {
+        } catch(QuotaExceededException e) {
             boundForm = boundForm.withGlobalError("Quota überschritten. Bitte geben sie eine kleinere Datei an.");
             return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
         } catch (Exception e) {

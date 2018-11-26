@@ -57,32 +57,6 @@ public class PermissionManager {
         this.requestErrorMessage = "Fehler bei der Verarbeitung der Anfrage. Haben sie ungültige Informationen eingegeben?";
     }
 
-    public GroupPermission getGroupPermission(Long groupPermissionId) throws InvalidArgumentException, UnauthorizedException {
-        User user = this.sessionManager.currentUser();
-        Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
-
-        if (!permission.isPresent())
-            throw new InvalidArgumentException();
-
-        if (!policy.CanViewGroupPermission(user, permission.get()))
-            throw new UnauthorizedException();
-
-        return permission.get();
-    }
-
-    public UserPermission getUserPermission(Long userPermissionId) throws UnauthorizedException, InvalidArgumentException {
-        User user = this.sessionManager.currentUser();
-        Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
-
-        if (!permission.isPresent())
-            throw new InvalidArgumentException();
-
-        if (!policy.CanViewUserPermission(user, permission.get()))
-            throw new UnauthorizedException();
-
-        return permission.get();
-    }
-
     //
     //  group permissions
     //
