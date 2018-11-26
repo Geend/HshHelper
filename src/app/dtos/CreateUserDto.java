@@ -18,7 +18,7 @@ public class CreateUserDto {
     private String email;
 
     @Constraints.Required
-    private Integer quotaLimit;
+    private Long quotaLimit;
 
 
     public String getUsername() {
@@ -37,11 +37,11 @@ public class CreateUserDto {
         this.email = email;
     }
 
-    public Integer getQuotaLimit() {
+    public Long getQuotaLimit() {
         return quotaLimit;
     }
 
-    public void setQuotaLimit(Integer quotaLimit) {
+    public void setQuotaLimit(Long quotaLimit) {
         this.quotaLimit = quotaLimit;
     }
 }

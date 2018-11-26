@@ -35,6 +35,7 @@ public class UserController extends Controller {
     private final Form<UserIdDto> deleteUserForm;
     private final Form<ChangeUserSessionTimeoutDto> changeUserSessionTimeoutForm;
     private final Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
+    private final Form<ChangeUserQuotaLimitDto> changeUserQuotaLimitForm;
 
     private final SessionManager sessionManager;
 
@@ -48,8 +49,11 @@ public class UserController extends Controller {
         this.deleteUserForm = formFactory.form(UserIdDto.class);
         this.changeUserSessionTimeoutForm = formFactory.form(ChangeUserSessionTimeoutDto.class);
         this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
+        this.changeUserQuotaLimitForm = formFactory.form(ChangeUserQuotaLimitDto.class);
+
         this.sessionManager = sessionManager;
     }
+
 
     @Authentication.Required
     public Result showUsers() throws UnauthorizedException {
@@ -214,6 +218,29 @@ public class UserController extends Controller {
         userManager.changeUserPassword(boundForm.get().getCurrentPassword(), boundForm.get().getNewPassword());
 
         return redirect(routes.UserController.showUserSettings());
+    }
+
+    @Authentication.Required
+    public Result showUserAdminSettings(Long userId) throws UnauthorizedException, InvalidArgumentException {
+        ChangeUserQuotaLimitDto userQuotaLimitDto = new ChangeUserQuotaLimitDto();
+        userQuotaLimitDto.setUserId(userId);
+        userQuotaLimitDto.setNewQuotaLimit(userManager.getUserQuotaLimit(userId));
+
+        Form<ChangeUserQuotaLimitDto> filledForm = changeUserQuotaLimitForm.fill(userQuotaLimitDto);
+        return ok(views.html.users.UserAdminSettings.render(filledForm));
+    }
+
+
+    @Authentication.Required
+    public Result changeUserQuotaLimit() throws UnauthorizedException, InvalidArgumentException {
+        Form<ChangeUserQuotaLimitDto> boundForm = changeUserQuotaLimitForm.bindFromRequest();
+
+        if(boundForm.hasErrors()){
+            return ok(views.html.users.UserAdminSettings.render(boundForm));
+        }
+
+        userManager.changeUserQuotaLimit(boundForm.get().getUserId(), boundForm.get().getNewQuotaLimit());
+        return ok(views.html.users.UserAdminSettings.render(boundForm));
     }
 
 }

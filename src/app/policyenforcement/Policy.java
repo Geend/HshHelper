@@ -382,4 +382,16 @@ public class Policy {
 
         return true;
     }
+
+    public boolean CanReadWriteQuotaLimit(User user) {
+        if(user == null){
+            return false;
+        }
+
+        if(user.isAdmin()){
+            return true;
+        }
+
+        return false;
+    }
 }

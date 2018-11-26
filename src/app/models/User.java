@@ -25,7 +25,7 @@ public class User extends Model {
 
     private boolean passwordResetRequired;
 
-    private int quotaLimit;
+    private Long quotaLimit;
 
     @OneToMany(
         mappedBy = "owner",
@@ -68,7 +68,7 @@ public class User extends Model {
             String email,
             String passwordHash,
             boolean passwordResetRequired,
-            int quotaLimit) {
+            Long quotaLimit) {
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -133,11 +133,11 @@ public class User extends Model {
         this.passwordResetRequired = passwordResetRequired;
     }
 
-    public int getQuotaLimit() {
+    public Long getQuotaLimit() {
         return quotaLimit;
     }
 
-    public void setQuotaLimit(int quotaLimit) {
+    public void setQuotaLimit(Long quotaLimit) {
         this.quotaLimit = quotaLimit;
     }
 

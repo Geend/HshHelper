@@ -20,6 +20,7 @@
                 <td>Benutzername</td>
                 <td>Gruppen</td>
                 <td></td>
+                <td></td>
             </tr>
         </thead>
 
@@ -33,6 +34,9 @@
                         }
                     </td>
                     <td>@user.getOwnerOf.size()</td>
+                    <td class="right">
+                        <a href="@routes.UserController.showUserAdminSettings(user.getUserId)">Bearbeiten</a>
+                    </td>
                     <td class="right">
                         @if(policyenforcement.Policy.instance.CanDeleteUser(SessionInstance().currentUser(), user)) {
                             @helper.form(action = routes.UserController.showConfirmDeleteForm()) {
