@@ -13,7 +13,7 @@ public class CanReadWrite
         this.canWrite = canWrite;
     }
 
-    public boolean isCanRead() {
+    public boolean getCanRead() {
         return canRead;
     }
 
@@ -21,7 +21,7 @@ public class CanReadWrite
         this.canRead = canRead;
     }
 
-    public boolean isCanWrite() {
+    public boolean getCanWrite() {
         return canWrite;
     }
 

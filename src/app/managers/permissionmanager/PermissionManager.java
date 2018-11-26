@@ -1,5 +1,7 @@
 package managers.permissionmanager;
 
+import extension.CanReadWrite;
+import extension.PermissionLevelConverter;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.EbeanServer;
@@ -73,12 +75,12 @@ public class PermissionManager {
             throw new UnauthorizedException();
         }
 
-        CanReadWrite c = this.PermissionLevelToCanReadWrite(newLevel);
-        permission.get().setCanWrite(c.canWrite);
-        permission.get().setCanRead(c.canRead);
+        CanReadWrite c = PermissionLevelConverter.ToReadWrite(newLevel);
+        permission.get().setCanWrite(c.getCanWrite());
+        permission.get().setCanRead(c.getCanRead());
 
         this.ebeanServer.save(permission.get());
-        logger.info(user.getUsername() + " changed permissions for group " + permission.get().getGroup().getName() + "to canWrite: " + c.canWrite + " and canRead: " + c.canRead);
+        logger.info(user.getUsername() + " changed permissions for group " + permission.get().getGroup().getName() + "to canWrite: " + c.getCanWrite() + " and canRead: " + c.getCanRead());
     }
 
     public EditGroupPermissionDto getGroupPermissionForEdit(Long groupPermissionId) throws InvalidDataException, InvalidArgumentException, UnauthorizedException {
@@ -97,7 +99,7 @@ public class PermissionManager {
 
         return new EditGroupPermissionDto(
             gp.getGroupPermissionId(),
-            fromReadWrite(gp.getCanRead(), gp.getCanWrite()),
+            PermissionLevelConverter.FromReadWrite(gp.getCanRead(), gp.getCanWrite()),
             gp.getGroup().getGroupId(),
             gp.getGroup().getName(),
             gp.getFile().getFileId(),
@@ -137,7 +139,7 @@ public class PermissionManager {
             throw new UnauthorizedException();
         }
 
-        PermissionLevel permissionLevel = this.fromReadWrite(permission.get().getCanRead(), permission.get().getCanWrite());
+        PermissionLevel permissionLevel = PermissionLevelConverter.FromReadWrite(permission.get().getCanRead(), permission.get().getCanWrite());
         List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
 
         return new EditUserPermissionDto(
@@ -177,11 +179,11 @@ public class PermissionManager {
             throw new UnauthorizedException();
         }
 
-        CanReadWrite c = this.PermissionLevelToCanReadWrite(newLevel);
-        permission.get().setCanWrite(c.canWrite);
-        permission.get().setCanRead(c.canRead);
+        CanReadWrite c = PermissionLevelConverter.ToReadWrite(newLevel);
+        permission.get().setCanWrite(c.getCanWrite());
+        permission.get().setCanRead(c.getCanRead());
         this.ebeanServer.save(permission.get());
-        logger.info(user.getUsername() + " changed permissions for user " + permission.get().getUser().getUsername() + "to canWrite: " + c.canWrite + " and canRead: " + c.canRead);
+        logger.info(user.getUsername() + " changed permissions for user " + permission.get().getUser().getUsername() + "to canWrite: " + c.getCanWrite() + " and canRead: " + c.getCanRead());
     }
 
     //
@@ -212,9 +214,9 @@ public class PermissionManager {
         permission.setFile(file.get());
         permission.setUser(user.get());
 
-        CanReadWrite c = this.PermissionLevelToCanReadWrite(permissionLevel);
-        permission.setCanWrite(c.canWrite);
-        permission.setCanRead(c.canRead);
+        CanReadWrite c = PermissionLevelConverter.ToReadWrite(permissionLevel);
+        permission.setCanWrite(c.getCanWrite());
+        permission.setCanRead(c.getCanRead());
 
         ebeanServer.save(permission);
         logger.info(currentUser.getUsername() + " created new permissions for user " + user.get().getUsername() +  " on file " + file.get().getName());
@@ -245,9 +247,9 @@ public class PermissionManager {
         permission.setFile(file.get());
         permission.setGroup(group.get());
 
-        CanReadWrite c = this.PermissionLevelToCanReadWrite(permissionLevel);
-        permission.setCanWrite(c.canWrite);
-        permission.setCanRead(c.canRead);
+        CanReadWrite c = PermissionLevelConverter.ToReadWrite(permissionLevel);
+        permission.setCanWrite(c.getCanWrite());
+        permission.setCanRead(c.getCanRead());
 
         ebeanServer.save(permission);
         logger.info(currentUser.getUsername() + " created new permissions for group " + group.get().getName() +  " on file " + file.get().getName());
@@ -259,45 +261,5 @@ public class PermissionManager {
 
     public File getFile(Long fileId) throws UnauthorizedException, InvalidArgumentException {
         return fileManager.getFile(fileId);
-    }
-
-    private PermissionLevel fromReadWrite(boolean canRead, boolean canWrite) throws InvalidDataException {
-        if(canRead && canWrite) {
-            return PermissionLevel.READWRITE;
-        }
-        if(canWrite) {
-            return PermissionLevel.WRITE;
-        }
-        else if(canRead) {
-            return PermissionLevel.READ;
-        }
-        throw new InvalidDataException("no permission level exists for no read and no write access");
-    }
-
-    private CanReadWrite PermissionLevelToCanReadWrite(PermissionLevel l) throws InvalidArgumentException {
-        CanReadWrite result = new CanReadWrite();
-        switch (l) {
-            case READ:
-                result.canRead =true;
-                result.canWrite = false;
-                break;
-            case WRITE:
-                result.canRead = false;
-                result.canWrite = true;
-                break;
-            case READWRITE:
-                result.canRead = true;
-                result.canWrite = true;
-                break;
-            default:
-                throw new InvalidArgumentException("Permission Level ungültig");
-        }
-        return result;
-    }
-
-    class CanReadWrite
-    {
-        boolean canRead;
-        boolean canWrite;
     }
 }

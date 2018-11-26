@@ -99,7 +99,7 @@ public class FileManager {
                     throw new UnauthorizedException();
                 }
                 CanReadWrite c = PermissionLevelConverter.ToReadWrite(groupDto.getPermissionLevel());
-                GroupPermission groupPermission = new GroupPermission(file, g, c.isCanRead(), c.isCanWrite());
+                GroupPermission groupPermission = new GroupPermission(file, g, c.getCanRead(), c.getCanWrite());
                 this.ebeanServer.save(groupPermission);
             }
             for(UserPermissionDto userDto: initialUserPermissions) {
@@ -108,7 +108,7 @@ public class FileManager {
                     throw new UnauthorizedException();
                 }
                 CanReadWrite c = PermissionLevelConverter.ToReadWrite(userDto.getPermissionLevel());
-                UserPermission userPermission = new UserPermission(file, u, c.isCanRead(), c.isCanWrite());
+                UserPermission userPermission = new UserPermission(file, u, c.getCanRead(), c.getCanWrite());
                 this.ebeanServer.save(userPermission);
             }
 
