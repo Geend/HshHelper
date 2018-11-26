@@ -61,7 +61,7 @@ public class UserManager {
         this.recaptchaHelper = recaptchaHelper;
     }
 
-    public String createUser(String username, String email, int quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException, UsernameCannotBeAdmin {
+    public String createUser(String username, String email, Long quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException, UsernameCannotBeAdmin {
         User currentUser = sessionManager.currentUser();
 
         if(!this.policy.CanCreateUser(currentUser)) {
@@ -212,5 +212,36 @@ public class UserManager {
         user.setPasswordHash(hashHelper.hashPassword(newPassword));
 
         ebeanServer.save(user);
+    }
+
+    public Long getUserQuotaLimit(Long userId) throws UnauthorizedException, InvalidArgumentException {
+        User currentUser = sessionManager.currentUser();
+
+        if(!policy.CanReadWriteQuotaLimit(currentUser)){
+            throw new UnauthorizedException();
+        }
+
+        Optional<User> user = userFinder.byIdOptional(userId);
+
+        if(!user.isPresent()){
+            throw new InvalidArgumentException();
+        }
+
+        return user.get().getQuotaLimit();
+    }
+
+    public void changeUserQuotaLimit(Long userId, Long newQuotaLimit) throws UnauthorizedException, InvalidArgumentException {
+        User currentUser = sessionManager.currentUser();
+
+        if(!policy.CanReadWriteQuotaLimit(currentUser)){
+            throw new UnauthorizedException();
+        }
+
+        Optional<User> user = userFinder.byIdOptional(userId);
+        if(!user.isPresent()){
+            throw new InvalidArgumentException();
+        }
+        user.get().setQuotaLimit(newQuotaLimit);
+        ebeanServer.save(user.get());
     }
 }

@@ -34,7 +34,7 @@ public class SessionManagerTest {
         hashHelper = new HashHelper();
         sessionManager = new SessionManager();
 
-        robin = new User("robin", "hsh.helper+robin@gmail.com", hashHelper.hashPassword("robin"), true, 10);
+        robin = new User("robin", "hsh.helper+robin@gmail.com", hashHelper.hashPassword("robin"), true, 10l);
         robin.save();
     }
 

@@ -32,7 +32,7 @@ public class UserTests {
 
     @Test
     public void DeletingUsersDeletesHisGroups() {
-        User user = new User("testUser", "", "", false, 5);
+        User user = new User("testUser", "", "", false, 5l);
         Group group1 = new Group("testGroup1", user);
         Group group2 = new Group("testGroup2", user);
         List<Group> groups = new ArrayList<>();

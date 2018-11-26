@@ -116,8 +116,8 @@ public class UserManagerTest {
     @Test
     public void getAllReturnsUsers() throws UnauthorizedException {
         List<User> users = new ArrayList<User>();
-        users.add(new User("müller", "email", "hash", true, 5));
-        users.add(new User("michi", "email", "hash", true, 5));
+        users.add(new User("müller", "email", "hash", true, 5l));
+        users.add(new User("michi", "email", "hash", true, 5l));
         UserFinder userFinder = mock(UserFinder.class);
         when(userFinder.all()).thenReturn(users);
         HashHelper hashHelper = mock(HashHelper.class);
@@ -134,7 +134,7 @@ public class UserManagerTest {
         HashHelper hashHelper = mock(HashHelper.class);
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserManager sut = new UserManager(defaultUserFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, spec, defaultSessionManager, recaptchaHelper);
-        sut.createUser( "klaus", "test@test.de", 5);
+        sut.createUser( "klaus", "test@test.de", 5l);
     }
 
     @Test(expected = UsernameAlreadyExistsException.class)
@@ -145,7 +145,7 @@ public class UserManagerTest {
         when(userFinder.byName("klaus")).thenReturn(Optional.of(klausUser));
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserManager sut = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy, defaultSessionManager, recaptchaHelper);
-        sut.createUser("klaus", "test@test.de", 5);
+        sut.createUser("klaus", "test@test.de", 5l);
     }
 
     @Test(expected = EmailAlreadyExistsException.class)
@@ -156,7 +156,7 @@ public class UserManagerTest {
         when(userFinder.byEmail(eq("test@test.de"), any())).thenReturn(Optional.of(klausUser));
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserManager sut = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultPolicy, defaultSessionManager, recaptchaHelper);
-        sut.createUser( "klaus", "test@test.de", 5);
+        sut.createUser( "klaus", "test@test.de", 5l);
     }
 
     @Test
@@ -168,12 +168,12 @@ public class UserManagerTest {
         UserManager sut = new UserManager(defaultUserFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, server, defaultPolicy, defaultSessionManager, recaptchaHelper);
 
         ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
-        sut.createUser( "klaus", "test@test.de", 5);
+        sut.createUser( "klaus", "test@test.de", 5l);
         verify(server).save(argumentCaptor.capture());
         User addedUser = argumentCaptor.getValue();
         assertEquals(addedUser.getUsername(), "klaus");
         assertEquals(addedUser.getEmail(), "test@test.de");
-        assertEquals(addedUser.getQuotaLimit(), 5);
+        assertEquals(addedUser.getQuotaLimit(), new Long(5l));
     }
 
     @Test(expected = InvalidArgumentException.class)

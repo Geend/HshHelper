@@ -73,9 +73,9 @@ public class GroupManagerTests {
     public static void globalSetup() {
         HashHelper hashHelper = new HashHelper();
 
-        admin = new User("admin", "hsh.helper+admin@gmail.com", hashHelper.hashPassword("admin"), false, 10);
-        peter = new User("peter", "hsh.helper+peter@gmail.com",  hashHelper.hashPassword("peter"), false, 10);
-        klaus = new User("klaus", "hsh.helper+klaus@gmail.com",  hashHelper.hashPassword("klaus"), false, 10);
+        admin = new User("admin", "hsh.helper+admin@gmail.com", hashHelper.hashPassword("admin"), false, 10l);
+        peter = new User("peter", "hsh.helper+peter@gmail.com",  hashHelper.hashPassword("peter"), false, 10l);
+        klaus = new User("klaus", "hsh.helper+klaus@gmail.com",  hashHelper.hashPassword("klaus"), false, 10l);
 
         all = new Group("All", admin);
         admins = new Group("Administrators", admin);

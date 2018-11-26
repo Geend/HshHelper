@@ -54,6 +54,6 @@ public class CreateUserUsernameNotAdminTests {
         when(userFinder.byName(any())).thenReturn(Optional.empty());
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, spec, sessionManager, recaptchaHelper);
-        sut.createUser(this.username, "test@test.de", 5);
+        sut.createUser(this.username, "test@test.de", 5l);
     }
 }

@@ -1,0 +1,26 @@
+@import policyenforcement.session.Session
+@import dtos.DeleteSessionDto
+@import policyenforcement.session.SessionManager.SessionInstance
+@import policyenforcement.session.Session
+@import dtos.ChangeUserQuotaLimitDto
+@(changeUserQuotaLimitForm: Form[ChangeUserQuotaLimitDto])
+
+@Base("Benutzer-Einstellungen") {
+
+    <h2>Quota</h2>
+    @helper.form(action = routes.UserController.changeUserQuotaLimit()) {
+        <div class="inputForm">
+
+            <input type="hidden" value="@changeUserQuotaLimitForm("userId").value" name="userId" />
+            @helper.TextInput(changeUserQuotaLimitForm("newQuotaLimit"), "Quota Limit in Byte")
+
+        </div>
+        <div class="inputControls">
+            <input type="submit" value="Speichern" />
+        </div>
+
+        @helper.CSRF.formField
+    }
+
+
+}
