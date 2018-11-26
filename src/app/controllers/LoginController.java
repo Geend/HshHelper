@@ -78,7 +78,7 @@ public class LoginController extends Controller {
     public Result changePasswordAfterReset() throws IOException {
         Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat");
         if (boundForm.hasErrors()) {
-            return ok(views.html.login.ChangePasswordAfterReset.render(boundForm, false));
+            return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, false));
         }
 
         ChangePasswordAfterResetDto changePasswordData = boundForm.get();

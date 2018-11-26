@@ -110,7 +110,7 @@ public class UserController extends Controller {
     public Result createUser() throws UnauthorizedException, InvalidArgumentException {
         Form<CreateUserDto> boundForm = createUserForm.bindFromRequest("username", "email", "quotaLimit");
         if (boundForm.hasErrors()) {
-            return ok(views.html.users.CreateUser.render(boundForm));
+            return badRequest(views.html.users.CreateUser.render(boundForm));
         }
         CreateUserDto createUserDto = boundForm.get();
         try {
@@ -145,7 +145,7 @@ public class UserController extends Controller {
 
         Form<ResetUserPasswordDto> boundForm = resetUserPasswordForm.bindFromRequest("username");
         if (boundForm.hasErrors()) {
-            return ok(views.html.users.ResetUserPassword.render(boundForm));
+            return badRequest(views.html.users.ResetUserPassword.render(boundForm));
         }
 
         ResetUserPasswordDto resetUserPasswordData = boundForm.get();
@@ -196,8 +196,7 @@ public class UserController extends Controller {
     public Result changeUserSessionTimeout() throws UnauthorizedException, InvalidArgumentException {
         Form<ChangeUserSessionTimeoutDto> boundForm = changeUserSessionTimeoutForm.bindFromRequest("valueInMinutes");
 
-        if(boundForm.hasErrors())
-        {
+        if(boundForm.hasErrors()) {
             return redirect(routes.UserController.showUserSettings());
         }
 
@@ -236,7 +235,7 @@ public class UserController extends Controller {
         Form<ChangeUserQuotaLimitDto> boundForm = changeUserQuotaLimitForm.bindFromRequest();
 
         if(boundForm.hasErrors()){
-            return ok(views.html.users.UserAdminSettings.render(boundForm));
+            return badRequest(views.html.users.UserAdminSettings.render(boundForm));
         }
 
         userManager.changeUserQuotaLimit(boundForm.get().getUserId(), boundForm.get().getNewQuotaLimit());

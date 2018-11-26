@@ -98,7 +98,7 @@ public class FileController extends Controller {
         List<UserPermissionDto> userPermissionDtos = this.fileManager.getUserPermissionDtosForCreate();
         List<GroupPermissionDto> groupPermissionDtos = this.fileManager.getGroupPermissionDtosForCreate();
         if(boundForm.hasErrors()) {
-            return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
         }
 
         try {
@@ -135,10 +135,10 @@ public class FileController extends Controller {
             return redirect(routes.FileController.showOwnFiles());
         } catch (NoFileSubmittedOnUploadException e) {
             boundForm = boundForm.withError("file", "Bitte wählen Sie eine Datei zum Upload aus.");
-            return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
         } catch(QuotaExceededException e) {
             boundForm = boundForm.withGlobalError("Quota überschritten. Bitte geben sie eine kleinere Datei an.");
-            return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
         } catch (Exception e) {
             return redirect(routes.ErrorController.showBadRequestMessage());
         }
@@ -213,7 +213,7 @@ public class FileController extends Controller {
         if (boundForm.hasErrors()) {
             EditFileContentDto formData = boundForm.get();
             FileMeta fileMeta = fileManager.getFileMeta(formData.getFileId());
-            return ok(views.html.file.File.render(fileMeta, boundForm, editFileCommentDtoForm));
+            return badRequest(views.html.file.File.render(fileMeta, boundForm, editFileCommentDtoForm));
         }
 
         EditFileContentDto data = boundForm.get();
@@ -243,7 +243,7 @@ public class FileController extends Controller {
         Form<SearchQueryDto> boundForm = searchFileForm.bindFromRequest("query");
 
         if(boundForm.hasErrors()){
-            return ok(views.html.file.SearchResult.render(asScala(new ArrayList<FileMeta>()), boundForm));
+            return badRequest(views.html.file.SearchResult.render(asScala(new ArrayList<FileMeta>()), boundForm));
         }
 
         String query = boundForm.get().getQuery();

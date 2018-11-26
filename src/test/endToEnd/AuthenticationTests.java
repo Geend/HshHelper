@@ -89,7 +89,7 @@ public class AuthenticationTests {
             return Arrays.asList(new Object[][] {
                     // Unauthorized user can only access /login. Accessing another endpoint which
                     // requires authentication, will redirect the unauthorized user to /login.
-                    { "POST", "/users/create", Http.Status.OK },    // controllers.UserController.createUser
+                    { "POST", "/users/create", Http.Status.BAD_REQUEST },    // controllers.UserController.createUser
                     { "GET", "/users/create", Http.Status.OK },    // controllers.UserController.showCreateUserForm
             });
         }
@@ -144,12 +144,12 @@ public class AuthenticationTests {
                     { "GET", "/users/all", Http.Status.SEE_OTHER },    // controllers.UserController.showUsers
                     { "POST", "/users/delete", Http.Status.SEE_OTHER },    // controllers.UserController.deleteUser
                     { "GET", "/resetpassword", Http.Status.OK },    // controllers.UserController.showResetUserPasswordForm
-                    { "POST", "/resetpassword", Http.Status.OK },    // controllers.UserController.resetUserPassword
+                    { "POST", "/resetpassword", Http.Status.BAD_REQUEST },    // controllers.UserController.resetUserPassword
                     { "GET", "/login", Http.Status.OK },    // controllers.LoginController.showLoginForm
                     { "POST", "/login", Http.Status.BAD_REQUEST },    // controllers.LoginController.login
                     { "POST", "/logout", Http.Status.SEE_OTHER },    // controllers.LoginController.logout
                     { "GET", "/changePasswordAfterReset", Http.Status.OK },    // controllers.LoginController.showChangePasswordAfterResetForm
-                    { "POST", "/changePasswordAfterReset", Http.Status.OK },    // controllers.LoginController.changePasswordAfterReset
+                    { "POST", "/changePasswordAfterReset", Http.Status.BAD_REQUEST },    // controllers.LoginController.changePasswordAfterReset
                     { "GET", "/groups/own", Http.Status.SEE_OTHER },    // controllers.GroupController.showOwnGroups
                     { "GET", "/groups/create", Http.Status.SEE_OTHER },    // controllers.GroupController.showCreateGroupForm
                     { "POST", "/groups/create", Http.Status.SEE_OTHER },    // controllers.GroupController.createGroup

@@ -16,6 +16,6 @@ public class ErrorController  extends Controller {
     public Result showBadRequestMessage() {
         String message = Http.Context.current().flash().get(ErrorHandler.ERROR_KEY);
 
-        return forbidden(views.html.error.BadRequest.render(message));
+        return badRequest(views.html.error.BadRequest.render(message));
     }
 }
