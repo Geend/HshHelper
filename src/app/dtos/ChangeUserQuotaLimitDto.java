@@ -8,6 +8,7 @@ public class ChangeUserQuotaLimitDto {
     private Long userId;
 
     @Constraints.Required
+    @Constraints.Min(0)
     private Long newQuotaLimit;
 
 

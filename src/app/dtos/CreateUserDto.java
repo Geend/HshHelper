@@ -18,6 +18,7 @@ public class CreateUserDto {
     private String email;
 
     @Constraints.Required
+    @Constraints.Min(0)
     private Long quotaLimit;
 
 
