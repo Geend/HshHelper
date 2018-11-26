@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
@@ -90,6 +91,18 @@ public class FileController extends Controller {
     public Result showUploadFileForm() {
         List<UserPermissionDto> userPermissionDtos = this.fileManager.getUserPermissionDtosForCreate();
         List<GroupPermissionDto> groupPermissionDtos = this.fileManager.getGroupPermissionDtosForCreate();
+        return ok(views.html.file.UploadFile.render(this.uploadFileForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+    }
+
+    public Result showUploadFileToGroupForm(Long groupId) {
+        List<UserPermissionDto> userPermissionDtos = this.fileManager.getUserPermissionDtosForCreate();
+        List<GroupPermissionDto> groupPermissionDtos = this.fileManager.getGroupPermissionDtosForCreate();
+
+        groupPermissionDtos.stream()
+                .filter(x -> x.getGroupId().equals(groupId))
+                .findFirst()
+                .ifPresent(x -> x.setPermissionLevel(PermissionLevel.READ));
+
         return ok(views.html.file.UploadFile.render(this.uploadFileForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
     }
 

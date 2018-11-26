@@ -56,6 +56,9 @@ POST        /files/delete                                     controllers.FileCo
 GET         /files/upload                                     controllers.FileController.showUploadFileForm
 POST        /files/upload                                     controllers.FileController.uploadFile
 
+GET         /files/uploadToGroup/:groupId                     controllers.FileController.showUploadFileToGroupForm(groupId:Long)
+
+
 GET         /files/quota                                      controllers.FileController.showQuotaUsage
 GET         /files/:fileId                                    controllers.FileController.showFile(fileId: Long)
 GET         /files/:fileId/download                           controllers.FileController.downloadFile(fileId: Long)
