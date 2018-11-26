@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
@@ -93,11 +94,23 @@ public class FileController extends Controller {
         return ok(views.html.file.UploadFile.render(this.uploadFileForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
     }
 
+    public Result showUploadFileToGroupForm(Long groupId) {
+        List<UserPermissionDto> userPermissionDtos = this.fileManager.getUserPermissionDtosForCreate();
+        List<GroupPermissionDto> groupPermissionDtos = this.fileManager.getGroupPermissionDtosForCreate();
+
+        groupPermissionDtos.stream()
+                .filter(x -> x.getGroupId().equals(groupId))
+                .findFirst()
+                .ifPresent(x -> x.setPermissionLevel(PermissionLevel.READ));
+        
+        return ok(views.html.file.UploadFile.render(this.uploadFileForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+    }
+
     public Result uploadFile() {
         Form<UploadFileDto> boundForm = uploadFileForm.bindFromRequest();
         List<UserPermissionDto> userPermissionDtos = this.fileManager.getUserPermissionDtosForCreate();
         List<GroupPermissionDto> groupPermissionDtos = this.fileManager.getGroupPermissionDtosForCreate();
-        if(boundForm.hasErrors()) {
+        if (boundForm.hasErrors()) {
             return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
         }
 
@@ -105,15 +118,14 @@ public class FileController extends Controller {
             ArrayList<GroupPermissionDto> groupPermissions = new ArrayList<>();
             ArrayList<UserPermissionDto> userPermissions = new ArrayList<>();
             Map<String, String> fields = boundForm.rawData();
-            for (Map.Entry<String, String> entry: fields.entrySet()) {
+            for (Map.Entry<String, String> entry : fields.entrySet()) {
                 PermissionLevel pl = permissionLevelFromFormString(entry.getValue());
-                if(pl != PermissionLevel.NONE) {
-                    if(entry.getKey().startsWith("user_")) {
+                if (pl != PermissionLevel.NONE) {
+                    if (entry.getKey().startsWith("user_")) {
                         String userIdString = entry.getKey().substring(5);
                         Long groupId = Long.parseLong(userIdString);
                         userPermissions.add(new UserPermissionDto(groupId, "", pl));
-                    }
-                    else if(entry.getKey().startsWith("group_")) {
+                    } else if (entry.getKey().startsWith("group_")) {
                         String groupIdString = entry.getKey().substring(6);
                         Long groupId = Long.parseLong(groupIdString);
                         groupPermissions.add(new GroupPermissionDto(groupId, "", pl));
@@ -124,7 +136,7 @@ public class FileController extends Controller {
             Http.MultipartFormData<java.io.File> body = request().body().asMultipartFormData();
             Http.MultipartFormData.FilePart<java.io.File> file = body.getFile("file");
 
-            if(StringUtils.isEmpty(file.getFilename())) {
+            if (StringUtils.isEmpty(file.getFilename())) {
                 throw new NoFileSubmittedOnUploadException();
             }
 
@@ -136,7 +148,7 @@ public class FileController extends Controller {
         } catch (NoFileSubmittedOnUploadException e) {
             boundForm = boundForm.withError("file", "Bitte wählen Sie eine Datei zum Upload aus.");
             return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
-        } catch(QuotaExceededException e) {
+        } catch (QuotaExceededException e) {
             boundForm = boundForm.withGlobalError("Quota überschritten. Bitte geben sie eine kleinere Datei an.");
             return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
         } catch (Exception e) {
@@ -152,8 +164,8 @@ public class FileController extends Controller {
                 return PermissionLevel.WRITE;
             case "ReadAndWrite":
                 return PermissionLevel.READWRITE;
-                default:
-            return PermissionLevel.NONE;
+            default:
+                return PermissionLevel.NONE;
         }
     }
 
@@ -173,8 +185,8 @@ public class FileController extends Controller {
         FileMeta fileMeta = fileManager.getFileMeta(fileId);
 
         EditFileCommentDto fileCommentDto = new EditFileCommentDto(
-            fileMeta.getFileId(),
-            fileMeta.getComment()
+                fileMeta.getFileId(),
+                fileMeta.getComment()
         );
 
         return ok(views.html.file.File.render(fileMeta, editFileContentDtoForm, editFileCommentDtoForm.fill(fileCommentDto)));
@@ -220,7 +232,7 @@ public class FileController extends Controller {
         Http.MultipartFormData<java.io.File> body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart<java.io.File> file = body.getFile("file");
 
-        if(StringUtils.isEmpty(file.getFilename())) {
+        if (StringUtils.isEmpty(file.getFilename())) {
             boundForm = boundForm.withError("file", "Bitte Datei auswählen!");
             FileMeta fileMeta = fileManager.getFileMeta(data.getFileId());
             return badRequest(views.html.file.File.render(fileMeta, boundForm, editFileCommentDtoForm));
@@ -239,10 +251,10 @@ public class FileController extends Controller {
         return redirect(routes.FileController.showFile(boundForm.get().getFileId()));
     }
 
-    public Result searchFiles(){
+    public Result searchFiles() {
         Form<SearchQueryDto> boundForm = searchFileForm.bindFromRequest("query");
 
-        if(boundForm.hasErrors()){
+        if (boundForm.hasErrors()) {
             return ok(views.html.file.SearchResult.render(asScala(new ArrayList<FileMeta>()), boundForm));
         }
 

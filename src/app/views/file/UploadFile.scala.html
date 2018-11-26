@@ -1,38 +1,69 @@
 @(form: Form[dtos.UploadFileDto], userPermissionDtos: Seq[dtos.UserPermissionDto], groupPermissionDtos: Seq[dtos.GroupPermissionDto])
 
-@Base("Datei Hochladen") {
-    @helper.form(action = routes.FileController.uploadFile(), 'enctype -> "multipart/form-data") {
-        @helper.CSRF.formField
-        <div class="inputForm">
-            @if(form.hasGlobalErrors) {
-                <p class="error">
-                @for(error <- form.globalErrors) {
-                    <p>@error.format(messages())</p>
+    @Base("Datei Hochladen") {
+        @helper.form(action = routes.FileController.uploadFile(), 'enctype -> "multipart/form-data") {
+            @helper.CSRF.formField
+            <div class="inputForm">
+                @if(form.hasGlobalErrors) {
+                    <p class="error">
+                    @for(error <- form.globalErrors) {
+                        <p>@error.format(messages())</p>
+                    }
+                    </p>
                 }
-                </p>
-            }
-            @helper.TextInput(form("filename"), "Dateiname")
-            @helper.TextAreaInput(form("comment"), "Kommentar")
-            @helper.FileInput(form("file"), "Datei")
+                @helper.TextInput(form("filename"), "Dateiname")
+                @helper.TextAreaInput(form("comment"), "Kommentar")
+                @helper.FileInput(form("file"), "Datei")
 
-            <div class="element" >
-                <div class="label">
-                    <label>Gruppenrechte:</label>
-                </div>
-                <div class="input">
-                    <table class="fileTable">
-                        <thead>
-                            <tr>
-                                <td class="name">Gruppenname</td>
-                                <td>Rechte</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for(group <- groupPermissionDtos) {
+                <div class="element" >
+                    <div class="label">
+                        <label>Gruppenrechte:</label>
+                    </div>
+                    <div class="input">
+                        <table class="fileTable">
+                            <thead>
                                 <tr>
+                                    <td class="name">Gruppenname</td>
+                                    <td>Rechte</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @for(group <- groupPermissionDtos) {
+                                <tr @if(group.getPermissionLevel!=PermissionLevel.NONE){class="potentiallyDangerous"}>
                                     <td>@group.getGroupName()</td>
                                     <td>
                                         <select name="group_@group.getGroupId()">
+                                            <option value="None" @if(group.getPermissionLevel == PermissionLevel.NONE) {selected="selected"}>Keine</option>
+                                            <option value="Read" @if(group.getPermissionLevel == PermissionLevel.READ) {selected="selected"}>Lesen</option>
+                                            <option value="Write" @if(group.getPermissionLevel == PermissionLevel.WRITE) {selected="selected"}>Schreiben</option>
+                                            <option value="ReadAndWrite" @if(group.getPermissionLevel == PermissionLevel.READWRITE) {selected="selected"}>Lesen und Schreiben</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="element" >
+                    <div class="label">
+                        <label>Nutzerrechte:</label>
+                    </div>
+                    <div class="input">
+                        <table class="fileTable">
+                            <thead>
+                                <tr>
+                                    <td class="name">Nutzername</td>
+                                    <td>Rechte</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @for(group <- userPermissionDtos) {
+                                <tr>
+                                    <td>@group.getUsername()</td>
+                                    <td>
+                                        <select name="user_@group.getUserId()">
                                             <option value="None" selected="selected">Keine</option>
                                             <option value="Read">Lesen</option>
                                             <option value="Write">Schreiben</option>
@@ -41,44 +72,13 @@
                                     </td>
                                 </tr>
                             }
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-
-            <div class="element" >
-                <div class="label">
-                    <label>Nutzerrechte:</label>
-                </div>
-                <div class="input">
-                    <table class="fileTable">
-                        <thead>
-                            <tr>
-                                <td class="name">Nutzername</td>
-                                <td>Rechte</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @for(group <- userPermissionDtos) {
-                            <tr>
-                                <td>@group.getUsername()</td>
-                                <td>
-                                    <select name="user_@group.getUserId()">
-                                        <option value="None" selected="selected">Keine</option>
-                                        <option value="Read">Lesen</option>
-                                        <option value="Write">Schreiben</option>
-                                        <option value="ReadAndWrite">Lesen und Schreiben</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </div>
+            <div class="inputControls">
+                <input type="submit" value="Datei hochladen" />
             </div>
-        </div>
-        <div class="inputControls">
-            <input type="submit" value="Datei hochladen" />
-        </div>
+        }
     }
-}
