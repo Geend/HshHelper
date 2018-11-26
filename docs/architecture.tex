@@ -245,10 +245,18 @@ Für einige Parameter gibt es festgelegte Constraints, die in allen entsprechend
 
 \section{Nutzer kann mit seinen aktiven Sessions interagieren}
 
-Im Sinne von Ka-Ping Yee, der innerhalb seines Papers \citetitle{Yee.UserInteraction} \autocite{Yee.UserInteraction} zehn Designprinzipien beschrieben hat, die Benutzer bei Bedienung eines sicheren Systems benutzerfreundlich unterstützen sollen, haben wir mithilfe dieser neuen Funktionalität das Designprinzip \enquote{Revocability} abgebildet. \par
+Im Sinne von Ka-Ping Yee, der innerhalb seines Papers \citetitle{Yee.UserInteraction} \autocite{Yee.UserInteraction} zehn Designprinzipien beschrieben hat, die Benutzer bei Bedienung eines sicheren Systems benutzerfreundlich unterstützen sollen, haben wir mithilfe dieser neuen Funktionalität die Designprinzipien \enquote{Revocability} und \enquote{Visibility} abgebildet. \par
 Ein Nutzer ist in der Lage, seine eigenen, aktiven Sessions in tabellarischer Form zu betrachten.
 Während dieser Ansicht kann der Nutzer einzelne Sessions invalidieren, sofern er es für nötig hält.
 Wir halten das für eine nützliche Zusatzfunktionalität, da ein Nutzer unsere Applikation von verschiedenen Geräten nutzen kann.
+
+\section{Nutzer kann vorherige Logins betrachten}
+
+Da wir bereits anzeigen, welche Sessions gerade noch aktiv sind, und sich ein Nutzer von verschiedenen Geräten zeitgleich einloggen kann, ist es sinnvoll, dem Nutzer die Möglichkeit zu verschaffen, ihm seine bisherigen, erfolgreichen Logins anzuzeigen.
+Dadurch ist er in der Lage, ggf. Logins von anderen Geräten sowie User-Agents zu identifizieren, die er weder autorisiert hat noch eventuell selber getätigt.
+So ist ihm auch möglich, eine Session, die gegebenfalls von einer bösartigen Quelle kommt, zu identifizieren.
+Ähnlich wie die zuvor genannte Zusatzfunktionalität soll diese Funktionalität dazu dienen, dem Nutzer zu ermöglichen, mehr Information und somit mehr Klarheit über die Aktivität seines Kontos zu erhalten.
+Auch diese Funktionalität bildet das Designprinzip \enquote{Visibility} ab.
 
 \chapter{Verworfene Entwürfe}
 
