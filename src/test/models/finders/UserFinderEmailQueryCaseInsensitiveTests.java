@@ -42,7 +42,7 @@ public class UserFinderEmailQueryCaseInsensitiveTests {
     public static void startApp() {
         app = Helpers.fakeApplication();
         Helpers.start(app);
-        User user = new User("", "test@test.de", "", false, 5);
+        User user = new User("", "test@test.de", "", false, 5l);
         user.save();
     }
 

@@ -47,12 +47,12 @@ public class PolicyTests {
      */
     @BeforeClass
     public static void setup() {
-        admin = new User("admin", "admin@admin.com", "admin", true, 10);
-        adminTwo = new User("adminTwo", "adminTwo@admin.com", "admin", true, 10);
-        peter = new User("peter", "peter@gmx.com", "peter", true, 10);
-        klaus = new User("klaus", "klaus@gmx.com", "klaus", true, 10);
-        horst = new User("horst", "horst@gmx.com", "horst", true, 10);
-        rudi = new User("rudi", "rudi@gmx.com", "rudi", true, 10);
+        admin = new User("admin", "admin@admin.com", "admin", true, 10l);
+        adminTwo = new User("adminTwo", "adminTwo@admin.com", "admin", true, 10l);
+        peter = new User("peter", "peter@gmx.com", "peter", true, 10l);
+        klaus = new User("klaus", "klaus@gmx.com", "klaus", true, 10l);
+        horst = new User("horst", "horst@gmx.com", "horst", true, 10l);
+        rudi = new User("rudi", "rudi@gmx.com", "rudi", true, 10l);
 
         allGroup = new Group("Alle", admin);
         allGroup.setIsAllGroup(true);
