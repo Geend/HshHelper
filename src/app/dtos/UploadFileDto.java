@@ -1,8 +1,16 @@
 package dtos;
 
+import play.data.validation.Constraints;
+import policyenforcement.ConstraintValues;
+
+import static policyenforcement.ConstraintValues.MAX_FILENAME_LENGTH;
+
 public class UploadFileDto {
-    //TODO: Add filename regex constraint
+    @Constraints.Required
+    @Constraints.Pattern(ConstraintValues.USERNAME_REGEX)
+    @Constraints.MaxLength(MAX_FILENAME_LENGTH)
     private String filename;
+
     private String comment;
 
     public String getFilename() {

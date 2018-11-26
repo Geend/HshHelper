@@ -1,5 +1,6 @@
 package controllers;
 
+import extension.NoFileSubmittedOnUploadException;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.filemanager.FileManager;
@@ -95,14 +96,14 @@ public class FileController extends Controller {
     }
 
     public Result uploadFile() {
-        try {
-            Form<UploadFileDto> boundForm = uploadFileForm.bindFromRequest();
-            if(boundForm.hasErrors()) {
-                List<UserPermissionDto> userPermissionDtos = this.fileManager.getUserPermissionDtosForCreate();
-                List<GroupPermissionDto> groupPermissionDtos = this.fileManager.getGroupPermissionDtosForCreate();
-                return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
-            }
+        Form<UploadFileDto> boundForm = uploadFileForm.bindFromRequest();
+        List<UserPermissionDto> userPermissionDtos = this.fileManager.getUserPermissionDtosForCreate();
+        List<GroupPermissionDto> groupPermissionDtos = this.fileManager.getGroupPermissionDtosForCreate();
+        if(boundForm.hasErrors()) {
+            return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+        }
 
+        try {
             ArrayList<GroupPermissionDto> groupPermissions = new ArrayList<>();
             ArrayList<UserPermissionDto> userPermissions = new ArrayList<>();
             Map<String, String> fields = boundForm.rawData();
@@ -124,11 +125,22 @@ public class FileController extends Controller {
 
             Http.MultipartFormData<java.io.File> body = request().body().asMultipartFormData();
             Http.MultipartFormData.FilePart<java.io.File> file = body.getFile("file");
+
+            if(StringUtils.isEmpty(file.getFilename())) {
+                throw new NoFileSubmittedOnUploadException();
+            }
+
             byte[] data = Files.readAllBytes(file.getFile().toPath());
             UploadFileDto uploadFileDto = boundForm.get();
             this.fileManager.createFile(uploadFileDto.getFilename(), uploadFileDto.getComment(), data, userPermissions, groupPermissions);
 
             return redirect(routes.FileController.showOwnFiles());
+        } catch (NoFileSubmittedOnUploadException _) {
+            boundForm = boundForm.withError("file", "Bitte wählen Sie eine Datei zum Upload aus.");
+            return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+        } catch(QuotaExceededException _) {
+            boundForm = boundForm.withGlobalError("Quota überschritten. Bitte geben sie eine kleinere Datei an.");
+            return ok(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
         } catch (Exception e) {
             return redirect(routes.ErrorController.showBadRequestMessage());
         }
