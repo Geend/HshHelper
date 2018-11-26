@@ -1,0 +1,26 @@
+@import managers.filemanager.dto.PermissionMeta
+@import managers.filemanager.dto.PermissionMeta.EType
+@(permission: PermissionMeta)
+
+
+@if(permission.canEditPermission) {
+    @if(permission.getType.equals(EType.USER)) {
+        @helper.form(action = routes.PermissionController.showEditUserPermissionForm()) {
+            @helper.CSRF.formField
+            <input type="hidden" name="returnUrl" value="@request().uri()" />
+            <input type="hidden" name="userPermissionId" value="@permission.getId" />
+            <button type="submit" class="linkBtn">Ändern</button>
+        }
+    }
+
+    @if(permission.getType.equals(EType.GROUP)) {
+        @helper.form(action = routes.PermissionController.showEditGroupPermissionForm()) {
+            @helper.CSRF.formField
+            <input type="hidden" name="returnUrl" value="@request().uri()" />
+            <input type="hidden" name="groupPermissionId" value="@permission.getId" />
+            <button type="submit" class="linkBtn">Ändern</button>
+        }
+    }
+} else {
+    <button type="submit" class="linkBtn" disabled>Ändern</button>
+}

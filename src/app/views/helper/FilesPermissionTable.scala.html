@@ -1,10 +1,10 @@
 @import policyenforcement.Policy
 @import policyenforcement.session.SessionManager.SessionInstance
-@import views.html.file.btn.DeleteGroupPermissionBtn
-@import views.html.file.btn.DeleteUserPermissionBtn
-@import views.html.file.btn.EditGroupPermissionBtn
-@import views.html.file.btn.EditUserPermissionBtn
-@(files : Seq[File])
+@import managers.filemanager.dto.FileMeta
+@import managers.filemanager.dto.PermissionMeta.EType
+@import views.html.file.btn.EditPermissionBtn
+@import views.html.file.btn.DeletePermissionBtn
+@(files : Seq[FileMeta])
 
 
 @if(files.nonEmpty) {
@@ -12,24 +12,26 @@
         @for(file <- files) {
             <thead>
                 <tr class="file">
-                    <td><a href="@routes.FileController.showFile(file.getFileId)"><b>@file.getName</b></a></td>
-                    <td  colspan="2">Berechtigungen</td>
+                    <td><a href="@routes.FileController.showFile(file.getFileId)"><b>@file.getFilename</b></a></td>
+                    <td colspan="2">Berechtigungen</td>
                 </tr>
             </thead>
 
-            @for(groupPermission <- file.getGroupPermissions()) {
+            @for(permission <- file.getPermissions) {
                 <tr>
-                    <td>Gruppe: @groupPermission.getGroup.getName</td>
-                    <td>@helper.PermissionFormat(groupPermission.getCanRead, groupPermission.getCanWrite)</td>
-                    <td  class="rightBound">@EditGroupPermissionBtn(groupPermission) - @DeleteGroupPermissionBtn(groupPermission)</td>
-                </tr>
-            }
+                    <td>
+                        @if(permission.getType.equals(EType.USER)) {
+                            User:
+                        }
 
-            @for(userPermission <- file.getUserPermissions()) {
-                <tr>
-                    <td>User: @userPermission.getUser.getUsername</td>
-                    <td>@helper.PermissionFormat(userPermission.getCanRead, userPermission.getCanWrite)</td>
-                    <td class="rightBound">@EditUserPermissionBtn(userPermission) - @DeleteUserPermissionBtn(userPermission)</td>
+                        @if(permission.getType.equals(EType.GROUP)) {
+                            Gruppe:
+                        }
+
+                        @permission.getRefName
+                    </td>
+                    <td>@helper.PermissionFormat(permission.canRead, permission.canWrite)</td>
+                    <td  class="rightBound">@EditPermissionBtn(permission) - @DeletePermissionBtn(permission)</td>
                 </tr>
             }
         }

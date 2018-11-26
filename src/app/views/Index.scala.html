@@ -1,6 +1,7 @@
 @import policyenforcement.session.SessionManager.SessionInstance
 @import policyenforcement.Policy
-@(files: Seq[File])
+@import managers.filemanager.dto.FileMeta
+@(files: Seq[FileMeta])
 
 @Base("Alle Verfügbaren Dateien") {
     @helper.FilesTable(files)

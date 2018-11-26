@@ -1,4 +1,5 @@
-@(group : Group, files : Seq[File])
+@import managers.filemanager.dto.FileMeta
+@(group : Group, files : Seq[FileMeta])
 
 @GroupBase(group) {
     @helper.FilesTable(files)

@@ -1,30 +1,34 @@
 @import dtos.EditFileDto
 @import views.TemplateEnvironment
-@import views.html.file.btn.DeleteUserPermissionBtn
-@import views.html.file.btn.DeleteGroupPermissionBtn
-@import views.html.file.btn.EditGroupPermissionBtn
-@import views.html.file.btn.EditUserPermissionBtn
 @import dtos.EditFileCommentDto
 @import dtos.EditFileContentDto
 @import views.html.helper.StandaloneFileInput
 @import views.html.helper.FileInput
 @import extension.FileSizeFormatter.FormatSize;
-@(file:File, editFileContentForm : Form[EditFileContentDto], editFileCommentForm : Form[EditFileCommentDto])
+@import managers.filemanager.dto.PermissionMeta.EType
+@import views.html.file.btn.EditPermissionBtn
+@import views.html.file.btn.DeletePermissionBtn
+@import managers.filemanager.dto.FileMeta
 
-@Base(file.getName + " (Datei)") {
+@(fileMeta : FileMeta, editFileContentForm : Form[EditFileContentDto], editFileCommentForm : Form[EditFileCommentDto])
+
+@Base(fileMeta.getFilename() + " (Datei)") {
     <div class="left_right">
         <div class="left">
-            <div class="fileMeta @helper.TrustworthyFileClass(file)">
-                Dateiname: @file.getName<br>
-                Größe: @FormatSize(file.getDataSize())<br>
-                Eigentümer: @file.getOwner.getUsername<br>
-                Geschrieben von: @file.getWrittenBy.getUsername am @file.getWrittenByDt.toString("dd.MM.yyyy - HH:mm:ss")<br>
-                <a href="@routes.FileController.downloadFile(file.getFileId)"><b>Download</b></a>
+            <div class="fileMeta @helper.TrustworthyFileClass(fileMeta)">
+                Dateiname: @fileMeta.getFilename()<br>
+                Größe: @FormatSize(fileMeta.getSize())<br>
+                Eigentümer: @fileMeta.getOwnerName<br>
+                Geschrieben von: @fileMeta.getWrittenByName am @fileMeta.getWrittenByDt.toString("dd.MM.yyyy - HH:mm:ss")<br>
 
-                @if(TemplateEnvironment.GetPolicy().CanDeleteFile(TemplateEnvironment.GetMainManager().currentUser(), file)) {
+                @if(fileMeta.canReadFile()) {
+                    <a href="@routes.FileController.downloadFile(fileMeta.getFileId)"><b>Download</b></a>
+                }
+
+                @if(fileMeta.canDeleteFile()) {
                     -
                     @helper.form(action = routes.FileController.deleteFile()) {
-                        <input type="hidden" name="fileId" value="@file.getFileId" />
+                        <input type="hidden" name="fileId" value="@fileMeta.getFileId" />
                         <button type="submit" class="linkBtn">Datei löschen</button>
                         @helper.CSRF.formField
                     }
@@ -32,13 +36,13 @@
             </div>
         </div>
 
-        @if(TemplateEnvironment.GetPolicy().CanWriteFile(TemplateEnvironment.GetMainManager().currentUser(), file)) {
+        @if(fileMeta.canWriteFile()) {
             <div class="right">
                 <h2 class="noTopSpace">Datei überschreiben</h2>
 
                 @helper.form(action = routes.FileController.editFileContent(), 'enctype -> "multipart/form-data") {
                     @helper.CSRF.formField
-                    <input type="hidden" name="fileId" value="@file.getFileId" />
+                    <input type="hidden" name="fileId" value="@fileMeta.getFileId" />
 
                     <div class="inputForm">
                         @FileInput(editFileContentForm("file"), "Datei")
@@ -54,7 +58,7 @@
 
 
     <h2>Kommentar</h2>
-    @if(TemplateEnvironment.GetPolicy.CanWriteFile(TemplateEnvironment.GetMainManager().currentUser(), file)) {
+    @if(fileMeta.canWriteFile()) {
         @helper.form(action = routes.FileController.editFileComment()) {
             <div class="inputForm">
                 <div class="fileComment">
@@ -64,22 +68,22 @@
             <div class="inputControls">
                 <input type="submit" value="Ändern" />
             </div>
-            <input type="hidden" name="fileId" value="@file.getFileId" />
+            <input type="hidden" name="fileId" value="@fileMeta.getFileId" />
             @helper.CSRF.formField
         }
     } else {
         <form>
             <div class="inputForm">
                 <div class="fileComment">
-                    <textarea disabled="disabled">@file.getComment</textarea>
+                    <textarea disabled="disabled">@fileMeta.getComment</textarea>
                 </div>
             </div>
         </form>
     }
 
-    @if(TemplateEnvironment.GetPolicy().CanViewFilePermissions(TemplateEnvironment.GetMainManager().currentUser(), file)) {
+    @if(fileMeta.canReadPermissions()) {
         <h2>Berechtigungen</h2>
-        @if(file.getGroupPermissions.isEmpty && file.getUserPermissions.isEmpty) {
+        @if(fileMeta.getPermissions.isEmpty) {
             <p>Keine Berechtigungen gesetzt</p>
         } else {
             <table>
@@ -91,30 +95,30 @@
                     </tr>
                 </thead>
 
-                @for(groupPermission <- file.getGroupPermissions) {
+                @for(permission <- fileMeta.getPermissions) {
                     <tr>
-                        <td>Gruppe: @groupPermission.getGroup.getName</td>
-                        <td>@helper.PermissionFormat(groupPermission.getCanRead, groupPermission.getCanWrite)</td>
-                        <td>@EditGroupPermissionBtn(groupPermission) - @DeleteGroupPermissionBtn(groupPermission)</td>
-                    </tr>
-                }
+                        <td>
+                            @if(permission.getType().equals(EType.USER)) {
+                                User:
+                            }
+                            @if(permission.getType().equals(EType.GROUP)) {
+                                Gruppe:
+                            }
 
-                @for(userPermission <- file.getUserPermissions) {
-                    <tr>
-                        <td>User: @userPermission.getUser.getUsername</td>
-                        <td>@helper.PermissionFormat(userPermission.getCanRead, userPermission.getCanWrite)</td>
-                        <td>@EditUserPermissionBtn(userPermission) - @DeleteUserPermissionBtn(userPermission)</td>
+                            @permission.getRefName
+                        </td>
+                        <td>@helper.PermissionFormat(permission.canRead, permission.canWrite)</td>
+                        <td>@EditPermissionBtn(permission) - @DeletePermissionBtn(permission)</td>
                     </tr>
                 }
             </table>
         }
-
         <div class="inputControls">
-            @helper.form(action = routes.PermissionController.showCreateGroupPermission(file.getFileId)) {
+            @helper.form(action = routes.PermissionController.showCreateGroupPermission(fileMeta.getFileId)) {
                 <input type="submit" value="Neue Gruppenberechtigung" />
             }
 
-            @helper.form(action = routes.PermissionController.showCreateUserPermission(file.getFileId)) {
+            @helper.form(action = routes.PermissionController.showCreateUserPermission(fileMeta.getFileId)) {
                 <input type="submit" value="Neue Benutzerberechtigung" />
             }
         </div>

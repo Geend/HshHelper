@@ -112,8 +112,8 @@ public class DatabaseInitialization {
         UserPermission up2 = new UserPermission();
         up2.setUser(u1);
         up2.setFile(f3);
-        up2.setCanRead(true);
-        up2.setCanWrite(false);
+        up2.setCanRead(false);
+        up2.setCanWrite(true);
         up2.save();
 
         UserPermission up3 = new UserPermission();

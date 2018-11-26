@@ -1,11 +1,12 @@
 @import policyenforcement.Policy
 @import policyenforcement.session.SessionManager.SessionInstance
-@(files : Seq[File])
+@import managers.filemanager.dto.FileMeta
+@(files : Seq[FileMeta])
 
-@permissions(file : File) = {
+@permissions(fileMeta : FileMeta) = {
     @helper.PermissionFormat(
-        Policy.instance.CanReadFile(SessionInstance().currentUser(), file),
-        Policy.instance.CanWriteFile(SessionInstance().currentUser(), file)
+        fileMeta.canReadFile,
+        fileMeta.canWriteFile
     )
 }
 
@@ -32,9 +33,9 @@
         <tbody>
         @for(file <- files) {
             <tr class="@helper.TrustworthyFileClass(file)">
-                <td class="name"><b><a href="@routes.FileController.showFile(file.getFileId)">@file.getName</a></b></td>
+                <td class="name"><b><a href="@routes.FileController.showFile(file.getFileId)">@file.getFilename</a></b></td>
                 <td>@truncateComment(file.getComment)</td>
-                <td>@file.getOwner.getUsername</td>
+                <td>@file.getOwnerName</td>
                 <td>@extension.FileSizeFormatter.FormatSize(file.getTotalSize)</td>
                 <td>@permissions(file)</td>
             </tr>

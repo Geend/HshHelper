@@ -1,6 +1,7 @@
 package controllers;
 
 import managers.filemanager.FileManager;
+import managers.filemanager.dto.FileMeta;
 import models.File;
 import models.User;
 import play.mvc.Controller;
@@ -28,7 +29,7 @@ public class HomeController extends Controller {
     }
 
     public Result index() {
-        List<File> accessibleFiles = fileManager.accessibleFiles();
+        List<FileMeta> accessibleFiles = fileManager.accessibleFiles();
         return ok(views.html.Index.render(asScala(accessibleFiles)));
     }
 

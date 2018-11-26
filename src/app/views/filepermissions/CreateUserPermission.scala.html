@@ -1,4 +1,5 @@
-@(form: Form[dtos.CreateUserPermissionDto], allUsers: Seq[User], possiblePermissions: Seq[PermissionLevel], relevantFile : File)
+@import managers.filemanager.dto.FileMeta
+@(form: Form[dtos.CreateUserPermissionDto], allUsers: Seq[User], possiblePermissions: Seq[PermissionLevel], relevantFile : FileMeta)
 
 @Base("Benutzerberechtigung erstellen"){
     @helper.form(action = routes.PermissionController.createUserPermission()) {
@@ -6,7 +7,7 @@
             <div class="element">
                 <div class="label">Datei:</div>
                 <div class="input">
-                    <a href="@routes.FileController.showFile(relevantFile.getFileId)">@relevantFile.getName</a>
+                    <a href="@routes.FileController.showFile(relevantFile.getFileId)">@relevantFile.getFilename</a>
                 </div>
             </div>
 

@@ -2,6 +2,7 @@ package controllers;
 
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import managers.filemanager.dto.FileMeta;
 import managers.groupmanager.GroupManager;
 import managers.groupmanager.GroupNameAlreadyExistsException;
 import models.File;
@@ -109,7 +110,7 @@ public class GroupController extends Controller {
 
     public Result showGroupFiles(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Group group = groupManager.getGroup(groupId);
-        List<File> sharedWithGroup = groupManager.getGroupFiles(group);
+        List<FileMeta> sharedWithGroup = groupManager.getGroupFiles(group);
         return ok(views.html.groups.GroupFiles.render(group, asScala(sharedWithGroup)));
     }
 

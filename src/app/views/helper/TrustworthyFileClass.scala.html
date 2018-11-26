@@ -1,7 +1,8 @@
 @import policyenforcement.session.SessionManager.SessionInstance
-@(file : File)
+@import managers.filemanager.dto.FileMeta
+@(fileMeta : FileMeta)
 
-@if(file.getWrittenBy.equals(SessionInstance().currentUser())) {
+@if(fileMeta.getWrittenById().equals(SessionInstance().currentUser().getUserId)) {
     trustworthy
 } else {
     potentiallyDangerous

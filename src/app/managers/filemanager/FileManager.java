@@ -8,6 +8,7 @@ import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.*;
+import managers.filemanager.dto.FileMeta;
 import models.*;
 import models.finders.FileFinder;
 import models.finders.GroupFinder;
@@ -29,17 +30,19 @@ public class FileManager {
     private final EbeanServer ebeanServer;
     private final Policy policy;
     private final SessionManager sessionManager;
+    private final FileMetaFactory fileMetaFactory;
 
     private static final Logger.ALogger logger = Logger.of(FileManager.class);
 
     @Inject
-    public FileManager(FileFinder fileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy, SessionManager sessionManager, GroupFinder groupFinder) {
+    public FileManager(FileFinder fileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy, SessionManager sessionManager, GroupFinder groupFinder, FileMetaFactory fileMetaFactory) {
         this.groupFinder = groupFinder;
         this.fileFinder = fileFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
         this.policy = policy;
         this.sessionManager = sessionManager;
+        this.fileMetaFactory = fileMetaFactory;
     }
 
     public List<GroupPermissionDto> getGroupPermissionDtosForCreate() {
@@ -117,7 +120,7 @@ public class FileManager {
         logger.info(currentUser.getUsername() + " added a file");
     }
 
-    public List<File> accessibleFiles() {
+    public List<FileMeta> accessibleFiles() {
         User user = sessionManager.currentUser();
 
         Set<File> result = new HashSet<>();
@@ -125,11 +128,10 @@ public class FileManager {
         result.addAll(fileFinder.byUserHasUserPermission(user));
         result.addAll(fileFinder.byUserHasGroupPermission(user));
 
-        return new ArrayList<>(result);
-
+        return fileMetaFactory.fromFiles(new ArrayList<>(result));
     }
 
-    public List<File> sharedWithCurrentUserFiles() {
+    public List<FileMeta> sharedWithCurrentUserFiles() {
         User user = sessionManager.currentUser();
 
         Set<File> result = new HashSet<>();
@@ -137,7 +139,18 @@ public class FileManager {
         result.addAll(fileFinder.byUserHasGroupPermission(user));
         result.removeAll(user.getOwnedFiles());
 
-        return new ArrayList<>(result);
+        return fileMetaFactory.fromFiles(new ArrayList<>(result));
+    }
+
+    public List<FileMeta> sharedByCurrentUserFiles() {
+        User user = sessionManager.currentUser();
+        List<File> files = user.getOwnedFiles().stream().filter(x -> x.getGroupPermissions().size() > 0 || x.getUserPermissions().size() > 0).collect(Collectors.toList());
+        return fileMetaFactory.fromFiles(files);
+    }
+
+    public List<FileMeta> ownedByCurrentUserFiles() {
+        User user = sessionManager.currentUser();
+        return fileMetaFactory.fromFiles(user.getOwnedFiles());
     }
 
     public UserQuota getCurrentQuotaUsage() {
@@ -145,26 +158,46 @@ public class FileManager {
         return fileFinder.getUsedQuota(user.getUserId());
     }
 
-    public File getFile(long fileId) throws InvalidArgumentException, UnauthorizedException {
+    public FileMeta getFileMeta(long fileId) throws InvalidArgumentException, UnauthorizedException {
+        Optional<File> optFile = fileFinder.byIdOptional(fileId);
 
+        if (!optFile.isPresent()) {
+            throw new InvalidArgumentException();
+        }
+
+        File file = optFile.get();
+
+        if(!policy.CanGetFileMeta(sessionManager.currentUser(), file)) {
+            logger.error(sessionManager.currentUser().getUsername() + " tried to access file " + file.getName() + "'s meta info but he is not authorized");
+            throw new UnauthorizedException();
+        }
+
+        return fileMetaFactory.fromFile(file);
+    }
+
+    public byte[] getFileContent(long fileId) throws UnauthorizedException, InvalidArgumentException {
         Optional<File> file = fileFinder.byIdOptional(fileId);
 
         if (!file.isPresent())
             throw new InvalidArgumentException();
-
 
         if (!policy.CanReadFile(sessionManager.currentUser(), file.get())) {
             logger.error(sessionManager.currentUser().getUsername() + " tried to access file " + file.get().getName() + " but he is not authorized");
             throw new UnauthorizedException();
         }
 
-        logger.info(sessionManager.currentUser().getUsername() + " is accessing file " + file.get().getName());
-        return file.get();
+        return file.get().getData();
     }
 
     public void deleteFile(long fileId) throws UnauthorizedException, InvalidArgumentException {
         User user = sessionManager.currentUser();
-        File file = getFile(fileId);
+
+        Optional<File> optFile = fileFinder.byIdOptional(fileId);
+
+        if (!optFile.isPresent())
+            throw new InvalidArgumentException();
+
+        File file = optFile.get();
 
         if (!policy.CanDeleteFile(user, file)) {
             logger.error(user.getUsername() + " tried to delete file " + file.getName() + " but he is not authorized");
@@ -233,8 +266,8 @@ public class FileManager {
         logger.info(user.getUsername() + " has changed the comment of file with id " + fileId);
     }
 
-    public List<File> searchFile(String query) {
-        return accessibleFiles().stream().filter(x -> like(x.getName(), query)).collect(Collectors.toList());
+    public List<FileMeta> searchFile(String query) {
+        return accessibleFiles().stream().filter(x -> like(x.getFilename(), query)).collect(Collectors.toList());
     }
 
     private boolean like(String str, String expr) {

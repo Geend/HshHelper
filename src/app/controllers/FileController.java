@@ -5,6 +5,7 @@ import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.filemanager.FileManager;
 import managers.filemanager.QuotaExceededException;
+import managers.filemanager.dto.FileMeta;
 import models.File;
 import dtos.*;
 import models.GroupPermission;
@@ -61,20 +62,17 @@ public class FileController extends Controller {
     }
 
     public Result showOwnFiles() {
-        User user = sessionManager.currentUser();
-        List<File> files = user.getOwnedFiles();
+        List<FileMeta> files = fileManager.ownedByCurrentUserFiles();
         return ok(views.html.file.Files.render(asScala(files)));
     }
 
     public Result showSharedFiles() {
-        User user = sessionManager.currentUser();
-        // TODO: Durch qry ersetzen!
-        List<File> files = user.getOwnedFiles().stream().filter(x -> x.getGroupPermissions().size() > 0 || x.getUserPermissions().size() > 0).collect(Collectors.toList());
-        return ok(views.html.file.SharedFiles.render(asScala(files)));
+        List<FileMeta> sharedFiles = fileManager.sharedByCurrentUserFiles();
+        return ok(views.html.file.SharedFiles.render(asScala(sharedFiles)));
     }
 
     public Result showThirdPartyFiles() {
-        List<File> files = fileManager.sharedWithCurrentUserFiles();
+        List<FileMeta> files = fileManager.sharedWithCurrentUserFiles();
         return ok(views.html.file.Files.render(asScala(files)));
     }
 
@@ -172,28 +170,29 @@ public class FileController extends Controller {
 
 
     public Result showFile(long fileId) throws UnauthorizedException, InvalidArgumentException {
-        File file = fileManager.getFile(fileId);
+        FileMeta fileMeta = fileManager.getFileMeta(fileId);
 
         EditFileCommentDto fileCommentDto = new EditFileCommentDto(
-            file.getFileId(),
-            file.getComment()
+            fileMeta.getFileId(),
+            fileMeta.getComment()
         );
 
-        return ok(views.html.file.File.render(file, editFileContentDtoForm, editFileCommentDtoForm.fill(fileCommentDto)));
+        return ok(views.html.file.File.render(fileMeta, editFileContentDtoForm, editFileCommentDtoForm.fill(fileCommentDto)));
     }
 
 
     public Result downloadFile(long fileId) throws UnauthorizedException, InvalidArgumentException {
-        File file = fileManager.getFile(fileId);
-        return ok(file.getData()).as("application/octet-stream").withHeader("Content-Disposition", "attachment; filename=" + file.getName());
+        FileMeta fileMeta = fileManager.getFileMeta(fileId);
+        byte[] data = fileManager.getFileContent(fileId);
+        return ok(data).as("application/octet-stream").withHeader("Content-Disposition", "attachment; filename=" + fileMeta.getFilename());
     }
 
     public Result editFileComment() throws UnauthorizedException, InvalidArgumentException, QuotaExceededException {
         Form<EditFileCommentDto> boundForm = editFileCommentDtoForm.bindFromRequest();
         if (boundForm.hasErrors()) {
             EditFileCommentDto data = boundForm.get();
-            File file = fileManager.getFile(data.getFileId());
-            return badRequest(views.html.file.File.render(file, editFileContentDtoForm, boundForm));
+            FileMeta fileMeta = fileManager.getFileMeta(data.getFileId());
+            return badRequest(views.html.file.File.render(fileMeta, editFileContentDtoForm, boundForm));
         }
 
         EditFileCommentDto data = boundForm.get();
@@ -202,10 +201,9 @@ public class FileController extends Controller {
             fileManager.editFileComment(data.getFileId(), data.getComment());
         } catch (QuotaExceededException ex) {
             boundForm = boundForm.withError("comment", "Kommentar zu lang (Quota überschritten)");
-            File file = fileManager.getFile(data.getFileId());
-            return badRequest(views.html.file.File.render(file, editFileContentDtoForm, boundForm));
+            FileMeta fileMeta = fileManager.getFileMeta(data.getFileId());
+            return badRequest(views.html.file.File.render(fileMeta, editFileContentDtoForm, boundForm));
         }
-
 
         return redirect(routes.FileController.showFile(boundForm.get().getFileId()));
     }
@@ -214,8 +212,8 @@ public class FileController extends Controller {
         Form<EditFileContentDto> boundForm = editFileContentDtoForm.bindFromRequest();
         if (boundForm.hasErrors()) {
             EditFileContentDto formData = boundForm.get();
-            File actualFile = fileManager.getFile(formData.getFileId());
-            return ok(views.html.file.File.render(actualFile, boundForm, editFileCommentDtoForm));
+            FileMeta fileMeta = fileManager.getFileMeta(formData.getFileId());
+            return ok(views.html.file.File.render(fileMeta, boundForm, editFileCommentDtoForm));
         }
 
         EditFileContentDto data = boundForm.get();
@@ -224,8 +222,8 @@ public class FileController extends Controller {
 
         if(StringUtils.isEmpty(file.getFilename())) {
             boundForm = boundForm.withError("file", "Bitte Datei auswählen!");
-            File actualFile = fileManager.getFile(data.getFileId());
-            return badRequest(views.html.file.File.render(actualFile, boundForm, editFileCommentDtoForm));
+            FileMeta fileMeta = fileManager.getFileMeta(data.getFileId());
+            return badRequest(views.html.file.File.render(fileMeta, boundForm, editFileCommentDtoForm));
         }
 
         byte[] fileData = Files.readAllBytes(file.getFile().toPath());
@@ -234,24 +232,23 @@ public class FileController extends Controller {
             fileManager.editFileContent(data.getFileId(), fileData);
         } catch (QuotaExceededException ex) {
             boundForm = boundForm.withError("file", "Datei zu groß (Quota überschritten)");
-            File actualFile = fileManager.getFile(data.getFileId());
-            return badRequest(views.html.file.File.render(actualFile, boundForm, editFileCommentDtoForm));
+            FileMeta fileMeta = fileManager.getFileMeta(data.getFileId());
+            return badRequest(views.html.file.File.render(fileMeta, boundForm, editFileCommentDtoForm));
         }
 
         return redirect(routes.FileController.showFile(boundForm.get().getFileId()));
     }
 
     public Result searchFiles(){
-
         Form<SearchQueryDto> boundForm = searchFileForm.bindFromRequest("query");
 
         if(boundForm.hasErrors()){
-            return ok(views.html.file.SearchResult.render(asScala(new ArrayList<File>()), boundForm));
+            return ok(views.html.file.SearchResult.render(asScala(new ArrayList<FileMeta>()), boundForm));
         }
 
         String query = boundForm.get().getQuery();
 
-        List<File> files = fileManager.searchFile(query);
+        List<FileMeta> files = fileManager.searchFile(query);
         return ok(views.html.file.SearchResult.render(asScala(files), boundForm));
     }
 

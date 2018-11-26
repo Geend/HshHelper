@@ -20,7 +20,6 @@ import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -96,7 +95,7 @@ public class GroupManagerTests {
         peter.setGroups(Stream.of(all, petersGroup).collect(Collectors.toList()));
         klaus.setGroups(Stream.of(all).collect(Collectors.toList()));
 
-        gm = new GroupManager(groupFinder, userFinder, defaultServer, sessionManager, policy, defaultFileFinder);
+        gm = new GroupManager(groupFinder, userFinder, defaultServer, sessionManager, policy, defaultFileFinder, null);
     }
 
     @Test

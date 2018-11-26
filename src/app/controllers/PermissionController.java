@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import managers.filemanager.dto.FileMeta;
+import managers.filemanager.dto.PermissionMeta;
 import managers.permissionmanager.InvalidDataException;
 import managers.permissionmanager.PermissionManager;
 import models.*;
@@ -165,20 +167,28 @@ public class PermissionController extends Controller {
      */
 
     public Result showCreateGroupPermission(Long fileId) throws UnauthorizedException, InvalidArgumentException {
-        File file = manager.getFile(fileId);
+        FileMeta file = manager.getFileMeta(fileId);
         List<Group> ownGroups = sessionManager.currentUser().getGroups();
         // Gruppen mit bestehenden Berechtigungen filtern!
-        ownGroups.removeAll(file.getGroupPermissions().stream().map(GroupPermission::getGroup).collect(Collectors.toList()));
+        ownGroups.removeIf(
+                x -> file.getPermissions().stream().anyMatch(
+                        y -> y.getRefId().equals(x.getGroupId()) && y.getType().equals(PermissionMeta.EType.GROUP)
+                )
+        );
         List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
 
         return ok(views.html.filepermissions.CreateGroupPermission.render(createGroupPermissionForm, asScala(ownGroups), asScala(possiblePermissions), file));
     }
 
     public Result showCreateUserPermission(Long fileId) throws UnauthorizedException, InvalidArgumentException {
-        File file = manager.getFile(fileId);
+        FileMeta file = manager.getFileMeta(fileId);
         List<User> allOtherUsers = manager.getAllOtherUsers(sessionManager.currentUser().userId);
         // Benutzer mit bestehenden berechtigungen filtern!
-        allOtherUsers.removeAll(file.getUserPermissions().stream().map(UserPermission::getUser).collect(Collectors.toList()));
+        allOtherUsers.removeIf(
+                x -> file.getPermissions().stream().anyMatch(
+                        y -> y.getRefId().equals(x.getUserId()) && y.getType().equals(PermissionMeta.EType.USER)
+                )
+        );
         List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
 
         return ok(views.html.filepermissions.CreateUserPermission.render(createUserPermissionForm, asScala(allOtherUsers), asScala(possiblePermissions), file));

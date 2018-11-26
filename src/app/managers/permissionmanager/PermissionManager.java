@@ -6,6 +6,7 @@ import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.EbeanServer;
 import managers.filemanager.FileManager;
+import managers.filemanager.dto.FileMeta;
 import models.*;
 import models.File;
 import models.GroupPermission;
@@ -259,7 +260,7 @@ public class PermissionManager {
         return userFinder.findAllButThis(userId);
     }
 
-    public File getFile(Long fileId) throws UnauthorizedException, InvalidArgumentException {
-        return fileManager.getFile(fileId);
+    public FileMeta getFileMeta(Long fileId) throws UnauthorizedException, InvalidArgumentException {
+        return fileManager.getFileMeta(fileId);
     }
 }

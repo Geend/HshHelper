@@ -252,6 +252,16 @@ public class Policy {
         return false;
     }
 
+    public boolean CanGetFileMeta(User user, File file) {
+        if(CanReadFile(user, file))
+            return true;
+
+        if(CanWriteFile(user, file))
+            return true;
+
+        return false;
+    }
+
     public boolean CanDeleteFile(User user, File file) {
         if(user == null || file == null)
             return false;

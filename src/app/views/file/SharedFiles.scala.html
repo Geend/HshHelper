@@ -1,5 +1,6 @@
 @import policyenforcement.session.SessionManager.SessionInstance
-@(files : Seq[File])
+@import managers.filemanager.dto.FileMeta
+@(files : Seq[FileMeta])
 
 @FilesBase() {
     @helper.FilesPermissionTable(files)

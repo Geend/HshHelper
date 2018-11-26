@@ -5,6 +5,8 @@ import managers.UnauthorizedException;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
+import managers.filemanager.FileMetaFactory;
+import managers.filemanager.dto.FileMeta;
 import models.File;
 import models.Group;
 import models.User;
@@ -27,17 +29,19 @@ public class GroupManager {
     private final SessionManager sessionManager;
     private final FileFinder fileFinder;
     private final Policy policy;
+    private final FileMetaFactory fileMetaFactory;
 
     private static final Logger.ALogger logger = Logger.of(GroupManager.class);
 
     @Inject
-    public GroupManager(GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer, SessionManager sessionManager, Policy policy, FileFinder fileFinder) {
+    public GroupManager(GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer, SessionManager sessionManager, Policy policy, FileFinder fileFinder, FileMetaFactory fileMetaFactory) {
         this.fileFinder = fileFinder;
         this.groupFinder = groupFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
         this.sessionManager = sessionManager;
         this.policy = policy;
+        this.fileMetaFactory = fileMetaFactory;
     }
 
     public void createGroup(String groupName) throws GroupNameAlreadyExistsException, InvalidArgumentException {
@@ -59,17 +63,19 @@ public class GroupManager {
         }
     }
 
-    public List<File> getGroupFiles(Group group) throws UnauthorizedException, InvalidArgumentException {
-        return fileFinder.query()
-                .where()
-                .and()
-                .eq("groupPermissions.group", group)
-                .or()
-                .eq("groupPermissions.canRead", true)
-                .eq("groupPermissions.canWrite", true)
-                .endOr()
-                .endAnd()
-                .findList();
+    public List<FileMeta> getGroupFiles(Group group) throws UnauthorizedException, InvalidArgumentException {
+        return fileMetaFactory.fromFiles(
+            fileFinder.query()
+            .where()
+            .and()
+            .eq("groupPermissions.group", group)
+            .or()
+            .eq("groupPermissions.canRead", true)
+            .eq("groupPermissions.canWrite", true)
+            .endOr()
+            .endAnd()
+            .findList()
+        );
     }
 
     public List<Group> getAllGroups() throws InvalidArgumentException, UnauthorizedException {
