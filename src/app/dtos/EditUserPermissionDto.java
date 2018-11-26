@@ -6,6 +6,8 @@ import play.data.validation.Constraints;
 import javax.validation.Constraint;
 import java.util.List;
 
+import static policyenforcement.ConstraintValues.RETURN_URL_REGEX;
+
 public class EditUserPermissionDto {
 
     @Constraints.Required
@@ -18,6 +20,7 @@ public class EditUserPermissionDto {
 
     private String username;
 
+    @Constraints.Pattern(RETURN_URL_REGEX)
     private String returnUrl;
 
     private Long fileId;

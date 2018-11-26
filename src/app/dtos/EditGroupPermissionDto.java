@@ -3,6 +3,8 @@ package dtos;
 import models.PermissionLevel;
 import play.data.validation.Constraints;
 
+import static policyenforcement.ConstraintValues.RETURN_URL_REGEX;
+
 public class EditGroupPermissionDto {
 
     @Constraints.Required
@@ -15,6 +17,7 @@ public class EditGroupPermissionDto {
 
     private String groupName;
 
+    @Constraints.Pattern(RETURN_URL_REGEX)
     private String returnUrl;
 
     private Long fileId;

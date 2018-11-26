@@ -1,7 +1,12 @@
 package dtos;
 
+import play.data.validation.Constraints;
+
+import static policyenforcement.ConstraintValues.RETURN_URL_REGEX;
+
 public class ShowEditUserPermissionFormDto {
     private Long userPermissionId;
+    @Constraints.Pattern(RETURN_URL_REGEX)
     private String returnUrl;
 
     public ShowEditUserPermissionFormDto() {

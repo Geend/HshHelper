@@ -2,10 +2,13 @@ package dtos;
 
 import play.data.validation.Constraints;
 
+import static policyenforcement.ConstraintValues.RETURN_URL_REGEX;
+
 public class GroupPermissionIdDto {
     @Constraints.Required
     private Long groupPermissionId;
 
+    @Constraints.Pattern(RETURN_URL_REGEX)
     private String returnUrl;
 
     public Long getGroupPermissionId() {
