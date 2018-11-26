@@ -58,5 +58,5 @@ public class InternalSession extends Model {
         this.user = user;
     }
 
-    protected static Finder<UUID, InternalSession> finder = new Finder(InternalSession.class);
+    protected static Finder<UUID, InternalSession> finder = new Finder<>(InternalSession.class);
 }
