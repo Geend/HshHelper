@@ -236,10 +236,16 @@ Für einige Parameter gibt es festgelegte Constraints, die in allen entsprechend
 		\item Regex: Siehe Play Implementierung von \texttt{EmailValidator}
 	\end{itemize}
 
+	\item filename
+	\begin{itemize}
+		\item Maximale Länge: 40
+		\item Regex: [a-zA-Zäüöß0-9.,#\%+&!"':;~-]+ 
+	\end{itemize}
 
 \end{itemize}
 
-
+\section{Ausgabecodierung}
+Die Zeichen die ein HsHelper Benutzer in das Kommentarfeld einer Datei eintragen kann unterliegen keiner Beschränkung. Aus diesem Grund müssen Sonderzeichen maskiert werden. Wenn in Play Daten vom Typ String in einem Template verwendet werden, geschieht die Maskierung der Zeichen automatisch. So wird zum Beispiel der String \texttt{<script>} durch \texttt{\&lt;script\&gt;} ersetzt.
 
 %    public static final int MAX_USERNAME_LENGTH = 20;
 %    public static final int MAX_PASSWORD_LENGTH = 100;
@@ -271,6 +277,9 @@ Auch diese Funktionalität bildet das Designprinzip \enquote{Visibility} ab.
 Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch überschreiben kann, ist es nicht klar ersichtlich, von wem der Dateiinhalt tatsächlich geschrieben wurde. Aus diesem Grund speichern wir zusätzlich für jede Datei, wer den tatsächlichen Inhalt geschrieben hat. Diese Information verwenden wir in Form einer visuellen Darstellung: Dateien, die von einem selbst geschrieben wurden, sind grün hinterlegt (\say{vertrauenswürdig}). Dateien, die von Dritten geschrieben wurden, werden rot hinterlegt (\say{potentiell gefährlich}). Zugleich wird auf der Detailseite der entsprechenden Datei angezeigt wer diese geschrieben hat und wann dies erfolgte.
 Über diese Funktionalität wird zugleich Threat -VERWEIS-EINBAUEN- (Freigabe einer Datei mit gleichem Namen) mitigiert. Eine solche Datei wäre rot gefärbt und somit deutlich von der eigenen, namensgleichen Datei zu unterscheiden.
 % TODO: Check for the right design principle. Is this identifiability?
+
+\section{Nutzer kann sein Passwort ändern}
+Ein angemeldeter Benutzer kann sein Passwort ändern. Dazu muss er sein derzeitigs Passwort und zwei mal das gewünschte neue Passwort eingaben. Diese Funktion wurde implementiert, da ein Benutzer sein Passwort sonst nur über die \enqoute{Passwort-Vergessen} Funktion ändern kann.
 
 \section{Warnung bei Aktionen mit schweren Seiteneffekten}
 \label{warning:severe:sideeffects}
