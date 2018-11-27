@@ -32,7 +32,6 @@ public class UserManager {
     private final MailerClient mailerClient;
     private final HashHelper hashHelper;
     private final EbeanServer ebeanServer;
-    private final Policy policy;
     private final SessionManager sessionManager;
     private final RecaptchaHelper recaptchaHelper;
 
@@ -46,12 +45,10 @@ public class UserManager {
             MailerClient mailerClient,
             HashHelper hashHelper,
             EbeanServer server,
-            Policy policy,
             SessionManager sessionManager,
             RecaptchaHelper recaptchaHelper)
     {
         this.groupFinder = groupFinder;
-        this.policy = policy;
         this.ebeanServer = server;
         this.mailerClient = mailerClient;
         this.passwordGenerator = passwordGenerator;
@@ -64,7 +61,7 @@ public class UserManager {
     public String createUser(String username, String email, Long quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException, UsernameCannotBeAdmin {
         User currentUser = sessionManager.currentUser();
 
-        if(!this.policy.CanCreateUser(currentUser)) {
+        if(!sessionManager.currentPolicy().canCreateUser()) {
             logger.error(currentUser + " tried to create a user but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -111,7 +108,7 @@ public class UserManager {
         if(!userToDelete.isPresent())
             throw new InvalidArgumentException("Dieser User existiert nicht.");
 
-        if(!this.policy.CanDeleteUser(currentUser, userToDelete.get())) {
+        if(!sessionManager.currentPolicy().canDeleteUser(userToDelete.get())) {
             logger.error(currentUser + " tried to delete a user but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -122,7 +119,7 @@ public class UserManager {
     public List<User> getAllUsers() throws UnauthorizedException {
         User currentUser = sessionManager.currentUser();
 
-        if(!this.policy.CanViewAllUsers(currentUser)) {
+        if(!sessionManager.currentPolicy().canViewAllUsers()) {
             logger.error(currentUser + " tried to access all users but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -164,7 +161,7 @@ public class UserManager {
 
         User user = optUser.get();
 
-        if(!policy.CanViewUserMetaInfo(sessionManager.currentUser(), user)) {
+        if(!sessionManager.currentPolicy().canViewUserMetaInfo(user)) {
             throw new UnauthorizedException();
         }
 
@@ -188,9 +185,10 @@ public class UserManager {
     public void changeUserSessionTimeout(Integer valueInMinutes) throws UnauthorizedException, InvalidArgumentException {
         User user = sessionManager.currentUser();
 
-        if(!policy.CanChangeUserTimeoutValue(user)){
+        if(!sessionManager.currentPolicy().canChangeUserTimeoutValue(user)){
             throw new UnauthorizedException();
         }
+
         if(valueInMinutes == null){
             throw new InvalidArgumentException();
         }
@@ -198,7 +196,6 @@ public class UserManager {
         user.setSessionTimeoutInMinutes(valueInMinutes);
 
         ebeanServer.save(user);
-
     }
 
     public void changeUserPassword(String currentPassword, String newPassword) throws UnauthorizedException {
@@ -217,7 +214,7 @@ public class UserManager {
     public Long getUserQuotaLimit(Long userId) throws UnauthorizedException, InvalidArgumentException {
         User currentUser = sessionManager.currentUser();
 
-        if(!policy.CanReadWriteQuotaLimit(currentUser)){
+        if(!sessionManager.currentPolicy().canReadWriteQuotaLimit(currentUser)){
             throw new UnauthorizedException();
         }
 
@@ -233,7 +230,7 @@ public class UserManager {
     public void changeUserQuotaLimit(Long userId, Long newQuotaLimit) throws UnauthorizedException, InvalidArgumentException {
         User currentUser = sessionManager.currentUser();
 
-        if(!policy.CanReadWriteQuotaLimit(currentUser)){
+        if(!sessionManager.currentPolicy().canReadWriteQuotaLimit(currentUser)){
             throw new UnauthorizedException();
         }
 
