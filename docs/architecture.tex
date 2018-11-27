@@ -95,6 +95,8 @@ Alle Dateien die Benutzer hochladen werden in der Datenbank als \texttt{BLOB} ge
 
 Um die Umgehung des Quotas durch Ausnutzung des Kommentarfeldes und Dateinamens zu verhindern, zählen sowohl der Datei Inhalt, als auch der Name und das Kommentar zum belegten Speicherplatz einer Datei.
 
+Beim Herundeladen von Datein wird der Content-Disposition Modus auf \texttt{attachment} und Content-Type auf \texttt{application/octet-stream} gesetzt. So wird erzwungen, dass der Browser immer den \enqoute{Speichern}-Dialog anzeigt statt die Datei direkt (im Browser) darzustellen\footnote{Das wäre zum Beispiel bei Textdateien, Bildern und PDFs möglich.}}.
+
 \chapter{Kryptografisch relevante Informationen}
 Folgender Abschnitt enthält gesammelte Informationen über die kryptographischen Algorithmen, die im HsH-Helfer Anwendung finden. Die für die Algorithmen benötigten Geheimnisse und deren Verwaltung wird ebenfalls hier dokumentiert, da die Sicherheit von der Geheimhaltung dieser abhängt.
 
