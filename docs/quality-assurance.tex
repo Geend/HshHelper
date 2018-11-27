@@ -127,6 +127,13 @@ In der Folge wurde das Session-Konzept so geändert, dass vor Anlegen einer neue
 %Gibt es ggf. automatisierbare Skripts?
 %Wenn ja, für welche Angriffe?
 
+\subsubsection{HTTP Response Splitting mittels Dateinamen}
+Um zu prüfen ob HTTP Response Splitting durch das Einfügen von Zeilenumbrüchen in Dateinamen möglich sind, wurde ein Penetrationstest durchgeführt. Dazu wurde vorübergehend die Eingabevalidierung für Dateinamen deaktiviert, um die Zeilenumbrüche platzieren zu können.
+
+In der Oberfläche wird der Zeilenumbruch wie erwartet dargestellt. Beim Versuch die Datei herunterzaladen gibt es eine Exception: \texttt{[ServerResultException: Error converting Play Result for server backend]}. Der Benutzer bekommt eine Fehlerseite mit dem HTTP Statuscode 500 angezeigt und die Datei wird nicht heruntergeladen. Weiter Seiteneffekte konnten dabei nicht beobachtet werden.
+
+Das Fehlerverhalten ist hier angemessen. Druch die Eingabevalidierung ist es bei normaler Benutzung nicht möglich die Zeilenumbrüche in einem Dateinamen zu verwenden.
+
 \section{Reviews}
 \subsection{Session-Konzept}
 Die erste Version unseres Session-Konzepts wurde einem Review unterzogen. Das Review wurde von einer Person innerhalb von 2 Stunden durchgeführt. Hierbei wurde insbesondere ein schlechtes Design bemängelt. Die Session-Funktionalität wurde nicht von einer beziehungsweise wenigen Klassen abgebildet, sondern auf verschiedenste Klassen verteilt: Die Login-Methode im Controller erstellte inline einen Datenbank-Eintrag sowie ein Cookie. Andere Controller-Methoden manipulierten inline die entsprechenden Einträge und entfernten nach Bedarf Cookies. Das Wissen darüber, was überhaupt eine Session darstellt war so nicht an einer zentralen Stelle im Code zu finden und entsprechend schwer zu prüfen.
