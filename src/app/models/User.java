@@ -74,7 +74,7 @@ public class User extends Model {
         this.passwordHash = passwordHash;
         this.passwordResetRequired = passwordResetRequired;
         this.quotaLimit = quotaLimit;
-        this.sessionTimeoutInMinutes = ConstraintValues.MAX_SESSION_TIMEOUT_HOURS * 60;
+        this.sessionTimeoutInMinutes = ConstraintValues.MIN_SESSION_TIMEOUT_MINUTES;
     }
 
     public List<File> getOwnedFiles() {
