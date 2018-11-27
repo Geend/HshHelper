@@ -56,7 +56,7 @@
                     <div class="box actions">
                         <h2>Menü</h2>
                         <div class="menu">
-                            @if(policyenforcement.Policy.instance.CanViewAllUsers(SessionInstance().currentUser())) {
+                            @if(TemplateEnvironment.policy.canViewAllUsers) {
                                 @helper.MenuLink("Benutzer", routes.UserController.showUsers(), "/users")
                             }
                             @helper.MenuLink("Gruppen", routes.GroupController.showOwnMemberships(), "/groups")

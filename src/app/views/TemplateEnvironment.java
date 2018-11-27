@@ -3,12 +3,13 @@ package views;
 import extension.RecaptchaHelper;
 import managers.mainmanager.MainManager;
 import policyenforcement.Policy;
+import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 
 public class TemplateEnvironment {
     @Inject
-    static Policy policy;
+    static SessionManager sessionManager;
 
     @Inject
     static MainManager mainManager;
@@ -16,8 +17,8 @@ public class TemplateEnvironment {
     @Inject
     static RecaptchaHelper recaptchaHelper;
 
-    public static Policy GetPolicy() {
-        return policy;
+    public static Policy policy() {
+        return sessionManager.currentPolicy();
     }
 
     public static MainManager GetMainManager() {
