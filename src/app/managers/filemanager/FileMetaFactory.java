@@ -14,12 +14,10 @@ import java.util.List;
 
 public class FileMetaFactory {
     private SessionManager sessionManager;
-    private Policy policy;
 
     @Inject
-    public FileMetaFactory(SessionManager sessionManager, Policy policy) {
+    public FileMetaFactory(SessionManager sessionManager) {
         this.sessionManager = sessionManager;
-        this.policy = policy;
     }
 
     public List<FileMeta> fromFiles(List<File> files) {
@@ -34,7 +32,7 @@ public class FileMetaFactory {
 
     public FileMeta fromFile(File file) {
         ArrayList<PermissionMeta> permissions = null;
-        if(policy.CanViewFilePermissions(sessionManager.currentUser(), file)) {
+        if(sessionManager.currentPolicy().canViewFilePermissions(file)) {
             permissions = new ArrayList<>();
 
             for(UserPermission userPermission : file.getUserPermissions()) {
@@ -45,8 +43,8 @@ public class FileMetaFactory {
                         userPermission.getUser().getUsername(),
                         userPermission.getCanRead(),
                         userPermission.getCanWrite(),
-                        policy.CanEditUserPermission(sessionManager.currentUser(), userPermission),
-                        policy.CanDeleteUserPermission(sessionManager.currentUser(), userPermission)
+                        sessionManager.currentPolicy().canEditUserPermission(userPermission),
+                        sessionManager.currentPolicy().canDeleteUserPermission(userPermission)
                 );
                 permissions.add(permission);
             }
@@ -59,8 +57,8 @@ public class FileMetaFactory {
                         groupPermission.getGroup().getName(),
                         groupPermission.getCanRead(),
                         groupPermission.getCanWrite(),
-                        policy.CanEditGroupPermission(sessionManager.currentUser(), groupPermission),
-                        policy.CanDeleteGroupPermission(sessionManager.currentUser(), groupPermission)
+                        sessionManager.currentPolicy().canEditGroupPermission(groupPermission),
+                        sessionManager.currentPolicy().canDeleteGroupPermission(groupPermission)
                 );
                 permissions.add(permission);
             }
@@ -78,10 +76,10 @@ public class FileMetaFactory {
                 file.getWrittenBy().getUsername(),
                 file.getWrittenByDt(),
                 permissions,
-                policy.CanReadFile(sessionManager.currentUser(), file),
-                policy.CanViewFilePermissions(sessionManager.currentUser(), file),
-                policy.CanWriteFile(sessionManager.currentUser(), file),
-                policy.CanDeleteFile(sessionManager.currentUser(), file)
+                sessionManager.currentPolicy().canReadFile(file),
+                sessionManager.currentPolicy().canViewFilePermissions(file),
+                sessionManager.currentPolicy().canWriteFile(file),
+                sessionManager.currentPolicy().canDeleteFile(file)
         );
     }
 }
