@@ -267,6 +267,7 @@ Wir denken, dass dem Nutzer dadurch klarer ist, ob er dem Inhalt einer Datei ver
 % TODO: Check for the right design principle. Is this identifiability?
 
 \section{Warnung bei Aktionen mit schweren Seiteneffekten}
+\label{warning:severe:sideeffects}
 Die Aktionen \say{Benutzer löschen} und \say{Gruppe löschen} haben schwerwiegende Seiteneffekte: Wird ein Nutzer gelöscht, werden seine Dateien und Gruppen sowie sämtliche diesbezügliche Freigaben unwiederruflich entfernt. Das gleiche gilt für die Löschung einer Gruppe und diesbezügliche Freigaben. Diese Aktion war mittels eines Mausklicks möglich, es fand keinerlei Warnung statt. Eine solche Implementierung begünstigt Fat-Finger-Fehler\footnote{\url{https://en.wikipedia.org/wiki/Fat-finger_error}}. Aus diesem Grund haben wir uns entschieden von dem Benutzer eine explizite Bestätigung zu verlangen. Die Auswirkungen seiner geplanten Aktion werden ihm ausdrücklich angezeigt.
 
 
@@ -295,6 +296,8 @@ So wäre selbst bei fehlerhaften Formulareingaben kein mehrfach-Upload erforderl
 \section{Aufteilung von Datei-Upload und Rechtevergabe}
 Der Datei-Upload sollte ursprünglich keine unmittelbare Rechtevergabe beinhalten. Ein Upload sollte in einer Datei resultieren, über die ausschließlich der Owner verfügen kann bzw. das alleinige Nutzungsrecht verfügt. Das Rechtemanagement sollte ihm nach dem Dateiupload möglich sein. Im Gespräch mit Herrn Prof. Dr. Peine wurde klar, dass eine solche Umsetzung die Anforderungen nicht erfüllt. Es wurde ausdrücklich von ihm gefordert, dass der Upload in einem Request erfolgt und dieser die Datei sowie die korrospondierenden Rechte beeinhalten muss. Folglich wurde das Konzept verworfen.
 
+\section{Darstellung der Dateianzahl von Nutzern}
+Auf der Warnseite, die beim Löschen eines Nutzers angezeigt wird (vgl. \ref{warning:severe:sideeffects}) wurde ursprünglich auch die Anzahl jener Dateien angezeigt, die dem entsprechenden Benutzer gehören. Herr Prof. Dr. Peine hat uns darauf hingewiesen, dass ein Administrator über keine Berechtigung verfügt, die es ihm gestattet eine derartige Information zu erlangen. Die Anzahl der Dateien wurde durch eine allgemeingültige Umschreibung ersetzt (\say{..alle Dateien des Nutzers..}).
 
 
 \printbibliography
