@@ -156,10 +156,10 @@ public class UserManager {
         logger.info("Created a new temp pw and send mail for user " + user.getUsername());
     }
 
-    public UserMetaInfo getUserMetaInfo(Long userId) throws UnauthorizedException {
+    public UserMetaInfo getUserMetaInfo(Long userId) throws UnauthorizedException, InvalidArgumentException {
         Optional<User> optUser = userFinder.byIdOptional(userId);
         if(!optUser.isPresent()) {
-            throw new IllegalArgumentException();
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
 
         User user = optUser.get();
@@ -175,10 +175,10 @@ public class UserManager {
         );
     }
 
-    public String getUsername(Long userId) {
+    public String getUsername(Long userId) throws InvalidArgumentException {
         Optional<User> optUser = userFinder.byIdOptional(userId);
         if(!optUser.isPresent()) {
-            throw new IllegalArgumentException();
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
 
         User user = optUser.get();
