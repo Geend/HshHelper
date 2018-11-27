@@ -3,8 +3,10 @@ package controllers;
 import managers.loginmanager.*;
 import dtos.ChangePasswordAfterResetDto;
 import dtos.UserLoginDto;
+import play.api.Configuration;
 import play.data.Form;
 import play.data.FormFactory;
+import play.filters.csrf.CSRF;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -40,6 +42,13 @@ public class LoginController extends Controller {
         Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password");
         if (boundForm.hasErrors()) {
             return badRequest(views.html.login.Login.render(boundForm, false));
+        }
+
+        Optional<CSRF.Token> token = CSRF.getToken(request());
+        if(!token.isPresent()) {
+            // bewusst nicht auf bad request sondern wieder auf login da bad request
+            // einen angemeldenten benutzer erwartet
+            return redirect(routes.LoginController.login());
         }
 
         UserLoginDto loginData = boundForm.get();
