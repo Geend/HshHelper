@@ -236,6 +236,9 @@ Für einige Parameter gibt es festgelegte Constraints, die in allen entsprechend
 
 \end{itemize}
 
+\section{Ausgabecodierung}
+Die Zeichen die ein HsHelper Benutzer in das Kommentarfeld einer Datei eintragen kann unterliegen keiner Beschränkung. Aus diesem Grund müssen Sonderzeichen maskiert werden. Wenn in Play Daten vom Typ String in einem Template verwendet werden, geschieht die Maskierung der Zeichen automatisch. So wird zum Beispiel der String \texttt{<script>} durch \texttt{\&lt;script\&gt;} ersetzt.
+
 
 
 \chapter{Implementierte Zusatzfunktionalität}
