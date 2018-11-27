@@ -47,12 +47,13 @@ public class PermissionManagerTests {
         this.defaultFileManager = mock(FileManager.class);
 
         when(defaultSessionManager.currentUser()).thenReturn(mock(User.class));
-        when(defaultPolicy.CanDeleteGroupPermission(any(User.class), any(GroupPermission.class))).thenReturn(true);
-        when(defaultPolicy.CanDeleteUserPermission(any(User.class), any(UserPermission.class))).thenReturn(true);
-        when(defaultPolicy.CanEditUserPermission(any(User.class), any(UserPermission.class))).thenReturn(true);
-        when(defaultPolicy.CanEditGroupPermission(any(User.class), any(GroupPermission.class))).thenReturn(true);
-        when(defaultPolicy.CanCreateUserPermission(any(File.class), any(User.class))).thenReturn(true);
-        when(defaultPolicy.CanCreateGroupPermission(any(File.class), any(User.class), any(Group.class))).thenReturn(true);
+        when(defaultSessionManager.currentPolicy()).thenReturn(defaultPolicy);
+        when(defaultPolicy.canDeleteGroupPermission(any(GroupPermission.class))).thenReturn(true);
+        when(defaultPolicy.canDeleteUserPermission(any(UserPermission.class))).thenReturn(true);
+        when(defaultPolicy.canEditUserPermission(any(UserPermission.class))).thenReturn(true);
+        when(defaultPolicy.canEditGroupPermission(any(GroupPermission.class))).thenReturn(true);
+        when(defaultPolicy.canCreateUserPermission(any(File.class))).thenReturn(true);
+        when(defaultPolicy.canCreateGroupPermission(any(File.class), any(Group.class))).thenReturn(true);
 
         when(defaultUserFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(User.class)));
         when(defaultGroupFinder.byIdOptional(0l)).thenReturn(Optional.of(mock(Group.class)));
@@ -71,7 +72,9 @@ public class PermissionManagerTests {
     @Test(expected = UnauthorizedException.class)
     public void ShowEditUserPermissionIsAuthorizesTest() throws InvalidDataException, UnauthorizedException, InvalidArgumentException {
         Policy spec = mock(Policy.class);
-        when(spec.CanEditUserPermission(any(User.class), any(UserPermission.class))).thenReturn(false);
+        when(spec.canEditUserPermission(any(UserPermission.class))).thenReturn(false);
+        when(defaultSessionManager.currentPolicy()).thenReturn(spec);
+
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
                 this.defaultGroupPermissionFinder,
@@ -79,7 +82,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 this.defaultEbeanServer,
-                spec,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         permissionManager.getUserPermissionForEdit(0l);
@@ -103,7 +105,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 s,
-                this.defaultPolicy,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         permissionManager.editUserPermission(0l, PermissionLevel.WRITE);
@@ -130,7 +131,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 s,
-                this.defaultPolicy,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         permissionManager.editGroupPermission(0l, PermissionLevel.READ);
@@ -162,7 +162,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 this.defaultEbeanServer,
-                this.defaultPolicy,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         EditUserPermissionDto result = permissionManager.getUserPermissionForEdit(0l);
@@ -197,7 +196,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 this.defaultEbeanServer,
-                this.defaultPolicy,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         EditGroupPermissionDto result = permissionManager.getGroupPermissionForEdit(0l);
@@ -213,7 +211,9 @@ public class PermissionManagerTests {
     @Test(expected = UnauthorizedException.class)
     public void ShowEditGroupPermissionIsAuthorizesTest() throws InvalidDataException, UnauthorizedException, InvalidArgumentException {
         Policy spec = mock(Policy.class);
-        when(spec.CanEditGroupPermission(any(User.class), any(GroupPermission.class))).thenReturn(false);
+        when(spec.canEditGroupPermission(any(GroupPermission.class))).thenReturn(false);
+        when(defaultSessionManager.currentPolicy()).thenReturn(spec);
+
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
                 this.defaultGroupPermissionFinder,
@@ -221,7 +221,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 this.defaultEbeanServer,
-                spec,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         permissionManager.getGroupPermissionForEdit(0l);
@@ -230,7 +229,8 @@ public class PermissionManagerTests {
     @Test(expected = UnauthorizedException.class)
     public void DeleteGroupPermissionIsAuthorizedTest() throws UnauthorizedException, InvalidArgumentException {
         Policy spec = mock(Policy.class);
-        when(spec.CanDeleteGroupPermission(any(User.class), any(GroupPermission.class))).thenReturn(false);
+        when(spec.canDeleteGroupPermission(any(GroupPermission.class))).thenReturn(false);
+        when(defaultSessionManager.currentPolicy()).thenReturn(spec);
 
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
@@ -239,7 +239,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 this.defaultEbeanServer,
-                spec,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         permissionManager.deleteGroupPermission(0l);
@@ -263,7 +262,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 s,
-                this.defaultPolicy,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         permissionManager.deleteGroupPermission(0l);
@@ -289,7 +287,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 s,
-                this.defaultPolicy,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         permissionManager.deleteUserPermission(0l);
@@ -300,7 +297,9 @@ public class PermissionManagerTests {
     @Test(expected = UnauthorizedException.class)
     public void DeleteUserPermissionIsAuthorizedTest() throws UnauthorizedException, InvalidArgumentException {
         Policy spec = mock(Policy.class);
-        when(spec.CanDeleteUserPermission(any(User.class), any(UserPermission.class))).thenReturn(false);
+        when(spec.canDeleteUserPermission(any(UserPermission.class))).thenReturn(false);
+        when(defaultSessionManager.currentPolicy()).thenReturn(spec);
+
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
                 this.defaultGroupPermissionFinder,
@@ -308,7 +307,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 this.defaultEbeanServer,
-                spec,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         permissionManager.deleteUserPermission(0l);
@@ -329,7 +327,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 s,
-                this.defaultPolicy,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         ArgumentCaptor<UserPermission> argumentCaptor = ArgumentCaptor.forClass(UserPermission.class);
@@ -345,7 +342,9 @@ public class PermissionManagerTests {
     @Test(expected = UnauthorizedException.class)
     public void CreateUserPermissionIsAuthorizedTest() throws UnauthorizedException, InvalidArgumentException {
         Policy spec = mock(Policy.class);
-        when(spec.CanCreateUserPermission(any(File.class), any(User.class))).thenReturn(false);
+        when(spec.canCreateUserPermission(any(File.class))).thenReturn(false);
+        when(defaultSessionManager.currentPolicy()).thenReturn(spec);
+
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
                 this.defaultGroupPermissionFinder,
@@ -353,7 +352,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 this.defaultEbeanServer,
-                spec,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         permissionManager.createUserPermission(0l, 0l, PermissionLevel.WRITE);
@@ -369,7 +367,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 s,
-                this.defaultPolicy,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         ArgumentCaptor<GroupPermission> argumentCaptor = ArgumentCaptor.forClass(GroupPermission.class);
@@ -385,7 +382,9 @@ public class PermissionManagerTests {
     @Test(expected = UnauthorizedException.class)
     public void CreateGroupPermissionIsAuthorizedTest() throws UnauthorizedException, InvalidArgumentException {
         Policy spec = mock(Policy.class);
-        when(spec.CanCreateGroupPermission(any(File.class), any(User.class), any(Group.class))).thenReturn(false);
+        when(spec.canCreateGroupPermission(any(File.class), any(Group.class))).thenReturn(false);
+        when(defaultSessionManager.currentPolicy()).thenReturn(spec);
+
         PermissionManager permissionManager = new PermissionManager(
                 this.defaultUserPermissionFinder,
                 this.defaultGroupPermissionFinder,
@@ -393,7 +392,6 @@ public class PermissionManagerTests {
                 this.defaultGroupFinder,
                 this.defaultUserFinder,
                 this.defaultEbeanServer,
-                spec,
                 this.defaultSessionManager,
                 this.defaultFileManager);
         permissionManager.createGroupPermission(0l, 0l, PermissionLevel.WRITE);

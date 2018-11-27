@@ -182,12 +182,6 @@ public class PolicyTests {
         assertThat(actual).isFalse();
     }
 
-    @Test
-    public void adminCantDeleteHimself() {
-        boolean actual = Policy.ForUser(adminTwo).canDeleteUser(adminTwo);
-        assertThat(actual).isFalse();
-    }
-
     /*
         Remove user from Group
      */

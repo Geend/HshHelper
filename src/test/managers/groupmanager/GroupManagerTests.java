@@ -42,9 +42,6 @@ public class GroupManagerTests {
     SessionManager sessionManager;
 
     @Mock
-    Policy policy;
-
-    @Mock
     FileFinder defaultFileFinder;
 
     @Rule
@@ -95,13 +92,14 @@ public class GroupManagerTests {
         peter.setGroups(Stream.of(all, petersGroup).collect(Collectors.toList()));
         klaus.setGroups(Stream.of(all).collect(Collectors.toList()));
 
-        gm = new GroupManager(groupFinder, userFinder, defaultServer, sessionManager, policy, defaultFileFinder, null);
+        gm = new GroupManager(groupFinder, userFinder, defaultServer, sessionManager, defaultFileFinder, null);
     }
 
     @Test
     public void canCreateGroup() throws GroupNameAlreadyExistsException, InvalidArgumentException {
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
         when(sessionManager.currentUser()).thenReturn(admin);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(admin));
 
         String groupName = "TestGroup";
         gm.createGroup(groupName);
@@ -116,6 +114,7 @@ public class GroupManagerTests {
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
         when(groupFinder.byName("All")).thenReturn(Optional.of(all));
         when(sessionManager.currentUser()).thenReturn(admin);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(admin));
 
         expected.expect(GroupNameAlreadyExistsException.class);
         gm.createGroup(groupName);
@@ -133,6 +132,7 @@ public class GroupManagerTests {
         when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
         when(userFinder.byIdOptional(adminId)).thenReturn(Optional.of(admin));
         when(sessionManager.currentUser()).thenReturn(peter);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(peter));
 
         gm.removeGroupMember(adminId, petersGrpId);
         verify(defaultServer).save(petersGroup);
@@ -142,6 +142,7 @@ public class GroupManagerTests {
     @Test
     public void cannotRemoveGroupMemberOfAnotherGroup() throws UnauthorizedException, InvalidArgumentException {
         when(sessionManager.currentUser()).thenReturn(peter);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(peter));
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
 
@@ -153,6 +154,7 @@ public class GroupManagerTests {
     @Test
     public void canAddGroupMember() throws UnauthorizedException, InvalidArgumentException {
         when(sessionManager.currentUser()).thenReturn(peter);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(peter));
         when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
 
@@ -164,6 +166,7 @@ public class GroupManagerTests {
     @Test
     public void cannotAddGroupMemberToAnotherGroup() throws UnauthorizedException, InvalidArgumentException {
         when(sessionManager.currentUser()).thenReturn(peter);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(peter));
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
         when(userFinder.byIdOptional(klausId)).thenReturn(Optional.of(klaus));
 
@@ -175,6 +178,7 @@ public class GroupManagerTests {
     @Test
     public void canDeleteGroup() throws UnauthorizedException, InvalidArgumentException {
         when(sessionManager.currentUser()).thenReturn(peter);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(peter));
         when(groupFinder.byIdOptional(petersGrpId)).thenReturn(Optional.of(petersGroup));
 
         gm.deleteGroup(petersGrpId);
@@ -184,6 +188,7 @@ public class GroupManagerTests {
     @Test
     public void cannotDeleteGroupAnotherGroup() throws UnauthorizedException, InvalidArgumentException {
         when(sessionManager.currentUser()).thenReturn(peter);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(peter));
         when(groupFinder.byIdOptional(allId)).thenReturn(Optional.of(all));
 
         expected.expect(UnauthorizedException.class);
@@ -194,6 +199,7 @@ public class GroupManagerTests {
     @Test
     public void adminCanSeeAllGroups() throws UnauthorizedException, InvalidArgumentException {
         when(sessionManager.currentUser()).thenReturn(admin);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(admin));
 
         gm.getAllGroups();
         verify(groupFinder).all();
@@ -202,6 +208,7 @@ public class GroupManagerTests {
     @Test
     public void nonAdminCanNotSeeAllGroups() throws UnauthorizedException, InvalidArgumentException {
         when(sessionManager.currentUser()).thenReturn(klaus);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(klaus));
 
         expected.expect(UnauthorizedException.class);
         gm.getAllGroups();
