@@ -7,7 +7,6 @@
 \documentclass[12pt,DIV14,BCOR10mm,a4paper,parskip=half-,headsepline,headinclude,english,ngerman,bibliography=totocnumbered]{scrreprt}
 
 \usepackage{hshhelper_base}
-\usepackage{dirtytalk}
 
 \usepackage[section]{placeins}
 
@@ -253,19 +252,20 @@ Wir halten das für eine nützliche Zusatzfunktionalität, da ein Nutzer unsere 
 \section{Nutzer kann vorherige Logins betrachten}
 
 Da wir bereits anzeigen, welche Sessions gerade noch aktiv sind, und sich ein Nutzer von verschiedenen Geräten zeitgleich einloggen kann, ist es sinnvoll, dem Nutzer die Möglichkeit zu verschaffen, ihm seine bisherigen, erfolgreichen Logins anzuzeigen.
-Dadurch ist er in der Lage, ggf. Logins von anderen Geräten sowie User-Agents zu identifizieren, die er weder autorisiert noch eventuell selber getätigt hat.
+Dadurch ist er in der Lage, ggf. Logins von anderen Geräten sowie User-Agents zu identifizieren, die er weder autorisiert hat noch eventuell selber getätigt.
 So ist ihm auch möglich, eine Session, die gegebenfalls von einer bösartigen Quelle kommt, zu identifizieren.
 Ähnlich wie die zuvor genannte Zusatzfunktionalität soll diese Funktionalität dazu dienen, dem Nutzer zu ermöglichen, mehr Information und somit mehr Klarheit über die Aktivität seines Kontos zu erhalten.
 Auch diese Funktionalität bildet das Designprinzip \enquote{Visibility} ab.
 
 \section{Nutzer kann einsehen, welcher Nutzer zuletzt eine Datei überschrieben hat}
-Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch überschreiben kann, ist es nicht klar ersichtlich, von wem der Dateiinhalt tatsächlich geschrieben wurde. Aus diesem Grund speichern wir zusätzlich für jede Datei, wer den tatsächlichen Inhalt geschrieben hat. Diese Information verwenden wir in Form einer visuellen Darstellung: Dateien, die von einem selbst geschrieben wurden, sind grün hinterlegt (\say{vertrauenswürdig}). Dateien, die von Dritten geschrieben wurden, werden rot hinterlegt (\say{potentiell gefährlich}). Zugleich wird auf der Detailseite der entsprechenden Datei angezeigt wer diese geschrieben hat und wann dies erfolgte.
-Über diese Funktionalität wird zugleich Threat -VERWEIS-EINBAUEN- (Freigabe einer Datei mit gleichem Namen) mitigiert. Eine solche Datei wäre rot gefärbt und somit deutlich von der eigenen, namensgleichen Datei zu unterscheiden.
+
+Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch überschreiben kann, ist es nicht klar ersichtlich, ob der Inhalt dieser Datei von eigentlichem Besitzer kommt.
+Deswegen haben wir ebenfalls eine Funktionalität eingebaut, durch welche der Benutzer sehen kann, welcher Nutzer die letzte Schreiboperation auf dieser Datei durchgeführt hat.
+Wir denken, dass dem Nutzer dadurch klarer ist, ob er dem Inhalt einer Datei vertrauen kann.
 % TODO: Check for the right design principle. Is this identifiability?
 
-\section{Warnung bei Aktionen mit schweren Seiteneffekten}
-\label{warning:severe:sideeffects}
-Die Aktionen \say{Benutzer löschen} und \say{Gruppe löschen} haben schwerwiegende Seiteneffekte: Wird ein Nutzer gelöscht, werden seine Dateien und Gruppen sowie sämtliche diesbezügliche Freigaben unwiederruflich entfernt. Das gleiche gilt für die Löschung einer Gruppe und diesbezügliche Freigaben. Diese Aktion war mittels eines Mausklicks möglich, es fand keinerlei Warnung statt. Eine solche Implementierung begünstigt Fat-Finger-Fehler\footnote{\url{https://en.wikipedia.org/wiki/Fat-finger_error}}. Aus diesem Grund haben wir uns entschieden von dem Benutzer eine explizite Bestätigung zu verlangen. Die Auswirkungen seiner geplanten Aktion werden ihm ausdrücklich angezeigt.
+\section{Nutzer kann sein Passwort ändern}
+Ein angemeldeter Benutzer kann sein Passwort ändern. Dazu muss er sein derzeitigs Passwort und zwei mal das gewünschte neue Passwort eingaben. Diese Funktion wurde implementiert, da ein Benutzer sein Passwort sonst nur über die \enqoute{Passwort-Vergessen} Funktion ändern kann.
 
 
 \chapter{Verworfene Entwürfe}
@@ -285,17 +285,6 @@ Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit ein
 
 \section{Session-Konzept / Numeric IDs}
 Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine numerische ID, die inkrementell aufsteigend war. Das JWT-Token beinhaltet den Schlüssel der korrospondierenden Session-Entität in der Datenbank. Würde ein Angreifer die JWT Signatur knacken, könnte er leicht passende IDs erraten: Er müsste sich anmelden, wüsste dann, welche ID \enquote{aktuell} ist und könnte anhand dieser Information passende IDs ausprobieren. Wir haben diese Implementierung zugunsten von kryptografisch sicheren UUIDs verworfen, die ein \enquote{second layer of defense} darstellen (vgl. \ref{sessionkonzept}).
-
-\section{Asynchroner Datei-Upload}
-Aufgrund von Usability-Erwägungen wurde ein asynchroner Datei-Upload mittels Javascript angepeilt: Es ist eine Vorgabe des Dozenten, dass beim Upload zugleich Dateiname und Kommentar sowie die Berechtigungen angegeben werden müssen. Treten bei diesen Daten Fehler auf, ist es erforderlich, die entsprechende Datei erneut auszuwählen und hochzuladen. Um diesen Makel zu verhindern, war es angedacht, dass das Auswählen einer Datei unmittelbar einen Upload inkl. Fortschrittsanzeige in Gang setzt. Die Daten würden von unserer Anwendung temporär vorgehalten werden und im Formular mittels eines Hidden-Inputs eingebunden. 
-So wäre selbst bei fehlerhaften Formulareingaben kein mehrfach-Upload erforderlich. Diese Idee wurde verwurfen: Herr Prof. Dr. hat ein dertiges Konzept als zu komplex bewertet und uns mitgeteilt, dass die Usability bei einer erzwungenden Mehrfachauswahl der Datei nicht negativ beeinträchtigt wäre.
-
-\section{Aufteilung von Datei-Upload und Rechtevergabe}
-Der Datei-Upload sollte ursprünglich keine unmittelbare Rechtevergabe beinhalten. Ein Upload sollte in einer Datei resultieren, über die ausschließlich der Owner verfügen kann bzw. das alleinige Nutzungsrecht verfügt. Das Rechtemanagement sollte ihm nach dem Dateiupload möglich sein. Im Gespräch mit Herrn Prof. Dr. Peine wurde klar, dass eine solche Umsetzung die Anforderungen nicht erfüllt. Es wurde ausdrücklich von ihm gefordert, dass der Upload in einem Request erfolgt und dieser die Datei sowie die korrospondierenden Rechte beeinhalten muss. Folglich wurde das Konzept verworfen.
-
-\section{Darstellung der Dateianzahl von Nutzern}
-Auf der Warnseite, die beim Löschen eines Nutzers angezeigt wird (vgl. \ref{warning:severe:sideeffects}) wurde ursprünglich auch die Anzahl jener Dateien angezeigt, die dem entsprechenden Benutzer gehören. Herr Prof. Dr. Peine hat uns darauf hingewiesen, dass ein Administrator über keine Berechtigung verfügt, die es ihm gestattet eine derartige Information zu erlangen. Die Anzahl der Dateien wurde durch eine allgemeingültige Umschreibung ersetzt (\say{..alle Dateien des Nutzers..}).
-
 
 \printbibliography
 
