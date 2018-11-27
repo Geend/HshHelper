@@ -227,20 +227,16 @@ Für einige Parameter gibt es festgelegte Constraints, die in allen entsprechend
 	\begin{itemize}
 		\item Regex: Siehe Play Implementierung von \texttt{EmailValidator}
 	\end{itemize}
-
+	
+	\item filename
+	\begin{itemize}
+		\item Maximale Länge: 40
+		\item Regex: [a-zA-Zäüöß0-9.,#\%+&!"':;~-]+ 
+	\end{itemize}
 
 \end{itemize}
 
 
-
-%    public static final int MAX_USERNAME_LENGTH = 20;
-%    public static final int MAX_PASSWORD_LENGTH = 100;
-%    public static final String USERNAME_REGEX = "[a-z][a-z0-9.]+";
-
-
- %   public static final int GROUPNAME_MIN_LENGTH = 3;
- %   public static final int GROUPNAME_MAX_LENGTH = 20;
- %   public static final String GROUPNAME_REGEX = "[a-z][a-z0-9.]+";
 
 \chapter{Implementierte Zusatzfunktionalität}
 
