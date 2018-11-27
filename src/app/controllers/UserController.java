@@ -96,10 +96,10 @@ public class UserController extends Controller {
 
     @Authentication.Required
     public Result showCreateUserForm() throws UnauthorizedException {
-        User currentUser = sessionManager.currentUser();
-        if (!Policy.instance.CanCreateUser(currentUser)) {
+        if (!sessionManager.currentPolicy().canCreateUser()) {
             throw new UnauthorizedException();
         }
+        
         return ok(views.html.users.CreateUser.render(createUserForm));
     }
 
