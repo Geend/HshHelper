@@ -260,10 +260,8 @@ So ist ihm auch möglich, eine Session, die gegebenfalls von einer bösartigen Q
 Auch diese Funktionalität bildet das Designprinzip \enquote{Visibility} ab.
 
 \section{Nutzer kann einsehen, welcher Nutzer zuletzt eine Datei überschrieben hat}
-
-Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch überschreiben kann, ist es nicht klar ersichtlich, ob der Inhalt dieser Datei von eigentlichem Besitzer kommt.
-Deswegen haben wir ebenfalls eine Funktionalität eingebaut, durch welche der Benutzer sehen kann, welcher Nutzer die letzte Schreiboperation auf dieser Datei durchgeführt hat.
-Wir denken, dass dem Nutzer dadurch klarer ist, ob er dem Inhalt einer Datei vertrauen kann.
+Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch überschreiben kann, ist es nicht klar ersichtlich, von wem der Dateiinhalt tatsächlich geschrieben wurde. Aus diesem Grund speichern wir zusätzlich für jede Datei, wer den tatsächlichen Inhalt geschrieben hat. Diese Information verwenden wir in Form einer visuellen Darstellung: Dateien, die von einem selbst geschrieben wurden, sind grün hinterlegt (\say{vertrauenswürdig}). Dateien, die von Dritten geschrieben wurden, werden rot hinterlegt (\say{potentiell gefährlich}). Zugleich wird auf der Detailseite der entsprechenden Datei angezeigt wer diese geschrieben hat und wann dies erfolgte.
+Über diese Funktionalität wird zugleich Threat -VERWEIS-EINBAUEN- (Freigabe einer Datei mit gleichem Namen) mitigiert. Eine solche Datei wäre rot gefärbt und somit deutlich von der eigenen, namensgleichen Datei zu unterscheiden.
 % TODO: Check for the right design principle. Is this identifiability?
 
 \section{Warnung bei Aktionen mit schweren Seiteneffekten}
