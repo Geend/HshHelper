@@ -268,6 +268,12 @@ Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auc
 \label{warning:severe:sideeffects}
 Die Aktionen \say{Benutzer löschen} und \say{Gruppe löschen} haben schwerwiegende Seiteneffekte: Wird ein Nutzer gelöscht, werden seine Dateien und Gruppen sowie sämtliche diesbezügliche Freigaben unwiederruflich entfernt. Das gleiche gilt für die Löschung einer Gruppe und diesbezügliche Freigaben. Diese Aktion war mittels eines Mausklicks möglich, es fand keinerlei Warnung statt. Eine solche Implementierung begünstigt Fat-Finger-Fehler\footnote{\url{https://en.wikipedia.org/wiki/Fat-finger_error}}. Aus diesem Grund haben wir uns entschieden von dem Benutzer eine explizite Bestätigung zu verlangen. Die Auswirkungen seiner geplanten Aktion werden ihm ausdrücklich angezeigt.
 
+\section{Suchfunktionalität}
+Im Rahmen der Design-Erstellung haben wir das Bedürfnis einer Suchfunktionalität entdeckt. Die Dateien sind die Zentralen Elemente des HsH-Helpers und sollten so einfach wie möglich zugänglich sein. Folglich haben wir uns dazu entschlossen, in unser Design ein Suchfeld zu implementieren, das von jeder Stelle der Anwendung aus zugänglich ist.
+
+\section{Einstellbares Session-Timeout}
+Im Zuge unserer Session-Implementierung wurde ein Timeout eingeführt: Eine Session sollte nur für einen begrenzten Zeitraum gültig sein. Dieser Timeout wurde vom Entwickler willkürlich gesetzt und sollte im Rahmen einer späteren Diskussion angepasst werden. Im Laufe der Diskussion stellten wir fest, dass die Bestimmung eines Werts schwierig ist. Wir haben uns dazu entschlossen, dem Nutzer selbst einen gewissen Grad an Freiheit einzuräumen: Er darf in einem fest definierten Interval ein eigenes Timeout wählen, das für die eigenen Sessions gilt (5 Minuten - 1 Tag).
+
 
 \chapter{Verworfene Entwürfe}
 
