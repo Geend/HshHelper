@@ -1,16 +1,17 @@
 @(form: Form[dtos.UploadFileDto], userPermissionDtos: Seq[dtos.UserPermissionDto], groupPermissionDtos: Seq[dtos.GroupPermissionDto])
 
     @Base("Datei Hochladen") {
+        @if(form.hasGlobalErrors) {
+            <div class="message error">
+            @for(error <- form.globalErrors) {
+                <p>@error.format(messages())</p>
+            }
+            </div>
+        }
+
         @helper.form(action = routes.FileController.uploadFile(), 'enctype -> "multipart/form-data") {
             @helper.CSRF.formField
             <div class="inputForm">
-                @if(form.hasGlobalErrors) {
-                    <p class="error">
-                    @for(error <- form.globalErrors) {
-                        <p>@error.format(messages())</p>
-                    }
-                    </p>
-                }
                 @helper.TextInput(form("filename"), "Dateiname")
                 @helper.TextAreaInput(form("comment"), "Kommentar")
                 @helper.FileInput(form("file"), "Datei")
