@@ -36,10 +36,8 @@ import static play.libs.Scala.asScala;
 @Singleton
 @Authentication.Required
 public class FileController extends Controller {
-    private final Form<UploadFileMetaDto> uploadFileMetaForm;
     private final Form<UploadFileDto> uploadFileForm;
     private final Form<DeleteFileDto> deleteFileForm;
-    private final Form<EditFileDto> editFileForm;
     private final Form<SearchQueryDto> searchFileForm;
     private final Form<EditFileCommentDto> editFileCommentDtoForm;
     private final Form<EditFileContentDto> editFileContentDtoForm;
@@ -51,8 +49,6 @@ public class FileController extends Controller {
     @Inject
     public FileController(SessionManager sessionManager, FileManager fileManager, FormFactory formFactory) {
         this.uploadFileForm = formFactory.form(UploadFileDto.class);
-        this.uploadFileMetaForm = formFactory.form(UploadFileMetaDto.class);
-        this.editFileForm = formFactory.form(EditFileDto.class);
         this.deleteFileForm = formFactory.form(DeleteFileDto.class);
         this.searchFileForm = formFactory.form(SearchQueryDto.class);
         this.editFileCommentDtoForm = formFactory.form(EditFileCommentDto.class);
