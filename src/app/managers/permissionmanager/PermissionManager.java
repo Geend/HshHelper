@@ -32,7 +32,6 @@ public class PermissionManager {
     private final GroupFinder groupFinder;
     private final UserFinder userFinder;
     private final EbeanServer ebeanServer;
-    private final Policy policy;
     private final String requestErrorMessage;
     private final FileManager fileManager;
 
@@ -46,7 +45,6 @@ public class PermissionManager {
             GroupFinder groupFinder,
             UserFinder userFinder,
             EbeanServer ebeanServer,
-            Policy policy,
             SessionManager sessionManager, FileManager fileManager) {
         this.sessionManager = sessionManager;
         this.userPermissionFinder = userPermissionFinder;
@@ -55,7 +53,6 @@ public class PermissionManager {
         this.groupFinder = groupFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
-        this.policy = policy;
         this.fileManager = fileManager;
         this.requestErrorMessage = "Fehler bei der Verarbeitung der Anfrage. Haben sie ungültige Informationen eingegeben?";
     }
@@ -71,7 +68,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!policy.CanEditGroupPermission(user, permission.get())) {
+        if (!sessionManager.currentPolicy().canEditGroupPermission(permission.get())) {
             logger.error(user.getUsername() + " tried to change the permissions for group " + permission.get().getGroup().getName() + " but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -91,7 +88,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!policy.CanEditGroupPermission(user, permission.get())) {
+        if (!sessionManager.currentPolicy().canEditGroupPermission(permission.get())) {
             logger.error(user.getUsername() + " tried to edit the permissions for group " + permission.get().getGroup().getName() + " but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -115,7 +112,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!policy.CanDeleteGroupPermission(user, permission.get())) {
+        if (!sessionManager.currentPolicy().canDeleteGroupPermission(permission.get())) {
             logger.error(user.getUsername() + " tried to delete permissions for group " + permission.get().getGroup().getName() + " but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -135,7 +132,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!policy.CanEditUserPermission(user, permission.get())) {
+        if (!sessionManager.currentPolicy().canEditUserPermission(permission.get())) {
             logger.error(user.getUsername() + " tried to edit permissions for user " + permission.get().getUser().getUsername() + " but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -159,7 +156,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!policy.CanDeleteUserPermission(user, permission.get())) {
+        if (!sessionManager.currentPolicy().canDeleteUserPermission(permission.get())) {
             logger.error(user.getUsername() + " tried to delete permissions for user " + permission.get().getUser().getUsername() + " but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -175,7 +172,7 @@ public class PermissionManager {
         if (!permission.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!policy.CanEditUserPermission(user, permission.get())) {
+        if (!sessionManager.currentPolicy().canEditUserPermission(permission.get())) {
             logger.error(user.getUsername() + " tried to change the permissions for user " + permission.get().getUser().getUsername() + " but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -202,7 +199,7 @@ public class PermissionManager {
         if (!file.isPresent())
             throw new InvalidArgumentException(this.requestErrorMessage);
 
-        if (!policy.CanCreateUserPermission(file.get(), currentUser)) {
+        if (!sessionManager.currentPolicy().canCreateUserPermission(file.get())) {
             logger.error(currentUser.getUsername() + " tried to create permissions for file " + file.get().getName() + " but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -234,7 +231,7 @@ public class PermissionManager {
         if (!file.isPresent())
             throw new InvalidArgumentException(this.requestErrorMessage);
 
-        if (!policy.CanCreateGroupPermission(file.get(), currentUser, group.get())) {
+        if (!sessionManager.currentPolicy().canCreateGroupPermission(file.get(), group.get())) {
             logger.error(currentUser.getUsername() + " tried to create permissions for group " + group.get().getName() + " for file " + file.get().getName() + " but he is not authorized");
             throw new UnauthorizedException();
         }
