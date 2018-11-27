@@ -28,19 +28,17 @@ public class FileManager {
     private final FileFinder fileFinder;
     private final UserFinder userFinder;
     private final EbeanServer ebeanServer;
-    private final Policy policy;
     private final SessionManager sessionManager;
     private final FileMetaFactory fileMetaFactory;
 
     private static final Logger.ALogger logger = Logger.of(FileManager.class);
 
     @Inject
-    public FileManager(FileFinder fileFinder, UserFinder userFinder, EbeanServer ebeanServer, Policy policy, SessionManager sessionManager, GroupFinder groupFinder, FileMetaFactory fileMetaFactory) {
+    public FileManager(FileFinder fileFinder, UserFinder userFinder, EbeanServer ebeanServer, SessionManager sessionManager, GroupFinder groupFinder, FileMetaFactory fileMetaFactory) {
         this.groupFinder = groupFinder;
         this.fileFinder = fileFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
-        this.policy = policy;
         this.sessionManager = sessionManager;
         this.fileMetaFactory = fileMetaFactory;
     }
@@ -98,16 +96,17 @@ public class FileManager {
 
             for(GroupPermissionDto groupDto: initialGroupPermissions) {
                 Group g = this.groupFinder.byId(groupDto.getGroupId());
-                if(!this.policy.CanCreateGroupPermission(file, currentUser, g)) {
+                if(!sessionManager.currentPolicy().canCreateGroupPermission(file, g)) {
                     throw new UnauthorizedException();
                 }
                 CanReadWrite c = PermissionLevelConverter.ToReadWrite(groupDto.getPermissionLevel());
                 GroupPermission groupPermission = new GroupPermission(file, g, c.getCanRead(), c.getCanWrite());
                 this.ebeanServer.save(groupPermission);
             }
+
             for(UserPermissionDto userDto: initialUserPermissions) {
                 User u = this.userFinder.byId(userDto.getUserId());
-                if(!this.policy.CanCreateUserPermission(file, currentUser)) {
+                if(!sessionManager.currentPolicy().canCreateUserPermission(file)) {
                     throw new UnauthorizedException();
                 }
                 CanReadWrite c = PermissionLevelConverter.ToReadWrite(userDto.getPermissionLevel());
@@ -167,7 +166,7 @@ public class FileManager {
 
         File file = optFile.get();
 
-        if(!policy.CanGetFileMeta(sessionManager.currentUser(), file)) {
+        if(!sessionManager.currentPolicy().canGetFileMeta(file)) {
             logger.error(sessionManager.currentUser().getUsername() + " tried to access file " + file.getName() + "'s meta info but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -181,7 +180,7 @@ public class FileManager {
         if (!file.isPresent())
             throw new InvalidArgumentException();
 
-        if (!policy.CanReadFile(sessionManager.currentUser(), file.get())) {
+        if (!sessionManager.currentPolicy().canReadFile(file.get())) {
             logger.error(sessionManager.currentUser().getUsername() + " tried to access file " + file.get().getName() + " but he is not authorized");
             throw new UnauthorizedException();
         }
@@ -199,7 +198,7 @@ public class FileManager {
 
         File file = optFile.get();
 
-        if (!policy.CanDeleteFile(user, file)) {
+        if (!sessionManager.currentPolicy().canDeleteFile(file)) {
             logger.error(user.getUsername() + " tried to delete file " + file.getName() + " but he is not authorized");
             throw new UnauthorizedException("Du bist nicht autorisiert, diese Datei zu löschen.");
         }
@@ -217,7 +216,7 @@ public class FileManager {
             if (!fileOptional.isPresent())
                 throw new InvalidArgumentException();
 
-            if (!policy.CanWriteFile(user, fileOptional.get())) {
+            if (!sessionManager.currentPolicy().canWriteFile(fileOptional.get())) {
                 logger.error(user.getUsername() + " tried to change the content file with id " + fileId + " but he is not authorized");
                 throw new UnauthorizedException();
             }
@@ -247,7 +246,7 @@ public class FileManager {
             if (!fileOptional.isPresent())
                 throw new InvalidArgumentException();
 
-            if (!policy.CanWriteFile(user, fileOptional.get())) {
+            if (!sessionManager.currentPolicy().canWriteFile(fileOptional.get())) {
                 logger.error(user.getUsername() + " tried to change the comment of file with id " + fileId + " but he is not authorized");
                 throw new UnauthorizedException();
             }

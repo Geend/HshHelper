@@ -11,16 +11,13 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Security;
 import policyenforcement.Policy;
 import policyenforcement.session.Authentication;
 import policyenforcement.session.Session;
 import policyenforcement.session.SessionManager;
-import scala.collection.Seq;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -178,7 +175,7 @@ public class UserController extends Controller {
     @Authentication.Required
     public Result deleteUserSession() throws InvalidArgumentException, UnauthorizedException {
         Form<DeleteSessionDto> bf = deleteSessionForm.bindFromRequest();
-        sessionManager.destroySessionOfCurrentUser(bf.get().getSessionId());
+        sessionManager.destroySession(bf.get().getSessionId());
         return redirect(routes.UserController.showActiveUserSessions());
     }
 

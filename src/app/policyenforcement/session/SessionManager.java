@@ -66,6 +66,10 @@ public class SessionManager {
         return session;
     }
 
+    public Policy currentPolicy() {
+        return Policy.ForUser(currentUser());
+    }
+
     public User currentUser() {
         if(!hasActiveSession()) {
             throw new RuntimeException("There is no active session");
@@ -74,21 +78,21 @@ public class SessionManager {
         return currentSession().getUser();
     }
 
-    public void destroySessionOfCurrentUser(UUID sessionId) throws InvalidArgumentException, UnauthorizedException {
-        Optional<Session> session = getUserSession(currentUser(), sessionId);
+    public void destroySession(UUID sessionId) throws InvalidArgumentException, UnauthorizedException {
+        Optional<Session> session = getUserSession(sessionId);
         if (!session.isPresent()) {
             throw new InvalidArgumentException();
         }
 
-        if (!Policy.instance.CanDeleteSession(currentUser(), session.get())) {
+        if (!currentPolicy().canDeleteSession(session.get())) {
             throw new UnauthorizedException();
         }
 
         session.get().destroy();
     }
 
-    private Optional<Session> getUserSession(User user, UUID sessionKey) {
-        Optional<InternalSession> session = InternalSession.finder.query().where().eq("user", user).eq("sessionKey", sessionKey).findOneOrEmpty();
+    private Optional<Session> getUserSession(UUID sessionKey) {
+        Optional<InternalSession> session = InternalSession.finder.query().where().eq("sessionKey", sessionKey).findOneOrEmpty();
 
         Optional<Session> ret = Optional.empty();
         if(session.isPresent()) {
