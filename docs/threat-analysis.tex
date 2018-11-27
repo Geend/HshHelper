@@ -53,7 +53,7 @@ Dieses DFD soll als Übersicht über alle vorhandenen Datenflüsse dienen, ohne 
 
 Die folgende Liste stellt alle vorhandenen Eintrittspunkte unserer Applikation in einer Baumstruktur vor.
 Die Eintrittspunkte wurden für die bessere Übersicht nach \texttt{Controller} gruppiert, der für diesen Eintrittspunkt zuständig ist.
-Zusätzlich werden die Parameter aufgelistet, die wir von dem Nutzer bei dem jeweiligen Eintrittspunkt entgegennehmen.
+Zusätzlich werden die Parameter aufgelistet, die wir von dem Nutzer bei dem jeweiligen Eintrittspunkt entgegennehmen. Um diese kurz und übersichtlich zu halten, geben wir nicht die Session an, die ein Nutzer implizit mitschickt.
 Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein Eintrittspunkt übersehen werden kann.
 
 \begin{enumerate}
@@ -61,10 +61,13 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
   \begin{enumerate}
     \item \texttt{HomeController}
     \begin{enumerate}
-      \item GET - \texttt{/}
+     \item \texttt{/}
+      \begin{enumerate}
+        \item GET - \texttt{index()}
+      \end{enumerate}
     \end{enumerate}
 
- \item \texttt{LoginController}
+  \item \texttt{LoginController}
     \begin{enumerate}
      \item \texttt{/login}
       \begin{enumerate}
@@ -81,54 +84,109 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
         \item POST - \texttt{changePasswordAfterReset(username, currentPassword, password, passwordRepeat, recaptcha)}
       \end{enumerate}
     \end{enumerate}
+
     \item \texttt{UserController}
     \begin{enumerate}
-      \item \texttt{/users}
+      \item \texttt{/users/all}
       \begin{enumerate}
         \item GET - \texttt{showUsers()}
+      \end{enumerate}
+      \item \texttt{/users/admins}
+      \begin{enumerate}
+        \item GET - \texttt{showAdminUsers()}
       \end{enumerate}
       \item \texttt{/users/create}
       \begin{enumerate}
         \item GET - \texttt{showCreateUserForm()}
-        \item POST - \texttt{createUser(username, email)}
+        \item POST - \texttt{createUser(username, email, quotaLimit)}
+      \end{enumerate}
+      \item \texttt{/users/confirmDelete}
+      \begin{enumerate}
+        \item GET - \texttt{showConfirmDeleteForm(userId)}
       \end{enumerate}
       \item \texttt{/users/delete}
       \begin{enumerate}
         \item POST - \texttt{deleteUser(userId)}
       \end{enumerate}
+      \item \texttt{/users/:userId/settings}
+      \begin{enumerate}
+        \item GET - \texttt{showUserAdminSettings(userId)}
+      \end{enumerate}
+      \item \texttt{/users/editQuota}
+      \begin{enumerate}
+        \item GET - \texttt{changeUserQuotaLimit(userId, 
+        newQuotaLimit)}
+      \end{enumerate}
       \item \texttt{/resetpassword}
       \begin{enumerate}
         \item GET - \texttt{showResetUserPasswordForm}
-        \item POST - \texttt{resetUserPassword(username)}
+        \item POST - \texttt{resetUserPassword(username, recaptcha)}
       \end{enumerate}
       \item \texttt{/sessions}
       \begin{enumerate}
-        \item GET - \texttt{showActiveUserSessions()}
+        \item GET - \texttt{showActiveUserSessions(userId)}
+      \end{enumerate}
+      \item \texttt{/sessions/changePassword}
+      \begin{enumerate}
+        \item POST - \texttt{changeUserPassword()}
       \end{enumerate}
       \item \texttt{/sessions/delete}
       \begin{enumerate}
-        \item POST - \texttt{deleteUserSession()}
+        \item POST - \texttt{deleteUserSession(sessionId)}
+      \end{enumerate}
+      \item \texttt{/settings}
+      \begin{enumerate}
+        \item POST - \texttt{showUserSettings()}
+      \end{enumerate}
+      \item \texttt{/settings/changePassword}
+      \begin{enumerate}
+        \item POST - \texttt{changeUserPassword(currentPassword, newPassword)}
+      \end{enumerate}
+      \item \texttt{/settings/sessionTimeout}
+      \begin{enumerate}
+        \item POST - \texttt{changeUserSessionTimeout(newSessionTimeout)}
       \end{enumerate}
     \end{enumerate}
 
     \item \texttt{GroupController}
     \begin{enumerate}
-      \item \texttt{/user/groups}
+      \item \texttt{/groups/all}
       \begin{enumerate}
-        \item GET - \texttt{showOwnGroups}
+        \item GET - \texttt{showAllGroups()}
       \end{enumerate}
-      \item \texttt{/groups}
+      \item \texttt{/groups/membership}
       \begin{enumerate}
-        \item GET - \texttt{showAllGroups}
+        \item GET - \texttt{showOwnMemberships()}
+      \end{enumerate}
+      \item \texttt{/groups/own}
+      \begin{enumerate}
+        \item GET - \texttt{showOwnGroups()}
+      \end{enumerate}
+      \item \texttt{/groups/delete}
+      \begin{enumerate}
+        \item POST - \texttt{deleteGroup(groupId)}
+      \end{enumerate}
+      \item \texttt{/groups/confirmDelete}
+      \begin{enumerate}
+        \item POST - \texttt{confirmDelete(groupId)}
       \end{enumerate}
       \item \texttt{/groups/create}
       \begin{enumerate}
-        \item GET - \texttt{showCreateGroupForm}
-        \item POST - \texttt{createGroup(groupname)}
+        \item GET - \texttt{showCreateGroupForm()}
+        \item POST - \texttt{createGroup(groupName)}
       \end{enumerate}
+
       \item \texttt{/groups/:groupId}
       \begin{enumerate}
         \item GET - \texttt{showGroup(groupId)}
+      \end{enumerate}
+      \item \texttt{/groups/:groupId/files}
+      \begin{enumerate}
+        \item GET - \texttt{showGroupFiles(groupId)}
+      \end{enumerate}
+      \item \texttt{/groups/:groupId/members}
+      \begin{enumerate}
+        \item GET - \texttt{showGroupMembers(groupId)}
       \end{enumerate}
       \item \texttt{/groups/:groupId/members/remove}
       \begin{enumerate}
@@ -136,12 +194,133 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/groups/:groupId/members/add}
       \begin{enumerate}
+        \item GET - \texttt{showAddMemberForm(groupId)}
         \item POST - \texttt{addGroupMember(groupId, userId)}
       \end{enumerate}
-      \item \texttt{/groups/:groupId/delete}
+    \end{enumerate}
+
+    \item \texttt{FileController}
+    \begin{enumerate}
+
+      \item \texttt{/files/own}
       \begin{enumerate}
-        \item POST - \texttt{deleteGroup(groupId)}
+        \item GET - \texttt{showOwnFiles()}
       \end{enumerate}
+      \item \texttt{/files/shared}
+      \begin{enumerate}
+        \item GET - \texttt{showSharedFiles()}
+      \end{enumerate}
+      \item \texttt{/files/thirdParty}
+      \begin{enumerate}
+        \item GET - \texttt{showThirdPartyFiles()}
+      \end{enumerate}
+      \item \texttt{/files/delete}
+      \begin{enumerate}
+        \item POST - \texttt{deleteFile(fileId)}
+      \end{enumerate}
+
+      \item \texttt{/files/upload}
+      \begin{enumerate}
+        \item GET - \texttt{showUploadFileForm()}
+        \item POST - \texttt{uploadFile(fileName, fileContent, comment, groupPermissions, userPermissions)}
+      \end{enumerate}
+
+      \item \texttt{/files/uploadToGroup/:groupId}
+      \begin{enumerate}
+        \item GET - \texttt{showUploadFileToGroupForm(groupId)}
+      \end{enumerate}
+      \item \texttt{/files/quota}
+      \begin{enumerate}
+        \item GET - \texttt{showQuotaUsage()}
+      \end{enumerate}
+      \item \texttt{/files/:fileId}
+      \begin{enumerate}
+        \item GET - \texttt{showFile(fileId)}
+      \end{enumerate}
+      \item \texttt{/files/:fileId/download}
+      \begin{enumerate}
+        \item GET - \texttt{downloadFile(fileId)}
+      \end{enumerate}
+      \item \texttt{/files/editComment}
+      \begin{enumerate}
+        \item POST - \texttt{editFileComment(fileId, comment)}
+      \end{enumerate}
+      \item \texttt{/files/editContent}
+      \begin{enumerate}
+        \item POST - \texttt{editFileContent(fileId, newFileContent)}
+      \end{enumerate}
+      \item \texttt{/files/search}
+      \begin{enumerate}
+        \item POST - \texttt{searchFiles(query)}
+      \end{enumerate}
+    \end{enumerate}
+
+    \item \texttt{PermissionController}
+    \begin{enumerate}
+
+      \item \texttt{/permissions/editUserPermission}
+      \begin{enumerate}
+        \item POST - \texttt{showEditUserPermissionForm(userPermissionsId)}
+      \end{enumerate}
+      \item \texttt{/permissions/editUserPermission/submit}
+      \begin{enumerate}
+        \item POST - \texttt{editUserPermission(userPermissionId, permissionLevel, returnUrl)}
+      \end{enumerate}
+      \item \texttt{/permissions/editGroupPermission/}
+      \begin{enumerate}
+        \item POST - \texttt{showEditGroupPermissionForm(userPermissionId, returnUrl)}
+      \end{enumerate}
+      \item \texttt{/permissions/editGroupPermission/submit}
+      \begin{enumerate}
+        \item POST - \texttt{editGroupPermission(groupPermissionId, permissionLevel, returnUrl)}
+      \end{enumerate}
+
+      \item \texttt{/permissions/createUserPermission/:fileId}
+      \begin{enumerate}
+        \item GET - \texttt{showCreateUserPermission(fileId)}
+      \end{enumerate}
+      \item \texttt{/permissions/createUserPermission}
+      \begin{enumerate}
+        \item POST - \texttt{createUserPermission(fileId, userId, permissionLevel)}
+      \end{enumerate}
+      \item \texttt{/permissions/createGroupPermission/:fileId}
+      \begin{enumerate}
+        \item GET - \texttt{showCreateGroupPermission(fileId)}
+      \end{enumerate}
+      \item \texttt{/permissions/createGroupPermission/}
+      \begin{enumerate}
+        \item POST - \texttt{createGroupPermission(fileId, groupId, permissionLevel)}
+      \end{enumerate}
+      
+      \item \texttt{/permissions/deleteGroupPermission}
+      \begin{enumerate}
+        \item POST - \texttt{deleteGroupPermission(groupPermissionId, returnUrl)}
+      \end{enumerate}
+      \item \texttt{/permissions/deleteUserPermission}
+      \begin{enumerate}
+        \item POST - \texttt{deleteUserPermission(userPermissionId, returnUrl)}
+      \end{enumerate}
+      \item \texttt{/permissions/editGroupPermission/submit}
+      \begin{enumerate}
+        \item POST - \texttt{editGroupPermission()}
+      \end{enumerate}
+    \end{enumerate}
+
+    \item \texttt{ErrorController}
+    \begin{enumerate}
+     \item \texttt{/forbidden}
+      \begin{enumerate}
+        \item GET - \texttt{showForbiddenMessage()}
+      \end{enumerate}
+      \item \texttt{/badrequest}
+      \begin{enumerate}
+        \item GET - \texttt{showBadRequestMessage()}
+      \end{enumerate}
+    \end{enumerate}
+
+  \item \texttt{/assets/*file}
+    \begin{enumerate}
+      \item GET - \texttt{Assets.at(path="/public", file)}
     \end{enumerate}
   \end{enumerate}
   \item SMTP (Port 587)
