@@ -170,8 +170,8 @@ public class UserManager {
 
         return new UserMetaInfo(
             user.getUsername(),
-            user.getOwnedFiles().size(),
-            user.getOwnerOf().size()
+            user.getOwnerOf().size(),
+            user.getOwnedFiles().size()
         );
     }
 
