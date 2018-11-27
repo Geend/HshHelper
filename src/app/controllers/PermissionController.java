@@ -47,7 +47,7 @@ public class PermissionController extends Controller {
     private final Form<ShowEditGroupPermissionFormDto> showEditGroupPermissionFormDtoForm;
 
     @Inject
-    public PermissionController(FormFactory formFactory, PermissionManager manager, SessionManager sessionManager, Policy policy) {
+    public PermissionController(FormFactory formFactory, PermissionManager manager, SessionManager sessionManager) {
         this.createUserPermissionForm = formFactory.form(CreateUserPermissionDto.class);
         this.createGroupPermissionForm = formFactory.form(CreateGroupPermissionDto.class) ;
         this.editGroupPermissionForm = formFactory.form(EditGroupPermissionDto.class);
