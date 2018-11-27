@@ -283,7 +283,23 @@ Im Rahmen der Design-Erstellung haben wir das Bedürfnis einer Suchfunktionalit�
 Im Zuge unserer Session-Implementierung wurde ein Timeout eingeführt: Eine Session sollte nur für einen begrenzten Zeitraum gültig sein. Dieser Timeout wurde vom Entwickler willkürlich gesetzt und sollte im Rahmen einer späteren Diskussion angepasst werden. Im Laufe der Diskussion stellten wir fest, dass die Bestimmung eines Werts schwierig ist. Wir haben uns dazu entschlossen, dem Nutzer selbst einen gewissen Grad an Freiheit einzuräumen: Er darf in einem fest definierten Interval ein eigenes Timeout wählen, das für die eigenen Sessions gilt (5 Minuten - 1 Tag). Der Default-Wert ist das zulässige Minumum.
 
 \section{Zusätzliche Sichten}
-Gemäß der Anforderungsbeschreibung wurde lediglich 
+Gemäß der Anforderungsbeschreibung wurde lediglich eine Sicht zum Listen von Dateien verlangt: Sie soll anzeigen, welche von \underline{anderen} hochgeladenen Dateien der aktuelle Nutzer lesen oder schreiben darf. Die Beschränkung auf diese Sicht ist aus Usability-Aspekten nicht ausreichend: Der Benutzer sollte zumindest noch die eigenen Dateien sehen können. Folglich haben wir die folgenden Sichten zusätzlich implementiert:
+
+\begin{itemize}
+	\item Alle Dateien, die aktuelle Benutzer lesen und/oder schreiben kann.
+	\item Alle Dateien, die dem aktuellen Benutzer gehören.
+	\item Alle Dateien, die dem aktuellen Benutzer freigegeben wurden (d.h. keine eigenen Dateien sind).
+	\item Alle Dateien, die der aktuelle Benutzer Dritten freigegeben hat inkl. Berechtigungen.
+	\item Alle Dateien, die einer bestimmten Gruppe zugeordnet sind.
+\end{itemize}
+
+Ergänzend zu den Datei-Bezogenen Sichten haben wir noch folgende Sichten implementiert:
+
+\begin{itemize}
+	\item Alle Benutzer, die Administrator-Privilegien haben.
+	\item Alle Gruppen, deren Owner der aktuelle Benutzer ist.
+	\item Details zum Quota-Verbrauch des aktuellen Nutzer aufgeschlüsselt nach Kategorien.
+\end{itemize}
 
 
 \chapter{Verworfene Entwürfe}
