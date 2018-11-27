@@ -7,6 +7,7 @@
 \documentclass[12pt,DIV14,BCOR10mm,a4paper,parskip=half-,headsepline,headinclude,english,ngerman,bibliography=totocnumbered]{scrreprt}
 
 \usepackage{hshhelper_base}
+\usepackage{dirtytalk}
 
 \usepackage[section]{placeins}
 
@@ -265,6 +266,10 @@ Deswegen haben wir ebenfalls eine Funktionalität eingebaut, durch welche der Be
 Wir denken, dass dem Nutzer dadurch klarer ist, ob er dem Inhalt einer Datei vertrauen kann.
 % TODO: Check for the right design principle. Is this identifiability?
 
+\section{Warnung bei Aktionen mit schweren Seiteneffekten}
+Die Aktionen \say{Benutzer löschen} und \say{Gruppe löschen} haben schwerwiegende Seiteneffekte: Wird ein Nutzer gelöscht, werden seine Dateien und Gruppen sowie sämtliche diesbezügliche Freigaben unwiederruflich entfernt. Das gleiche gilt für die Löschung einer Gruppe und diesbezügliche Freigaben. Diese Aktion war mittels eines Mausklicks möglich, es fand keinerlei Warnung statt. Eine solche Implementierung begünstigt Fat-Finger-Fehler\footnote{\url{https://en.wikipedia.org/wiki/Fat-finger_error}}. Aus diesem Grund haben wir uns entschieden von dem Benutzer eine explizite Bestätigung zu verlangen. Die Auswirkungen seiner geplanten Aktion werden ihm ausdrücklich angezeigt.
+
+
 \chapter{Verworfene Entwürfe}
 
 \section{Trennung der Zuständigkeiten des Controllers}
@@ -282,6 +287,15 @@ Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit ein
 
 \section{Session-Konzept / Numeric IDs}
 Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine numerische ID, die inkrementell aufsteigend war. Das JWT-Token beinhaltet den Schlüssel der korrospondierenden Session-Entität in der Datenbank. Würde ein Angreifer die JWT Signatur knacken, könnte er leicht passende IDs erraten: Er müsste sich anmelden, wüsste dann, welche ID \enquote{aktuell} ist und könnte anhand dieser Information passende IDs ausprobieren. Wir haben diese Implementierung zugunsten von kryptografisch sicheren UUIDs verworfen, die ein \enquote{second layer of defense} darstellen (vgl. \ref{sessionkonzept}).
+
+\section{Asynchroner Datei-Upload}
+Aufgrund von Usability-Erwägungen wurde ein asynchroner Datei-Upload mittels Javascript angepeilt: Es ist eine Vorgabe des Dozenten, dass beim Upload zugleich Dateiname und Kommentar sowie die Berechtigungen angegeben werden müssen. Treten bei diesen Daten Fehler auf, ist es erforderlich, die entsprechende Datei erneut auszuwählen und hochzuladen. Um diesen Makel zu verhindern, war es angedacht, dass das Auswählen einer Datei unmittelbar einen Upload inkl. Fortschrittsanzeige in Gang setzt. Die Daten würden von unserer Anwendung temporär vorgehalten werden und im Formular mittels eines Hidden-Inputs eingebunden. 
+So wäre selbst bei fehlerhaften Formulareingaben kein mehrfach-Upload erforderlich. Diese Idee wurde verwurfen: Herr Prof. Dr. hat ein dertiges Konzept als zu komplex bewertet und uns mitgeteilt, dass die Usability bei einer erzwungenden Mehrfachauswahl der Datei nicht negativ beeinträchtigt wäre.
+
+\section{Aufteilung von Datei-Upload und Rechtevergabe}
+Der Datei-Upload sollte ursprünglich keine unmittelbare Rechtevergabe beinhalten. Ein Upload sollte in einer Datei resultieren, über die ausschließlich der Owner verfügen kann bzw. das alleinige Nutzungsrecht verfügt. Das Rechtemanagement sollte ihm nach dem Dateiupload möglich sein. Im Gespräch mit Herrn Prof. Dr. Peine wurde klar, dass eine solche Umsetzung die Anforderungen nicht erfüllt. Es wurde ausdrücklich von ihm gefordert, dass der Upload in einem Request erfolgt und dieser die Datei sowie die korrospondierenden Rechte beeinhalten muss. Folglich wurde das Konzept verworfen.
+
+
 
 \printbibliography
 
