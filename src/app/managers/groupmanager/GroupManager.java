@@ -28,19 +28,17 @@ public class GroupManager {
     private final EbeanServer ebeanServer;
     private final SessionManager sessionManager;
     private final FileFinder fileFinder;
-    private final Policy policy;
     private final FileMetaFactory fileMetaFactory;
 
     private static final Logger.ALogger logger = Logger.of(GroupManager.class);
 
     @Inject
-    public GroupManager(GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer, SessionManager sessionManager, Policy policy, FileFinder fileFinder, FileMetaFactory fileMetaFactory) {
+    public GroupManager(GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer, SessionManager sessionManager, FileFinder fileFinder, FileMetaFactory fileMetaFactory) {
         this.fileFinder = fileFinder;
         this.groupFinder = groupFinder;
         this.userFinder = userFinder;
         this.ebeanServer = ebeanServer;
         this.sessionManager = sessionManager;
-        this.policy = policy;
         this.fileMetaFactory = fileMetaFactory;
     }
 
@@ -79,7 +77,7 @@ public class GroupManager {
     }
 
     public List<Group> getAllGroups() throws InvalidArgumentException, UnauthorizedException {
-        if(!Policy.instance.CanSeeAllGroups(sessionManager.currentUser()))
+        if(!sessionManager.currentPolicy().canSeeAllGroups())
             throw new UnauthorizedException();
 
         logger.info(sessionManager.currentUser().getUsername() + " is looking at all groups.");
@@ -97,7 +95,7 @@ public class GroupManager {
 
         Group group = groupOptional.get();
 
-        if(!policy.CanViewGroupDetails(sessionManager.currentUser(), group)) {
+        if(!sessionManager.currentPolicy().canViewGroupDetails(group)) {
             logger.error(sessionManager.currentUser().getUsername() + " tried to access group " + group.getName() + " for which he is not authorized");
             throw new UnauthorizedException("Du bist nicht authorisiert auf diese Gruppe zuzugreifen.");
         }
@@ -108,7 +106,7 @@ public class GroupManager {
     public List<User> getUsersWhichAreNotInThisGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Group group = getGroup(groupId);
 
-        if (!Policy.instance.CanViewGroupDetails(sessionManager.currentUser(), group)) {
+        if (!sessionManager.currentPolicy().canViewGroupDetails(group)) {
             logger.error(sessionManager.currentUser().getUsername() + " tried to see the members of group " + group.getName() + " for which he is not authorized");
             throw new UnauthorizedException("Du bist nicht authorisiert, die Mitglieder dieser Gruppe zu sehen.");
         }
@@ -134,7 +132,7 @@ public class GroupManager {
         Group g = groupOptional.get();
         User toBeRemovedUser = tobeRemovedUserOptional.get();
 
-        if(!Policy.instance.CanRemoveGroupMember(sessionManager.currentUser(), g, toBeRemovedUser)) {
+        if(!sessionManager.currentPolicy().canRemoveGroupMember(g, toBeRemovedUser)) {
             logger.error(sessionManager.currentUser().getUsername() + " tried to delete + " + toBeRemovedUser.getUsername() + " from group " + g.getName() + " but he is not authorized");
             throw new UnauthorizedException("Du bist nicht authorisiert, einen Member aus dieser Gruppe zu loeschen.");
         }
@@ -161,7 +159,7 @@ public class GroupManager {
         Group g = groupOptional.get();
         User toBeAddedUser = tobeAddedUserOptional.get();
 
-        if (!Policy.instance.CanAddSpecificGroupMember(sessionManager.currentUser(), g, toBeAddedUser)) {
+        if (!sessionManager.currentPolicy().canAddSpecificGroupMember(g, toBeAddedUser)) {
             logger.error(sessionManager.currentUser().getUsername() + " tried to add + " + toBeAddedUser.getUsername() + " to group " + g.getName() + " but he is not authorized");
             throw new UnauthorizedException("Du bist nicht authorisiert, einen Member zu dieser Gruppe hinzu zu fuegen.");
         }
@@ -180,7 +178,7 @@ public class GroupManager {
         }
 
         Group g = groupOptional.get();
-        if (!Policy.instance.CanDeleteGroup(sessionManager.currentUser(), g)) {
+        if (!sessionManager.currentPolicy().canDeleteGroup(g)) {
             logger.error(sessionManager.currentUser().getUsername() + " tried to delete group " + g.getName() + " but he is not authorized");
             throw new UnauthorizedException("Du bist nicht authorisiert, eine Gruppe zu loeschen.");
         }
