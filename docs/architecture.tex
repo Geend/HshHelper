@@ -7,7 +7,6 @@
 \documentclass[12pt,DIV14,BCOR10mm,a4paper,parskip=half-,headsepline,headinclude,english,ngerman,bibliography=totocnumbered]{scrreprt}
 
 \usepackage{hshhelper_base}
-\usepackage{dirtytalk}
 
 \usepackage[section]{placeins}
 
@@ -239,7 +238,7 @@ Für einige Parameter gibt es festgelegte Constraints, die in allen entsprechend
 	\item filename
 	\begin{itemize}
 		\item Maximale Länge: 40
-		\item Regex: [a-zA-Zäüöß0-9.,#\%+&!"':;~-]+ 
+		\item Regex: [a-zA-Zäüöß0-9.,\#\%+\&!"':;~-]+
 	\end{itemize}
 
 \end{itemize}
@@ -274,16 +273,16 @@ So ist ihm auch möglich, eine Session, die gegebenfalls von einer bösartigen Q
 Auch diese Funktionalität bildet das Designprinzip \enquote{Visibility} ab.
 
 \section{Nutzer kann einsehen, welcher Nutzer zuletzt eine Datei überschrieben hat}
-Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch überschreiben kann, ist es nicht klar ersichtlich, von wem der Dateiinhalt tatsächlich geschrieben wurde. Aus diesem Grund speichern wir zusätzlich für jede Datei, wer den tatsächlichen Inhalt geschrieben hat. Diese Information verwenden wir in Form einer visuellen Darstellung: Dateien, die von einem selbst geschrieben wurden, sind grün hinterlegt (\say{vertrauenswürdig}). Dateien, die von Dritten geschrieben wurden, werden rot hinterlegt (\say{potentiell gefährlich}). Zugleich wird auf der Detailseite der entsprechenden Datei angezeigt wer diese geschrieben hat und wann dies erfolgte.
+Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch überschreiben kann, ist es nicht klar ersichtlich, von wem der Dateiinhalt tatsächlich geschrieben wurde. Aus diesem Grund speichern wir zusätzlich für jede Datei, wer den tatsächlichen Inhalt geschrieben hat. Diese Information verwenden wir in Form einer visuellen Darstellung: Dateien, die von einem selbst geschrieben wurden, sind grün hinterlegt (\enquote{vertrauenswürdig}). Dateien, die von Dritten geschrieben wurden, werden rot hinterlegt (\enquote{potentiell gefährlich}). Zugleich wird auf der Detailseite der entsprechenden Datei angezeigt wer diese geschrieben hat und wann dies erfolgte.
 Über diese Funktionalität wird zugleich Threat -VERWEIS-EINBAUEN- (Freigabe einer Datei mit gleichem Namen) mitigiert. Eine solche Datei wäre rot gefärbt und somit deutlich von der eigenen, namensgleichen Datei zu unterscheiden.
 % TODO: Check for the right design principle. Is this identifiability?
 
 \section{Nutzer kann sein Passwort ändern}
-Ein angemeldeter Benutzer kann sein Passwort ändern. Dazu muss er sein derzeitigs Passwort und zwei mal das gewünschte neue Passwort eingaben. Diese Funktion wurde implementiert, da ein Benutzer sein Passwort sonst nur über die \enqoute{Passwort-Vergessen} Funktion ändern kann.
+Ein angemeldeter Benutzer kann sein Passwort ändern. Dazu muss er sein derzeitigs Passwort und zwei mal das gewünschte neue Passwort eingaben. Diese Funktion wurde implementiert, da ein Benutzer sein Passwort sonst nur über die \enquote{Passwort-Vergessen} Funktion ändern kann.
 
 \section{Warnung bei Aktionen mit schweren Seiteneffekten}
 \label{warning:severe:sideeffects}
-Die Aktionen \say{Benutzer löschen} und \say{Gruppe löschen} haben schwerwiegende Seiteneffekte: Wird ein Nutzer gelöscht, werden seine Dateien und Gruppen sowie sämtliche diesbezügliche Freigaben unwiederruflich entfernt. Das gleiche gilt für die Löschung einer Gruppe und diesbezügliche Freigaben. Diese Aktion war mittels eines Mausklicks möglich, es fand keinerlei Warnung statt. Eine solche Implementierung begünstigt Fat-Finger-Fehler\footnote{\url{https://en.wikipedia.org/wiki/Fat-finger_error}}. Aus diesem Grund haben wir uns entschieden von dem Benutzer eine explizite Bestätigung zu verlangen. Die Auswirkungen seiner geplanten Aktion werden ihm ausdrücklich angezeigt.
+Die Aktionen \enquote{Benutzer löschen} und \enquote{Gruppe löschen} haben schwerwiegende Seiteneffekte: Wird ein Nutzer gelöscht, werden seine Dateien und Gruppen sowie sämtliche diesbezügliche Freigaben unwiederruflich entfernt. Das gleiche gilt für die Löschung einer Gruppe und diesbezügliche Freigaben. Diese Aktion war mittels eines Mausklicks möglich, es fand keinerlei Warnung statt. Eine solche Implementierung begünstigt Fat-Finger-Fehler\footnote{\url{https://en.wikipedia.org/wiki/Fat-finger_error}}. Aus diesem Grund haben wir uns entschieden von dem Benutzer eine explizite Bestätigung zu verlangen. Die Auswirkungen seiner geplanten Aktion werden ihm ausdrücklich angezeigt.
 
 \section{Suchfunktionalität}
 Im Rahmen der Design-Erstellung haben wir das Bedürfnis einer Suchfunktionalität entdeckt. Die Dateien sind die Zentralen Elemente des HsH-Helpers und sollten so einfach wie möglich zugänglich sein. Folglich haben wir uns dazu entschlossen, in unser Design ein Suchfeld zu implementieren, das von jeder Stelle der Anwendung aus zugänglich ist.
@@ -337,7 +336,7 @@ So wäre selbst bei fehlerhaften Formulareingaben kein mehrfach-Upload erforderl
 Der Datei-Upload sollte ursprünglich keine unmittelbare Rechtevergabe beinhalten. Ein Upload sollte in einer Datei resultieren, über die ausschließlich der Owner verfügen kann bzw. das alleinige Nutzungsrecht verfügt. Das Rechtemanagement sollte ihm nach dem Dateiupload möglich sein. Im Gespräch mit Herrn Prof. Dr. Peine wurde klar, dass eine solche Umsetzung die Anforderungen nicht erfüllt. Es wurde ausdrücklich von ihm gefordert, dass der Upload in einem Request erfolgt und dieser die Datei sowie die korrospondierenden Rechte beeinhalten muss. Folglich wurde das Konzept verworfen.
 
 \section{Darstellung der Dateianzahl von Nutzern}
-Auf der Warnseite, die beim Löschen eines Nutzers angezeigt wird (vgl. \ref{warning:severe:sideeffects}) wurde ursprünglich auch die Anzahl jener Dateien angezeigt, die dem entsprechenden Benutzer gehören. Herr Prof. Dr. Peine hat uns darauf hingewiesen, dass ein Administrator über keine Berechtigung verfügt, die es ihm gestattet eine derartige Information zu erlangen. Die Anzahl der Dateien wurde durch eine allgemeingültige Umschreibung ersetzt (\say{..alle Dateien des Nutzers..}).
+Auf der Warnseite, die beim Löschen eines Nutzers angezeigt wird (vgl. \ref{warning:severe:sideeffects}) wurde ursprünglich auch die Anzahl jener Dateien angezeigt, die dem entsprechenden Benutzer gehören. Herr Prof. Dr. Peine hat uns darauf hingewiesen, dass ein Administrator über keine Berechtigung verfügt, die es ihm gestattet eine derartige Information zu erlangen. Die Anzahl der Dateien wurde durch eine allgemeingültige Umschreibung ersetzt (\enquote{..alle Dateien des Nutzers..}).
 
 
 \printbibliography
