@@ -4,62 +4,60 @@ import models.*;
 import policyenforcement.session.Session;
 
 public class Policy {
-    public static Policy instance = new Policy();
+    public static Policy ForUser(User user) {
+        return new Policy(user);
+    }
 
-    public boolean CanViewGroupDetails(User currentUser, Group toBeWatched) {
-        if(currentUser == null) {
-            return false;
+    //-----
+
+    private User associatedUser;
+
+    private Policy(User associatedUser) {
+        if(associatedUser == null) {
+            throw new IllegalArgumentException("associatedUser cannot be null!");
         }
 
-        if(toBeWatched.getMembers().contains(currentUser)) {
+        this.associatedUser = associatedUser;
+    }
+
+    public boolean canViewGroupDetails(Group toBeWatched) {
+        if(toBeWatched.getMembers().contains(associatedUser)) {
             return true;
         }
 
-        if(currentUser.isAdmin()) {
+        if(associatedUser.isAdmin()) {
             return true;
         }
 
         return false;
     }
 
-    public boolean CanViewAllUsers(User currentUser) {
-        if(currentUser == null) {
-            return false;
-        }
-
-        if(currentUser.isAdmin()) {
+    public boolean canViewAllUsers() {
+        if(associatedUser.isAdmin()) {
             return true;
         }
 
         return false;
     }
 
-    public boolean CanViewAllGroupsList(User currentUser) {
-        if(currentUser == null) {
-            return false;
-        }
-
-        if(currentUser.isAdmin()) {
+    public boolean canViewAllGroupsList() {
+        if(associatedUser.isAdmin()) {
             return true;
         }
 
         return false;
     }
 
-    public boolean CanCreateUser(User currentUser) {
-        if(currentUser == null) {
-            return false;
-        }
-
-        if(currentUser.isAdmin()) {
+    public boolean canCreateUser() {
+        if(associatedUser.isAdmin()) {
             return true;
         }
 
         return false;
     }
 
-    public boolean CanDeleteUser(User currentUser, User userToBeDeleted) {
-        if(currentUser == null || userToBeDeleted == null) {
+    public boolean canDeleteUser(User userToBeDeleted) {
+        if(userToBeDeleted == null) {
             return false;
         }
 
@@ -68,7 +66,7 @@ public class Policy {
             return false;
         }
 
-        if(currentUser.isAdmin()) {
+        if(associatedUser.isAdmin()) {
             return true;
         }
 
@@ -76,6 +74,8 @@ public class Policy {
     }
 
 
+    /* TODO: Die methode sollte entfernt werden */
+    /*
     public boolean CanResetPassword(User currentUser) {
         if(currentUser == null) {
             return true;
@@ -83,32 +83,25 @@ public class Policy {
 
         return false;
     }
+    */
 
-    public boolean CanDeleteGroup(User currentUser, Group group) {
-        if(currentUser == null) {
-            return false;
-        }
-
+    public boolean canDeleteGroup(Group group) {
         if(group.getIsAdminGroup() || group.getIsAllGroup()) {
             return false;
         }
 
-        if(currentUser.equals(group.getOwner())) {
+        if(associatedUser.equals(group.getOwner())) {
             return true;
         }
 
-        if(currentUser.isAdmin()) {
+        if(associatedUser.isAdmin()) {
             return true;
         }
 
         return false;
     }
 
-    public boolean CanRemoveGroupMember(User currentUser, Group group, User toBeDeleted) {
-        if(currentUser == null) {
-            return false;
-        }
-
+    public boolean canRemoveGroupMember(Group group, User toBeDeleted) {
         //Can't remove from the "all" group, because every user needs te be a member of it
         if(group.getIsAllGroup()){
             return false;
@@ -122,40 +115,36 @@ public class Policy {
             return false;
         }
 
-        if(currentUser.equals(group.getOwner())) {
+        if(associatedUser.equals(group.getOwner())) {
             return true;
         }
 
-        if(currentUser.isAdmin()) {
+        if(associatedUser.isAdmin()) {
             return true;
         }
 
         return false;
     }
 
-    public boolean CanGenerallyAddGroupMember(User currentUser, Group group) {
-        //Can't remove from the "all" group, because every user needs te be a member of it
+    public boolean canGenerallyAddGroupMember(Group group) {
+        // Can't add to all group -> managed by the system
         if(group.getIsAllGroup()){
             return false;
         }
 
-        if(currentUser.isAdmin()) {
+        if(associatedUser.isAdmin()) {
             return true;
         }
 
-        if(group.getOwner().equals(currentUser)) {
+        if(group.getOwner().equals(associatedUser)) {
             return true;
         }
 
         return false;
     }
 
-    public boolean CanAddSpecificGroupMember(User currentUser, Group group, User toBeAdded) {
-        if(currentUser == null) {
-            return false;
-        }
-
-        //Can't add to the "all" group. Every user is alread in there.
+    public boolean canAddSpecificGroupMember(Group group, User toBeAdded) {
+        //Can't add to the "all" group -> managed by the system
         if(group.getIsAllGroup()){
             return false;
         }
@@ -165,242 +154,197 @@ public class Policy {
             return false;
         }
 
-        if(currentUser.isAdmin()) {
+        if(associatedUser.isAdmin()) {
             return true;
         }
 
-        if(group.getOwner().equals(currentUser)) {
+        if(group.getOwner().equals(associatedUser)) {
             return true;
         }
 
         return false;
     }
 
-    public boolean CanCreateGroup(User currentUser) {
-        if(currentUser == null) {
-            return false;
-        }
-
+    public boolean canCreateGroup() {
         return true;
     }
 
-    public boolean CanUpdatePassword(User currentUser, User toBeUpdated) {
-        if(currentUser == null) {
-            return false;
-        }
-
-        if(currentUser.equals(toBeUpdated)) {
+    public boolean canUpdatePassword(User toBeUpdated) {
+        if(associatedUser.equals(toBeUpdated)) {
             return true;
         }
 
         return false;
     }
 
-    public boolean CanDeleteSession(User currentUser, Session session) {
-        if(currentUser == null) {
-            return false;
-        }
-
-        if(session.getUser().equals(currentUser)) {
+    public boolean canDeleteSession(Session session) {
+        if(session.getUser().equals(associatedUser)) {
             return true;
         }
 
         return false;
     }
 
-    public boolean CanSeeAllGroups(User currentUser) {
-        if(currentUser == null) {
-            return false;
-        }
-        if(currentUser.isAdmin()) {
+    public boolean canSeeAllGroups() {
+        if(associatedUser.isAdmin()) {
             return true;
         }
 
         return false;
     }
 
-    public boolean CanReadFile(User user, File file){
-        if(user == null || file == null)
+    public boolean canReadFile(File file){
+        if(file == null)
             return false;
 
-        if(file.getOwner().equals(user))
+        if(file.getOwner().equals(associatedUser))
             return true;
 
-        if(user.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanRead))
+        if(associatedUser.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanRead))
             return true;
 
-        if(user.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanRead)))
+        if(associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanRead)))
             return true;
 
         return false;
 
     }
 
-    public boolean CanWriteFile(User user, File file){
-        if(user == null || file == null)
+    public boolean canWriteFile(File file){
+        if(file == null)
             return false;
 
-        if(file.getOwner().equals(user))
+        if(file.getOwner().equals(associatedUser))
             return true;
 
-        if(user.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanWrite))
+        if(associatedUser.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanWrite))
             return true;
 
-        if(user.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanWrite)))
+        if(associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanWrite)))
             return true;
 
         return false;
     }
 
-    public boolean CanGetFileMeta(User user, File file) {
-        if(CanReadFile(user, file))
+    public boolean canGetFileMeta(File file) {
+        if(canReadFile(file))
             return true;
 
-        if(CanWriteFile(user, file))
-            return true;
-
-        return false;
-    }
-
-    public boolean CanDeleteFile(User user, File file) {
-        if(user == null || file == null)
-            return false;
-
-        if(file.getOwner().equals(user))
+        if(canWriteFile(file))
             return true;
 
         return false;
     }
 
-    public boolean CanDeleteGroupPermission(User user, GroupPermission groupPermission) {
-        if(user == null || groupPermission == null)
+    public boolean canDeleteFile(File file) {
+        if(file == null)
             return false;
 
-        if(user.equals(groupPermission.getFile().getOwner())){
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean CanDeleteUserPermission(User user, UserPermission userPermission) {
-        if(user == null || userPermission == null)
-            return false;
-
-        if(user.equals(userPermission.getFile().getOwner())){
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean CanEditUserPermission(User user, UserPermission userPermission) {
-        if(user == null || userPermission == null)
-            return false;
-
-        if(user.equals(userPermission.getFile().getOwner())){
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean CanEditGroupPermission(User user, GroupPermission userPermission) {
-        if(user == null || userPermission == null)
-            return false;
-
-        if(user.equals(userPermission.getFile().getOwner())){
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean CanCreateUserPermission(File file, User user) {
-
-        if(user == null || file == null)
-            return false;
-
-        if(file.getOwner().equals(user))
+        if(file.getOwner().equals(associatedUser))
             return true;
 
         return false;
     }
 
-    public boolean CanCreateGroupPermission(File file, User user, Group group) {
-        if(user == null || file == null || group == null)
+    public boolean canDeleteGroupPermission(GroupPermission groupPermission) {
+        if(groupPermission == null)
             return false;
 
-        if(group.getMembers().contains(user))
+        if(associatedUser.equals(groupPermission.getFile().getOwner()))
+            return true;
+
+
+        return false;
+    }
+
+    public boolean canDeleteUserPermission(UserPermission userPermission) {
+        if(userPermission == null)
+            return false;
+
+        if(associatedUser.equals(userPermission.getFile().getOwner()))
             return true;
 
         return false;
     }
 
-    public boolean CanViewFilePermissions(User currentUser, File file) {
-        if(currentUser == null) {
+    public boolean canEditUserPermission(UserPermission userPermission) {
+        if(userPermission == null)
             return false;
-        }
 
-        if(file.getOwner().equals(currentUser)) {
+        if(associatedUser.equals(userPermission.getFile().getOwner()))
             return true;
-        }
 
         return false;
     }
 
-    public boolean CanViewUserPermission(User currentUser, UserPermission permission) {
-        if(currentUser == null) {
+    public boolean canEditGroupPermission(GroupPermission userPermission) {
+        if(userPermission == null)
             return false;
-        }
 
-        if(permission.getFile().getOwner().equals(currentUser)) {
+        if(associatedUser.equals(userPermission.getFile().getOwner()))
             return true;
-        }
 
         return false;
     }
 
-    public boolean CanViewGroupPermission(User currentUser, GroupPermission permission) {
-        if(currentUser == null) {
+    public boolean canCreateUserPermission(File file) {
+        if(file == null)
             return false;
-        }
 
-        if(permission.getFile().getOwner().equals(currentUser)) {
+        if(file.getOwner().equals(associatedUser))
             return true;
-        }
 
         return false;
     }
 
-    public boolean CanViewUserMetaInfo(User currentUser, User toBeViewed) {
-        if(currentUser == null) {
+    public boolean canCreateGroupPermission(File file, Group group) {
+        if(file == null || group == null)
             return false;
-        }
 
-        if(currentUser.isAdmin()) {
+        if(group.getMembers().contains(associatedUser))
             return true;
-        }
 
         return false;
     }
 
-    public boolean CanChangeUserTimeoutValue(User user) {
-        if(user == null){
-            return false;
-        }
+    public boolean canViewFilePermissions(File file) {
+        if(file.getOwner().equals(associatedUser))
+            return true;
 
-        return true;
+        return false;
     }
 
-    public boolean CanReadWriteQuotaLimit(User user) {
-        if(user == null){
-            return false;
-        }
-
-        if(user.isAdmin()){
+    public boolean canViewUserPermission(UserPermission permission) {
+        if(permission.getFile().getOwner().equals(associatedUser))
             return true;
-        }
+
+        return false;
+    }
+
+    public boolean canViewGroupPermission(GroupPermission permission) {
+        if(permission.getFile().getOwner().equals(associatedUser))
+            return true;
+
+        return false;
+    }
+
+    public boolean canViewUserMetaInfo(User toBeViewed) {
+        if(associatedUser.isAdmin())
+            return true;
+
+        return false;
+    }
+
+    public boolean canChangeUserTimeoutValue(User toBeChanged) {
+        if(associatedUser.equals(toBeChanged))
+            return true;
+
+        return false;
+    }
+
+    public boolean canReadWriteQuotaLimit(User toBeChanged) {
+        if(associatedUser.isAdmin())
+            return true;
 
         return false;
     }

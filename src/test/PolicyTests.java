@@ -126,25 +126,26 @@ public class PolicyTests {
         assertThat(horst.isAdmin()).isFalse();
     }
 
+    /*
+        Policy Initialization
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void noNulledUserPolicies() {
+        Policy.ForUser(null);
+    }
 
     /*
         Create User
      */
     @Test
     public void adminCanCreateUser() {
-        boolean actual = Policy.instance.CanCreateUser(admin);
+        boolean actual = Policy.ForUser(admin).canCreateUser();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void nonAdminCantCreateUser() {
-        boolean actual = Policy.instance.CanCreateUser(peter);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void unauthorizedCantCreateUser() {
-        boolean actual = Policy.instance.CanCreateUser(null);
+        boolean actual = Policy.ForUser(peter).canCreateUser();
         assertThat(actual).isFalse();
     }
 
@@ -153,37 +154,37 @@ public class PolicyTests {
      */
     @Test
     public void adminCanDeleteUser() {
-        boolean actual = Policy.instance.CanDeleteUser(admin, peter);
+        boolean actual = Policy.ForUser(admin).canDeleteUser(peter);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminCantDeleteAdminOwner() {
-        boolean actual = Policy.instance.CanDeleteUser(adminTwo, admin);
+        boolean actual = Policy.ForUser(adminTwo).canDeleteUser(admin);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void adminCanDeleteOtherAdmin() {
-        boolean actual = Policy.instance.CanDeleteUser(admin, adminTwo);
+        boolean actual = Policy.ForUser(admin).canDeleteUser(adminTwo);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void nonAdminCantDeleteUser() {
-        boolean actual = Policy.instance.CanDeleteUser(peter, klaus);
+        boolean actual = Policy.ForUser(peter).canDeleteUser(klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void userCantDeleteHimself() {
-        boolean actual = Policy.instance.CanDeleteUser(peter, peter);
+        boolean actual = Policy.ForUser(peter).canDeleteUser(peter);
         assertThat(actual).isFalse();
     }
 
     @Test
-    public void nonAuthorizedCantDeleteUser() {
-        boolean actual = Policy.instance.CanDeleteUser(null, peter);
+    public void adminCantDeleteHimself() {
+        boolean actual = Policy.ForUser(adminTwo).canDeleteUser(adminTwo);
         assertThat(actual).isFalse();
     }
 
@@ -192,55 +193,49 @@ public class PolicyTests {
      */
     @Test
     public void noUserCanBeRemovedFromAllGroup() {
-        boolean actual = Policy.instance.CanRemoveGroupMember(admin, allGroup, peter);
+        boolean actual = Policy.ForUser(admin).canRemoveGroupMember(allGroup, peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void ownerCannotBeRemovedFromGroup() {
-        boolean actual = Policy.instance.CanRemoveGroupMember(peter, petersGroup, peter);
+        boolean actual = Policy.ForUser(peter).canRemoveGroupMember(petersGroup, peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void ownerCannotBeRemovedFromGroupByAdmin() {
-        boolean actual = Policy.instance.CanRemoveGroupMember(admin, petersGroup, peter);
+        boolean actual = Policy.ForUser(admin).canRemoveGroupMember(petersGroup, peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void ownerCanRemoveMember() {
-        boolean actual = Policy.instance.CanRemoveGroupMember(peter, petersGroup, klaus);
+        boolean actual = Policy.ForUser(peter).canRemoveGroupMember(petersGroup, klaus);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminCanRemoveMemberFromForeignGroup() {
-        boolean actual = Policy.instance.CanRemoveGroupMember(admin, petersGroup, klaus);
+        boolean actual = Policy.ForUser(admin).canRemoveGroupMember(petersGroup, klaus);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void memberCannotRemoveOtherMembersFromGroup() {
-        boolean actual = Policy.instance.CanRemoveGroupMember(klaus, petersGroup, adminTwo);
+        boolean actual = Policy.ForUser(klaus).canRemoveGroupMember(petersGroup, adminTwo);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonMemberCannotRemoveOtherMembersFromGroup() {
-        boolean actual = Policy.instance.CanRemoveGroupMember(horst, petersGroup, klaus);
+        boolean actual = Policy.ForUser(horst).canRemoveGroupMember(petersGroup, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonMemberCannotRemoveOwnerFromGroup() {
-        boolean actual = Policy.instance.CanRemoveGroupMember(horst, petersGroup, peter);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void nonAuthorizedCannotRemoveGroupMember() {
-        boolean actual = Policy.instance.CanRemoveGroupMember(null, petersGroup, peter);
+        boolean actual = Policy.ForUser(horst).canRemoveGroupMember(petersGroup, peter);
         assertThat(actual).isFalse();
     }
 
@@ -249,31 +244,31 @@ public class PolicyTests {
      */
     @Test
     public void ownerCanGenerallyAddGroupMember() {
-        boolean actual = Policy.instance.CanGenerallyAddGroupMember(peter, petersGroup);
+        boolean actual = Policy.ForUser(peter).canGenerallyAddGroupMember(petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminMemberCanGenerallyAddGroupMember() {
-        boolean actual = Policy.instance.CanGenerallyAddGroupMember(adminTwo, petersGroup);
+        boolean actual = Policy.ForUser(adminTwo).canGenerallyAddGroupMember(petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminNonMemberCanGenerallyAddGroupMember() {
-        boolean actual = Policy.instance.CanGenerallyAddGroupMember(admin, petersGroup);
+        boolean actual = Policy.ForUser(admin).canGenerallyAddGroupMember(petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void memberCannotGenerallyAddGroupMember() {
-        boolean actual = Policy.instance.CanGenerallyAddGroupMember(klaus, petersGroup);
+        boolean actual = Policy.ForUser(klaus).canGenerallyAddGroupMember(petersGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonMemberCannotGenerallyAddGroupMember() {
-        boolean actual = Policy.instance.CanGenerallyAddGroupMember(rudi, petersGroup);
+        boolean actual = Policy.ForUser(rudi).canGenerallyAddGroupMember(petersGroup);
         assertThat(actual).isFalse();
     }
 
@@ -282,55 +277,49 @@ public class PolicyTests {
      */
     @Test
     public void ownerCanAddGroupMember() {
-        boolean actual = Policy.instance.CanAddSpecificGroupMember(peter, petersGroup, admin);
+        boolean actual = Policy.ForUser(peter).canAddSpecificGroupMember(petersGroup, admin);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void foreignAdminCanAddGroupMember() {
-        boolean actual = Policy.instance.CanAddSpecificGroupMember(admin, petersGroup, horst);
+        boolean actual = Policy.ForUser(admin).canAddSpecificGroupMember(petersGroup, horst);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminGroupMemberCanAddGroupMember() {
-        boolean actual = Policy.instance.CanAddSpecificGroupMember(adminTwo, petersGroup, horst);
+        boolean actual = Policy.ForUser(adminTwo).canAddSpecificGroupMember(petersGroup, horst);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void ownerCannotAddMemberTwice() {
-        boolean actual = Policy.instance.CanAddSpecificGroupMember(peter, petersGroup, klaus);
+        boolean actual = Policy.ForUser(peter).canAddSpecificGroupMember(petersGroup, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void foreignAdminCannotAddGroupMemberTwice() {
-        boolean actual = Policy.instance.CanAddSpecificGroupMember(admin, petersGroup, klaus);
+        boolean actual = Policy.ForUser(admin).canAddSpecificGroupMember(petersGroup, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void adminGroupMemberCannotAddGroupMemberTwice() {
-        boolean actual = Policy.instance.CanAddSpecificGroupMember(adminTwo, petersGroup, klaus);
+        boolean actual = Policy.ForUser(adminTwo).canAddSpecificGroupMember(petersGroup, klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void groupMemberCannotAddOtherGroupMember() {
-        boolean actual = Policy.instance.CanAddSpecificGroupMember(klaus, petersGroup, horst);
+        boolean actual = Policy.ForUser(klaus).canAddSpecificGroupMember(petersGroup, horst);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonGroupMemberCannotAddOtherGroupMember() {
-        boolean actual = Policy.instance.CanAddSpecificGroupMember(horst, petersGroup, rudi);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void nonAuthorizedUserCannotAddOtherGroupMember() {
-        boolean actual = Policy.instance.CanAddSpecificGroupMember(null, petersGroup, rudi);
+        boolean actual = Policy.ForUser(horst).canAddSpecificGroupMember(petersGroup, rudi);
         assertThat(actual).isFalse();
     }
 
@@ -339,59 +328,46 @@ public class PolicyTests {
      */
     @Test
     public void adminCanCreateGroup() {
-        boolean actual = Policy.instance.CanCreateGroup(admin);
+        boolean actual = Policy.ForUser(admin).canCreateGroup();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void userCanCreateGroup() {
-        boolean actual = Policy.instance.CanCreateGroup(peter);
+        boolean actual = Policy.ForUser(peter).canCreateGroup();
         assertThat(actual).isTrue();
     }
-
-    @Test
-    public void nonAuthorizedUserCannotCreateGroup() {
-        boolean actual = Policy.instance.CanCreateGroup(null);
-        assertThat(actual).isFalse();
-    }
-
 
     /*
         See Group Details (members)/group page
      */
     @Test
     public void foreignAdminCanViewGroupDetails() {
-        boolean actual = Policy.instance.CanViewGroupDetails(admin, petersGroup);
+        boolean actual = Policy.ForUser(admin).canViewGroupDetails(petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminGroupMemberCanViewGroupDetails() {
-        boolean actual = Policy.instance.CanViewGroupDetails(adminTwo, petersGroup);
+        boolean actual = Policy.ForUser(adminTwo).canViewGroupDetails(petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void groupOwnerCanViewGroupDetails() {
-        boolean actual = Policy.instance.CanViewGroupDetails(peter, petersGroup);
+        boolean actual = Policy.ForUser(peter).canViewGroupDetails(petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void groupMemberCanViewGroupDetails() {
-        boolean actual = Policy.instance.CanViewGroupDetails(klaus, petersGroup);
+        boolean actual = Policy.ForUser(klaus).canViewGroupDetails(petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void nonGroupMemberCannotViewGroupDetails() {
-        boolean actual = Policy.instance.CanViewGroupDetails(horst, petersGroup);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void notAuthorizedUserCannotViewGroupDetails() {
-        boolean actual = Policy.instance.CanViewGroupDetails(null, petersGroup);
+        boolean actual = Policy.ForUser(horst).canViewGroupDetails(petersGroup);
         assertThat(actual).isFalse();
     }
 
@@ -400,19 +376,13 @@ public class PolicyTests {
      */
     @Test
     public void adminCanViewAllGroups() {
-        boolean actual = Policy.instance.CanViewAllGroupsList(admin);
+        boolean actual = Policy.ForUser(admin).canViewAllGroupsList();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void memberCannotViewAllGroups() {
-        boolean actual = Policy.instance.CanViewAllGroupsList(peter);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void notAuthorizedUserCannotViewAllGroups() {
-        boolean actual = Policy.instance.CanViewAllGroupsList(null);
+        boolean actual = Policy.ForUser(peter).canViewAllGroupsList();
         assertThat(actual).isFalse();
     }
 
@@ -421,37 +391,31 @@ public class PolicyTests {
      */
     @Test
     public void ownerCanDeleteGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(peter, petersGroup);
+        boolean actual = Policy.ForUser(peter).canDeleteGroup(petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void foreignAdminCanDeleteGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(admin, petersGroup);
+        boolean actual = Policy.ForUser(admin).canDeleteGroup(petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void adminGroupMemberCanDeleteGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(adminTwo, petersGroup);
+        boolean actual = Policy.ForUser(adminTwo).canDeleteGroup(petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void groupMemberCannotDeleteGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(klaus, petersGroup);
+        boolean actual = Policy.ForUser(klaus).canDeleteGroup(petersGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonGroupMemberCannotDeleteGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(horst, petersGroup);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void nonAuthorizedUserCannotDeleteGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(null, petersGroup);
+        boolean actual = Policy.ForUser(horst).canDeleteGroup(petersGroup);
         assertThat(actual).isFalse();
     }
 
@@ -460,25 +424,19 @@ public class PolicyTests {
      */
     @Test
     public void adminGroupOwnerCannotDeleteAdminGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(admin, adminGroup);
+        boolean actual = Policy.ForUser(admin).canDeleteGroup(adminGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonGroupOwningAdminCannotDeleteAdminGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(adminTwo, adminGroup);
+        boolean actual = Policy.ForUser(adminTwo).canDeleteGroup(adminGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAdminCannotDeleteAdminGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(horst, adminGroup);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void notAuthorizedUserCannotDeleteAdminGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(null, adminGroup);
+        boolean actual = Policy.ForUser(horst).canDeleteGroup(adminGroup);
         assertThat(actual).isFalse();
     }
 
@@ -487,80 +445,70 @@ public class PolicyTests {
      */
     @Test
     public void allGroupOwnerCannotDeleteAllGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(admin, allGroup);
+        boolean actual = Policy.ForUser(admin).canDeleteGroup(allGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonGroupOwningAdminCannotDeleteAllGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(adminTwo, allGroup);
+        boolean actual = Policy.ForUser(adminTwo).canDeleteGroup(allGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAdminCannotDeleteAllGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(horst, allGroup);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void notAuthorizedUserCannotDeleteAllGroup() {
-        boolean actual = Policy.instance.CanDeleteGroup(null, allGroup);
+        boolean actual = Policy.ForUser(horst).canDeleteGroup(allGroup);
         assertThat(actual).isFalse();
     }
 
     /*
         Password reset
      */
+    /* TODO: Entfernen?
     @Test
     public void adminCannotResetPassword() {
-        boolean actual = Policy.instance.CanResetPassword(admin);
+        boolean actual = Policy.ForUser(admin).canResetPassword();
         assertThat(actual).isFalse();
     }
 
     @Test
     public void userCanResetPassword() {
-        boolean actual = Policy.instance.CanResetPassword(peter);
+        boolean actual = Policy.ForUser().canResetPassword(peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonAuthorizedUserCanResetPassword() {
-        boolean actual = Policy.instance.CanResetPassword(null);
+        boolean actual = Policy.ForUser().canResetPassword(null);
         assertThat(actual).isTrue();
     }
+    */
 
     /*
         Password Update
      */
     @Test
     public void adminCannotUpdateOthersPassword() {
-        boolean actual = Policy.instance.CanUpdatePassword(admin, peter);
+        boolean actual = Policy.ForUser(admin).canUpdatePassword(peter);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void userCannotUpdateOthersPassword() {
-        boolean actual = Policy.instance.CanUpdatePassword(peter, klaus);
+        boolean actual = Policy.ForUser(peter).canUpdatePassword(klaus);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void adminCanUpdateOwnPassword() {
-        boolean actual = Policy.instance.CanUpdatePassword(admin, admin);
+        boolean actual = Policy.ForUser(admin).canUpdatePassword(admin);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void userCanUpdateOwnPassword() {
-        boolean actual = Policy.instance.CanUpdatePassword(peter, peter);
+        boolean actual = Policy.ForUser(peter).canUpdatePassword(peter);
         assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void notAuthorizedCannotUpdateOthersPassword() {
-        boolean actual = Policy.instance.CanUpdatePassword(null, peter);
-        assertThat(actual).isFalse();
     }
 
     /*
@@ -568,25 +516,19 @@ public class PolicyTests {
      */
     @Test
     public void adminCannotDeleteOthersSession() {
-        boolean actual = Policy.instance.CanDeleteSession(admin, petersSession);
+        boolean actual = Policy.ForUser(admin).canDeleteSession(petersSession);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void userCannotDeleteOthersSession() {
-        boolean actual = Policy.instance.CanDeleteSession(klaus, petersSession);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void nonAuthorizedUserCannotDeleteOthersSession() {
-        boolean actual = Policy.instance.CanDeleteSession(null, petersSession);
+        boolean actual = Policy.ForUser(klaus).canDeleteSession(petersSession);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void userCanDeleteOwnSession() {
-        boolean actual = Policy.instance.CanDeleteSession(peter, petersSession);
+        boolean actual = Policy.ForUser(peter).canDeleteSession(petersSession);
         assertThat(actual).isTrue();
     }
 
@@ -596,85 +538,85 @@ public class PolicyTests {
      */
     @Test
     public void ownerCanReadFile(){
-        boolean actual = Policy.instance.CanReadFile(klaus, klausFile);
+        boolean actual = Policy.ForUser(klaus).canReadFile(klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void userWithUserPermissionCanReadFile(){
-        boolean actual = Policy.instance.CanReadFile(peter, klausFile);
+        boolean actual = Policy.ForUser(peter).canReadFile(klausFile);
         assertThat(actual).isTrue();
     }
     @Test
     public void userWithGroupPermissionCanReadFile(){
-        boolean actual = Policy.instance.CanReadFile(klaus, petersGroupFile);
+        boolean actual = Policy.ForUser(klaus).canReadFile(petersGroupFile);
         assertThat(actual).isTrue();
 
     }
     @Test
     public void userWithGroupPermissionWithoutReadTrueCantReadFile(){
-        boolean actual = Policy.instance.CanReadFile(admin, petersGroupFile);
+        boolean actual = Policy.ForUser(admin).canReadFile(petersGroupFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void normalUserCantReadFile(){
-        boolean actual = Policy.instance.CanReadFile(horst, klausFile);
+        boolean actual = Policy.ForUser(horst).canReadFile(klausFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonOwnerCantViewFilePermissions() {
-        boolean actual = Policy.instance.CanViewFilePermissions(horst, klausFile);
+        boolean actual = Policy.ForUser(horst).canViewFilePermissions(klausFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonOwnerAdminCantViewFilePermissions() {
-        boolean actual = Policy.instance.CanViewFilePermissions(admin, klausFile);
+        boolean actual = Policy.ForUser(admin).canViewFilePermissions(klausFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void ownerCanViewFilePermissions() {
-        boolean actual = Policy.instance.CanViewFilePermissions(klaus, klausFile);
+        boolean actual = Policy.ForUser(klaus).canViewFilePermissions(klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void nonOwnerCantViewUserPermission() {
-        boolean actual = Policy.instance.CanViewUserPermission(horst, klausFilePeterUserPermission);
+        boolean actual = Policy.ForUser(horst).canViewUserPermission(klausFilePeterUserPermission);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonOwnerAdminCantViewUserPermission() {
-        boolean actual = Policy.instance.CanViewUserPermission(admin, klausFilePeterUserPermission);
+        boolean actual = Policy.ForUser(admin).canViewUserPermission(klausFilePeterUserPermission);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void ownerCanViewUserPermission() {
-        boolean actual = Policy.instance.CanViewUserPermission(klaus, klausFilePeterUserPermission);
+        boolean actual = Policy.ForUser(klaus).canViewUserPermission(klausFilePeterUserPermission);
         assertThat(actual).isTrue();
     }
 
 
     @Test
     public void nonOwnerCantViewGroupPermission() {
-        boolean actual = Policy.instance.CanViewGroupPermission(horst, petersGroupFilePetersGroupPermission);
+        boolean actual = Policy.ForUser(horst).canViewGroupPermission(petersGroupFilePetersGroupPermission);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void nonOwnerAdminCantViewGroupPermission() {
-        boolean actual = Policy.instance.CanViewGroupPermission(admin, petersGroupFilePetersGroupPermission);
+        boolean actual = Policy.ForUser(admin).canViewGroupPermission(petersGroupFilePetersGroupPermission);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void ownerCanViewGroupPermission() {
-        boolean actual = Policy.instance.CanViewGroupPermission(peter, petersGroupFilePetersGroupPermission);
+        boolean actual = Policy.ForUser(peter).canViewGroupPermission(petersGroupFilePetersGroupPermission);
         assertThat(actual).isTrue();
     }
     /*
@@ -682,48 +624,48 @@ public class PolicyTests {
   */
     @Test
     public void ownerCanWriteFile(){
-        boolean actual = Policy.instance.CanWriteFile(klaus, klausFile);
+        boolean actual = Policy.ForUser(klaus).canWriteFile(klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void userWithUserPermissionCanWriteFile(){
-        boolean actual = Policy.instance.CanWriteFile(peter, klausFile);
+        boolean actual = Policy.ForUser(peter).canWriteFile(klausFile);
         assertThat(actual).isTrue();
     }
     @Test
     public void userWithGroupPermissionCanWriteFile(){
-        boolean actual = Policy.instance.CanWriteFile(klaus, petersGroupFile);
+        boolean actual = Policy.ForUser(klaus).canWriteFile(petersGroupFile);
         assertThat(actual).isTrue();
 
     }
     @Test
     public void userWithGroupPermissionWithoutWriteTrueCantWriteFile(){
-        boolean actual = Policy.instance.CanWriteFile(rudi, petersGroupFile);
+        boolean actual = Policy.ForUser(rudi).canWriteFile(petersGroupFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void groupPermissionWithReadTrueWithoutWriteTrueCantWriteFile(){
-        boolean actual = Policy.instance.CanWriteFile(rudi, klausFile);
+        boolean actual = Policy.ForUser(rudi).canWriteFile(klausFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void normalUserCantWriteFile(){
-        boolean actual = Policy.instance.CanWriteFile(horst, klausFile);
+        boolean actual = Policy.ForUser(horst).canWriteFile(klausFile);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void ownerCanDeleteFile() {
-        boolean actual = Policy.instance.CanDeleteFile(klaus, klausFile);
+        boolean actual = Policy.ForUser(klaus).canDeleteFile(klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void normalUserCannotDeleteFile() {
-        boolean actual = Policy.instance.CanDeleteFile(horst, klausFile);
+        boolean actual = Policy.ForUser(horst).canDeleteFile(klausFile);
         assertThat(actual).isFalse();
     }
     /*
@@ -738,11 +680,10 @@ public class PolicyTests {
         GroupPermission permission = mock(GroupPermission.class);
         when(file.getOwner()).thenReturn(otherUser);
         when(permission.getFile()).thenReturn(file);
-        assertThat(Policy.instance.CanDeleteGroupPermission(null, permission)).isFalse();
-        assertThat(Policy.instance.CanDeleteGroupPermission(user, null)).isFalse();
-        assertThat(Policy.instance.CanDeleteGroupPermission(user, permission)).isFalse();
+        assertThat(Policy.ForUser(user).canDeleteGroupPermission(null)).isFalse();
+        assertThat(Policy.ForUser(user).canDeleteGroupPermission(permission)).isFalse();
         when(file.getOwner()).thenReturn(user);
-        assertThat(Policy.instance.CanDeleteGroupPermission(user, permission)).isTrue();
+        assertThat(Policy.ForUser(user).canDeleteGroupPermission(permission)).isTrue();
     }
 
     @Test
@@ -753,11 +694,10 @@ public class PolicyTests {
         UserPermission permission = mock(UserPermission.class);
         when(file.getOwner()).thenReturn(otherUser);
         when(permission.getFile()).thenReturn(file);
-        assertThat(Policy.instance.CanDeleteUserPermission(null, permission)).isFalse();
-        assertThat(Policy.instance.CanDeleteUserPermission(user, null)).isFalse();
-        assertThat(Policy.instance.CanDeleteUserPermission(user, permission)).isFalse();
+        assertThat(Policy.ForUser(user).canDeleteUserPermission(null)).isFalse();
+        assertThat(Policy.ForUser(user).canDeleteUserPermission(permission)).isFalse();
         when(file.getOwner()).thenReturn(user);
-        assertThat(Policy.instance.CanDeleteUserPermission(user, permission)).isTrue();
+        assertThat(Policy.ForUser(user).canDeleteUserPermission(permission)).isTrue();
     }
 
     @Test
@@ -768,11 +708,10 @@ public class PolicyTests {
         UserPermission permission = mock(UserPermission.class);
         when(file.getOwner()).thenReturn(otherUser);
         when(permission.getFile()).thenReturn(file);
-        assertThat(Policy.instance.CanEditUserPermission(null, permission)).isFalse();
-        assertThat(Policy.instance.CanEditUserPermission(user, null)).isFalse();
-        assertThat(Policy.instance.CanEditUserPermission(user, permission)).isFalse();
+        assertThat(Policy.ForUser(user).canEditUserPermission(null)).isFalse();
+        assertThat(Policy.ForUser(user).canEditUserPermission(permission)).isFalse();
         when(file.getOwner()).thenReturn(user);
-        assertThat(Policy.instance.CanEditUserPermission(user, permission)).isTrue();
+        assertThat(Policy.ForUser(user).canEditUserPermission(permission)).isTrue();
     }
 
     @Test
@@ -783,10 +722,9 @@ public class PolicyTests {
         GroupPermission permission = mock(GroupPermission.class);
         when(file.getOwner()).thenReturn(otherUser);
         when(permission.getFile()).thenReturn(file);
-        assertThat(Policy.instance.CanEditGroupPermission(null, permission)).isFalse();
-        assertThat(Policy.instance.CanEditGroupPermission(user, null)).isFalse();
-        assertThat(Policy.instance.CanEditGroupPermission(user, permission)).isFalse();
+        assertThat(Policy.ForUser(user).canEditGroupPermission(null)).isFalse();
+        assertThat(Policy.ForUser(user).canEditGroupPermission(permission)).isFalse();
         when(file.getOwner()).thenReturn(user);
-        assertThat(Policy.instance.CanEditGroupPermission(user, permission)).isTrue();
+        assertThat(Policy.ForUser(user).canEditGroupPermission(permission)).isTrue();
     }
 }
