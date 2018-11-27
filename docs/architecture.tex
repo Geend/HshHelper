@@ -89,6 +89,12 @@ Das Klartext-Passwort wird zurückgegeben und dem Administrator angezeigt, um di
 
 Das Login-Sequenzdiagramm zeigt den Fall, dass der Benutzer bereits mehrfach das Passwort falsch eingegeben hat und ein Captcha lösen muss. In der Antwort, die auf die erste GET Anfrage folgt, sind sowohl das CSRF-Token als auch das HTML zum Lösen des Captchas enthalten. In der darauffolgenden POST Anfrage werden die Captcha-Information, sowie der Benutzername und das Passwort aus dem Formular mitgeliefert. Bei beiden Anfragen wird noch sichergestellt, dass der Benutzer nicht bereits eine gültige Session besitzt, um mehrfache Logins zu vermeiden. Die Eingaben werden, wie auch schon bei Nutzer erstellen, zuerst durch Annotations validiert und anschließend an den \texttt{LoginManager} weitergereicht. Diese berechnet unabhängig von der Existenz des Nutzerkontos den Hash des Klartext-Passworts und vergleicht diesen mit dem Hash, der zum Benutzerkonto abgespeichert wurde, falls vorhanden. Anschließend wird die Login-Firewall befragt, ob es Unstimmigkeiten für diesen Benutzer oder die anfragende IP-Adresse gibt. In dem hier vorgestellten Fall liefert diese \texttt{Verify} zurück, was bedeutet, dass dieser Benutzer ein Captcha lösen muss. Anschließend wird überprüft, ob es erfolgreich gelöst wurde und dann wird beim \texttt{SessionManager} durch den Aufruf von \texttt{startNewSession} eine neue Session erzeugt. Damit wurde der Login erfolgreich abgeschlossen.
 
+
+\section{Dateiaustausch}
+Alle Dateien die Benutzer hochladen werden in der Datenbank als \texttt{BLOB} gespeichert. So können konsitente Zustände mittels Transaktionen sichergestellt werden. Außerdem ist HsHelper dadurch unabhäniger vom Dateisystem das auf dem Host-System verwendet wird.
+
+Um die Umgehung des Quotas durch Ausnutzung des Kommentarfeldes und Dateinamens zu verhindern, zählen sowohl der Datei Inhalt, als auch der Name und das Kommentar zum belegten Speicherplatz einer Datei.
+
 \chapter{Kryptografisch relevante Informationen}
 Folgender Abschnitt enthält gesammelte Informationen über die kryptographischen Algorithmen, die im HsH-Helfer Anwendung finden. Die für die Algorithmen benötigten Geheimnisse und deren Verwaltung wird ebenfalls hier dokumentiert, da die Sicherheit von der Geheimhaltung dieser abhängt.
 
