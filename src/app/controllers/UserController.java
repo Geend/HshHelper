@@ -99,7 +99,7 @@ public class UserController extends Controller {
         if (!sessionManager.currentPolicy().canCreateUser()) {
             throw new UnauthorizedException();
         }
-        
+
         return ok(views.html.users.CreateUser.render(createUserForm));
     }
 

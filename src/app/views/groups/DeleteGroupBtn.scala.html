@@ -1,7 +1,7 @@
-@import policyenforcement.session.SessionManager.SessionInstance
+@import views.TemplateEnvironment
 @(group : Group)
 
-@if(policyenforcement.Policy.instance.CanDeleteGroup(SessionInstance().currentUser(), group)) {
+@if(TemplateEnvironment.policy.canDeleteGroup(group)) {
     @helper.form(action = routes.GroupController.confirmDelete()) {
         @helper.CSRF.formField
         <input type="hidden" name="groupId" value="@group.getGroupId" />

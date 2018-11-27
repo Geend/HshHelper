@@ -1,4 +1,5 @@
-@import policyenforcement.session.SessionManager.SessionInstance
+@import views.html.groups.GroupBase
+@import views.TemplateEnvironment
 @(group : Group, members : Seq[User])
 
 @GroupBase(group) {
@@ -20,7 +21,7 @@
                         }
                     </td>
                     <td class="right">
-                        @if(policyenforcement.Policy.instance.CanRemoveGroupMember(SessionInstance().currentUser(), group, member)) {
+                        @if(TemplateEnvironment.policy().canRemoveGroupMember(group, member)) {
                             @helper.form(action = routes.GroupController.removeGroupMember(group.getGroupId())) {
                                 @helper.CSRF.formField
                                 <input type="hidden" name="userId" value="@member.getUserId" />

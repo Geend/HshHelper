@@ -1,4 +1,4 @@
-@import policyenforcement.session.SessionManager.SessionInstance
+@import views.TemplateEnvironment
 @(users : Seq[User])
 
 @Base("Benutzer") {
@@ -38,7 +38,7 @@
                         <a href="@routes.UserController.showUserAdminSettings(user.getUserId)">Bearbeiten</a>
                     </td>
                     <td class="right">
-                        @if(policyenforcement.Policy.instance.CanDeleteUser(SessionInstance().currentUser(), user)) {
+                        @if(TemplateEnvironment.policy().canDeleteUser(user)) {
                             @helper.form(action = routes.UserController.showConfirmDeleteForm()) {
                                 @helper.CSRF.formField
                                 <input type="hidden" name="userId" value="@user.getUserId" />
