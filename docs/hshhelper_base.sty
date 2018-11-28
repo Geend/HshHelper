@@ -18,7 +18,7 @@
 \RequirePackage[utf8]{inputenc}
 % add table of contents and other tables automatically
 \RequirePackage[nottoc]{tocbibind}
-\RequirePackage[toc,page]{appendix}
+\RequirePackage[toc, page]{appendix}
 
 %% json related packages
 % dont use bera, can't get it at the work PC
@@ -68,6 +68,14 @@
 
 % Seitenköpfe automatisch
 \KOMAoptions{headinclude}
+
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+}
 
 %%% Change settings for epigraphs
 %%% Change chapter format, if needed.
