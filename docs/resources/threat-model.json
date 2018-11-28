@@ -71,8 +71,8 @@
                 "height": 80
               },
               "position": {
-                "x": 889,
-                "y": 39
+                "x": 910,
+                "y": 20
               },
               "angle": 0,
               "id": "77af25e2-b77a-4e8e-917e-5e711e7bd5d2",
@@ -117,8 +117,8 @@
                 "height": 80
               },
               "position": {
-                "x": 911,
-                "y": 475
+                "x": 964,
+                "y": 484
               },
               "angle": 0,
               "id": "e4605773-2655-463c-a457-85d5bb8adf60",
@@ -146,8 +146,8 @@
                 "height": 100
               },
               "position": {
-                "x": 711,
-                "y": 286
+                "x": 752,
+                "y": 307
               },
               "angle": 0,
               "id": "f0794b97-f070-473d-8f9a-90911c14027c",
@@ -175,7 +175,7 @@
               },
               "position": {
                 "x": 402,
-                "y": 281
+                "y": 280
               },
               "angle": 0,
               "id": "d7c1f3d0-506e-4654-8ebb-13a4c0ff0745",
@@ -200,8 +200,8 @@
                 "height": 100
               },
               "position": {
-                "x": 160,
-                "y": 447
+                "x": 162,
+                "y": 455
               },
               "angle": 0,
               "id": "62ebf1af-3caf-431a-82d9-13a4a86ebef5",
@@ -226,8 +226,8 @@
                 "height": 100
               },
               "position": {
-                "x": 414,
-                "y": 88
+                "x": 468,
+                "y": 38
               },
               "angle": 0,
               "id": "8f4d03bb-b53f-4244-834d-64bca8313080",
@@ -351,7 +351,7 @@
                   },
                   "attrs": {
                     "text": {
-                      "text": "Session, Formdaten",
+                      "text": "Session, Formdaten,\nreCAPTCHA, Datei",
                       "font-weight": "400",
                       "font-size": "small"
                     }
@@ -421,16 +421,16 @@
               },
               "vertices": [
                 {
-                  "x": 354,
-                  "y": 185
+                  "x": 396,
+                  "y": 228
                 }
               ],
               "id": "745ba865-a49b-4909-8f2b-96828290aba8",
               "labels": [
                 {
                   "position": {
-                    "distance": 0.6099660945093303,
-                    "offset": -6.52872213255614
+                    "distance": 0.5146623881231757,
+                    "offset": -0.8746291566640139
                   },
                   "attrs": {
                     "text": {
@@ -547,13 +547,18 @@
               "target": {
                 "id": "8b93d03a-adaf-4ab6-8c20-084986fc6d77"
               },
-              "vertices": [],
+              "vertices": [
+                {
+                  "x": 288,
+                  "y": 323
+                }
+              ],
               "id": "ee894b85-20c4-4b4e-a65e-31aa2b01e255",
               "labels": [
                 {
                   "position": {
-                    "distance": 0.5093469103405981,
-                    "offset": 0.7901813350617886
+                    "distance": 0.43360109392548196,
+                    "offset": 1.6817583227530122
                   },
                   "attrs": {
                     "text": {
@@ -589,20 +594,20 @@
               },
               "vertices": [
                 {
-                  "x": 613,
-                  "y": 270
+                  "x": 595,
+                  "y": 299
                 }
               ],
               "id": "ed315a72-87ad-4e04-a656-0811377de851",
               "labels": [
                 {
                   "position": {
-                    "distance": 0.5626190822730559,
-                    "offset": 1.2376414826139808
+                    "distance": 0.4852845942904282,
+                    "offset": 8.52273796312511
                   },
                   "attrs": {
                     "text": {
-                      "text": "Entity-IDs",
+                      "text": "Formdaten,\nDateiname, CAPTCHA",
                       "font-weight": "400",
                       "font-size": "small"
                     }
@@ -611,6 +616,7 @@
               ],
               "z": 22,
               "hasOpenThreats": false,
+              "outOfScope": false,
               "attrs": {
                 ".marker-target": {
                   "class": "marker-target hasNoOpenThreats isInScope"
@@ -631,8 +637,8 @@
               },
               "vertices": [
                 {
-                  "x": 591,
-                  "y": 357
+                  "x": 593,
+                  "y": 386
                 }
               ],
               "id": "204d1527-5bc1-4a6c-91f0-3fe0c30d5dd6",
@@ -673,8 +679,8 @@
               },
               "vertices": [
                 {
-                  "x": 825,
-                  "y": 187
+                  "x": 844,
+                  "y": 184
                 }
               ],
               "id": "130bcdd9-dfc9-410a-9f22-3215b670a4df",
@@ -718,20 +724,20 @@
               },
               "vertices": [
                 {
-                  "x": 931,
-                  "y": 401
+                  "x": 982,
+                  "y": 423
                 }
               ],
               "id": "b8ab88df-0f62-43c0-9f88-8437e32359e8",
               "labels": [
                 {
                   "position": {
-                    "distance": 0.5595241007745236,
-                    "offset": -4.42148978356272
+                    "distance": 0.5920668886841919,
+                    "offset": -0.6618108926340938
                   },
                   "attrs": {
                     "text": {
-                      "text": "Domänendaten",
+                      "text": "Domänendaten,\nDateiname",
                       "font-weight": "400",
                       "font-size": "small"
                     }
@@ -802,8 +808,8 @@
               },
               "vertices": [
                 {
-                  "x": 829,
-                  "y": 453
+                  "x": 879,
+                  "y": 459
                 }
               ],
               "id": "9f04511a-d719-4a2c-9ae2-2e6c00925428",
@@ -815,7 +821,7 @@
                   },
                   "attrs": {
                     "text": {
-                      "text": "Domänendaten",
+                      "text": "Domänendaten,\nDateiname",
                       "font-weight": "400",
                       "font-size": "small"
                     }
@@ -844,20 +850,20 @@
               },
               "vertices": [
                 {
-                  "x": 619,
-                  "y": 415
+                  "x": 685,
+                  "y": 425
                 }
               ],
               "id": "ede0b8ec-9e5d-4f87-b4e3-de9e588dcb77",
               "labels": [
                 {
                   "position": {
-                    "distance": 0.4203362266187841,
-                    "offset": -12.020614720880985
+                    "distance": 0.479713940112616,
+                    "offset": 5.808547361753881
                   },
                   "attrs": {
                     "text": {
-                      "text": "Loginerlaubnis,\nCaptcha",
+                      "text": "Loginerlaubnis,\nCAPTCHA",
                       "font-weight": "400",
                       "font-size": "small"
                     }
@@ -886,8 +892,8 @@
               },
               "vertices": [
                 {
-                  "x": 700,
-                  "y": 472
+                  "x": 751,
+                  "y": 485
                 }
               ],
               "id": "83a6d1c1-63dd-4226-9bed-11b009bdd4fa",
@@ -970,20 +976,20 @@
               },
               "vertices": [
                 {
-                  "x": 305,
-                  "y": 216
+                  "x": 309,
+                  "y": 239
                 }
               ],
               "id": "8cde4d82-28ba-4b94-b472-17c75329b8d1",
               "labels": [
                 {
                   "position": {
-                    "distance": 0.5789438433680908,
-                    "offset": -0.18443587515503168
+                    "distance": 0.6909048432918681,
+                    "offset": -4.943374639376998
                   },
                   "attrs": {
                     "text": {
-                      "text": "Formdaten",
+                      "text": "Formdaten,\nreCAPTCHA, Datei",
                       "font-weight": "400",
                       "font-size": "small"
                     }
@@ -1032,8 +1038,8 @@
               },
               "vertices": [
                 {
-                  "x": 439,
-                  "y": 237
+                  "x": 437,
+                  "y": 202
                 }
               ],
               "id": "40b0a516-a166-47cf-8ba2-f9f2baf38bc7",
@@ -1045,7 +1051,7 @@
                   },
                   "attrs": {
                     "text": {
-                      "text": "Formdaten",
+                      "text": "Formdaten,\nDateiname",
                       "font-weight": "400",
                       "font-size": "small"
                     }
@@ -1090,8 +1096,8 @@
                 "height": 100
               },
               "position": {
-                "x": 537,
-                "y": 472
+                "x": 605,
+                "y": 479
               },
               "angle": 0,
               "id": "dd0977c6-2341-4bcb-b0bf-5a9e600e5f84",
@@ -1116,8 +1122,8 @@
                 "height": 100
               },
               "position": {
-                "x": 995,
-                "y": 221
+                "x": 1028,
+                "y": 215
               },
               "angle": 0,
               "id": "56a11985-3f2b-450b-8737-24947b6f9a57",
@@ -1142,7 +1148,7 @@
                 "height": 80
               },
               "position": {
-                "x": 695,
+                "x": 663,
                 "y": 12
               },
               "angle": 0,
@@ -1183,20 +1189,20 @@
               },
               "vertices": [
                 {
-                  "x": 494,
-                  "y": 247
+                  "x": 536,
+                  "y": 229
                 }
               ],
               "id": "65beccc1-1357-4222-b6d2-72876e23219e",
               "labels": [
                 {
                   "position": {
-                    "distance": 0.5461542237323911,
-                    "offset": -2.8910011532716453
+                    "distance": 0.5062360197214444,
+                    "offset": -20.897425359580666
                   },
                   "attrs": {
                     "text": {
-                      "text": "Formdaten",
+                      "text": "Formdaten,\nDateiname",
                       "font-weight": "400",
                       "font-size": "small"
                     }
@@ -1322,6 +1328,284 @@
                 },
                 ".connection": {
                   "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "smooth": true,
+              "source": {
+                "id": "d7c1f3d0-506e-4654-8ebb-13a4c0ff0745"
+              },
+              "target": {
+                "id": "f0794b97-f070-473d-8f9a-90911c14027c"
+              },
+              "vertices": [
+                {
+                  "x": 603,
+                  "y": 267
+                }
+              ],
+              "id": "802b9c21-3d4b-47ca-8fe4-4fa553ce0d91",
+              "labels": [
+                {
+                  "position": 0.5,
+                  "attrs": {
+                    "text": {
+                      "text": "Dateiinhalt und\n-kommentar",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 42,
+              "hasOpenThreats": true,
+              "threats": [
+                {
+                  "ruleId": "4adaa48a-0345-4533-a189-64c98c4420dd",
+                  "title": "Generic tampering threat",
+                  "type": "Tampering",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic tampering threat",
+                  "$$hashKey": "object:84"
+                },
+                {
+                  "ruleId": "13000296-b17d-4b72-9cc4-f5cc33f80e4c",
+                  "title": "Generic information disclosure threat",
+                  "type": "Information disclosure",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic information disclosure threat",
+                  "$$hashKey": "object:93"
+                },
+                {
+                  "ruleId": "edb05d76-a695-455f-947b-7d67b78bc31d",
+                  "title": "Generic DoS threat",
+                  "type": "Denial of service",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic DoS threat",
+                  "$$hashKey": "object:102"
+                }
+              ],
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "smooth": true,
+              "source": {
+                "id": "f0794b97-f070-473d-8f9a-90911c14027c"
+              },
+              "target": {
+                "id": "e4605773-2655-463c-a457-85d5bb8adf60"
+              },
+              "vertices": [
+                {
+                  "x": 1017,
+                  "y": 386
+                }
+              ],
+              "id": "8cb098cf-a970-4560-a2fd-151241206df0",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.5002582716967782,
+                    "offset": -0.40475508756935596
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "Dateiinhalt und\n-kommentar",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 43,
+              "hasOpenThreats": true,
+              "threats": [
+                {
+                  "ruleId": "4adaa48a-0345-4533-a189-64c98c4420dd",
+                  "title": "Generic tampering threat",
+                  "type": "Tampering",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic tampering threat",
+                  "$$hashKey": "object:114"
+                },
+                {
+                  "ruleId": "13000296-b17d-4b72-9cc4-f5cc33f80e4c",
+                  "title": "Generic information disclosure threat",
+                  "type": "Information disclosure",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic information disclosure threat",
+                  "$$hashKey": "object:123"
+                },
+                {
+                  "ruleId": "edb05d76-a695-455f-947b-7d67b78bc31d",
+                  "title": "Generic DoS threat",
+                  "type": "Denial of service",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic DoS threat",
+                  "$$hashKey": "object:124"
+                }
+              ],
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "smooth": true,
+              "source": {
+                "id": "e4605773-2655-463c-a457-85d5bb8adf60"
+              },
+              "target": {
+                "id": "f0794b97-f070-473d-8f9a-90911c14027c"
+              },
+              "vertices": [
+                {
+                  "x": 854,
+                  "y": 512
+                }
+              ],
+              "id": "dda4deef-f19a-4c07-9197-57a633faab24",
+              "labels": [
+                {
+                  "position": 0.5,
+                  "attrs": {
+                    "text": {
+                      "text": "Dateiinhalt und\n-kommentar",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 44,
+              "hasOpenThreats": true,
+              "threats": [
+                {
+                  "ruleId": "4adaa48a-0345-4533-a189-64c98c4420dd",
+                  "title": "Generic tampering threat",
+                  "type": "Tampering",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic tampering threat",
+                  "$$hashKey": "object:134"
+                },
+                {
+                  "ruleId": "13000296-b17d-4b72-9cc4-f5cc33f80e4c",
+                  "title": "Generic information disclosure threat",
+                  "type": "Information disclosure",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic information disclosure threat",
+                  "$$hashKey": "object:135"
+                },
+                {
+                  "ruleId": "edb05d76-a695-455f-947b-7d67b78bc31d",
+                  "title": "Generic DoS threat",
+                  "type": "Denial of service",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic DoS threat",
+                  "$$hashKey": "object:136"
+                }
+              ],
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "smooth": true,
+              "source": {
+                "id": "f0794b97-f070-473d-8f9a-90911c14027c"
+              },
+              "target": {
+                "id": "d7c1f3d0-506e-4654-8ebb-13a4c0ff0745"
+              },
+              "vertices": [
+                {
+                  "x": 585,
+                  "y": 419
+                }
+              ],
+              "id": "79d7164d-fe8a-46d8-971c-634703f05e52",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.639784387179497,
+                    "offset": -2.669304918497801
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "Dateiinhalt und\n-kommentar",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 45,
+              "hasOpenThreats": true,
+              "threats": [
+                {
+                  "ruleId": "4adaa48a-0345-4533-a189-64c98c4420dd",
+                  "title": "Generic tampering threat",
+                  "type": "Tampering",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic tampering threat",
+                  "$$hashKey": "object:147"
+                },
+                {
+                  "ruleId": "13000296-b17d-4b72-9cc4-f5cc33f80e4c",
+                  "title": "Generic information disclosure threat",
+                  "type": "Information disclosure",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic information disclosure threat",
+                  "$$hashKey": "object:148"
+                },
+                {
+                  "ruleId": "edb05d76-a695-455f-947b-7d67b78bc31d",
+                  "title": "Generic DoS threat",
+                  "type": "Denial of service",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "description": "A generic DoS threat",
+                  "$$hashKey": "object:149"
+                }
+              ],
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasOpenThreats isInScope"
                 }
               }
             }
