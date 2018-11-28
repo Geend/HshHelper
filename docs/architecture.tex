@@ -72,15 +72,15 @@ Das Login-Sequenzdiagramm \ref{architecture:loginseq_diagram} zeigt den Fall, da
 
 
 \section{Dateiaustausch}
-Alle Dateien die Benutzer hochladen werden in der Datenbank als \texttt{BLOB} gespeichert. So können konsitente Zustände mittels Transaktionen sichergestellt werden. Außerdem ist HsHelper dadurch unabhäniger vom Dateisystem das auf dem Host-System verwendet wird.
+Alle Dateien die Benutzer hochladen werden in der Datenbank als \texttt{BLOB} gespeichert. So können konsistente Zustände mittels Transaktionen sichergestellt werden. Außerdem ist HsHelper dadurch unabhängiger vom Dateisystem, das auf dem Host-System verwendet wird.
 
-Um die Umgehung des Quotas durch Ausnutzung des Kommentarfeldes und Dateinamens zu verhindern, zählen sowohl der Datei Inhalt, als auch der Name und das Kommentar zum belegten Speicherplatz einer Datei.
+Um die Umgehung des Quota-Limits durch Ausnutzung des Kommentarfeldes und Dateinamens zu verhindern, zählen sowohl der Datei-Inhalt, als auch Name und Kommentar zum Speicherplatz, den eine Datei belegt.
 
-Beim Herundeladen von Datein wird der Content-Disposition Modus auf \texttt{attachment} und Content-Type auf \texttt{application/octet-stream} gesetzt. So wird erzwungen, dass der Browser immer den \enquote{Speichern}-Dialog anzeigt statt die Datei direkt (im Browser) darzustellen\footnote{Das wäre zum Beispiel bei Textdateien, Bildern und PDFs möglich.}.
+Beim Herunterladen von Datein wird der Content-Disposition Modus auf \texttt{attachment} und Content-Type auf \texttt{application/octet-stream} gesetzt. So wird erzwungen, dass der Browser immer den \enquote{Speichern}-Dialog anzeigt statt die Datei direkt (im Browser) darzustellen\footnote{Das wäre zum Beispiel bei Textdateien, Bildern und PDFs möglich.}.
 
 \section{Logging}
 
-Aufgrund der Bedrohung \textit{T11: Abstreitbarkeit illegaler Handlungen} wurde ein Logging implementiert, mit dem sicher gestellt wird, dass genau das nicht passieren kann.
+Aufgrund der Bedrohung \textit{T11: Abstreitbarkeit illegaler Handlungen} wurde ein Logging implementiert, mit dem sichergestellt wird, dass genau das nicht passieren kann.
 
 Im Zuge dessen wurden 2 verschiedene Logs mithilfe der Bibliothek \enquote{Logback}, die Play standardmäßig inkludiert, implementiert.
 Einmal ein generelles Zugriffslog, in welchem jegliche Zugriffe auf unsere Seite dokumentiert werden, und ein domänenspezifisches Log, in dem spezielle Loggingausgaben für die einzelnen, vorhandenen Aktionen persistiert werden.
