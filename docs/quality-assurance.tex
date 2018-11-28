@@ -190,7 +190,7 @@ Das Format eines Play CSRF Token ist demnach
 <signature> - <nonce> - <token>
 \end{lstlisting}
 
-Für eine Play-Session wird nur ein Token generiert (aus Listing \ref{csrfGenerateToken}). Dieses ist solange gültig wie die Play-Session und ändert sich nicht. Es wird für jeden Formulat innerhalb einer Session verwendet. Da die Nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt. Dadurch werden Attacken die ähnlich wie der \texttt{BREACH} Angriff die HTTP-Komprimierung bei Verwendung von HTTPS verhindert.
+Für eine Play-Session wird nur ein Token generiert (aus Listing \ref{csrfGenerateToken}). Dieses ist solange gültig wie die Play-Session und ändert sich nicht. Es wird für jedes Formular innerhalb einer Session verwendet. Da die Nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt. Dadurch werden Attacken die ähnlich wie der \texttt{BREACH} Angriff die HTTP-Komprimierung bei Verwendung von HTTPS verhindert.
 
 Um CSRF-Token überprüfen zu können, wird das erste CSRF-Token, dass in einer Play Session verwendet wird im Play-Session-Cookie gespeichert. Durch einen Vergleich des Tokens im ersten CSRF-Token mit dem zu prüfenden Token kann sichergestellt werden, dass das CSRF-Token zu der richtigen Session gehört. Außerdem wird geprüft ob die Signatur eines CSRF-Tokens korrekt ist.
 
