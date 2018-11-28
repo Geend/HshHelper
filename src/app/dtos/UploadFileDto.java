@@ -7,7 +7,7 @@ import static policyenforcement.ConstraintValues.MAX_FILENAME_LENGTH;
 
 public class UploadFileDto {
     @Constraints.Required
-    @Constraints.Pattern(ConstraintValues.USERNAME_REGEX)
+    @Constraints.Pattern(ConstraintValues.FILENAME_REGEX)
     @Constraints.MaxLength(MAX_FILENAME_LENGTH)
     private String filename;
 
