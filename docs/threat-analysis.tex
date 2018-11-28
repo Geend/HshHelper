@@ -521,109 +521,113 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
 
 \begin{itemize}
 
-  \hypertarget{}{}
-  \item \textbf{Log Poisoning}
+  \hypertarget{threat26}{}
+  \item \textbf{T26: Log Poisoning}
   \begin{itemize}
-  \item Zweck:
-  \item Möglichkeiten:
-  \item Risiko: 
-  \item Mögliche Gegenmaßnahmen:
-  \begin{itemize}
-  \item 
-  \end{itemize}
+  \item Zweck: Log-Einträge für real nicht stattgefundene Events erstellen / Anderem Nutzer etwas anhängen.
+  \item Möglichkeiten: User-Input in Logs mit Newline versehen.
+  \item Risiko: Mittel
+  \item Mögliche Gegenmaßnahmen: Ausgabecodierung von User-Input in Logdatei z.B. Base64.
   \end{itemize}
 
-  \hypertarget{}{}
-  \item \textbf{Log Code Injection}
+  \hypertarget{threat27}{}
+  \item \textbf{T27: Log Code Injection}
   \begin{itemize}
-  \item Zweck:
-  \item Möglichkeiten:
-  \item Risiko: 
-  \item Mögliche Gegenmaßnahmen:
-  \begin{itemize}
-  \item 
-  \end{itemize}
+  \item Zweck: Programme angreifen, welche die Log parsen/öffnen.
+  \item Möglichkeiten: Schadcode in User-Input eingeben, der in der Log-Datei landet.
+  \item Risiko: Low
+  \item Mögliche Gegenmaßnahmen: - Wird derzeit noch diskutiert -
   \end{itemize}
 
-  \hypertarget{}{}
-  \item \textbf{Speicherverbrauch durch Spammen von Requests}
+  \hypertarget{threat28}{}
+  \item \textbf{T28: Speicherverbrauch durch Spammen von Requests}
   \begin{itemize}
-  \item Zweck:
-  \item Möglichkeiten:
-  \item Risiko: 
-  \item Mögliche Gegenmaßnahmen:
-  \begin{itemize}
-  \item 
+  \item Zweck: Speicher des Servers völlig mit Logs belegen -> Denial of Service.
+  \item Möglichkeiten: In endlosschleife Requests ausführen.
+  \item Risiko: Mittel
+  \item Mögliche Gegenmaßnahmen: Log-Rotation verwenden.
   \end{itemize}
+  
+  \hypertarget{threat29}{}
+  \item \textbf{T29: Log-Deletion durch Spammen von Requests}
+  \begin{itemize}
+  \item Zweck: Log-Rotation triggern, um eine Beweisvernichtung auszuführen.
+  \item Möglichkeiten: In endlosschleife Requests ausführen.
+  \item Risiko: Mittel
+  \item Mögliche Gegenmaßnahmen: - Wird derzeit noch diskutiert -
   \end{itemize}
 
-  \hypertarget{}{}
-  \item \textbf{Virensignatur in User Agent}
+  \hypertarget{threat30}{}
+  \item \textbf{T30: Virensignatur in User-Input}
   \begin{itemize}
-  \item Zweck:
-  \item Möglichkeiten:
-  \item Risiko: 
+  \item Zweck: Denial of Service / Logging blockieren
+  \item Möglichkeiten: Eine Signatur in User-Input einbauen, die von einem Virenscanner erkannt wird. Virenscanner blockiert folgend Zugriffe auf die Log-Datei und Anwendung kann keine weiteren Logs schreiben.
+  \item Risiko: Low
   \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
-  \item 
+  	\item Keinen Virenscanner auf Applikationsserver verwenden.
+  	\item Anwendung in VM ohne Virenscanner laufen lassen.
+  	\item Log-Folder auf Whitelist des Virenscanner setzen.
   \end{itemize}
   \end{itemize}
 \end{itemize}
 
-\subsubsection{Mögliche Angriffe auf Zusatzfunktionalitaet: Anzeige, wer File als letztes beschrieben haben}
+\subsubsection{Mögliche Angriffe auf Zusatzfunktionalität: Anzeige, wer File als letztes beschrieben haben}
 
 \begin{itemize}
 
-  \hypertarget{}{}
-  \item \textbf{CSS Injection}
+  \hypertarget{threat31}{}
+  \item \textbf{T31: CSS Injection}
   \begin{itemize}
-  \item Zweck:
-  \item Möglichkeiten:
-  \item Risiko
+  \item Zweck: Einfärbewarnung deaktivieren.
+  \item Möglichkeiten: Wie XSS, jedoch wird anstelle von Javascript Inline-CSS injeziert, das die CSS-Klasse überschreibt, welche für die Rotfärbung von Dateien verantwortlich ist.
+  \item Risiko: Mittel
   \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
-  \item 
+	  \item Ausgabecodierung.
+	  \item Content-Security-Policy.
   \end{itemize}
 \end{itemize}
 \end{itemize}
 
-\subsubsection{Mögliche Angriffe auf Zusatzfunktionalitaet: Nutzer kann Session-Timeout einstellen}
+\subsubsection{Mögliche Angriffe auf Zusatzfunktionalität: Nutzer kann Session-Timeout einstellen}
 
 \begin{itemize}
 
-  \hypertarget{}{}
-  \item \textbf{Ueberlanges Session-Timeout einstellen}
+  \hypertarget{threat32}{}
+  \item \textbf{T32: Überlanges Session-Timeout einstellen}
   \begin{itemize}
-    \item Zweck: Umgehen des intendierten Schutzes
-    \item Möglichkeiten:
-    \item Risiko
+    \item Zweck: Umgehen des intendierten Schutzmechanismus (Session-Timeout).
+    \item Möglichkeiten: Einen extrem hohen Wert wählen.
+    \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
-      \item 
+      \item Einen Maximalwert definieren.
       \end{itemize} 
   \end{itemize}
 
-  \hypertarget{}{}
-  \item \textbf{Integer Overflow}
+  \hypertarget{threat33}{}
+  \item \textbf{T33: Integer Overflow}
   \begin{itemize}
-    \item Zweck: Umgehen des intendierten Schutzes
-    \item Möglichkeiten:
-    \item Risiko
+    \item Zweck: Umgehen des intendierten Schutzmechanismus (Session-Timeout).
+    \item Möglichkeiten: Einen extrem hohen Wert wählen.
+    \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
-      \item 
+      \item Einen Maximalwert definieren.
+      \item Arithmetik verwenden, die nicht anfällig für Integer-Overflows ist.
       \end{itemize}
   \end{itemize}
 
-  \hypertarget{}{}
-  \item \textbf{Negatives Session Timeout}
+  \hypertarget{threat34}{}
+  \item \textbf{T34: Negatives Session Timeout}
   \begin{itemize}
-    \item Zweck: Umgehen des intendierten Schutzes
-    \item Möglichkeiten:
-    \item Risiko
+    \item Zweck: Umgehen des intendierten Schutzmechanismus (Session-Timeout).
+    \item Möglichkeiten: Einen sehr geringen (negativen) Wert wählen.
+    \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
-      \item 
+      \item Einen Minimalwert definieren.
       \end{itemize}
   \end{itemize}
 \end{itemize}
@@ -772,15 +776,17 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
 
 \begin{itemize}
 
-  \hypertarget{}{}
-  \item \textbf{Open Redirect}
+  \hypertarget{threat25}{}
+  \item \textbf{T25: Open Redirect}
   \begin{itemize}
-    \item Zweck: 
-    \item Möglichkeiten:
-    \item Risiko
+    \item Zweck: Benutzer auf eine Angriffseite umleiten.
+    \item Möglichkeiten: Eigene URL als Redirect-Parameter angeben.
+    \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
-      \item 
+      	\item Zugrundeliegende Funktionalität nicht per GET sondern per POST anbieten, das vom Play CSRF-Schutz gesichert wird.
+      	\item URL-Eingabe durch ein Regex prüfen.
+      	\item URL-Eingabe durch eine Whitelist prüfen.
       \end{itemize} 
   \end{itemize}
 \end{itemize}
