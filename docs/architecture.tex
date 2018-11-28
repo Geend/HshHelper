@@ -39,13 +39,6 @@
 \chapter{Architekturaufbau}
 \section{Klassendiagramm}
 
-\begin{figure}[!htb]
-  \hspace*{-2.5cm}
-  \includegraphics[width=0.93\paperwidth]{resources/class_diagram.png}
-  \label{architecture:class_diagram}
-  \caption{\enquote{High-Level}-Klassendiagramm unseres Systems}
-\end{figure}
-
 Das in Abbildung \ref{architecture:class_diagram} dargestellte Architekturdiagramm verzichtet zugunsten der Über\-sichtlichkeit auf die Abhängig\-keiten zwischen den Klassen. Es dient lediglich zur Veranschaulichung der Top-Level-Architektur und zur Illustration der wichtigsten Klassen. Der Zusammenhang der farblich abgetrennten Gruppierungen wird zusätzlich textuell erklärt.
 
 % ggf. explizit Farben nennen?
@@ -57,6 +50,9 @@ Das Gleiche gilt für das \texttt{PasswordSecurityModule}, welches beim Login, E
 Daher wurden diese beiden Klassen unter \enquote{Cross-Cutting-Concerns} zusammengefasst.
 Zugriffe auf diese Klassen können sowohl von Controllern als auch von Managern in der Domänenlogik erfolgen. \par
 Im Folgenden geben Sequenzdiagramme weitere Einsicht in das Zusammenspiel dieser Klassen.
+
+Die Klassen, die in der zweiten Iteration dazu gekommen sind, können der Abbildung \ref{architecture:class_diagram2} entnommen werden.
+Sie folgen dem gleichem Aufbau wie oben geschildert.
 
 \section{Sequenzdiagram: Benutzer erstellen}
 
@@ -380,6 +376,20 @@ HMAC-SHA256(
 	secret
 )
 \end{lstlisting}
+
+\begin{figure}[!htb]
+	\hspace*{-2.5cm}
+	\includegraphics[width=0.93\paperwidth]{resources/class_diagram.png}
+	\label{architecture:class_diagram}
+	\caption{\enquote{High-Level}-Klassendiagramm unseres Systems}
+  \end{figure}
+
+  \begin{figure}[!htb]
+	\hspace*{-2.5cm}
+	  \includegraphics[width=0.93\paperwidth]{resources/class_diagram_2.png}
+	  \label{architecture:class_diagram2}
+	  \caption{\enquote{High-Level}-Klassendiagramm unseres Systems}
+	\end{figure}
 
 \end{appendices}
 
