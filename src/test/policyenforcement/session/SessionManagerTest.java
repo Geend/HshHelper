@@ -123,7 +123,7 @@ public class SessionManagerTest {
 
         DateTimeUtils.setCurrentMillisFixed(
                 DateTimeUtils.currentTimeMillis()
-                + (long)sessionManager.getSessionTimeoutHours()*3600L*1000L
+                + (long)robin.getSessionTimeoutInMinutes()*60L*1000L
                 + 1000L // gurantee that we are *beyond* the timeout
         );
 
@@ -146,7 +146,7 @@ public class SessionManagerTest {
 
         DateTimeUtils.setCurrentMillisFixed(
                 DateTimeUtils.currentTimeMillis()
-                        + (long)sessionManager.getSessionTimeoutHours()*3600L*1000L
+                        + (long) robin.getSessionTimeoutInMinutes()*60L*1000L
                         - 1000L // gurantee that we are just *before* the timeout
         );
 

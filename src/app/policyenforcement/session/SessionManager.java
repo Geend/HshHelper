@@ -139,10 +139,6 @@ public class SessionManager {
         Logger.info("REWRITE/ Delete "+deletedSessions+" Sessions");
     }
 
-    public int getSessionTimeoutHours() {
-        return ConstraintValues.MAX_SESSION_TIMEOUT_HOURS;
-    }
-
     public int remainingSessionTime(){
         Minutes timeDifference = Minutes.minutesBetween(currentSession().getIssuedAt(), DateTime.now());
         return currentUser().getSessionTimeoutInMinutes() - timeDifference.getMinutes();
