@@ -121,14 +121,14 @@ Die verwendete Bibliothek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in d
 Auch zur Generierung der initialen (und temporären) Benutzer-Passwörter beim Anlegen eines neuen Benutzerkontos wird SecureRandom als Basis verwendet. Dafür zuständig ist die Klasse \texttt{PasswordGenerator}. Die generierten Passwörter können die Zeichen \texttt{a-z}, \texttt{A-Z}, \texttt{0-9} und die Sonderzeichen \texttt{!\%?\#-\_*+} enthalten.
 
 \section{CSRF-Tokens}
-Die Play CSRF-Tokens bestehen aus 3 Teilen: 
+Die Play CSRF-Tokens bestehen aus 3 Teilen:
 \begin{enumerate}
 \item Einem Token, dass für jede Session mit der Java Klasse SecureRandom als CPRNG generiert wird.
 \item Einer auf der Systemzeit basierendem Nonce, dass für jeden Request generiert wird.
 \item Einer auf HMAC-SHA1 basierenden Signatur des Tokesn und der Nonce.
 \end{enumerate}
 
-Beim starten einer Play-Session wird ein CSRF-Token in das Session Cookie geschrieben. Dieses CSRF-Token ändert sich während einer Play-Session nie. Für jedes Formular wird ein eigenes CSRF-Token generiert, dass sich innerhalb einer Play-Session nur durch die Nonce (und damit auch der Signatur) unterscheidet. Durch Vergleichen des Tokens aus dem CSRF-Token der Play-Session und des Tokens aus dem CSRF-Token in einem HTTP Request kann die Gültigkeit eines CSRF-Token festgestellt werden. 
+Beim starten einer Play-Session wird ein CSRF-Token in das Session Cookie geschrieben. Dieses CSRF-Token ändert sich während einer Play-Session nie. Für jedes Formular wird ein eigenes CSRF-Token generiert, dass sich innerhalb einer Play-Session nur durch die Nonce (und damit auch der Signatur) unterscheidet. Durch Vergleichen des Tokens aus dem CSRF-Token der Play-Session und des Tokens aus dem CSRF-Token in einem HTTP Request kann die Gültigkeit eines CSRF-Token festgestellt werden.
 
 
 \section{Play Cookies}
@@ -173,7 +173,7 @@ Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 
 Der öffentliche reCAPTCHA-Schlüssel wird benötigt, um das reCAPTCHA einbinden zu können und wird vom Client an Google übertragen. Löst der Client ein Captcha korrekt, erhält er von Google eine Nonce, die er an uns weiterleitet. Diese wird von unserem Server in Verbindung mit dem Private Key an Google geschickt. Google teilt uns dann mit, ob diese Nonce valide ist.
 
-Der öffentliche Schlüssel ist fest mit \enquote{unserer Domain} (localhost) verbunden. D.h. der Captcha-Code kann nicht auf einer anderen Domain eingebunden werden, um Nonce's zu erzeugen.
+Der öffentliche Schlüssel ist fest mit \enquote{unserer Domain} (localhost) verbunden. Das heißt, dass der Captcha-Code nicht auf einer anderen Domain eingebunden werden kann, um Noncess zu erzeugen.
 
 Daher werden alle Schlüssel sowie Zugangsdaten in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Teammitglieder persistiert, welche nicht versioniert wird. Die \texttt{application.conf} bindet diese Datei mit dem \texttt{include}-Statement ein und somit werden die Schlüssel in der Anwendung verwendet. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind, aber Anwendungseinstellungen jedoch schon.
 
@@ -210,7 +210,7 @@ Zur Umsetzung dieser Funktionalität setzen wir auf dem Session-Konzept von Play
 Initialisiert ein Nutzer eine neue Session, so persistieren wir seine IP-Adresse, seine User-ID, das Initialisierungsdatum und eine kryptografisch sicheren \enquote{\gls{uuid}} als Identifikator dieser neuen Session in unserer Datenbank. \linebreak
 Um diese Session sicher beim Client speichern zu können, verwenden wir das bereits genannte Cookie \textit{PLAY\_SESSION}.
 Innerhalb des Payloads dieses JWT befindet sich ein JSON-Objekt namens \enquote{data} hinterlegt, zu welchem man weitere Applikationsdaten als Schlüssel-Wert-Paare hinzufügen kann.
-Das machen wir uns zu eigen und persistieren das Schlüssel-Wert-Paar \texttt{\"HsHSession\": \"UUID\"}, durch welches wir den Nutzer authentisieren können.
+Das machen wir uns zu eigen und persistieren das Schlüssel-Wert-Paar \enquote{HsHSession}: \enquote{UUID}, durch welches wir den Nutzer authentisieren können.
 Wir verlassen uns daher nicht auf die Existenz dieses Cookies, sondern nutzen dieses nur, um einen signierten Speicher innerhalb des Client-Browsers verwenden zu können.
 
 Die UUID selbst dient als 2nd Layer of Defense: Sollte die JWT-Signatur geknackt werden, muss der Angreifer noch eine in der Datenbank enthaltene UUID erraten. Selbst wenn er diese Hürde meistert, muss er noch die dazugehörige IP-Addresse kennen, sowie über diese auf unsere Anwendung zugreifen können und dies in einem engen Zeitfenster schaffen, da die Lebenszeit einer Session begrenzt ist. Wie lange eine Session gültig ist kann von HsHelper Benutzern eingstellt werden. Die Einstellung wirkt sich auf alles Sessions eines Benutzers aus. Maximal ist eine Session 24 Stunden gültig.
@@ -293,15 +293,20 @@ Auch diese Funktionalität bildet das Designprinzip \enquote{Visibility} ab.
 
 \section{Nutzer kann einsehen, welcher Nutzer zuletzt eine Datei überschrieben hat}
 Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch überschreiben kann, ist es nicht klar ersichtlich, von wem der Dateiinhalt tatsächlich geschrieben wurde. Aus diesem Grund speichern wir zusätzlich für jede Datei, wer den tatsächlichen Inhalt geschrieben hat. Diese Information verwenden wir in Form einer visuellen Darstellung: Dateien, die von einem selbst geschrieben wurden, sind grün hinterlegt (\enquote{vertrauenswürdig}). Dateien, die von Dritten geschrieben wurden, werden rot hinterlegt (\enquote{potentiell gefährlich}). Zugleich wird auf der Detailseite der entsprechenden Datei angezeigt wer diese geschrieben hat und wann dies erfolgte.
-Über diese Funktionalität wird zugleich Threat -VERWEIS-EINBAUEN- (Freigabe einer Datei mit gleichem Namen) mitigiert. Eine solche Datei wäre rot gefärbt und somit deutlich von der eigenen, namensgleichen Datei zu unterscheiden.
+Über diese Funktionalität wird zugleich Threat (Freigabe einer Datei mit gleichem Namen) mitigiert. Eine solche Datei wäre rot gefärbt und somit deutlich von der eigenen, namensgleichen Datei zu unterscheiden.
 % TODO: Check for the right design principle. Is this identifiability?
-
-\section{Nutzer kann sein Passwort ändern}
-Ein angemeldeter Benutzer kann sein Passwort ändern. Dazu muss er sein derzeitigs Passwort und zwei mal das gewünschte neue Passwort eingaben. Diese Funktion wurde implementiert, da ein Benutzer sein Passwort sonst nur über die \enquote{Passwort-Vergessen} Funktion ändern kann.
 
 \section{Warnung bei Aktionen mit schweren Seiteneffekten}
 \label{warning:severe:sideeffects}
-Die Aktionen \enquote{Benutzer löschen} und \enquote{Gruppe löschen} haben schwerwiegende Seiteneffekte: Wird ein Nutzer gelöscht, werden seine Dateien und Gruppen sowie sämtliche diesbezügliche Freigaben unwiederruflich entfernt. Das gleiche gilt für die Löschung einer Gruppe und diesbezügliche Freigaben. Diese Aktion war mittels eines Mausklicks möglich, es fand keinerlei Warnung statt. Eine solche Implementierung begünstigt Fat-Finger-Fehler\footnote{\url{https://en.wikipedia.org/wiki/Fat-finger_error}}. Aus diesem Grund haben wir uns entschieden von dem Benutzer eine explizite Bestätigung zu verlangen. Die Auswirkungen seiner geplanten Aktion werden ihm ausdrücklich angezeigt.
+Die Aktionen \enquote{Benutzer löschen} und \enquote{Gruppe löschen} haben schwerwiegende Seiteneffekte: Wird ein Nutzer gelöscht, werden seine Dateien und Gruppen sowie sämtliche diesbezügliche Freigaben unwiederruflich entfernt.
+Das gleiche gilt für die Löschung einer Gruppe und diesbezügliche Freigaben.
+Diese Aktion war mittels eines Mausklicks möglich, es fand keinerlei Warnung statt.
+Eine solche Implementierung begünstigt Fat-Finger-Fehler\footnote{\url{https://en.wikipedia.org/wiki/Fat-finger_error}}.
+Aus diesem Grund haben wir uns entschieden von dem Benutzer eine explizite Bestätigung zu verlangen. Die Auswirkungen seiner geplanten Aktion werden ihm ausdrücklich angezeigt.
+
+\section{Nutzer kann sein Passwort ändern}
+Ein angemeldeter Benutzer kann sein Passwort ändern. Dazu muss er sein derzeitige Passwort und zwei mal das gewünschte neue Passwort eingeben.
+Diese Funktion wurde implementiert, da ein Benutzer sein Passwort sonst nur über die \enquote{Passwort vergessen}-Funktion ändern kann.
 
 \section{Suchfunktionalität}
 Im Rahmen der Design-Erstellung haben wir das Bedürfnis einer Suchfunktionalität entdeckt. Die Dateien sind die Zentralen Elemente des HsH-Helpers und sollten so einfach wie möglich zugänglich sein. Folglich haben wir uns dazu entschlossen, in unser Design ein Suchfeld zu implementieren, das von jeder Stelle der Anwendung aus zugänglich ist.
@@ -348,7 +353,7 @@ Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit ein
 Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine numerische ID, die inkrementell aufsteigend war. Das JWT-Token beinhaltet den Schlüssel der korrospondierenden Session-Entität in der Datenbank. Würde ein Angreifer die JWT Signatur knacken, könnte er leicht passende IDs erraten: Er müsste sich anmelden, wüsste dann, welche ID \enquote{aktuell} ist und könnte anhand dieser Information passende IDs ausprobieren. Wir haben diese Implementierung zugunsten von kryptografisch sicheren UUIDs verworfen, die ein \enquote{second layer of defense} darstellen (vgl. \ref{sessionkonzept}).
 
 \section{Asynchroner Datei-Upload}
-Aufgrund von Usability-Erwägungen wurde ein asynchroner Datei-Upload mittels Javascript angepeilt: Es ist eine Vorgabe des Dozenten, dass beim Upload zugleich Dateiname und Kommentar sowie die Berechtigungen angegeben werden müssen. Treten bei diesen Daten Fehler auf, ist es erforderlich, die entsprechende Datei erneut auszuwählen und hochzuladen. Um diesen Makel zu verhindern, war es angedacht, dass das Auswählen einer Datei unmittelbar einen Upload inkl. Fortschrittsanzeige in Gang setzt. Die Daten würden von unserer Anwendung temporär vorgehalten werden und im Formular mittels eines Hidden-Inputs eingebunden. 
+Aufgrund von Usability-Erwägungen wurde ein asynchroner Datei-Upload mittels Javascript angepeilt: Es ist eine Vorgabe des Dozenten, dass beim Upload zugleich Dateiname und Kommentar sowie die Berechtigungen angegeben werden müssen. Treten bei diesen Daten Fehler auf, ist es erforderlich, die entsprechende Datei erneut auszuwählen und hochzuladen. Um diesen Makel zu verhindern, war es angedacht, dass das Auswählen einer Datei unmittelbar einen Upload inkl. Fortschrittsanzeige in Gang setzt. Die Daten würden von unserer Anwendung temporär vorgehalten werden und im Formular mittels eines Hidden-Inputs eingebunden.
 So wäre selbst bei fehlerhaften Formulareingaben kein mehrfach-Upload erforderlich. Diese Idee wurde verwurfen: Herr Prof. Dr. hat ein dertiges Konzept als zu komplex bewertet und uns mitgeteilt, dass die Usability bei einer erzwungenden Mehrfachauswahl der Datei nicht negativ beeinträchtigt wäre.
 
 \section{Aufteilung von Datei-Upload und Rechtevergabe}
