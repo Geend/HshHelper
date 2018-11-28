@@ -105,7 +105,15 @@ Die verwendete Bibliothek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in d
 Auch zur Generierung der initialen (und temporären) Benutzer-Passwörter beim Anlegen eines neuen Benutzerkontos wird SecureRandom als Basis verwendet. Dafür zuständig ist die Klasse \texttt{PasswordGenerator}. Die generierten Passwörter können die Zeichen \texttt{a-z}, \texttt{A-Z}, \texttt{0-9} und die Sonderzeichen \texttt{!\%?\#-\_*+} enthalten.
 
 \section{CSRF-Tokens}
-Play verwendet zum Generieren von CSRF-Tokens die Java Klasse SecureRandom als CPRNG. Für jede Play Session und jeden Request wird aus dem Token und einer Nonce ein mit HMAC-SHA1 signiertes CSRF-Token generiert.
+Die Play CSRF-Tokens bestehen aus 3 Teilen: 
+\begin{enumerate}
+\item Einem Token, dass für jede Session mit der Java Klasse SecureRandom als CPRNG generiert wird.
+\item Einer auf der Systemzeit basierendem Nounce, dass für jeden Request generiert wird.
+\item Einer auf HMAC-SHA1 basierenden Signatur des Tokesn und der Nounce.
+\end{enumerate}
+
+Beim starten einer Play-Session wird ein CSRF-Token in das Session Cookie geschrieben. Dieses CSRF-Token ändert sich während einer Play-Session nie. Für jedes Formular wird ein eigenes CSRF-Token generiert, dass sich innerhalb einer Play-Session nur durch die Nounce (und damit auch der Signatur) unterscheidet. Durch Vergleichen des Tokens aus dem CSRF-Token der Play-Session und des Tokens aus dem CSRF-Token in einem HTTP Request kann die Gültigkeit eines CSRF-Token festgestellt werden. 
+
 
 \section{Play Cookies}
 \label{play:cookies}
