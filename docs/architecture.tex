@@ -357,6 +357,8 @@ Der Datei-Upload sollte ursprünglich keine unmittelbare Rechtevergabe beinhalte
 \section{Darstellung der Dateianzahl von Nutzern}
 Auf der Warnseite, die beim Löschen eines Nutzers angezeigt wird (vgl. \ref{warning:severe:sideeffects}) wurde ursprünglich auch die Anzahl jener Dateien angezeigt, die dem entsprechenden Benutzer gehören. Herr Prof. Dr. Peine hat uns darauf hingewiesen, dass ein Administrator über keine Berechtigung verfügt, die es ihm gestattet eine derartige Information zu erlangen. Die Anzahl der Dateien wurde durch eine allgemeingültige Umschreibung ersetzt (\enquote{..alle Dateien des Nutzers..}).
 
+\section{Manager API ohne übergabe des aktuellen Benutzers}
+In der ersten Iteration erforderte die Schnittstelle der Manager eine Übergabe der Id des aktuell angemeldeten Benutzers. Dies ist nicht nur umständlich, da es bei den meisten Aufrufen geschehen muss (abgesehen von Spezialfällen wie Login), sondern auch relevant für die Sicherheit der Anwendung. Wird beim Aufruf fälschlicherweise nicht die Id des aktuellen Benutzers übergeben, kann es so zu einer Autorisierungsverletzung kommen. Nach der Überarbeitung beziehen alle Manager den aktuellen Benutzer aus dem Session Manager und somit wird diese art von Fehlern automatisch vermieden.
 
 \printbibliography
 
