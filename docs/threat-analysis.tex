@@ -731,20 +731,20 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \end{itemize}
 \end{itemize}
 
-\subsubsection{Mögliche Angriffe auf Zusatzfunktionalität: Anzeige, wer File als letztes beschrieben haben}
+\subsubsection{Mögliche Angriffe auf Zusatzfunktionalität: Anzeige, wer Dateiinhalt geschrieben hat}
 
 \begin{itemize}
 
   \hypertarget{threat31}{}
   \item \textbf{T31: CSS Injection}
   \begin{itemize}
-  \item Zweck: Einfärbewarnung deaktivieren.
+  \item Zweck: Einfärbewarnung deaktivieren/manipulieren.
   \item Möglichkeiten: Wie XSS, jedoch wird anstelle von Javascript Inline-CSS injeziert, das die CSS-Klasse überschreibt, welche für die Rotfärbung von Dateien verantwortlich ist.
   \item Risiko: Mittel
   \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
 	  \item Ausgabecodierung.
-	  \item Content-Security-Policy.
+	  \item Content-Security-Policy, die Inline-CSS verbietet.
   \end{itemize}
 \end{itemize}
 \end{itemize}
