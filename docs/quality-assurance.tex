@@ -130,7 +130,7 @@ In der Folge wurde das Session-Konzept so geändert, dass vor Anlegen einer neue
 \subsubsection{HTTP Response Splitting mittels Dateinamen}
 Um zu prüfen ob HTTP Response Splitting durch das Einfügen von Zeilenumbrüchen in Dateinamen möglich sind, wurde ein Penetrationstest durchgeführt. Dazu wurde vorübergehend die Eingabevalidierung für Dateinamen deaktiviert, um die Zeilenumbrüche platzieren zu können.
 
-In der Oberfläche wird der Zeilenumbruch wie erwartet dargestellt. Beim Versuch die Datei herunterzaladen gibt es eine Exception: \texttt{[ServerResultException: Error converting Play Result for server backend]}. Der Benutzer bekommt eine Fehlerseite mit dem HTTP Statuscode 500 angezeigt und die Datei wird nicht heruntergeladen. Weiter Seiteneffekte konnten dabei nicht beobachtet werden.
+In der Oberfläche wird der Zeilenumbruch wie erwartet dargestellt. Beim Versuch die Datei herunterzaladen gibt es eine Exception: \texttt{[ServerResultException: Error converting Play Result for server backend]}. Der Benutzer bekommt eine Fehlerseite mit dem HTTP Statuscode 500 angezeigt und die Datei wird nicht heruntergeladen. Weiter Seiteneffekte konnten dabei nicht beobachtet werden. Dieses Verhalten wird durch das Play Framework realisiert, dass die Verwendung von Zeilenumbrüchen in HTTP Headern unterbindet.
 
 Das Fehlerverhalten ist hier angemessen. Druch die Eingabevalidierung ist es bei normaler Benutzung nicht möglich die Zeilenumbrüche in einem Dateinamen zu verwenden.
 
