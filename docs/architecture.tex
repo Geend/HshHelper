@@ -171,11 +171,10 @@ Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 	\item Zugangsdaten für die Datenbank
 \end{itemize}
 
-Der öffentliche reCAPTCHA-Schlüssel wird benötigt, damit der reCAPTCHA-Service auf unserer Seite angezeigt werden kann sowie um die Antwort des Nutzers verschlüsselt an den reCAPTCHA-Server zu schicken.
-Nach dem Ausfüllen eines reCAPTCHAs durch einen Nutzer, wird seine verschlüsselte Antwort zusammen mit dem privaten Schlüssel an den reCAPTCHA-Service geschickt.
-Dieser Schlüssel authorisiert unsere Applikation zur Kommunikation mit dem reCAPTCHA-Service, dient aber zeitgleich zur Verifikation, dass unser Server, und keine andere Entität, die Antwort verifizieren möchte.
-Das gilt natürlich nur, wenn der private Schlüssel für den reCAPTCHA-Service geheim gehalten wird.
-\par
+Der öffentliche reCAPTCHA-Schlüssel wird benötigt, um das reCAPTCHA einbinden zu können und wird vom Client an Google übertragen. Löst der Client ein Captcha korrekt, erhält er von Google eine Nonce, die er an uns weiterleitet. Diese wird von unserem Server in Verbindung mit dem Private Key an Google geschickt. Google teilt uns dann mit, ob diese Nonce valide ist.
+
+Der öffentliche Schlüssel ist fest mit \enquote{unserer Domain} (localhost) verbunden. D.h. der Captcha-Code kann nicht auf einer anderen Domain eingebunden werden, um Nonce's zu erzeugen.
+
 Daher werden alle Schlüssel sowie Zugangsdaten in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Teammitglieder persistiert, welche nicht versioniert wird. Die \texttt{application.conf} bindet diese Datei mit dem \texttt{include}-Statement ein und somit werden die Schlüssel in der Anwendung verwendet. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind, aber Anwendungseinstellungen jedoch schon.
 
 \chapter{Sicherheitsmaßnahmen}
