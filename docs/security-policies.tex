@@ -71,7 +71,7 @@
   \item Nutzer des HsH-Helfers verwenden moderne, aktuelle Browser, die spezifische sicherheitsrelevante HTTP-Header unterstützen (Browser nach 2013 für CSP).
   \item Alle Browser respektieren den HTTP-Header \texttt{Content-Type: application/octet-stream}
   \item Unserer In-Memory-Datenbank geht niemals der Speicher aus, zumindest in Rahmen dieses Projekts.
-  \item \textcolor{red}{Nutzer unserer Applikation greifen nur innerhalb einer Sandbox auf eine Datei zu.}
+  \item Nutzer unserer Applikation greifen nur innerhalb einer Sandbox auf eine Datei zu.
 \end{itemize}
 
 \chapter{Akteure}
@@ -150,6 +150,9 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
   \item \textbf{AK21:} Gruppenberechtigungen einer Datei verwalten [DO]
   \item \textbf{AK22:} Informationen zu dem Speicherplatzlimit eines Nutzers anzeigen lassen [U+]
   \item \textbf{AK23:} Speicherplatzlimit eines Nutzers anpassen [A]
+  \item \textbf{AK24:} Nutzer kann Session-Timeout einstellen [U+]
+  \item \textbf{AK25:} Nutzer kann Passwort ändern [U+]
+  \item \textbf{AK26:} Nutzer kann nach Dateien suchen [DR, DW, DA, DO]
 \end{itemize}
 
 \chapter{Richtlinien}
@@ -183,6 +186,9 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
       AK21       & \redxmark & \redxmark & \redxmark & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
       AK22       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
       AK23       & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK24       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK25       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK26       & \redxmark & \redxmark & \redxmark & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark & \redxmark & \redxmark \\ \hline
   \end{tabularx}
 \end{table}
 
@@ -210,6 +216,8 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
   \item Ein Nutzer [U+] darf sich nur Dateien anzeigen lassen (AK19), zu welchen er mindestens zum Lesen berechtigt ist.
   \item Ein Nutzer [DO] darf die Nutzer- und Gruppenberechtigungen einer Datei jederzeit anpassen (AK20, 21); bedeutet löschen, hinzufügen, verändern.
   \item Ein Nutzer [U+] darf sich nur zu seinem eigenem Speicherplatzlimit informieren (AK22) und hat keinen Zugriff auf die Speicherplatzlimit anderer Nutzerkonten.
+  \item Ein Nutzer [U+] darf seinen eigenen Session-Timeout (AK24) einstellen.
+  \item Ein Nutzer [U+] darf sein eigenes Passwort (AK25) einstellen.
 \end{itemize}
 
 \printbibliography
