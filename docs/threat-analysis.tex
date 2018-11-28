@@ -114,7 +114,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/users/editQuota}
       \begin{enumerate}
-        \item GET - \texttt{changeUserQuotaLimit(userId, 
+        \item GET - \texttt{changeUserQuotaLimit(userId,
         newQuotaLimit)}
       \end{enumerate}
       \item \texttt{/resetpassword}
@@ -291,7 +291,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \begin{enumerate}
         \item POST - \texttt{createGroupPermission(fileId, groupId, permissionLevel)}
       \end{enumerate}
-      
+
       \item \texttt{/permissions/deleteGroupPermission}
       \begin{enumerate}
         \item POST - \texttt{deleteGroupPermission(groupPermissionId, returnUrl)}
@@ -608,12 +608,16 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
 
 \begin{itemize}
   \hypertarget{threat21}{}
-  \item \textbf{T21: Dateinamen, Kommmentarfeld oder Gruppennamen zur Dateispeicherung missbrauchen}
+  \item \textbf{T21: Dateinamen, Kommmentarfeld oder Gruppenname zum Dateien kodieren missbrauchen}
   \begin{itemize}
   \item Zweck: Speicherplatzlimit umgehen, Speicherverbrauch des Servers hochtreiben
   \item Möglichkeiten: Dateiinhalt in Kommentarfeld oder Dateinamen schreiben, gegebenfalls sogar kodiert.
   \item Risiko: Mittel
-  \item Mögliche Gegenmaßnahmen: Kommentarfeldlänge und Dateinamenlänge zählen ins Speicherplatzlimit des Nutzers. Gruppennamen sind in der Länge begrenzt.
+  \item Mögliche Gegenmaßnahmen:
+    \begin{itemize}
+      \item Kommentarfeldlänge und Dateinamenlänge zählen ins Speicherplatzlimit des Nutzers
+      \item Gruppenname mit einer Maximallänge versehen
+    \end{itemize}
   \end{itemize}
 \end{itemize}
 
@@ -672,7 +676,7 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
       	\item Zugrundeliegende Funktionalität nicht per GET sondern per POST anbieten, das vom Play CSRF-Schutz gesichert wird.
       	\item URL-Eingabe durch ein Regex prüfen.
       	\item URL-Eingabe durch eine Whitelist prüfen.
-      \end{itemize} 
+      \end{itemize}
   \end{itemize}
 \end{itemize}
 
@@ -706,7 +710,7 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \item Risiko: Mittel
   \item Mögliche Gegenmaßnahmen: Log-Rotation verwenden.
   \end{itemize}
-  
+
   \hypertarget{threat29}{}
   \item \textbf{T29: Log-Deletion durch Spammen von Requests}
   \begin{itemize}
@@ -762,7 +766,7 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
       \item Einen Maximalwert definieren.
-      \end{itemize} 
+      \end{itemize}
   \end{itemize}
 
   \hypertarget{threat33}{}
@@ -839,6 +843,7 @@ In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahme
     \enquote{Content Security Policy}-Header nutzen & \linktothreat{threat6}{T6}, \linktothreat{threat31}{T31} & \greencheckmark \\ \hline
     \enquote{X-XSS-Protection}-Header nutzen & \linktothreat{threat6}{T6}&  \greencheckmark \\ \hline
     Speicherplatzlimit auf Dateinamen und Kommentarfeld ausweiten & \linktothreat{threat21}{T21}  & \greencheckmark \\ \hline
+    Gruppenname mit einer Maximallänge versehen & \linktothreat{threat21}{T21}  & \greencheckmark \\ \hline
     Hervorhebung der Nutzer-eigenen Datei & \linktothreat{threat22}{T22} & \greencheckmark \\ \hline
     Beim Download einer Datei HTTP-Header \texttt{Content-Type} auf \texttt{application/octet-stream} setzen & \linktothreat{threat23}{T23} & \greencheckmark \\ \hline
     Maximal-/Minimalwert für Session-Timeout definieren & \linktothreat{threat32}{T32}, \linktothreat{threat33}{T33}, \linktothreat{threat34}{T34} & \greencheckmark \\ \hline
