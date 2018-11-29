@@ -292,7 +292,7 @@ So ist ihm auch möglich, eine Session, die gegebenfalls von einer bösartigen Q
 Auch diese Funktionalität bildet das Designprinzip \enquote{Visibility} ab.
 
 \section{Nutzer kann einsehen, welcher Nutzer zuletzt eine Datei überschrieben hat}
-Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch überschreiben kann, ist es nicht klar ersichtlich, von wem der Dateiinhalt tatsächlich geschrieben wurde. Aus diesem Grund speichern wir zusätzlich für jede Datei, wer den tatsächlichen Inhalt geschrieben hat. Diese Information verwenden wir in Form einer visuellen Darstellung: Dateien, die von einem selbst geschrieben wurden, sind grün hinterlegt (\enquote{vertrauenswürdig}). Dateien, die von Dritten geschrieben wurden, werden rot hinterlegt (\enquote{potentiell gefährlich}). Zugleich wird auf der Detailseite der entsprechenden Datei angezeigt wer diese geschrieben hat und wann dies erfolgte.
+Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch übersch\-rei\-ben kann, ist es nicht klar ersichtlich, von wem der Dateiinhalt tatsächlich geschrieben wurde. Aus diesem Grund speichern wir zusätzlich für jede Datei, wer den tatsächlichen Inhalt geschrieben hat. Diese Information verwenden wir in Form einer visuellen Darstellung: Dateien, die von einem selbst geschrieben wurden, sind grün hinterlegt (\enquote{vertrauenswürdig}). Dateien, die von Dritten geschrieben wurden, werden rot hinterlegt (\enquote{potentiell gefährlich}). Zugleich wird auf der Detailseite der entsprechenden Datei angezeigt wer diese geschrieben hat und wann dies erfolgte.
 Über diese Funktionalität wird zugleich Threat (Freigabe einer Datei mit gleichem Namen) mitigiert. Eine solche Datei wäre rot gefärbt und somit deutlich von der eigenen, namensgleichen Datei zu unterscheiden.
 % TODO: Check for the right design principle. Is this identifiability?
 
@@ -362,7 +362,7 @@ Der Datei-Upload sollte ursprünglich keine unmittelbare Rechtevergabe beinhalte
 \section{Darstellung der Dateianzahl von Nutzern}
 Auf der Warnseite, die beim Löschen eines Nutzers angezeigt wird (vgl. \ref{warning:severe:sideeffects}) wurde ursprünglich auch die Anzahl jener Dateien angezeigt, die dem entsprechenden Benutzer gehören. Herr Prof. Dr. Peine hat uns darauf hingewiesen, dass ein Administrator über keine Berechtigung verfügt, die es ihm gestattet eine derartige Information zu erlangen. Die Anzahl der Dateien wurde durch eine allgemeingültige Umschreibung ersetzt (\enquote{..alle Dateien des Nutzers..}).
 
-\section{Manager API ohne übergabe des aktuellen Benutzers}
+\section{Manager API ohne Übergabe des aktuellen Benutzers}
 In der ersten Iteration erforderte die Schnittstelle der Manager eine Übergabe der Id des aktuell angemeldeten Benutzers. Dies ist nicht nur umständlich, da es bei den meisten Aufrufen geschehen muss (abgesehen von Spezialfällen wie Login), sondern auch relevant für die Sicherheit der Anwendung. Wird beim Aufruf fälschlicherweise nicht die Id des aktuellen Benutzers übergeben, kann es so zu einer Autorisierungsverletzung kommen. Nach der Überarbeitung beziehen alle Manager den aktuellen Benutzer aus dem Session Manager und somit wird diese Art von Fehlern automatisch vermieden.
 
 \printbibliography
