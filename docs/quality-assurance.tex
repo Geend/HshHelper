@@ -190,7 +190,7 @@ Das Format eines Play CSRF Token ist demnach
 <signature> - <nonce> - <token>
 \end{lstlisting}
 
-Für eine Play-Session wird nur ein Token generiert (aus Listing \ref{csrfGenerateToken}). Dieses ist solange gültig wie die Play-Session und ändert sich nicht. Es wird für jedes Formular innerhalb einer Session verwendet. Da die Nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt. Dadurch werden Attacken, die ähnlich wie \texttt{BREACH} die HTTP-Komprimierung bei Verwendung von HTTPS angreift, verhindert\footnote{Siehe dazu https://www.playframework.com/documentation/2.6.x/JavaCsrf unten}.
+Für eine Play-Session wird nur ein Token generiert (aus Listing \ref{csrfGenerateToken}). Dieses ist solange gültig wie die Play-Session und ändert sich nicht. Es wird für jeden Formulat innerhalb einer Session verwendet. Da die Nonce auf der Systemzeit basiert, ändert sich diese jedoch mit jedem Request, was zu unterschiedlichen Signaturen führt. Dadurch werden Attacken die ähnlich wie der \texttt{BREACH} Angriff die HTTP-Komprimierung bei Verwendung von HTTPS verhindert.
 
 Um CSRF-Token überprüfen zu können, wird das erste CSRF-Token, dass in einer Play Session verwendet wird im Play-Session-Cookie gespeichert. Durch einen Vergleich des Tokens im ersten CSRF-Token mit dem zu prüfenden Token kann sichergestellt werden, dass das CSRF-Token zu der richtigen Session gehört. Außerdem wird geprüft ob die Signatur eines CSRF-Tokens korrekt ist.
 
@@ -304,7 +304,7 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
   Bootstrap-Helper-Methoden zur Erstellung eines Formulars haben Felder nicht mit bestehenden Daten befüllt & Aufgefallen während eines Reviews & 0.25 \\ \hline
   \enquote{Nutzer erstellen}-Prozess konnte von einem \enquote{Nicht-Administrator} ausgeführt werden & Autorisierungstests & 0.5 \\ \hline
   Mögliche Race Conditions während der Validation eines Nutzernamens & Review & 0.5 \\ \hline
-  Mögliche Side-Channel-Attacke beim Loginversuch durch den Login-Firewall & Review & 0.75 \\ \hline
+  Mögliche Side-Channel-Attacke beim Loginversuch durch die Login-Firewall & Review & 0.75 \\ \hline
   Endlosschleife von Redirects beim Login eines Nutzers mit valider Session aber unterschiedlicher IP & Review & 1.5 \\ \hline
   \end{tabularx}
 \end{table}
