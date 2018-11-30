@@ -112,7 +112,7 @@ public class GroupManager {
         }
 
         return userFinder.query().where().notIn("userId",
-                group.getMembers().stream().map(user -> user.getUserId()).collect(Collectors.toSet())
+                group.getMembers().stream().map(User::getUserId).collect(Collectors.toSet())
         ).findList();
     }
 

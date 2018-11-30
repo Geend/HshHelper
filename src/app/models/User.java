@@ -90,7 +90,7 @@ public class User extends Model {
     }
 
     public boolean isAdmin() {
-        return this.groups.stream().anyMatch(x -> x.getIsAdminGroup());
+        return this.groups.stream().anyMatch(Group::getIsAdminGroup);
     }
 
     public Long getUserId() {
