@@ -159,6 +159,7 @@ public class UserManager {
             throw new UnauthorizedException();
         }
 
+        // TODO: Extract the grp name as static var
         return this.userFinder.query().where()
                 .eq("groups.name", "Administrators")
                 .findList();
