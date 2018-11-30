@@ -5,7 +5,7 @@ public class Cipher {
         return null;
     }
 
-    public byte[] decrypt(CryptoKey key, byte[] ciphertext) {
+    public CryptoResult decrypt(CryptoKey key, byte[] ciphertext) {
         return null;
     }
 }
