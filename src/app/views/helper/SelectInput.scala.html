@@ -1,6 +1,3 @@
-@import views.html.helper.FieldConstructor
-@import views.html.helper.FieldConstructorTpl
-@import views.html.helper.select
 @(field : play.api.data.Field, label : String, options : Seq[(String,String)])
 @implicitField = @{ FieldConstructor(FieldConstructorTpl.f) }
 @select(field, options, '_label -> label)

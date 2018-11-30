@@ -8,7 +8,7 @@
     @helper.form(action = routes.UserController.changeUserQuotaLimit()) {
         <div class="inputForm">
 
-            <input type="hidden" value="@changeUserQuotaLimitForm("userId").value" name="userId" />
+            <input type="hidden" value="@changeUserQuotaLimitForm("userId").getValue.get()" name="userId" />
             @helper.TextInput(changeUserQuotaLimitForm("newQuotaLimit"), "Quota Limit in Byte")
 
         </div>
