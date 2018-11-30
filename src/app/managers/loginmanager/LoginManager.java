@@ -105,7 +105,7 @@ public class LoginManager {
     private String getUserAgentDisplayString(String userAgentString) throws IOException {
         Parser uaParser = new Parser();
         Client c = uaParser.parse(userAgentString);
-        return String.format("%s: %s (s)", c.device.family, c.userAgent.family, c.userAgent.major);
+        return String.format("%s: %s (%s)", c.device.family, c.userAgent.family, c.userAgent.major);
     }
 
     public void login(String username, String password, String captchaToken, Http.Request request) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException, IOException {
