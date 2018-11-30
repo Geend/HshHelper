@@ -8,8 +8,6 @@
 
 \usepackage{hshhelper_base}
 
-\usepackage[section]{placeins}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}    % hier gehts los
   \thispagestyle{empty} % Titelseite
@@ -52,7 +50,7 @@ Zugriffe auf diese Klassen können sowohl von Controllern als auch von Managern 
 Im Folgenden geben Sequenzdiagramme weitere Einsicht in das Zusammenspiel dieser Klassen.
 
 Die Klassen, die in der zweiten Iteration dazu gekommen sind, können der Abbildung \ref{architecture:class_diagram2} entnommen werden.
-Sie folgen dem gleichem Aufbau wie oben geschildert.
+Der Aufbau des zweiten Klassendiagramm gleicht dem Aufbau des ersten.
 
 \section{Sequenzdiagram: Benutzer erstellen}
 
@@ -72,15 +70,15 @@ Das Login-Sequenzdiagramm \ref{architecture:loginseq_diagram} zeigt den Fall, da
 
 
 \section{Dateiaustausch}
-Alle Dateien die Benutzer hochladen werden in der Datenbank als \texttt{BLOB} gespeichert. So können konsitente Zustände mittels Transaktionen sichergestellt werden. Außerdem ist HsHelper dadurch unabhäniger vom Dateisystem das auf dem Host-System verwendet wird.
+Alle Dateien die Benutzer hochladen werden in der Datenbank als \texttt{BLOB} gespeichert. So können konsistente Zustände mittels Transaktionen sichergestellt werden. Außerdem ist HsHelper dadurch unabhängiger vom Dateisystem, das auf dem Host-System verwendet wird.
 
-Um die Umgehung des Quotas durch Ausnutzung des Kommentarfeldes und Dateinamens zu verhindern, zählen sowohl der Datei Inhalt, als auch der Name und das Kommentar zum belegten Speicherplatz einer Datei.
+Um die Umgehung des Speicherplatzlimits durch Ausnutzung des Kommentarfeldes und Dateinamens zu verhindern, zählen sowohl der Datei-Inhalt, als auch Dateiname und Kommentar zum Speicherplatz, den eine Datei belegt.
 
-Beim Herundeladen von Datein wird der Content-Disposition Modus auf \texttt{attachment} und Content-Type auf \texttt{application/octet-stream} gesetzt. So wird erzwungen, dass der Browser immer den \enquote{Speichern}-Dialog anzeigt statt die Datei direkt (im Browser) darzustellen\footnote{Das wäre zum Beispiel bei Textdateien, Bildern und PDFs möglich.}.
+Beim Herunterladen von Dateien wird der Content-Disposition Modus auf \texttt{attachment} und Content-Type auf \texttt{application/octet-stream} gesetzt. So wird erzwungen, dass der Browser immer den \enquote{Speichern}-Dialog anzeigt statt die Datei direkt (im Browser) darzustellen\footnote{Das wäre zum Beispiel bei Textdateien, Bildern und PDFs möglich.}.
 
 \section{Logging}
 
-Aufgrund der Bedrohung \textit{T11: Abstreitbarkeit illegaler Handlungen} wurde ein Logging implementiert, mit dem sicher gestellt wird, dass genau das nicht passieren kann.
+Aufgrund der Bedrohung \textit{T11: Abstreitbarkeit illegaler Handlungen} wurde ein Logging implementiert, mit dem sichergestellt wird, dass genau das nicht passieren kann.
 
 Im Zuge dessen wurden 2 verschiedene Logs mithilfe der Bibliothek \enquote{Logback}, die Play standardmäßig inkludiert, implementiert.
 Einmal ein generelles Zugriffslog, in welchem jegliche Zugriffe auf unsere Seite dokumentiert werden, und ein domänenspezifisches Log, in dem spezielle Loggingausgaben für die einzelnen, vorhandenen Aktionen persistiert werden.
@@ -114,28 +112,29 @@ Folgender Abschnitt enthält gesammelte Informationen über die kryptographische
 \section{Passwörter}
 Die Passwörter, die Benutzer verwenden um sich beim HsH-Helfer zu authentisieren, werden grundsätzlich nur als Hash persistiert. Konkret wird die Hashfunktion bcrypt zum Hashen der Passwörter verwendet.
 
-Um ein Passwort mit bcrypt zu Hashen muss zunächst ein Salt generiert werden. Neben dem Salt und dem gehashten Passwort wird bei bcrypt außerdem noch die bcyrpt Version und die Anzahl der Runden gespeichert. Über die Anzahl der Runden kann die Laufzeit, die bcrypt benötigt, um ein Passwort zu hashen, beeinflusst werden.
+Um ein Passwort mit bcrypt zu hashen, muss zunächst ein Salt generiert werden. Neben dem Salt und dem gehashten Passwort wird bei bcrypt außerdem noch die bcyrpt Version und die Anzahl der Runden gespeichert. Über die Anzahl der Runden kann die Laufzeit, die bcrypt benötigt, um ein Passwort zu hashen, beeinflusst werden.
 
-Die verwendete Bibliothek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in der Version 0.4. Sie verwendet intern die Java Klasse SecureRandom als CPRNG.
+Die verwendete Bibliothek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in der Version 0.4. Sie verwendet intern die Java Klasse SecureRandom als CSPRNG.
 
 Auch zur Generierung der initialen (und temporären) Benutzer-Passwörter beim Anlegen eines neuen Benutzerkontos wird SecureRandom als Basis verwendet. Dafür zuständig ist die Klasse \texttt{PasswordGenerator}. Die generierten Passwörter können die Zeichen \texttt{a-z}, \texttt{A-Z}, \texttt{0-9} und die Sonderzeichen \texttt{!\%?\#-\_*+} enthalten.
 
 \section{CSRF-Tokens}
-Die Play CSRF-Tokens bestehen aus 3 Teilen: 
+Die CSRF-Tokens, die das Play Framework generiert, bestehen aus 3 Teilen:
 \begin{enumerate}
-\item Einem Token, dass für jede Session mit der Java Klasse SecureRandom als CPRNG generiert wird.
-\item Einer auf der Systemzeit basierendem Nounce, dass für jeden Request generiert wird.
-\item Einer auf HMAC-SHA1 basierenden Signatur des Tokesn und der Nounce.
+% SecureRandom ist cSprng.
+\item Einem Token, dass für jede Session mit der Java Klasse SecureRandom als CSPRNG generiert wird.
+\item Einer auf der Systemzeit basierendem Nonce, dass für jeden Request generiert wird.
+\item Einer auf HMAC-SHA1 basierenden Signatur des Tokens und der Nonce.
 \end{enumerate}
 
-Beim starten einer Play-Session wird ein CSRF-Token in das Session Cookie geschrieben. Dieses CSRF-Token ändert sich während einer Play-Session nie. Für jedes Formular wird ein eigenes CSRF-Token generiert, dass sich innerhalb einer Play-Session nur durch die Nounce (und damit auch der Signatur) unterscheidet. Durch Vergleichen des Tokens aus dem CSRF-Token der Play-Session und des Tokens aus dem CSRF-Token in einem HTTP Request kann die Gültigkeit eines CSRF-Token festgestellt werden. 
+Beim Starten einer Play-Session wird ein CSRF-Token in das Session Cookie geschrieben. Dieses CSRF-Token ändert sich während einer Play-Session nie. Für jedes Formular wird ein eigenes CSRF-Token generiert, dass sich innerhalb einer Play-Session nur durch die Nonce (und damit auch der Signatur) unterscheidet. Durch Vergleichen des Tokens aus dem CSRF-Token der Play-Session und des Tokens aus dem CSRF-Token in einem HTTP Request kann die Gültigkeit eines CSRF-Token festgestellt werden.
 
 
 \section{Play Cookies}
 \label{play:cookies}
 Das Play Framework nutzt zur Persistierung eines Cookies in dem Client-Browser das \enquote{\gls{jwt}}-Format.
 Ein \gls{jwt} besteht aus 3 Teilen: einem Header, einer Payload sowie einer Signatur, siehe \ref{jwtformat}.
-Jeder dieser Teile ist ein namenloses JSON-Objekt.
+Jeder dieser Teile ist ein namenloses JSON-Objekt. \\
 Innerhalb des Headers ist gelistet, welcher Algorithmus genutzt wurde, um das JWT zu signieren.
 Die Payload ist ein einfaches JSON-Objekt, in welchem Daten gespeichert werden können, die zu signieren sind.
 Diese Daten werden innerhalb des JWT-Formats als \enquote{Claims} bezeichnet.
@@ -143,7 +142,7 @@ Zusätzlich werden innerhalb dieser Payload persistiert, zu welchem Zeitpunkt da
 % TODO: Vllt erwähnen, wie HMAC-SHA256 funktioniert?
 Für die Signatur werden Header sowie Payload durch \enquote{base64url} kodiert und dann zusammen mit einem Punkt als Trennelement konkateniert. Die dadurch entstehende Zeichenkette wird zusammen mit einem geheimen Schlüssel an den kryptografischen Signatur-Algorithmus weitergegeben, der zuvor im Header genannt wird.
 Play verwendet standardmäßig zur Signierung den HMAC-SHA256 Algorithmus.
-Dadurch kann die Integrität der Claims geprüft werden und zeitgleich können sie authentifiziert werden.
+Dadurch kann die Integrität der Claims geprüft werden und zeitgleich können sie authentifiziert werden. \\
 Um das JWT nun bilden zu können, werden alle 3 Teile durch \enquote{base64url} seperat kodiert und durch einen Punkt getrennt und konkateniert: \texttt{encodeBase64Url(header) + '.' + encodeBase64Url(payload) + '.' + encodeBase64Url(signature)}.
 \par
 Bei Werkseinstellungen verwendet Play ein Cookie namens \textit{PLAY\_SESSION}, in dessen Payload ein zusätzliches JSON-Objekt namens \texttt{data} sowie die Zeitstempel für Erstellungsdatum sowie Beginn der Gültigkeit gespeichert sind.
@@ -171,11 +170,10 @@ Für das System sind mehrere Schlüssel und Zugangsdaten notwendig:
 	\item Zugangsdaten für die Datenbank
 \end{itemize}
 
-Der öffentliche reCAPTCHA-Schlüssel wird benötigt, damit der reCAPTCHA-Service auf unserer Seite angezeigt werden kann sowie um die Antwort des Nutzers verschlüsselt an den reCAPTCHA-Server zu schicken.
-Nach dem Ausfüllen eines reCAPTCHAs durch einen Nutzer, wird seine verschlüsselte Antwort zusammen mit dem privaten Schlüssel an den reCAPTCHA-Service geschickt.
-Dieser Schlüssel authorisiert unsere Applikation zur Kommunikation mit dem reCAPTCHA-Service, dient aber zeitgleich zur Verifikation, dass unser Server, und keine andere Entität, die Antwort verifizieren möchte.
-Das gilt natürlich nur, wenn der private Schlüssel für den reCAPTCHA-Service geheim gehalten wird.
-\par
+Der öffentliche reCAPTCHA-Schlüssel wird benötigt, um das reCAPTCHA einbinden zu können und wird vom Client an Google übertragen. Löst der Client ein Captcha korrekt, erhält er von Google eine Nonce, die er an uns weiterleitet. Diese wird von unserem Server in Verbindung mit dem Private Key an Google geschickt. Google teilt uns dann mit, ob diese Nonce valide ist.
+
+Der öffentliche Schlüssel ist fest mit \enquote{unserer Domain} (localhost) verbunden. Das heißt, dass der Captcha-Code nicht auf einer anderen Domain eingebunden werden kann, um Noncess zu erzeugen.
+
 Daher werden alle Schlüssel sowie Zugangsdaten in der \texttt{secrets.conf} Datei auf jedem Entwicklungsrechner der Teammitglieder persistiert, welche nicht versioniert wird. Die \texttt{application.conf} bindet diese Datei mit dem \texttt{include}-Statement ein und somit werden die Schlüssel in der Anwendung verwendet. Dies hat den offensichtlichen Vorteil das Zugangsdaten nicht im Repository einsichtlich sind, aber Anwendungseinstellungen jedoch schon.
 
 \chapter{Sicherheitsmaßnahmen}
@@ -211,10 +209,10 @@ Zur Umsetzung dieser Funktionalität setzen wir auf dem Session-Konzept von Play
 Initialisiert ein Nutzer eine neue Session, so persistieren wir seine IP-Adresse, seine User-ID, das Initialisierungsdatum und eine kryptografisch sicheren \enquote{\gls{uuid}} als Identifikator dieser neuen Session in unserer Datenbank. \linebreak
 Um diese Session sicher beim Client speichern zu können, verwenden wir das bereits genannte Cookie \textit{PLAY\_SESSION}.
 Innerhalb des Payloads dieses JWT befindet sich ein JSON-Objekt namens \enquote{data} hinterlegt, zu welchem man weitere Applikationsdaten als Schlüssel-Wert-Paare hinzufügen kann.
-Das machen wir uns zu eigen und persistieren das Schlüssel-Wert-Paar \texttt{\"HsHSession\": \"UUID\"}, durch welches wir den Nutzer authentisieren können.
+Das machen wir uns zu eigen und persistieren das Schlüssel-Wert-Paar (\enquote{HsHSession}: \enquote{UUID}), durch welches wir den Nutzer authentisieren können.
 Wir verlassen uns daher nicht auf die Existenz dieses Cookies, sondern nutzen dieses nur, um einen signierten Speicher innerhalb des Client-Browsers verwenden zu können.
 
-Die UUID selbst dient als 2nd Layer of Defense: Sollte die JWT-Signatur geknackt werden, muss der Angreifer noch eine in der Datenbank enthaltene UUID erraten. Selbst wenn er diese Hürde meistert, muss er noch die dazugehörige IP-Addresse kennen, sowie über diese auf unsere Anwendung zugreifen können und dies in einem engen Zeitfenster schaffen, da die Lebenszeit einer Session begrenzt ist. Wie lange eine Session gültig ist kann von HsHelper Benutzern eingstellt werden. Die Einstellung wirkt sich auf alles Sessions eines Benutzers aus. Maximal ist eine Session 24 Stunden gültig.
+Die UUID selbst dient als 2nd Layer of Defense: Sollte die JWT-Signatur geknackt werden, muss der Angreifer noch eine in der Datenbank enthaltene UUID erraten. Selbst wenn er diese Hürde meistert, muss er noch die dazugehörige IP-Addresse kennen, sowie über diese auf unsere Anwendung zugreifen können und dies in einem engen Zeitfenster schaffen, da die Lebenszeit einer Session begrenzt ist. Wie lange eine Session gültig ist kann von HsHelper Benutzern eingestellt werden. Die Einstellung wirkt sich auf alles Sessions eines Benutzers aus. Maximal ist eine Session 24 Stunden gültig.
 
 Die Anwendung verfügt über eine Ansicht, die dem Nutzer sämtliche eigene, \enquote{aktive} Sessions anzeigt und ihm die Möglichkeit bietet, diese nach Bedarf einzeln zu entfernen. Ein Logout-Vorgang führt ebenfalls zur Entfernung der korrospondierenden Session. Um eine Vermüllung der Datenbank zu vermeiden, läuft im Hintergrund ein Prozess, der in festen Zeitintervallen Sessions aus der Datenbank entfernt, die \enquote{veraltet} sind, denn wenn der Benutzer sich nicht ausloggt, sondern einfach den Browser schließt, kann unsere Anwendung keine Kenntnis davon erlangen.
 
@@ -264,7 +262,8 @@ Für einige Parameter gibt es festgelegte Constraints, die in allen entsprechend
 \end{itemize}
 
 \section{Ausgabecodierung}
-Die Zeichen die ein HsHelper Benutzer in das Kommentarfeld einer Datei eintragen kann unterliegen keiner Beschränkung. Aus diesem Grund müssen Sonderzeichen maskiert werden. Wenn in Play Daten vom Typ String in einem Template verwendet werden, geschieht die Maskierung der Zeichen automatisch. So wird zum Beispiel der String \texttt{<script>} durch \texttt{\&lt;script\&gt;} ersetzt.
+Die Zeichen, die ein HsHelper Benutzer in das Kommentarfeld einer Datei eintragen kann, unterliegen keiner Beschränkung.
+Aus diesem Grund müssen Sonderzeichen maskiert werden. Wenn in Play Daten vom Typ String in einem Template verwendet werden, geschieht die Maskierung der Zeichen automatisch. So wird zum Beispiel der String \texttt{<script>} durch \texttt{\&lt;script\&gt;} ersetzt.
 
 %    public static final int MAX_USERNAME_LENGTH = 20;
 %    public static final int MAX_PASSWORD_LENGTH = 100;
@@ -293,16 +292,21 @@ So ist ihm auch möglich, eine Session, die gegebenfalls von einer bösartigen Q
 Auch diese Funktionalität bildet das Designprinzip \enquote{Visibility} ab.
 
 \section{Nutzer kann einsehen, welcher Nutzer zuletzt eine Datei überschrieben hat}
-Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch überschreiben kann, ist es nicht klar ersichtlich, von wem der Dateiinhalt tatsächlich geschrieben wurde. Aus diesem Grund speichern wir zusätzlich für jede Datei, wer den tatsächlichen Inhalt geschrieben hat. Diese Information verwenden wir in Form einer visuellen Darstellung: Dateien, die von einem selbst geschrieben wurden, sind grün hinterlegt (\enquote{vertrauenswürdig}). Dateien, die von Dritten geschrieben wurden, werden rot hinterlegt (\enquote{potentiell gefährlich}). Zugleich wird auf der Detailseite der entsprechenden Datei angezeigt wer diese geschrieben hat und wann dies erfolgte.
-Über diese Funktionalität wird zugleich Threat -VERWEIS-EINBAUEN- (Freigabe einer Datei mit gleichem Namen) mitigiert. Eine solche Datei wäre rot gefärbt und somit deutlich von der eigenen, namensgleichen Datei zu unterscheiden.
+Dadurch, dass jeder Nutzer, der Schreibrechte für eine Datei besitzt, diese auch übersch\-rei\-ben kann, ist es nicht klar ersichtlich, von wem der Dateiinhalt tatsächlich geschrieben wurde. Aus diesem Grund speichern wir zusätzlich für jede Datei, wer den tatsächlichen Inhalt geschrieben hat. Diese Information verwenden wir in Form einer visuellen Darstellung: Dateien, die von einem selbst geschrieben wurden, sind grün hinterlegt (\enquote{vertrauenswürdig}). Dateien, die von Dritten geschrieben wurden, werden rot hinterlegt (\enquote{potentiell gefährlich}). Zugleich wird auf der Detailseite der entsprechenden Datei angezeigt wer diese geschrieben hat und wann dies erfolgte.
+Über diese Funktionalität wird zugleich Threat (Freigabe einer Datei mit gleichem Namen) mitigiert. Eine solche Datei wäre rot gefärbt und somit deutlich von der eigenen, namensgleichen Datei zu unterscheiden.
 % TODO: Check for the right design principle. Is this identifiability?
-
-\section{Nutzer kann sein Passwort ändern}
-Ein angemeldeter Benutzer kann sein Passwort ändern. Dazu muss er sein derzeitigs Passwort und zwei mal das gewünschte neue Passwort eingaben. Diese Funktion wurde implementiert, da ein Benutzer sein Passwort sonst nur über die \enquote{Passwort-Vergessen} Funktion ändern kann.
 
 \section{Warnung bei Aktionen mit schweren Seiteneffekten}
 \label{warning:severe:sideeffects}
-Die Aktionen \enquote{Benutzer löschen} und \enquote{Gruppe löschen} haben schwerwiegende Seiteneffekte: Wird ein Nutzer gelöscht, werden seine Dateien und Gruppen sowie sämtliche diesbezügliche Freigaben unwiederruflich entfernt. Das gleiche gilt für die Löschung einer Gruppe und diesbezügliche Freigaben. Diese Aktion war mittels eines Mausklicks möglich, es fand keinerlei Warnung statt. Eine solche Implementierung begünstigt Fat-Finger-Fehler\footnote{\url{https://en.wikipedia.org/wiki/Fat-finger_error}}. Aus diesem Grund haben wir uns entschieden von dem Benutzer eine explizite Bestätigung zu verlangen. Die Auswirkungen seiner geplanten Aktion werden ihm ausdrücklich angezeigt.
+Die Aktionen \enquote{Benutzer löschen} und \enquote{Gruppe löschen} haben schwerwiegende Seiteneffekte: Wird ein Nutzer gelöscht, werden seine Dateien und Gruppen sowie sämtliche diesbezügliche Freigaben unwiederruflich entfernt.
+Das gleiche gilt für die Löschung einer Gruppe und diesbezügliche Freigaben.
+Diese Aktion war mittels eines Mausklicks möglich, es fand keinerlei Warnung statt.
+Eine solche Implementierung begünstigt Fat-Finger-Fehler\footnote{\url{https://en.wikipedia.org/wiki/Fat-finger_error}}.
+Aus diesem Grund haben wir uns entschieden von dem Benutzer eine explizite Bestätigung zu verlangen. Die Auswirkungen seiner geplanten Aktion werden ihm ausdrücklich angezeigt.
+
+\section{Nutzer kann sein Passwort ändern}
+Ein angemeldeter Benutzer kann sein Passwort ändern. Dazu muss er sein derzeitige Passwort und zwei mal das gewünschte neue Passwort eingeben.
+Diese Funktion wurde implementiert, da ein Benutzer sein Passwort sonst nur über die \enquote{Passwort vergessen}-Funktion ändern kann.
 
 \section{Suchfunktionalität}
 Im Rahmen der Design-Erstellung haben wir das Bedürfnis einer Suchfunktionalität entdeckt. Die Dateien sind die Zentralen Elemente des HsH-Helpers und sollten so einfach wie möglich zugänglich sein. Folglich haben wir uns dazu entschlossen, in unser Design ein Suchfeld zu implementieren, das von jeder Stelle der Anwendung aus zugänglich ist.
@@ -349,7 +353,7 @@ Aufgrund von Datenschutzbedenken haben wir zunächst die Speicherung der mit ein
 Ursprünglich verfügte eine in unserer Datenbank abgebildete Session über eine numerische ID, die inkrementell aufsteigend war. Das JWT-Token beinhaltet den Schlüssel der korrospondierenden Session-Entität in der Datenbank. Würde ein Angreifer die JWT Signatur knacken, könnte er leicht passende IDs erraten: Er müsste sich anmelden, wüsste dann, welche ID \enquote{aktuell} ist und könnte anhand dieser Information passende IDs ausprobieren. Wir haben diese Implementierung zugunsten von kryptografisch sicheren UUIDs verworfen, die ein \enquote{second layer of defense} darstellen (vgl. \ref{sessionkonzept}).
 
 \section{Asynchroner Datei-Upload}
-Aufgrund von Usability-Erwägungen wurde ein asynchroner Datei-Upload mittels Javascript angepeilt: Es ist eine Vorgabe des Dozenten, dass beim Upload zugleich Dateiname und Kommentar sowie die Berechtigungen angegeben werden müssen. Treten bei diesen Daten Fehler auf, ist es erforderlich, die entsprechende Datei erneut auszuwählen und hochzuladen. Um diesen Makel zu verhindern, war es angedacht, dass das Auswählen einer Datei unmittelbar einen Upload inkl. Fortschrittsanzeige in Gang setzt. Die Daten würden von unserer Anwendung temporär vorgehalten werden und im Formular mittels eines Hidden-Inputs eingebunden. 
+Aufgrund von Usability-Erwägungen wurde ein asynchroner Datei-Upload mittels Javascript angepeilt: Es ist eine Vorgabe des Dozenten, dass beim Upload zugleich Dateiname und Kommentar sowie die Berechtigungen angegeben werden müssen. Treten bei diesen Daten Fehler auf, ist es erforderlich, die entsprechende Datei erneut auszuwählen und hochzuladen. Um diesen Makel zu verhindern, war es angedacht, dass das Auswählen einer Datei unmittelbar einen Upload inkl. Fortschrittsanzeige in Gang setzt. Die Daten würden von unserer Anwendung temporär vorgehalten werden und im Formular mittels eines Hidden-Inputs eingebunden.
 So wäre selbst bei fehlerhaften Formulareingaben kein mehrfach-Upload erforderlich. Diese Idee wurde verwurfen: Herr Prof. Dr. hat ein dertiges Konzept als zu komplex bewertet und uns mitgeteilt, dass die Usability bei einer erzwungenden Mehrfachauswahl der Datei nicht negativ beeinträchtigt wäre.
 
 \section{Aufteilung von Datei-Upload und Rechtevergabe}
@@ -358,6 +362,8 @@ Der Datei-Upload sollte ursprünglich keine unmittelbare Rechtevergabe beinhalte
 \section{Darstellung der Dateianzahl von Nutzern}
 Auf der Warnseite, die beim Löschen eines Nutzers angezeigt wird (vgl. \ref{warning:severe:sideeffects}) wurde ursprünglich auch die Anzahl jener Dateien angezeigt, die dem entsprechenden Benutzer gehören. Herr Prof. Dr. Peine hat uns darauf hingewiesen, dass ein Administrator über keine Berechtigung verfügt, die es ihm gestattet eine derartige Information zu erlangen. Die Anzahl der Dateien wurde durch eine allgemeingültige Umschreibung ersetzt (\enquote{..alle Dateien des Nutzers..}).
 
+\section{Manager API ohne Übergabe des aktuellen Benutzers}
+In der ersten Iteration erforderte die Schnittstelle der Manager eine Übergabe der Id des aktuell angemeldeten Benutzers. Dies ist nicht nur umständlich, da es bei den meisten Aufrufen geschehen muss (abgesehen von Spezialfällen wie Login), sondern auch relevant für die Sicherheit der Anwendung. Wird beim Aufruf fälschlicherweise nicht die Id des aktuellen Benutzers übergeben, kann es so zu einer Autorisierungsverletzung kommen. Nach der Überarbeitung beziehen alle Manager den aktuellen Benutzer aus dem Session Manager und somit wird diese Art von Fehlern automatisch vermieden.
 
 \printbibliography
 
@@ -378,8 +384,11 @@ Auf der Warnseite, die beim Löschen eines Nutzers angezeigt wird (vgl. \ref{war
 
 \begin{appendices}
 
+\KOMAoption{headsepline}{false}
+
+\chapter{Aufbau eines JSON Web Token}
 \begin{sloppypar}
-\begin{lstlisting}[label=jwtformat, caption={Aufbau eines JSON Web Token},captionpos=b]
+\begin{lstlisting}[label=jwtformat]
 Header:
 {
 	"alg" : "HS256",
@@ -403,32 +412,32 @@ HMAC-SHA256(
 \end{lstlisting}
 \end{sloppypar}
 
+\chapter{\enquote{High-Level}-Klassendiagramm unseres Systems (Erste Iteration)}
 \begin{figure}[!htb]
 	\hspace*{-2.5cm}
 	\includegraphics[width=0.93\paperwidth]{resources/class_diagram.png}
 	\label{architecture:class_diagram}
-	\caption{\enquote{High-Level}-Klassendiagramm unseres Systems}
 \end{figure}
 
+\chapter{\enquote{High-Level}-Klassendiagramm unseres Systems (Zweite Iteration)}
 \begin{figure}[!htb]
 \hspace*{-2.5cm}
 	\includegraphics[width=0.93\paperwidth]{resources/class_diagram_2.png}
 	\label{architecture:class_diagram2}
-	\caption{\enquote{High-Level}-Klassendiagramm unseres Systems}
 \end{figure}
 
+\chapter{Sequenzdiagramm für \enquote{Benutzer erstellen}-Prozess}
 \begin{figure}[!htb]
 	\hspace*{-1cm}
 	\includegraphics[width=0.83\paperwidth]{resources/createuserseq_diagram.png}
 	\label{architecture:createuserseq_diagram}
-	\caption{Sequenzdiagramm für \enquote{Benutzer erstellen}-Prozess}
 \end{figure}
 
+\chapter{Sequenzdiagramm für \enquote{Login}-Prozess}
 \begin{figure}[!htb]
 	\hspace*{-1cm}
 	\includegraphics[width=0.83\paperwidth]{resources/loginseq_diagram.png}
 	\label{architecture:loginseq_diagram}
-	\caption{Sequenzdiagramm für \enquote{Login}-Prozess}
 \end{figure}
 
 \end{appendices}

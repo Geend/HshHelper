@@ -1,4 +1,4 @@
-<diagram program="umletino" version="14.3.0"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>420</x><y>60</y><w>190</w><h>220</h></coordinates><panel_attributes>FileController
+<diagram program="umletino" version="14.3.0"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>420</x><y>30</y><w>200</w><h>220</h></coordinates><panel_attributes>FileController
 --
 style=autoresize
 + showOwnFiles() : Result
@@ -12,7 +12,7 @@ style=autoresize
 + downloadFile()  : Result
 + editFileComment() : Result
 + editFileContent() : Result
-+ searchFiles() : Result</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>420</x><y>340</y><w>370</w><h>270</h></coordinates><panel_attributes>FileManager
++ searchFiles() : Result</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>420</x><y>300</y><w>390</w><h>270</h></coordinates><panel_attributes>FileManager
 --
 style=autoresize
 + getGroupPermissionDtosForCreate() : List&lt;GroupPermissionDto&gt;
@@ -29,9 +29,9 @@ style=autoresize
 + deleteFile(fileId: Long)
 + editFileContent(fileId: Long, data: byte[])
 + editFileComment(fileId: Long, comment: String)
-+ searchFile(string query) : List&lt;File&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>110</x><y>380</y><w>280</w><h>180</h></coordinates><panel_attributes>SessionManager
++ searchFile(string query) : List&lt;File&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>110</x><y>360</y><w>280</w><h>180</h></coordinates><panel_attributes>SessionManager
 --
-siehe Klassendiagram v1.0</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>570</x><y>640</y><w>460</w><h>240</h></coordinates><panel_attributes>PermissionManager
+siehe Klassendiagram v1.0</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>560</x><y>580</y><w>470</w><h>240</h></coordinates><panel_attributes>PermissionManager
 --
 style=autoresize
 + editGroupPermission(groupPermissionId: Long, level: PermissionLevel)
@@ -46,7 +46,7 @@ style=autoresize
 + createGroupPermission(fileId: Long, groupId: Long, level: PermissionLevel)
 
 + getAllOthers(userId: Long) : List&lt;User&gt;
-+ getFile(fileId: Long) : File</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>760</x><y>950</y><w>120</w><h>130</h></coordinates><panel_attributes>File
++ getFile(fileId: Long) : File</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>740</x><y>870</y><w>120</w><h>130</h></coordinates><panel_attributes>File
 --
 style=autoresize
 + name: String
@@ -54,19 +54,19 @@ style=autoresize
 + data: Long
 + ownerId: Long
 + writtenById: Long
-+ writtenByDt: Date</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>420</x><y>950</y><w>120</w><h>100</h></coordinates><panel_attributes>GroupPermission
++ writtenByDt: Date</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>420</x><y>870</y><w>130</w><h>100</h></coordinates><panel_attributes>GroupPermission
 --
 style=autoresize
 + fileId: Long
 + groupId: Long
 + canRead: Boolean
-+ canWrite: Boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>410</x><y>20</y><w>630</w><h>280</h></coordinates><panel_attributes>Controller
++ canWrite: Boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>410</x><y>0</y><w>630</w><h>260</h></coordinates><panel_attributes>Controller
 --
 bg=#FEE4B1
-layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>410</x><y>310</y><w>630</w><h>580</h></coordinates><panel_attributes>DomainLogic - Managers
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>410</x><y>270</y><w>630</w><h>560</h></coordinates><panel_attributes>DomainLogic - Managers
 --
 bg=#A6ECB2
-layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>780</x><y>60</y><w>250</w><h>220</h></coordinates><panel_attributes>PermissionController
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>770</x><y>30</y><w>260</w><h>220</h></coordinates><panel_attributes>PermissionController
 --
 style=autoresize
 + showEditUserPermissionsForm() : Result
@@ -80,20 +80,20 @@ style=autoresize
 + showCreateUserPermission() : Result
 + showCreateGroupPermission() : Result
 + createUserPermission() : Result
-+ createGroupPermission() : Result</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>100</x><y>900</y><w>940</w><h>220</h></coordinates><panel_attributes>Database
++ createGroupPermission() : Result</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>100</x><y>840</y><w>940</w><h>170</h></coordinates><panel_attributes>Database
 --
 bg=#FEB3B4
-layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>100</x><y>20</y><w>300</w><h>870</h></coordinates><panel_attributes>Cross Cutting Concerns
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>100</x><y>0</y><w>300</w><h>830</h></coordinates><panel_attributes>Cross Cutting Concerns
 --
 bg=#B6B2FF
-layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>280</x><y>950</y><w>100</w><h>120</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>280</x><y>870</y><w>110</w><h>120</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
 PermissionLevel
 --
 style=autoresize
 NONE
 READ
 WRITE
-READWRITE</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>590</x><y>950</y><w>120</w><h>100</h></coordinates><panel_attributes>GroupPermission
+READWRITE</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>580</x><y>870</y><w>130</w><h>100</h></coordinates><panel_attributes>GroupPermission
 --
 style=autoresize
 + fileId: Long

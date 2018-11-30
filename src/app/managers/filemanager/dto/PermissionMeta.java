@@ -1,7 +1,7 @@
 package managers.filemanager.dto;
 
 public class PermissionMeta {
-    public static enum EType { USER, GROUP }
+    public enum EType { USER, GROUP }
 
     private Long id;
     private EType type;
