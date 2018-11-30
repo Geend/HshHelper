@@ -8,7 +8,6 @@ import extension.PasswordGenerator;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
-import managers.loginmanager.Authentification;
 import managers.loginmanager.CaptchaRequiredException;
 import models.Group;
 import models.User;
@@ -19,12 +18,13 @@ import play.Logger;
 import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
 import play.mvc.Http;
-import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 import twofactorauth.TimeBasedOneTimePasswordUtil;
 
 import javax.inject.Inject;
 import java.util.*;
+
+import static extension.StringHelper.empty;
 
 public class UserManager {
     private final UserFinder userFinder;
@@ -57,6 +57,21 @@ public class UserManager {
         this.hashHelper = hashHelper;
         this.sessionManager = sessionManager;
         this.recaptchaHelper = recaptchaHelper;
+    }
+
+    public void activateTwoFactorAuth() throws NoTempSecretAvailableException {
+        User currentUser = sessionManager.currentUser();
+        if(empty(currentUser.getTempTwoFactorAuthSecret())) {
+            throw new NoTempSecretAvailableException();
+        }
+        currentUser.setTwoFactorAuthSecret(currentUser.getTempTwoFactorAuthSecret());
+        this.ebeanServer.save(currentUser);
+    }
+
+    public void deactivateTwoFactorAuth() {
+        User currentUser = sessionManager.currentUser();
+        currentUser.setTwoFactorAuthSecret("");
+        this.ebeanServer.save(currentUser);
     }
 
     public String generateNewTemporaryTwoFactorSecret() {

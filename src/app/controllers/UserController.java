@@ -15,18 +15,14 @@ import policyenforcement.session.Authentication;
 import policyenforcement.session.Session;
 import policyenforcement.session.SessionManager;
 import twofactorauth.QrCodeUtil;
-import twofactorauth.TimeBasedOneTimePasswordUtil;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static extension.StringHelper.empty;
 import static play.libs.Scala.asScala;
 
 public class UserController extends Controller {
@@ -186,8 +182,15 @@ public class UserController extends Controller {
     }
 
     @Authentication.Required
-    public Result activateTwoFactorAuth() throws InvalidArgumentException, UnauthorizedException {
-        return redirect(routes.UserController.showActiveUserSessions());
+    public Result activateTwoFactorAuth() throws NoTempSecretAvailableException {
+        this.userManager.activateTwoFactorAuth();
+        return redirect(routes.HomeController.index());
+    }
+
+    @Authentication.Required
+    public Result deactivateTwoFactorAuth() {
+        this.userManager.deactivateTwoFactorAuth();
+        return redirect(routes.HomeController.index());
     }
 
     public Result twoFacBarcodeImage() throws IOException {
@@ -198,11 +201,12 @@ public class UserController extends Controller {
 
     @Authentication.Required
     public Result showUserSettings() {
+        User currentUser = this.sessionManager.currentUser();
         ChangeUserSessionTimeoutDto changeUserSessionTimeoutDto = new ChangeUserSessionTimeoutDto();
-        changeUserSessionTimeoutDto.setValueInMinutes((int) sessionManager.currentUser().getSessionTimeoutInMinutes());
+        changeUserSessionTimeoutDto.setValueInMinutes(sessionManager.currentUser().getSessionTimeoutInMinutes());
         Form<ChangeUserSessionTimeoutDto> filledForm = changeUserSessionTimeoutForm.fill(changeUserSessionTimeoutDto);
 
-        return ok(views.html.users.UserSettings.render(filledForm, changeOwnPasswordForm));
+        return ok(views.html.users.UserSettings.render(filledForm, changeOwnPasswordForm, empty(currentUser.getTwoFactorAuthSecret())));
     }
 
     @Authentication.Required

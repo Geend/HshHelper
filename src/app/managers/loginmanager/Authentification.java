@@ -9,6 +9,8 @@ import javax.inject.Inject;
 import java.security.GeneralSecurityException;
 import java.util.Optional;
 
+import static extension.StringHelper.empty;
+
 public class Authentification {
     public static class Result {
         private boolean success;
@@ -55,7 +57,7 @@ public class Authentification {
         // Nutzer existiert
         boolean success = hashHelper.checkHash(password, user.get().getPasswordHash());
         String twoFactorSecret = user.get().getTwoFactorAuthSecret();
-        if(success && twoFactorSecret != null && twoFactorSecret != "") {
+        if(success && !empty(twoFactorSecret)) {
             success = verifySecondFactor(twoFactorSecret, twoFactorPin);
         }
         return new Result(success, true, user.get());

@@ -3,7 +3,6 @@ package controllers;
 import managers.loginmanager.*;
 import dtos.ChangePasswordAfterResetDto;
 import dtos.UserLoginDto;
-import play.api.Configuration;
 import play.data.Form;
 import play.data.FormFactory;
 import play.filters.csrf.CSRF;
@@ -17,6 +16,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Optional;
+
+import static extension.StringHelper.empty;
 
 public class LoginController extends Controller {
 
@@ -40,7 +41,7 @@ public class LoginController extends Controller {
 
     @Authentication.NotAllowed
     public Result login() throws IOException {
-        Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password");
+        Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password", "twofactorpin");
         if (boundForm.hasErrors()) {
             return badRequest(views.html.login.Login.render(boundForm, false));
         }
@@ -59,7 +60,7 @@ public class LoginController extends Controller {
         }
 
         Integer twoFactorPin = 0;
-        if(loginData.getTwofactorpin() != null) {
+        if(!empty(loginData.getTwofactorpin())) {
             twoFactorPin = Integer.parseInt(loginData.getTwofactorpin());
         }
 
