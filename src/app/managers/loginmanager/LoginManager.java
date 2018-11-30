@@ -19,6 +19,7 @@ import ua_parser.Parser;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static policyenforcement.ConstraintValues.SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS;
 
@@ -91,11 +92,16 @@ public class LoginManager {
             throw new InvalidLoginException();
         }
 
-        String userAgentString = request.getHeaders().get("User-Agent").get();
+
+        Optional<String> userAgentString = request.getHeaders().get("User-Agent");
+        if(!userAgentString.isPresent()) {
+            throw new InvalidLoginException();
+        }
+
         LoginAttempt attempt = new LoginAttempt();
         attempt.setUser(auth.user());
         attempt.setAddress(request.remoteAddress());
-        attempt.setClientName(this.getUserAgentDisplayString(userAgentString));
+        attempt.setClientName(this.getUserAgentDisplayString(userAgentString.get()));
         attempt.setDateTime(DateTime.now());
         this.ebeanSever.save(attempt);
 
