@@ -18,9 +18,9 @@ public class KeyGenerator {
     public CryptoKey generate(String password, byte[] salt) {
 
         try {
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, CryptoConstants.PBKDF2_ROUNDS, CryptoConstants.AES_KEY_SIZE);
-            SecretKey key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+            SecretKeyFactory factory = SecretKeyFactory.getInstance(CryptoConstants.KEY_DERIVATION_FUNCTION_NAME);
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, CryptoConstants.PBKDF2_ROUNDS, CryptoConstants.AES_KEY_SIZE_BIT);
+            SecretKey key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), CryptoConstants.CIPHER_NAME);
 
             return new CryptoKey(key);
 
@@ -30,11 +30,11 @@ public class KeyGenerator {
     }
 
     public CryptoKey generate(byte[] key) {
-        return new CryptoKey(new SecretKeySpec(key, "AES"));
+        return new CryptoKey(new SecretKeySpec(key, CryptoConstants.CIPHER_NAME));
     }
 
     public byte[] generateSalt(){
-        byte[] result = new byte[CryptoConstants.SALT_LENGTH];
+        byte[] result = new byte[CryptoConstants.SALT_LENGTH_BYTE];
         secureRandom.nextBytes(result);
         return result;
     }

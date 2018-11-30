@@ -10,13 +10,14 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidParameterSpecException;
 
+import static extension.Crypto.CryptoConstants.CIPHER_NAME_MODE_PADDING;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
 
 public class Cipher {
     public CryptoResult encrypt(CryptoKey key, byte[] plaintext) {
         try {
-            javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance("AES/CBC/PKCS5Padding");
+            javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance(CIPHER_NAME_MODE_PADDING);
             cipher.init(ENCRYPT_MODE, key.getKey());
 
             AlgorithmParameters params = cipher.getParameters();
@@ -31,7 +32,7 @@ public class Cipher {
 
     public byte[] decrypt(CryptoKey key, byte[]iv, byte[] ciphertext) {
         try {
-            javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance("AES/CBC/PKCS5Padding");
+            javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance(CIPHER_NAME_MODE_PADDING);
             cipher.init(DECRYPT_MODE, key.getKey(), new IvParameterSpec(iv));
             return cipher.doFinal(ciphertext);
 
