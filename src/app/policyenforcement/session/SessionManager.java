@@ -103,8 +103,6 @@ public class SessionManager {
 
     public void destroyAllUserSessions(User user) {
         Update<InternalSession> upd = Ebean.createUpdate(InternalSession.class, "DELETE FROM InternalSession WHERE user=:user");
-        Logger.ALogger logger = Logger.of(SessionManager.class);
-        logger.info(upd.getGeneratedSql());
         upd.set("user", user.userId);
         upd.execute();
     }
