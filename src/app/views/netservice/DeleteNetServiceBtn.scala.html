@@ -1,0 +1,12 @@
+@import views.TemplateEnvironment
+@(netService: NetService)
+
+@if(TemplateEnvironment.policy.canDeleteNetServices()) {
+    @helper.form(action = routes.NetServiceController.deleteNetService()) {
+        @helper.CSRF.formField
+        <input type="hidden" name="netServiceId" value="@netService.getNetServiceId" />
+        <button type="submit" class="linkBtn">Netzdienst Löschen</button>
+    }
+} else {
+    <button type="submit" class="linkBtn" disabled>Netzdienst Löschen</button>
+}

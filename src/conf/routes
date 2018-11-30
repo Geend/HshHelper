@@ -82,7 +82,12 @@ GET         /permissions/createGroupPermission/:fileId        controllers.Permis
 # PermissionController - END
 
 
-
+# NetServiceController - START
+GET         /netservices/all                                  controllers.NetServiceController.showAllNetServices
+GET         /netservices/create                               controllers.NetServiceController.showAddNetServiceForm
+POST        /netservices/create                               controllers.NetServiceController.createNetService
+POST        /netservices/delete                               controllers.NetServiceController.deleteNetService
+# NetServiceController - END
 
 GET         /forbidden                                        controllers.ErrorController.showForbiddenMessage()
 GET         /badrequest                                       controllers.ErrorController.showBadRequestMessage()

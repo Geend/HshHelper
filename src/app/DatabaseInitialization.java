@@ -33,6 +33,7 @@ public class DatabaseInitialization {
             stmt.execute("TRUNCATE TABLE group_permissions");
             stmt.execute("TRUNCATE TABLE user_permissions");
             stmt.execute("TRUNCATE TABLE internal_session");
+            stmt.execute("TRUNCATE TABLE netservices");
             stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
             stmt.execute("SET ALLOW_LITERALS NONE");
         });
@@ -137,6 +138,11 @@ public class DatabaseInitialization {
         gp1.setCanRead(true);
         gp1.setCanWrite(false);
         gp1.save();
+
+
+        NetService ns1 = new NetService();
+        ns1.setName("Testnetzdienst");
+        ns1.save();
 
         Logger.info("DatabaseInitialization - Prepare DB; Done adding new users and groups");
     }

@@ -348,4 +348,28 @@ public class Policy {
 
         return false;
     }
+
+    public boolean canSeeAllNetServices() {
+        if(associatedUser.isAdmin()){
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean canDeleteNetServices() {
+        if(associatedUser.isAdmin()){
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean canCreateNetService(){
+        if(associatedUser.isAdmin()){
+            return true;
+        }
+
+        return false;
+    }
 }
