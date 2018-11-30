@@ -69,6 +69,10 @@ public class User extends Model {
     private byte[] initializationVectorCredentialKey;
     private byte[] credentialKeyCipherText;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<NetServiceCredential> netServiceCredentials = new ArrayList<>();
+
+
     public User(
             String username,
             String email,
@@ -218,6 +222,14 @@ public class User extends Model {
 
     public void setInitializationVectorCredentialKey(byte[] initializationVectorCredentialKey) {
         this.initializationVectorCredentialKey = initializationVectorCredentialKey;
+    }
+
+    public List<NetServiceCredential> getNetServiceCredentials() {
+        return netServiceCredentials;
+    }
+
+    public void setNetServiceCredentials(List<NetServiceCredential> netServiceCredentials) {
+        this.netServiceCredentials = netServiceCredentials;
     }
 
     @Override

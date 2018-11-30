@@ -87,6 +87,12 @@ GET         /netservices/all                                  controllers.NetSer
 GET         /netservices/create                               controllers.NetServiceController.showAddNetServiceForm
 POST        /netservices/create                               controllers.NetServiceController.createNetService
 POST        /netservices/delete                               controllers.NetServiceController.deleteNetService
+
+GET         /netservice/credentials                           controllers.NetServiceController.showUserNetServiceCredentials
+GET         /netservice/credentials/create                    controllers.NetServiceController.showCreateNetServiceCredentialForm
+POST        /netservice/credentials/create                    controllers.NetServiceController.createNetServiceCredential
+POST        /netservice/credentials/delete                    controllers.NetServiceController.deleteNetServiceCredential
+
 # NetServiceController - END
 
 GET         /forbidden                                        controllers.ErrorController.showForbiddenMessage()

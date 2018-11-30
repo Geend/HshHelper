@@ -13,7 +13,7 @@ public class Policy {
     private User associatedUser;
 
     private Policy(User associatedUser) {
-        if(associatedUser == null) {
+        if (associatedUser == null) {
             throw new IllegalArgumentException("associatedUser cannot be null!");
         }
 
@@ -21,11 +21,11 @@ public class Policy {
     }
 
     public boolean canViewGroupDetails(Group toBeWatched) {
-        if(toBeWatched.getMembers().contains(associatedUser)) {
+        if (toBeWatched.getMembers().contains(associatedUser)) {
             return true;
         }
 
-        if(associatedUser.isAdmin()) {
+        if (associatedUser.isAdmin()) {
             return true;
         }
 
@@ -33,7 +33,7 @@ public class Policy {
     }
 
     public boolean canViewAllUsers() {
-        if(associatedUser.isAdmin()) {
+        if (associatedUser.isAdmin()) {
             return true;
         }
 
@@ -41,7 +41,7 @@ public class Policy {
     }
 
     public boolean canViewAllGroupsList() {
-        if(associatedUser.isAdmin()) {
+        if (associatedUser.isAdmin()) {
             return true;
         }
 
@@ -49,7 +49,7 @@ public class Policy {
     }
 
     public boolean canCreateUser() {
-        if(associatedUser.isAdmin()) {
+        if (associatedUser.isAdmin()) {
             return true;
         }
 
@@ -57,16 +57,16 @@ public class Policy {
     }
 
     public boolean canDeleteUser(User userToBeDeleted) {
-        if(userToBeDeleted == null) {
+        if (userToBeDeleted == null) {
             return false;
         }
 
         // Wenn Nutzer Owner einer Admin-Gruppe ist, darf er nicht gelöscht werden (Quasi Super-Admin)
-        if(userToBeDeleted.getGroups().stream().anyMatch(x -> x.getOwner().equals(userToBeDeleted) && x.getIsAdminGroup())) {
+        if (userToBeDeleted.getGroups().stream().anyMatch(x -> x.getOwner().equals(userToBeDeleted) && x.getIsAdminGroup())) {
             return false;
         }
 
-        if(associatedUser.isAdmin()) {
+        if (associatedUser.isAdmin()) {
             return true;
         }
 
@@ -86,15 +86,15 @@ public class Policy {
     */
 
     public boolean canDeleteGroup(Group group) {
-        if(group.getIsAdminGroup() || group.getIsAllGroup()) {
+        if (group.getIsAdminGroup() || group.getIsAllGroup()) {
             return false;
         }
 
-        if(associatedUser.equals(group.getOwner())) {
+        if (associatedUser.equals(group.getOwner())) {
             return true;
         }
 
-        if(associatedUser.isAdmin()) {
+        if (associatedUser.isAdmin()) {
             return true;
         }
 
@@ -103,23 +103,23 @@ public class Policy {
 
     public boolean canRemoveGroupMember(Group group, User toBeDeleted) {
         //Can't remove from the "all" group, because every user needs te be a member of it
-        if(group.getIsAllGroup()){
+        if (group.getIsAllGroup()) {
             return false;
         }
 
-        if(group.getOwner().equals(toBeDeleted)) {
+        if (group.getOwner().equals(toBeDeleted)) {
             return false;
         }
 
-        if(!group.getMembers().contains(toBeDeleted)) {
+        if (!group.getMembers().contains(toBeDeleted)) {
             return false;
         }
 
-        if(associatedUser.equals(group.getOwner())) {
+        if (associatedUser.equals(group.getOwner())) {
             return true;
         }
 
-        if(associatedUser.isAdmin()) {
+        if (associatedUser.isAdmin()) {
             return true;
         }
 
@@ -128,15 +128,15 @@ public class Policy {
 
     public boolean canGenerallyAddGroupMember(Group group) {
         // Can't add to all group -> managed by the system
-        if(group.getIsAllGroup()){
+        if (group.getIsAllGroup()) {
             return false;
         }
 
-        if(associatedUser.isAdmin()) {
+        if (associatedUser.isAdmin()) {
             return true;
         }
 
-        if(group.getOwner().equals(associatedUser)) {
+        if (group.getOwner().equals(associatedUser)) {
             return true;
         }
 
@@ -145,20 +145,20 @@ public class Policy {
 
     public boolean canAddSpecificGroupMember(Group group, User toBeAdded) {
         //Can't add to the "all" group -> managed by the system
-        if(group.getIsAllGroup()){
+        if (group.getIsAllGroup()) {
             return false;
         }
 
         // No duplicates!
-        if(group.getMembers().contains(toBeAdded)) {
+        if (group.getMembers().contains(toBeAdded)) {
             return false;
         }
 
-        if(associatedUser.isAdmin()) {
+        if (associatedUser.isAdmin()) {
             return true;
         }
 
-        if(group.getOwner().equals(associatedUser)) {
+        if (group.getOwner().equals(associatedUser)) {
             return true;
         }
 
@@ -170,7 +170,7 @@ public class Policy {
     }
 
     public boolean canUpdatePassword(User toBeUpdated) {
-        if(associatedUser.equals(toBeUpdated)) {
+        if (associatedUser.equals(toBeUpdated)) {
             return true;
         }
 
@@ -178,7 +178,7 @@ public class Policy {
     }
 
     public boolean canDeleteSession(Session session) {
-        if(session.getUser().equals(associatedUser)) {
+        if (session.getUser().equals(associatedUser)) {
             return true;
         }
 
@@ -186,71 +186,71 @@ public class Policy {
     }
 
     public boolean canSeeAllGroups() {
-        if(associatedUser.isAdmin()) {
+        if (associatedUser.isAdmin()) {
             return true;
         }
 
         return false;
     }
 
-    public boolean canReadFile(File file){
-        if(file == null)
+    public boolean canReadFile(File file) {
+        if (file == null)
             return false;
 
-        if(file.getOwner().equals(associatedUser))
+        if (file.getOwner().equals(associatedUser))
             return true;
 
-        if(associatedUser.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanRead))
+        if (associatedUser.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanRead))
             return true;
 
-        if(associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanRead)))
+        if (associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanRead)))
             return true;
 
         return false;
 
     }
 
-    public boolean canWriteFile(File file){
-        if(file == null)
+    public boolean canWriteFile(File file) {
+        if (file == null)
             return false;
 
-        if(file.getOwner().equals(associatedUser))
+        if (file.getOwner().equals(associatedUser))
             return true;
 
-        if(associatedUser.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanWrite))
+        if (associatedUser.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanWrite))
             return true;
 
-        if(associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanWrite)))
+        if (associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanWrite)))
             return true;
 
         return false;
     }
 
     public boolean canGetFileMeta(File file) {
-        if(canReadFile(file))
+        if (canReadFile(file))
             return true;
 
-        if(canWriteFile(file))
+        if (canWriteFile(file))
             return true;
 
         return false;
     }
 
     public boolean canDeleteFile(File file) {
-        if(file == null)
+        if (file == null)
             return false;
 
-        if(file.getOwner().equals(associatedUser))
+        if (file.getOwner().equals(associatedUser))
             return true;
 
         return false;
     }
 
     public boolean canDeleteGroupPermission(GroupPermission groupPermission) {
-        if(groupPermission == null)
+        if (groupPermission == null)
             return false;
 
-        if(associatedUser.equals(groupPermission.getFile().getOwner()))
+        if (associatedUser.equals(groupPermission.getFile().getOwner()))
             return true;
 
 
@@ -258,115 +258,119 @@ public class Policy {
     }
 
     public boolean canDeleteUserPermission(UserPermission userPermission) {
-        if(userPermission == null)
+        if (userPermission == null)
             return false;
 
-        if(associatedUser.equals(userPermission.getFile().getOwner()))
+        if (associatedUser.equals(userPermission.getFile().getOwner()))
             return true;
 
         return false;
     }
 
     public boolean canEditUserPermission(UserPermission userPermission) {
-        if(userPermission == null)
+        if (userPermission == null)
             return false;
 
-        if(associatedUser.equals(userPermission.getFile().getOwner()))
+        if (associatedUser.equals(userPermission.getFile().getOwner()))
             return true;
 
         return false;
     }
 
     public boolean canEditGroupPermission(GroupPermission userPermission) {
-        if(userPermission == null)
+        if (userPermission == null)
             return false;
 
-        if(associatedUser.equals(userPermission.getFile().getOwner()))
+        if (associatedUser.equals(userPermission.getFile().getOwner()))
             return true;
 
         return false;
     }
 
     public boolean canCreateUserPermission(File file) {
-        if(file == null)
+        if (file == null)
             return false;
 
-        if(file.getOwner().equals(associatedUser))
+        if (file.getOwner().equals(associatedUser))
             return true;
 
         return false;
     }
 
     public boolean canCreateGroupPermission(File file, Group group) {
-        if(file == null || group == null)
+        if (file == null || group == null)
             return false;
 
-        if(group.getMembers().contains(associatedUser))
+        if (group.getMembers().contains(associatedUser))
             return true;
 
         return false;
     }
 
     public boolean canViewFilePermissions(File file) {
-        if(file.getOwner().equals(associatedUser))
+        if (file.getOwner().equals(associatedUser))
             return true;
 
         return false;
     }
 
     public boolean canViewUserPermission(UserPermission permission) {
-        if(permission.getFile().getOwner().equals(associatedUser))
+        if (permission.getFile().getOwner().equals(associatedUser))
             return true;
 
         return false;
     }
 
     public boolean canViewGroupPermission(GroupPermission permission) {
-        if(permission.getFile().getOwner().equals(associatedUser))
+        if (permission.getFile().getOwner().equals(associatedUser))
             return true;
 
         return false;
     }
 
     public boolean canViewUserMetaInfo(User toBeViewed) {
-        if(associatedUser.isAdmin())
+        if (associatedUser.isAdmin())
             return true;
 
         return false;
     }
 
     public boolean canChangeUserTimeoutValue(User toBeChanged) {
-        if(associatedUser.equals(toBeChanged))
+        if (associatedUser.equals(toBeChanged))
             return true;
 
         return false;
     }
 
     public boolean canReadWriteQuotaLimit(User toBeChanged) {
-        if(associatedUser.isAdmin())
+        if (associatedUser.isAdmin())
             return true;
 
         return false;
     }
 
     public boolean canSeeAllNetServices() {
-        if(associatedUser.isAdmin()){
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     public boolean canDeleteNetServices() {
-        if(associatedUser.isAdmin()){
+        if (associatedUser.isAdmin()) {
             return true;
         }
 
         return false;
     }
 
-    public boolean canCreateNetService(){
-        if(associatedUser.isAdmin()){
+    public boolean canCreateNetService() {
+        if (associatedUser.isAdmin()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean canDeleteNetServicesCredential(NetServiceCredential netServiceCredential) {
+        if (netServiceCredential.getUser().equals(associatedUser)) {
             return true;
         }
 

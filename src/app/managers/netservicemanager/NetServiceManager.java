@@ -4,6 +4,7 @@ import io.ebean.EbeanServer;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import models.NetService;
+import models.NetServiceCredential;
 import models.finders.NetServiceFinder;
 import play.Logger;
 import policyenforcement.session.SessionManager;
@@ -64,5 +65,13 @@ public class NetServiceManager {
 
         ebeanServer.delete(netService.get());
 
+    }
+
+    public List<NetServiceCredential> getUserNetServiceCredentials() {
+        return sessionManager.currentUser().getNetServiceCredentials();
+    }
+
+    public void createNetUserCredential(Long netServiceId, String username, String password) {
+        //TODO
     }
 }
