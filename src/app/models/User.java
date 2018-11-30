@@ -60,8 +60,11 @@ public class User extends Model {
     private List<LoginAttempt> loginAttempts = new ArrayList<>();
 
 
-
     private int sessionTimeoutInMinutes;
+
+    private byte[] cryptoSalt;
+    private byte[] initializationVectorCredentialKey;
+    private byte[] credentialKeyCipherText;
 
     public User(
             String username,
@@ -172,6 +175,30 @@ public class User extends Model {
 
     public void setSessionTimeoutInMinutes(int sessionTimeoutInMinutes) {
         this.sessionTimeoutInMinutes = sessionTimeoutInMinutes;
+    }
+
+    public byte[] getCryptoSalt() {
+        return cryptoSalt;
+    }
+
+    public void setCryptoSalt(byte[] cryptoSalt) {
+        this.cryptoSalt = cryptoSalt;
+    }
+
+    public byte[] getCredentialKeyCipherText() {
+        return credentialKeyCipherText;
+    }
+
+    public void setCredentialKeyCipherText(byte[] credentialKeyCipherText) {
+        this.credentialKeyCipherText = credentialKeyCipherText;
+    }
+
+    public byte[] getInitializationVectorCredentialKey() {
+        return initializationVectorCredentialKey;
+    }
+
+    public void setInitializationVectorCredentialKey(byte[] initializationVectorCredentialKey) {
+        this.initializationVectorCredentialKey = initializationVectorCredentialKey;
     }
 
     @Override

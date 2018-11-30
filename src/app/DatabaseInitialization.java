@@ -2,6 +2,7 @@ import javax.inject.*;
 
 import extension.HashHelper;
 import models.*;
+import models.factories.UserFactory;
 import org.joda.time.DateTime;
 import play.Logger;
 import play.db.Database;
@@ -14,7 +15,7 @@ import java.util.stream.Stream;
 public class DatabaseInitialization {
 
     @Inject
-    public DatabaseInitialization(Database db, HashHelper hashHelper) {
+    public DatabaseInitialization(Database db, HashHelper hashHelper, UserFactory userFactory) {
         Logger.info("DatabaseInitialization - Prepare DB");
 
         // TODO: Add new tables for truncation
@@ -38,10 +39,10 @@ public class DatabaseInitialization {
         Logger.info("DatabaseInitialization - Prepare DB; Truncated");
 
         Logger.info("ApplicationStart - Prepare DB; Add new users and groups");
-        User u1 = new User("admin", "hsh.helper+admin@gmail.com", hashHelper.hashPassword("admin"), false, 10000000L);
-        User u2 = new User("peter", "hsh.helper+peter@gmail.com",  hashHelper.hashPassword("peter"), false, 10L);
-        User u3 = new User("klaus", "hsh.helper+klaus@gmail.com",  hashHelper.hashPassword("klaus"), false, 10L);
-        User u4 = new User("hans", "hsh.helper+hans@gmail.com",  hashHelper.hashPassword("hans"), true, 10L);
+        User u1 = userFactory.CreateUser("admin", "hsh.helper+admin@gmail.com", "admin", false, 1000L);
+        User u2 = userFactory.CreateUser("peter", "hsh.helper+peter@gmail.com",  "peter", false, 10L);
+        User u3 = userFactory.CreateUser("klaus", "hsh.helper+klaus@gmail.com",  "klaus", false, 10L);
+        User u4 = userFactory.CreateUser("hans", "hsh.helper+hans@gmail.com",  "hans", true, 10L);
 
         Group g1 = new Group("All", u1);
         Group g2 = new Group("Administrators", u1);

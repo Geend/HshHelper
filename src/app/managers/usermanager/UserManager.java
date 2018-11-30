@@ -12,6 +12,7 @@ import managers.loginmanager.Authentification;
 import managers.loginmanager.CaptchaRequiredException;
 import models.Group;
 import models.User;
+import models.factories.UserFactory;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import models.finders.UserFinderQueryOptions;
@@ -34,6 +35,7 @@ public class UserManager {
     private final EbeanServer ebeanServer;
     private final SessionManager sessionManager;
     private final RecaptchaHelper recaptchaHelper;
+    private final UserFactory userFactory;
 
     private static final Logger.ALogger logger = Logger.of(UserManager.class);
 
@@ -46,7 +48,8 @@ public class UserManager {
             HashHelper hashHelper,
             EbeanServer server,
             SessionManager sessionManager,
-            RecaptchaHelper recaptchaHelper)
+            RecaptchaHelper recaptchaHelper,
+            UserFactory userFactory)
     {
         this.groupFinder = groupFinder;
         this.ebeanServer = server;
@@ -56,6 +59,7 @@ public class UserManager {
         this.hashHelper = hashHelper;
         this.sessionManager = sessionManager;
         this.recaptchaHelper = recaptchaHelper;
+        this.userFactory = userFactory;
     }
 
     public String createUser(String username, String email, Long quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException, UsernameCannotBeAdmin {
@@ -68,7 +72,6 @@ public class UserManager {
 
         //TODO: Include generated password length in policy
         String plaintextPassword = passwordGenerator.generatePassword(10);
-        String passwordHash = hashHelper.hashPassword(plaintextPassword);
         User newUser;
         if(Objects.equals(username.toLowerCase(), "admin")) {
             logger.info(currentUser + " tried to create user with the name \"admin\"");
@@ -85,11 +88,13 @@ public class UserManager {
                 logger.error(currentUser + " tried to create user " + username + " but " + email + " already exists");
                 throw new EmailAlreadyExistsException();
             }
-            newUser = new User(username,
+            newUser = userFactory.CreateUser(
+                    username,
                     email,
-                    passwordHash,
+                    plaintextPassword,
                     true,
-                    quota);
+                    quota
+            );
             List<Group> groups = new ArrayList<>();
             groups.add(allGroup);
             newUser.setGroups(groups);

@@ -39,6 +39,7 @@ testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v"))
 libraryDependencies += "joda-time" % "joda-time" % "2.10"
 
 libraryDependencies += "io.github.keetraxx" % "recaptcha" % "0.5"
+libraryDependencies += "com.google.code.gson" % "gson" % "2.8.5"
 
 libraryDependencies += ws
 

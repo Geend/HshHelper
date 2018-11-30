@@ -5,6 +5,7 @@ import managers.UnauthorizedException;
 import extension.HashHelper;
 import extension.PasswordGenerator;
 import io.ebean.EbeanServer;
+import models.factories.UserFactory;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import org.junit.Test;
@@ -54,8 +55,9 @@ public class CreateUserUsernameNotAdminTests {
         when(sessionManager.currentPolicy()).thenReturn(spec);
         when(userFinder.byName(any())).thenReturn(Optional.empty());
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        UserFactory userFactory = mock(UserFactory.class);
 
-        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, sessionManager, recaptchaHelper);
+        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, sessionManager, recaptchaHelper, userFactory);
         sut.createUser(this.username, "test@test.de", 5l);
     }
 }
