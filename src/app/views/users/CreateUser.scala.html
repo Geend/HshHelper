@@ -1,4 +1,5 @@
-@(form: Form[dtos.CreateUserDto])
+@import dtos.user.CreateUserDto
+@(form: Form[CreateUserDto])
 
 @Base("Benutzer erstellen"){
     @helper.form(action = routes.UserController.createUser()) {

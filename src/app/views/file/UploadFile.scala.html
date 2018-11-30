@@ -1,4 +1,5 @@
-@(form: Form[dtos.UploadFileDto], userPermissionDtos: Seq[dtos.UserPermissionDto], groupPermissionDtos: Seq[dtos.GroupPermissionDto])
+@import dtos.file.{GroupPermissionDto, UploadFileDto, UserPermissionDto}
+@(form: Form[UploadFileDto], userPermissionDtos: Seq[UserPermissionDto], groupPermissionDtos: Seq[GroupPermissionDto])
 
     @Base("Datei Hochladen") {
         @if(form.hasGlobalErrors) {

@@ -1,5 +1,6 @@
 @import managers.filemanager.dto.FileMeta
-@(form: Form[dtos.CreateGroupPermissionDto], allGroups: Seq[Group], possiblePermissions: Seq[PermissionLevel], relevantFile : FileMeta)
+@import dtos.permissions.CreateGroupPermissionDto
+@(form: Form[CreateGroupPermissionDto], allGroups: Seq[Group], possiblePermissions: Seq[PermissionLevel], relevantFile : FileMeta)
 
 @Base("Gruppenberechtigung erstellen"){
     @helper.form(action = routes.PermissionController.createGroupPermission()) {

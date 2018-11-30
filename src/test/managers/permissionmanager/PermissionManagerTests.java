@@ -1,7 +1,7 @@
 package managers.permissionmanager;
 
-import dtos.EditGroupPermissionDto;
-import dtos.EditUserPermissionDto;
+import dtos.permissions.EditGroupPermissionDto;
+import dtos.permissions.EditUserPermissionDto;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.EbeanServer;

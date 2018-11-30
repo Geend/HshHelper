@@ -1,7 +1,8 @@
 @import views.TemplateEnvironment
 @import policyenforcement.session.SessionManager.SessionInstance
 @import views.TemplateEnvironment
-@(title: String, searchForm: Form[dtos.SearchQueryDto] = null)(content: Html)
+@import dtos.file.SearchQueryDto
+@(title: String, searchForm: Form[SearchQueryDto] = null)(content: Html)
 
 
 <!DOCTYPE html>

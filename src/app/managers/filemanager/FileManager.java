@@ -1,7 +1,7 @@
 package managers.filemanager;
 
-import dtos.GroupPermissionDto;
-import dtos.UserPermissionDto;
+import dtos.file.GroupPermissionDto;
+import dtos.file.UserPermissionDto;
 import extension.CanReadWrite;
 import extension.PermissionLevelConverter;
 import io.ebean.annotation.TxIsolation;
@@ -16,7 +16,6 @@ import models.finders.UserFinder;
 import models.finders.UserQuota;
 import org.joda.time.DateTime;
 import play.Logger;
-import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
