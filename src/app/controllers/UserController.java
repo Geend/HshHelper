@@ -1,11 +1,12 @@
 package controllers;
 
+import dtos.group.UserIdDto;
+import dtos.user.*;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.loginmanager.CaptchaRequiredException;
 import managers.usermanager.*;
 import models.User;
-import dtos.*;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;

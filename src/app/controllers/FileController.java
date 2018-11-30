@@ -1,16 +1,14 @@
 package controllers;
 
+import dtos.file.*;
+import dtos.file.GroupPermissionDto;
 import extension.NoFileSubmittedOnUploadException;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.filemanager.FileManager;
 import managers.filemanager.QuotaExceededException;
 import managers.filemanager.dto.FileMeta;
-import models.File;
-import dtos.*;
-import models.GroupPermission;
 import models.PermissionLevel;
-import models.User;
 import models.finders.UserQuota;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
@@ -28,8 +26,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
 

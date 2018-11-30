@@ -1,6 +1,7 @@
 @import policyenforcement.Policy
 @import managers.filemanager.dto.FileMeta
-@(files: Seq[FileMeta],searchForm: Form[dtos.SearchQueryDto])
+@import dtos.file.SearchQueryDto
+@(files: Seq[FileMeta],searchForm: Form[SearchQueryDto])
 
 @Base("Gefundene Dateien", searchForm) {
     @helper.FilesTable(files)

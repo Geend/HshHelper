@@ -2,6 +2,7 @@ package controllers;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import dtos.permissions.*;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.filemanager.dto.FileMeta;
@@ -11,21 +12,15 @@ import managers.permissionmanager.PermissionManager;
 import models.*;
 import models.User;
 import models.PermissionLevel;
-import models.File;
-import dtos.*;
 import org.springframework.util.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.shaded.ahc.io.netty.util.internal.StringUtil;
-import policyenforcement.Policy;
 import policyenforcement.session.Authentication;
 import policyenforcement.session.SessionManager;
-import scala.collection.Seq;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
 

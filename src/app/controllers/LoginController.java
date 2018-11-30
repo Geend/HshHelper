@@ -1,8 +1,8 @@
 package controllers;
 
 import managers.loginmanager.*;
-import dtos.ChangePasswordAfterResetDto;
-import dtos.UserLoginDto;
+import dtos.login.ChangePasswordAfterResetDto;
+import dtos.login.UserLoginDto;
 import play.data.Form;
 import play.data.FormFactory;
 import play.filters.csrf.CSRF;

@@ -11,14 +11,13 @@ import models.*;
 import models.File;
 import models.GroupPermission;
 import models.UserPermission;
-import dtos.EditGroupPermissionDto;
-import dtos.EditUserPermissionDto;
+import dtos.permissions.EditGroupPermissionDto;
+import dtos.permissions.EditUserPermissionDto;
 import models.finders.*;
 import models.finders.FileFinder;
 import models.finders.GroupPermissionFinder;
 import models.finders.UserPermissionFinder;
 import play.Logger;
-import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;

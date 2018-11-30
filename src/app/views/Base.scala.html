@@ -1,6 +1,6 @@
 @import views.TemplateEnvironment
-@(title: String, searchForm: Form[dtos.SearchQueryDto] = null)(content: Html)
-
+@import dtos.file.SearchQueryDto
+@(title: String, searchForm: Form[SearchQueryDto] = null)(content: Html)
 
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">

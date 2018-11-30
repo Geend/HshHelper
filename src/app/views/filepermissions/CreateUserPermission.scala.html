@@ -1,5 +1,6 @@
 @import managers.filemanager.dto.FileMeta
-@(form: Form[dtos.CreateUserPermissionDto], allUsers: Seq[User], possiblePermissions: Seq[PermissionLevel], relevantFile : FileMeta)
+@import dtos.permissions.CreateUserPermissionDto
+@(form: Form[CreateUserPermissionDto], allUsers: Seq[User], possiblePermissions: Seq[PermissionLevel], relevantFile : FileMeta)
 
 @Base("Benutzerberechtigung erstellen"){
     @helper.form(action = routes.PermissionController.createUserPermission()) {

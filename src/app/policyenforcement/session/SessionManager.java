@@ -3,6 +3,8 @@ package policyenforcement.session;
 import extension.B64Helper;
 import extension.Crypto.*;
 import extension.RandomDataGenerator;
+import io.ebean.Ebean;
+import io.ebean.Update;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import models.User;
@@ -122,6 +124,11 @@ public class SessionManager {
         return ret;
     }
 
+    public void destroyAllUserSessions(User user) {
+        Update<InternalSession> upd = Ebean.createUpdate(InternalSession.class, "DELETE FROM InternalSession WHERE user=:user");
+        upd.set("user", user.userId);
+        upd.execute();
+    }
 
     public void destroyCurrentSession() {
         if(!hasActiveSession()) {
