@@ -1,5 +1,9 @@
 package managers.loginmanager;
 
+import extension.Crypto.Cipher;
+import extension.Crypto.CryptoKey;
+import extension.Crypto.CryptoResult;
+import extension.Crypto.KeyGenerator;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
 import io.ebean.EbeanServer;
@@ -13,14 +17,12 @@ import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
 import policyenforcement.ext.loginFirewall.Strategy;
 import policyenforcement.session.SessionManager;
-import scala.reflect.internal.util.StripMarginInterpolator;
 import ua_parser.Client;
 import ua_parser.Parser;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.List;
 import java.util.Optional;
 
 import static policyenforcement.ConstraintValues.SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS;
@@ -34,6 +36,8 @@ public class LoginManager {
     private HashHelper hashHelper;
     private LoginAttemptFinder loginAttemptFinder;
     private final RecaptchaHelper recaptchaHelper;
+    private final KeyGenerator keyGenerator;
+    private final Cipher cipher;
 
     private static final Logger.ALogger logger = Logger.of(LoginManager.class);
 
@@ -45,7 +49,7 @@ public class LoginManager {
             HashHelper hashHelper,
             EbeanServer ebeanServer,
             LoginAttemptFinder loginAttemptFinder,
-            RecaptchaHelper recaptchaHelper)
+            RecaptchaHelper recaptchaHelper, KeyGenerator keyGenerator, Cipher cipher)
     {
         this.loginAttemptFinder = loginAttemptFinder;
         this.ebeanSever = ebeanServer;
@@ -54,6 +58,8 @@ public class LoginManager {
         this.sessionManager = sessionManager;
         this.hashHelper = hashHelper;
         this.recaptchaHelper = recaptchaHelper;
+        this.keyGenerator = keyGenerator;
+        this.cipher = cipher;
     }
 
     private User authenticate(String username, String password, String captchaToken, Http.Request request, Integer twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, IOException, GeneralSecurityException {
@@ -121,7 +127,10 @@ public class LoginManager {
             throw new PasswordChangeRequiredException();
         }
 
-        sessionManager.startNewSession(authenticatedUser);
+        CryptoKey key = keyGenerator.generate(password, authenticatedUser.getCryptoSalt());
+        byte[] credentialKeyPlaintext = cipher.decrypt(key, authenticatedUser.getInitializationVectorCredentialKey(), authenticatedUser.getCredentialKeyCipherText());
+
+        sessionManager.startNewSession(authenticatedUser, credentialKeyPlaintext);
         logger.info(authenticatedUser + " has logged in.");
     }
 

@@ -1,6 +1,10 @@
 package policyenforcement.session;
 
+import extension.B64Helper;
+import extension.Crypto.Cipher;
+import extension.Crypto.KeyGenerator;
 import extension.HashHelper;
+import extension.RandomDataGenerator;
 import io.ebean.Model;
 import models.User;
 import org.joda.time.DateTimeUtils;
@@ -12,6 +16,7 @@ import play.Application;
 import play.mvc.Http;
 import play.test.Helpers;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,13 +31,20 @@ public class SessionManagerTest {
     public static String defaultIp = "1.2.23.4";
     public static String otherIp = "2.2.2.2";
 
+    public static byte[] credentialKey = new byte[]{1,2,3,4,5,1};
+
     @BeforeClass
     public static void startApp() {
         app = Helpers.fakeApplication();
         Helpers.start(app);
 
         hashHelper = new HashHelper();
-        sessionManager = new SessionManager();
+        sessionManager = new SessionManager(
+            new KeyGenerator(),
+            new Cipher(),
+            new RandomDataGenerator(new SecureRandom()),
+            new B64Helper()
+        );
 
         robin = new User("robin", "hsh.helper+robin@gmail.com", hashHelper.hashPassword("robin"), true, 10l);
         robin.save();
@@ -69,7 +81,7 @@ public class SessionManagerTest {
             is(false)
         );
 
-        sessionManager.startNewSession(robin);
+        sessionManager.startNewSession(robin, credentialKey);
 
         assertThat(
             sessionManager.hasActiveSession(),
@@ -79,6 +91,11 @@ public class SessionManagerTest {
         assertThat(
             sessionManager.currentUser(),
             is(robin)
+        );
+
+        assertArrayEquals(
+            sessionManager.getCredentialKey(),
+            credentialKey
         );
 
         simulateNewRequest();
@@ -93,7 +110,7 @@ public class SessionManagerTest {
 
     @Test
     public void sessionLifespanIpChange() {
-        sessionManager.startNewSession(robin);
+        sessionManager.startNewSession(robin, credentialKey);
 
         assertThat(
             sessionManager.hasActiveSession(),
@@ -114,7 +131,7 @@ public class SessionManagerTest {
 
     @Test
     public void sessionLifespanAfterTimeout() {
-        sessionManager.startNewSession(robin);
+        sessionManager.startNewSession(robin, credentialKey);
 
         assertThat(
                 sessionManager.hasActiveSession(),
@@ -137,7 +154,7 @@ public class SessionManagerTest {
 
     @Test
     public void sessionLifespanBeforeTimeout() {
-        sessionManager.startNewSession(robin);
+        sessionManager.startNewSession(robin, credentialKey);
 
         assertThat(
                 sessionManager.hasActiveSession(),
@@ -160,7 +177,7 @@ public class SessionManagerTest {
 
     @Test
     public void sessionListSingleSession() {
-        sessionManager.startNewSession(robin);
+        sessionManager.startNewSession(robin, credentialKey);
 
         List<Session> sessions = sessionManager.sessionsByUser(robin);
         assertThat(sessions.size(), is(1));
@@ -192,7 +209,7 @@ public class SessionManagerTest {
         // Für jeden "Request" eine Session initiieren
         for(Http.Context ctx : requests) {
             Http.Context.current.set(ctx);
-            sessionManager.startNewSession(robin);
+            sessionManager.startNewSession(robin, credentialKey);
         }
 
         // Prüfen, dass auch bei jedem Request die Session besteht
@@ -219,5 +236,31 @@ public class SessionManagerTest {
                     is(i!=deleteIndex)
             );
         }
+    }
+
+    @Test
+    public void getCredentialKey() {
+        assertThat(
+                sessionManager.hasActiveSession(),
+                is(false)
+        );
+
+        sessionManager.startNewSession(robin, credentialKey);
+
+        assertThat(
+                sessionManager.hasActiveSession(),
+                is(true)
+        );
+
+        assertThat(
+                sessionManager.currentUser(),
+                is(robin)
+        );
+
+        assertArrayEquals(
+                sessionManager.getCredentialKey(),
+                credentialKey
+        );
+
     }
 }

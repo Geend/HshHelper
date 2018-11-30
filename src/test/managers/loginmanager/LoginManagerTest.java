@@ -1,5 +1,7 @@
 package managers.loginmanager;
 
+import extension.Crypto.Cipher;
+import extension.Crypto.KeyGenerator;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
 import io.ebean.EbeanServer;
@@ -32,6 +34,10 @@ public class LoginManagerTest {
     private Http.Headers defaultHeaders;
     private Http.Request defaultRequest;
     private RecaptchaHelper recaptchaHelper;
+    private KeyGenerator defaultKeyGenerator;
+    private Cipher defaultCipher;
+    private byte[] defaultCredentialKey;
+
 
     @Before
     public void init() {
@@ -51,6 +57,11 @@ public class LoginManagerTest {
         this.recaptchaHelper = mock(RecaptchaHelper.class);
         when(this.defaultFirewallInstance.getStrategy(any(Long.class))).thenReturn(Strategy.BYPASS);
         when(defaultFirewall.get(any(String.class))).thenReturn(this.defaultFirewallInstance);
+
+        defaultCredentialKey = new byte[]{1,2,3,4};
+        defaultKeyGenerator = mock(KeyGenerator.class);
+        defaultCipher = mock(Cipher.class);
+        when(defaultCipher.decrypt(any(), any(), any())).thenReturn(defaultCredentialKey);
     }
 
     @Test
@@ -67,9 +78,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
-        verify(sessionManager).startNewSession(authenticatedUser);
+        verify(sessionManager).startNewSession(authenticatedUser, defaultCredentialKey);
     }
 
     @Test(expected = PasswordChangeRequiredException.class)
@@ -86,7 +97,7 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -103,7 +114,7 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -125,7 +136,7 @@ public class LoginManagerTest {
                 hashHelper,
                 s,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
         verify(authenticatedUser).setIsPasswordResetRequired(false);
         verify(authenticatedUser).setPasswordHash("hashed");
@@ -146,7 +157,7 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -166,7 +177,7 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -187,7 +198,7 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -208,7 +219,7 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -228,7 +239,7 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -249,7 +260,7 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -270,7 +281,7 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -291,7 +302,7 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -312,7 +323,7 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper);
+                this.recaptchaHelper, defaultKeyGenerator, defaultCipher);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 }

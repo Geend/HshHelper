@@ -9,4 +9,6 @@ public class CryptoConstants {
     public static final String CIPHER_NAME = "AES";
     public static final String CIPHER_NAME_MODE_PADDING = "AES/CBC/PKCS5Padding";
     public static final String KEY_DERIVATION_FUNCTION_NAME = "PBKDF2WithHmacSHA256";
+
+    public static final int GENERATED_KEY_BYTE = 32;
 }

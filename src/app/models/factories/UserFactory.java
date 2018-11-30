@@ -1,9 +1,7 @@
 package models.factories;
 
-import extension.Crypto.Cipher;
-import extension.Crypto.CryptoKey;
-import extension.Crypto.CryptoResult;
-import extension.Crypto.KeyGenerator;
+import extension.B64Helper;
+import extension.Crypto.*;
 import extension.HashHelper;
 import extension.RandomDataGenerator;
 import models.User;
@@ -17,7 +15,7 @@ public class UserFactory {
     private Cipher cipher;
 
     @Inject
-    public UserFactory(HashHelper hashHelper, RandomDataGenerator randomDataGenerator, KeyGenerator keyGenerator, Cipher cipher) {
+    public UserFactory(HashHelper hashHelper, RandomDataGenerator randomDataGenerator, KeyGenerator keyGenerator, Cipher cipher, B64Helper b64Helper) {
         this.hashHelper = hashHelper;
         this.randomDataGenerator = randomDataGenerator;
         this.keyGenerator = keyGenerator;
@@ -36,7 +34,7 @@ public class UserFactory {
         u.setCryptoSalt(keyGenerator.generateSalt());
         CryptoKey ck = keyGenerator.generate(plaintextPassword, u.getCryptoSalt());
 
-        byte[] credentialKey = randomDataGenerator.generateBytes(32);
+        byte[] credentialKey = randomDataGenerator.generateBytes(CryptoConstants.GENERATED_KEY_BYTE);
         CryptoResult cryptoResult = cipher.encrypt(ck, credentialKey);
 
         u.setInitializationVectorCredentialKey(

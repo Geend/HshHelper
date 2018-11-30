@@ -1,7 +1,7 @@
 package policyenforcement.session;
 
-import extension.Crypto.Cipher;
-import extension.Crypto.KeyGenerator;
+import extension.B64Helper;
+import extension.Crypto.*;
 import extension.RandomDataGenerator;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
@@ -25,20 +25,39 @@ import java.util.UUID;
 public class SessionManager {
     private static final String CtxCurrentSession = "CurrentSession";
     private static final String CookieSessionName = "HsHSession";
+    private static final String CookieSessionSecretName = "SessionSecret";
 
-    public void startNewSession(User user) {
+    private final KeyGenerator keyGenerator;
+    private final Cipher cipher;
+    private final RandomDataGenerator randomDataGenerator;
+    private final B64Helper b64Helper;
+
+    @Inject
+    public SessionManager(KeyGenerator keyGenerator, Cipher cipher, RandomDataGenerator randomDataGenerator, B64Helper b64Helper){
+        this.keyGenerator = keyGenerator;
+        this.cipher = cipher;
+        this.randomDataGenerator = randomDataGenerator;
+        this.b64Helper = b64Helper;
+    }
+
+    public void startNewSession(User user, byte[] credentialKeyPlaintext) {
         Http.Context ctx = Http.Context.current();
+
+        byte[] credentialSecret = randomDataGenerator.generateBytes(CryptoConstants.GENERATED_KEY_BYTE);
+        CryptoKey key = keyGenerator.generate(credentialSecret);
+        CryptoResult encryptedCredentialKey = cipher.encrypt(key, credentialKeyPlaintext);
 
         InternalSession dbs = new InternalSession();
         dbs.setRemoteAddress(ctx.request().remoteAddress());
         dbs.setIssuedAt(DateTime.now());
         dbs.setUser(user);
+        dbs.setInitializationVectorCredentialKey(encryptedCredentialKey.getInitializationVector());
+        dbs.setCredentialKeyCipherText(encryptedCredentialKey.getCiphertext());
         dbs.save();
-
-
 
         ctx.session().clear();
         ctx.session().put(CookieSessionName, dbs.getSessionKey().toString());
+        ctx.session().put(CookieSessionSecretName, b64Helper.encode(credentialSecret));
         ctx.args.remove(CtxCurrentSession);
     }
 
@@ -143,6 +162,20 @@ public class SessionManager {
     public int remainingSessionTime(){
         Minutes timeDifference = Minutes.minutesBetween(currentSession().getIssuedAt(), DateTime.now());
         return currentUser().getSessionTimeoutInMinutes() - timeDifference.getMinutes();
+    }
 
+    public byte[] getCredentialKey() {
+        Http.Context ctx = Http.Context.current();
+        if(!ctx.session().containsKey(CookieSessionSecretName)) {
+            throw new RuntimeException("A secret is required!");
+        }
+
+        byte[] sessionSecret = b64Helper.decode(ctx.session().get(CookieSessionSecretName));
+        CryptoKey key = keyGenerator.generate(sessionSecret);
+
+        InternalSession session = currentSession();
+
+        byte[] credentialKey = cipher.decrypt(key, session.getInitializationVectorCredentialKey(), session.getCredentialKeyCipherText());
+        return credentialKey;
     }
 }
