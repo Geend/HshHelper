@@ -141,6 +141,8 @@ public class UserManager {
             logger.error(currentUser  + " tried to delete a user but he is not authorized");
             throw new UnauthorizedException();
         }
+
+        sessionManager.destroyAllUserSessions(userToDelete.get());
         ebeanServer.delete(userToDelete.get());
         logger.info(currentUser + " deleted user " + userToDelete.get());
     }

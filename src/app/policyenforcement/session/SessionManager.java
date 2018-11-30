@@ -1,8 +1,7 @@
 package policyenforcement.session;
 
-import extension.Crypto.Cipher;
-import extension.Crypto.KeyGenerator;
-import extension.RandomDataGenerator;
+import io.ebean.Ebean;
+import io.ebean.Update;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import models.User;
@@ -14,7 +13,6 @@ import play.mvc.Http;
 import policyenforcement.ConstraintValues;
 import policyenforcement.Policy;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +101,11 @@ public class SessionManager {
         return ret;
     }
 
+    public void destroyAllUserSessions(User user) {
+        Update<InternalSession> upd = Ebean.createUpdate(InternalSession.class, "DELETE InternalSession WHERE user=:user");
+        upd.set("User", user);
+        upd.execute();
+    }
 
     public void destroyCurrentSession() {
         if(!hasActiveSession()) {
