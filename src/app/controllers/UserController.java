@@ -11,12 +11,18 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import policyenforcement.Policy;
 import policyenforcement.session.Authentication;
 import policyenforcement.session.Session;
 import policyenforcement.session.SessionManager;
+import twofactorauth.QrCodeUtil;
+import twofactorauth.TimeBasedOneTimePasswordUtil;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -179,6 +185,16 @@ public class UserController extends Controller {
         return redirect(routes.UserController.showActiveUserSessions());
     }
 
+    @Authentication.Required
+    public Result activateTwoFactorAuth() throws InvalidArgumentException, UnauthorizedException {
+        return redirect(routes.UserController.showActiveUserSessions());
+    }
+
+    public Result twoFacBarcodeImage() throws IOException {
+        String secret = TimeBasedOneTimePasswordUtil.generateBase32Secret();
+        byte[] imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("identifier", secret);
+        return ok(imageSourceData).as("image/png");
+    }
 
     @Authentication.Required
     public Result showUserSettings() {

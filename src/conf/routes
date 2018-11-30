@@ -17,6 +17,7 @@ POST        /users/confirmDelete                              controllers.UserCo
 POST        /users/delete                                     controllers.UserController.deleteUser
 GET         /users/:userId/settings                           controllers.UserController.showUserAdminSettings(userId:Long)
 POST        /users/editQuota                                  controllers.UserController.changeUserQuotaLimit
+GET         /users/twoFacBarcodeImage                         controllers.UserController.twoFacBarcodeImage
 
 GET         /resetpassword                                    controllers.UserController.showResetUserPasswordForm
 POST        /resetpassword                                    controllers.UserController.resetUserPassword
@@ -25,6 +26,7 @@ POST        /sessions/delete                                  controllers.UserCo
 GET         /settings                                         controllers.UserController.showUserSettings()
 POST        /settings/sessionTimeout                          controllers.UserController.changeUserSessionTimeout()
 POST        /settings/changePassword                          controllers.UserController.changeUserPassword()
+POST        /settings/activateTwoFactorAuth                   controllers.UserController.activateTwoFactorAuth()
 
 # UserController - End
 
