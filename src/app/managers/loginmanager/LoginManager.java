@@ -13,11 +13,13 @@ import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
 import policyenforcement.ext.loginFirewall.Strategy;
 import policyenforcement.session.SessionManager;
+import scala.reflect.internal.util.StripMarginInterpolator;
 import ua_parser.Client;
 import ua_parser.Parser;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,11 +56,8 @@ public class LoginManager {
         this.recaptchaHelper = recaptchaHelper;
     }
 
-    private User authenticate(String username, String password, String captchaToken, Http.Request request) throws CaptchaRequiredException, InvalidLoginException, IOException {
-        Authentification.Result auth = authentification.Perform(
-            username,
-            password
-        );
+    private User authenticate(String username, String password, String captchaToken, Http.Request request, Integer twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, IOException, GeneralSecurityException {
+        Authentification.Result auth = authentification.Perform(username, password, twoFactorPin);
         Long uid;
         if(auth.userExists()) {
             uid = auth.user().getUserId();
@@ -114,8 +113,8 @@ public class LoginManager {
         return String.format("%s: %s (%s)", c.device.family, c.userAgent.family, c.userAgent.major);
     }
 
-    public void login(String username, String password, String captchaToken, Http.Request request) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException, IOException {
-        User authenticatedUser = this.authenticate(username, password, captchaToken, request);
+    public void login(String username, String password, String captchaToken, Http.Request request, Integer twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
+        User authenticatedUser = this.authenticate(username, password, captchaToken, request, twoFactorPin);
 
         if(authenticatedUser.getIsPasswordResetRequired()) {
             logger.error(authenticatedUser + " needs to change his password.");
@@ -126,8 +125,8 @@ public class LoginManager {
         logger.info(authenticatedUser + " has logged in.");
     }
 
-    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken, Http.Request request) throws InvalidLoginException, CaptchaRequiredException, IOException {
-        User authenticatedUser = this.authenticate(username, currentPassword, captchaToken, request);
+    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken, Http.Request request, Integer twoFactorPin) throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
+        User authenticatedUser = this.authenticate(username, currentPassword, captchaToken, request, twoFactorPin);
 
         authenticatedUser.setIsPasswordResetRequired(false);
         authenticatedUser.setPasswordHash(hashHelper.hashPassword(newPassword));

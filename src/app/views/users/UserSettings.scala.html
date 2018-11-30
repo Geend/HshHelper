@@ -1,5 +1,5 @@
 @import dtos.DeleteSessionDto
-@(sessionTimeoutForm: Form[dtos.ChangeUserSessionTimeoutDto], changePasswordForm: Form[dtos.ChangeOwnPasswordDto])
+@(sessionTimeoutForm: Form[dtos.ChangeUserSessionTimeoutDto], changePasswordForm: Form[dtos.ChangeOwnPasswordDto], twoFactorActive: Boolean)
 
 @Base("Benutzer-Einstellungen") {
 
@@ -29,5 +29,30 @@
         </div>
 
         @helper.CSRF.formField
+    }
+    <h2>Zwei Faktor Authentifizierung</h2>
+    @if(twoFactorActive) {
+        @helper.form(action = routes.UserController.activateTwoFactorAuth()) {
+            <div class="inputForm">
+                <div class="label">
+                    <label>Initialisierung:</label>
+                </div>
+                <div class="input">
+                    <img src="@routes.UserController.twoFacBarcodeImage()"/>
+                </div>
+            </div>
+            <div class="inputControls">
+                <input type="Submit" value="Aktivieren" />
+            </div>
+
+            @helper.CSRF.formField
+        }
+    } else {
+        @helper.form(action = routes.UserController.deactivateTwoFactorAuth()) {
+            <div class="inputControls">
+                <input type="Submit" value="Deaktivieren" />
+            </div>
+            @helper.CSRF.formField
+        }
     }
 }
