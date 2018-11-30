@@ -14,6 +14,7 @@ import policyenforcement.ext.loginFirewall.Strategy;
 import policyenforcement.session.SessionManager;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -53,12 +54,12 @@ public class LoginManagerTest {
     }
 
     @Test
-    public void successfulLogin() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException, IOException {
+    public void successfulLogin() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         when(authenticatedUser.getUserId()).thenReturn(5l);
         Authentification auth = mock(Authentification.class);
         SessionManager sessionManager = mock(SessionManager.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         LoginManager sut = new LoginManager(
                 auth,
                 this.defaultFirewall,
@@ -67,17 +68,17 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.login("lydia", "lydia", "", this.defaultRequest);
+        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
         verify(sessionManager).startNewSession(authenticatedUser);
     }
 
     @Test(expected = PasswordChangeRequiredException.class)
-    public void successfulLoginResetRequired() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException, IOException {
+    public void successfulLoginResetRequired() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         when(authenticatedUser.getUserId()).thenReturn(5l);
         when(authenticatedUser.getIsPasswordResetRequired()).thenReturn(true);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         LoginManager sut = new LoginManager(
                 auth,
                 this.defaultFirewall,
@@ -86,15 +87,15 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.login("lydia", "lydia", "", this.defaultRequest);
+        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
     @Test(expected = InvalidLoginException.class)
-    public void failedLogin() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException, IOException {
+    public void failedLogin() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         when(authenticatedUser.getUserId()).thenReturn(5l);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
         LoginManager sut = new LoginManager(
                 auth,
                 this.defaultFirewall,
@@ -103,17 +104,17 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.login("lydia", "lydia", "", this.defaultRequest);
+        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
 
     @Test
-    public void successfulChangePassword() throws InvalidLoginException, CaptchaRequiredException, IOException {
+    public void successfulChangePassword() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         when(authenticatedUser.getUserId()).thenReturn(5l);
         when(authenticatedUser.getIsPasswordResetRequired()).thenReturn(true);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         HashHelper hashHelper = mock(HashHelper.class);
         when(hashHelper.hashPassword(any(String.class))).thenReturn("hashed");
         EbeanServer s = mock(EbeanServer.class);
@@ -125,19 +126,19 @@ public class LoginManagerTest {
                 s,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
         verify(authenticatedUser).setIsPasswordResetRequired(false);
         verify(authenticatedUser).setPasswordHash("hashed");
         verify(s).save(authenticatedUser);
     }
 
     @Test(expected = InvalidLoginException.class)
-    public void failedChangePassword() throws InvalidLoginException, CaptchaRequiredException, IOException {
+    public void failedChangePassword() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         when(authenticatedUser.getUserId()).thenReturn(5l);
         when(authenticatedUser.getIsPasswordResetRequired()).thenReturn(true);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
         LoginManager sut = new LoginManager(
                 auth,
                 this.defaultFirewall,
@@ -146,14 +147,14 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
     @Test(expected = CaptchaRequiredException.class)
-    public void validLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException {
+    public void validLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class))).thenReturn(i);
@@ -166,15 +167,15 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.login("lydia", "lydia", "", this.defaultRequest);
+        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
 
     @Test(expected = CaptchaRequiredException.class)
-    public void invalidLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException {
+    public void invalidLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class))).thenReturn(i);
@@ -187,15 +188,15 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.login("lydia", "lydia", "", this.defaultRequest);
+        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
 
     @Test(expected = InvalidLoginException.class)
-    public void validLoginBanned() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException {
+    public void validLoginBanned() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class))).thenReturn(i);
@@ -208,14 +209,14 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.login("lydia", "lydia", "", this.defaultRequest);
+        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
     @Test(expected = InvalidLoginException.class)
-    public void invalidLoginBannedWithCorrectLogin() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException {
+    public void invalidLoginBannedWithCorrectLogin() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class))).thenReturn(i);
@@ -228,15 +229,15 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.login("lydia", "lydia", "", this.defaultRequest);
+        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
 
     @Test(expected = CaptchaRequiredException.class)
-    public void validPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException {
+    public void validPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class))).thenReturn(i);
@@ -249,15 +250,15 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
 
     @Test(expected = CaptchaRequiredException.class)
-    public void invalidPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException {
+    public void invalidPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class))).thenReturn(i);
@@ -270,15 +271,15 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
 
     @Test(expected = InvalidLoginException.class)
-    public void validPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException {
+    public void validPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class))).thenReturn(i);
@@ -291,15 +292,15 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
 
     @Test(expected = InvalidLoginException.class)
-    public void invalidPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException {
+    public void invalidPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class))).thenReturn(i);
@@ -312,6 +313,6 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 }
