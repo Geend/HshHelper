@@ -51,6 +51,7 @@ public class Authentification {
             // Statistik-Angriff verhindern.
             // Aufrufzeit darf sich nicht maßgeblich unterscheiden, wenn kein Nutzer existiert.
             hashHelper.hashPassword(password);
+            verifySecondFactor("ORT4CT7FHMPJB6X2", 250890);
             return new Result(false, false, null);
         }
 
