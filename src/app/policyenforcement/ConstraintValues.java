@@ -12,7 +12,7 @@ public class ConstraintValues {
 
     public static final int GROUPNAME_MIN_LENGTH = 3;
     public static final int GROUPNAME_MAX_LENGTH = 20;
-    public static final String GROUPNAME_REGEX = "[a-z][a-z0-9.]+";
+    public static final String GROUPNAME_REGEX = "[a-zA-Z][a-zA-Z0-9.]+";
 
     public static final String RETURN_URL_REGEX = "\\/[a-zA-Z0-9][a-zA-Z0-9\\/]+";
 
