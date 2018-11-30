@@ -36,6 +36,7 @@ public class UserController extends Controller {
     private final Form<ChangeUserSessionTimeoutDto> changeUserSessionTimeoutForm;
     private final Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
     private final Form<ChangeUserQuotaLimitDto> changeUserQuotaLimitForm;
+    private final Form<TwoFactorAuthDto> twoFactorAuthForm;
 
     private final SessionManager sessionManager;
 
@@ -50,6 +51,7 @@ public class UserController extends Controller {
         this.changeUserSessionTimeoutForm = formFactory.form(ChangeUserSessionTimeoutDto.class);
         this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
         this.changeUserQuotaLimitForm = formFactory.form(ChangeUserQuotaLimitDto.class);
+        this.twoFactorAuthForm = formFactory.form(TwoFactorAuthDto.class);
 
         this.sessionManager = sessionManager;
     }
@@ -183,8 +185,12 @@ public class UserController extends Controller {
     }
 
     @Authentication.Required
-    public Result activateTwoFactorAuth() throws NoTempSecretAvailableException {
-        this.userManager.activateTwoFactorAuth();
+    public Result activateTwoFactorAuth() {
+        Form<TwoFactorAuthDto> boundForm = this.twoFactorAuthForm.bindFromRequest("secret");
+        if(boundForm.hasErrors()) {
+            return redirect(routes.ErrorController.showBadRequestMessage());
+        }
+        this.userManager.activateTwoFactorAuth(boundForm.get().getSecret());
         return redirect(routes.HomeController.index());
     }
 
@@ -194,20 +200,23 @@ public class UserController extends Controller {
         return redirect(routes.HomeController.index());
     }
 
-    public Result twoFacBarcodeImage() throws IOException {
-        String secret = this.userManager.generateNewTemporaryTwoFactorSecret();
-        byte[] imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", secret);
-        return ok(imageSourceData).as("image/png");
-    }
-
     @Authentication.Required
-    public Result showUserSettings() {
+    public Result showUserSettings() throws IOException {
         User currentUser = this.sessionManager.currentUser();
         ChangeUserSessionTimeoutDto changeUserSessionTimeoutDto = new ChangeUserSessionTimeoutDto();
         changeUserSessionTimeoutDto.setValueInMinutes(sessionManager.currentUser().getSessionTimeoutInMinutes());
         Form<ChangeUserSessionTimeoutDto> filledForm = changeUserSessionTimeoutForm.fill(changeUserSessionTimeoutDto);
 
-        return ok(views.html.users.UserSettings.render(filledForm, changeOwnPasswordForm, empty(currentUser.getTwoFactorAuthSecret())));
+        TwoFactorAuthDto twoFactorDto = new TwoFactorAuthDto();
+        String secret = this.userManager.generateTwoFactorSecret();
+        twoFactorDto.setSecret(secret);
+        String imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", secret);
+        return ok(views.html.users.UserSettings.render(
+                filledForm,
+                changeOwnPasswordForm,
+                twoFactorDto,
+                empty(currentUser.getTwoFactorAuthSecret()),
+                imageSourceData));
     }
 
     @Authentication.Required

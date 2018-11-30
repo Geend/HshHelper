@@ -7,6 +7,8 @@ public class ConstraintValues {
     public static final String USERNAME_REGEX = "[a-z][a-z0-9.]+";
     public static final String SECOND_FACTOR_NUMBER = "[0-9 ]+";
 
+    public static final String SECOND_FACTOR_SECRET = "[A-Z2-7]{16}";
+
     public static final int MAX_FILENAME_LENGTH = 40;
     public static final String FILENAME_REGEX = "[a-zA-Zäüöß0-9.,#%+&!\"':;~-]+";
 

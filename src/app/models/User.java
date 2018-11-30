@@ -28,7 +28,6 @@ public class User extends Model {
     private Long quotaLimit;
 
     private String twoFactorAuthSecret;
-    private String tempTwoFactorAuthSecret;
 
     @OneToMany(
         mappedBy = "owner",
@@ -93,14 +92,6 @@ public class User extends Model {
 
     public void setTwoFactorAuthSecret(String twoFactorAuthSecret) {
         this.twoFactorAuthSecret = twoFactorAuthSecret;
-    }
-
-    public String getTempTwoFactorAuthSecret() {
-        return tempTwoFactorAuthSecret;
-    }
-
-    public void setTempTwoFactorAuthSecret(String tempTwoFactorAuthSecret) {
-        this.tempTwoFactorAuthSecret = tempTwoFactorAuthSecret;
     }
 
     public List<File> getOwnedFiles() {

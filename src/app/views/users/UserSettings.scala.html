@@ -1,5 +1,6 @@
 @import dtos.user.{ChangeOwnPasswordDto, ChangeUserSessionTimeoutDto, DeleteSessionDto}
-@(sessionTimeoutForm: Form[ChangeUserSessionTimeoutDto], changePasswordForm: Form[ChangeOwnPasswordDto], twoFactorActive: Boolean)
+@import dtos.user.TwoFactorAuthDto
+@(sessionTimeoutForm: Form[ChangeUserSessionTimeoutDto], changePasswordForm: Form[ChangeOwnPasswordDto], twoFactorForm: TwoFactorAuthDto, twoFactorActive: Boolean, imageSourceData: String)
 
 @Base("Benutzer-Einstellungen") {
 
@@ -34,11 +35,13 @@
     @if(twoFactorActive) {
         @helper.form(action = routes.UserController.activateTwoFactorAuth()) {
             <div class="inputForm">
+
+                <input type="hidden" name="secret" value="@twoFactorForm.getSecret" />
                 <div class="label">
                     <label>Initialisierung:</label>
                 </div>
                 <div class="input">
-                    <img src="@routes.UserController.twoFacBarcodeImage()"/>
+                    <img src="@imageSourceData"/>
                 </div>
             </div>
             <div class="inputControls">

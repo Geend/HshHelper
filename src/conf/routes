@@ -17,7 +17,6 @@ POST        /users/confirmDelete                              controllers.UserCo
 POST        /users/delete                                     controllers.UserController.deleteUser
 GET         /users/:userId/settings                           controllers.UserController.showUserAdminSettings(userId:Long)
 POST        /users/editQuota                                  controllers.UserController.changeUserQuotaLimit
-GET         /users/twoFacBarcodeImage                         controllers.UserController.twoFacBarcodeImage
 
 GET         /resetpassword                                    controllers.UserController.showResetUserPasswordForm
 POST        /resetpassword                                    controllers.UserController.resetUserPassword

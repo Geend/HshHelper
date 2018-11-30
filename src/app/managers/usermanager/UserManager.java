@@ -66,12 +66,9 @@ public class UserManager {
         this.credentialManager = credentialManager;
     }
 
-    public void activateTwoFactorAuth() throws NoTempSecretAvailableException {
+    public void activateTwoFactorAuth(String secret) {
         User currentUser = sessionManager.currentUser();
-        if(empty(currentUser.getTempTwoFactorAuthSecret())) {
-            throw new NoTempSecretAvailableException();
-        }
-        currentUser.setTwoFactorAuthSecret(currentUser.getTempTwoFactorAuthSecret());
+        currentUser.setTwoFactorAuthSecret(secret);
         this.ebeanServer.save(currentUser);
     }
 
@@ -81,11 +78,8 @@ public class UserManager {
         this.ebeanServer.save(currentUser);
     }
 
-    public String generateNewTemporaryTwoFactorSecret() {
-        User currentUser = sessionManager.currentUser();
+    public String generateTwoFactorSecret() {
         String temporarySecret = TimeBasedOneTimePasswordUtil.generateBase32Secret();
-        currentUser.setTempTwoFactorAuthSecret(temporarySecret);
-        this.ebeanServer.save(currentUser);
         return temporarySecret;
     }
 
