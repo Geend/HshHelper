@@ -22,7 +22,9 @@ public class CryptoTest {
     @Test
     public void enryptThenDecrypt(){
 
-        CryptoKey key = keyGenerator.generate("1234", "abcd");
+        byte[] salt = keyGenerator.generateSalt();
+        CryptoKey key = keyGenerator.generate("unsecureUserPassword", salt);
+
         byte[] plaintext = "supersecretdata".getBytes();
 
         CryptoResult ciphertext = cipher.encrypt(key, plaintext);
