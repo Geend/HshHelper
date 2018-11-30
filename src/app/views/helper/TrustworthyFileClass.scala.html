@@ -1,8 +1,8 @@
-@import policyenforcement.session.SessionManager.SessionInstance
 @import managers.filemanager.dto.FileMeta
+@import views.TemplateEnvironment
 @(fileMeta : FileMeta)
 
-@if(fileMeta.getWrittenById().equals(SessionInstance().currentUser().getUserId)) {
+@if(fileMeta.getWrittenById().equals(TemplateEnvironment.GetMainManager().currentUser().getUserId)) {
     trustworthy
 } else {
     potentiallyDangerous
