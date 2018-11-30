@@ -82,12 +82,19 @@ public class File extends Model {
     }
 
     public byte[] getData() {
-        return data;
+        if (data == null)
+            return new byte[0];
+        else
+            return data;
     }
 
     public void setData(byte[] data) {
-        this.data = data;
-        this.dataSize = (long)data.length;
+        if (data == null) {
+            this.data = new byte[0];
+        } else {
+            this.data = data;
+        }
+        this.dataSize = (long) data.length;
     }
 
     public User getOwner() {

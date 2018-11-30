@@ -30,21 +30,21 @@
                     <h1><a href="@routes.HomeController.index()">HsHelper</a></h1>
                 </div>
                 <div class="searchControl">
-                    @helper.form(action = routes.FileController.searchFiles()) {
-                        <div class="query">
-                        @if(searchForm != null) {
-                            <input type="text" id="query" name="query" value="@searchForm.field("query").getValue.get()" />
+                @helper.form(action = routes.FileController.searchFiles()) {
+                    <div class="query">
+                    @if(searchForm != null) {
+                        <input type="text" id="query" name="query" value="@searchForm.field("query").getValue.get()" />
 
-                        } else {
-                            <input type="text" id="query" name="query" value="" />
+                    } else {
+                        <input type="text" id="query" name="query" value="" />
 
-                        }
-                        </div>
-                        <div class="submit">
-                            <input type="submit" id="search_submit" value="Suchen" />
-                        </div>
-                        @helper.CSRF.formField
                     }
+                    </div>
+                    <div class="submit">
+                        <input type="submit" id="search_submit" value="Suchen" />
+                    </div>
+                    @helper.CSRF.formField
+                }
                 </div>
             </div>
 
@@ -56,9 +56,13 @@
                             @if(TemplateEnvironment.policy.canViewAllUsers) {
                                 @helper.MenuLink("Benutzer", routes.UserController.showUsers(), "/users")
                             }
+
                             @helper.MenuLink("Gruppen", routes.GroupController.showOwnMemberships(), "/groups")
                             @helper.MenuLink("Dateien", routes.FileController.showOwnFiles(), "/files")
                             @helper.MenuLink("Sessions", routes.UserController.showActiveUserSessions())
+                            @if(TemplateEnvironment.policy.canSeeAllNetServices) {
+                                @helper.MenuLink("Netzdienste", routes.NetServiceController.showAllNetServices(), "/netservice")
+                            }
                         </div>
                     </div>
 

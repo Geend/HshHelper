@@ -1,0 +1,40 @@
+@import policyenforcement.Policy
+@import views.TemplateEnvironment
+@import views.html.groups.DeleteGroupBtn
+@(netServices: Seq[NetService])
+
+@Base("Netzdienste") {
+
+    <div class="inline-menu lr">
+        <div class="left">
+
+        </div>
+        <div class="right">
+        @helper.MenuLink("Netzdienst erstellen", routes.NetServiceController.showAddNetServiceForm())
+        </div>
+    </div>
+
+
+    <table>
+        <thead>
+            <tr>
+                <td>Name</td>
+                <td>Parameter</td>
+
+                <td></td>
+            </tr>
+        </thead>
+
+        <tbody>
+        @for(netService <- netServices) {
+            <tr>
+
+                <td>@netService.getName</td>
+                <td class="right">
+                @DeleteNetServiceBtn(netService)
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

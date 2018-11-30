@@ -185,6 +185,7 @@ public class FileManager {
         }
 
         logger.info(sessionManager.currentUser() + " is accessing file " + file.get());
+
         return file.get().getData();
     }
 

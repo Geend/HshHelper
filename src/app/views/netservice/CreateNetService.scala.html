@@ -1,0 +1,15 @@
+@import dtos.netservice.CreateNetServiceDto
+@(form: Form[CreateNetServiceDto])
+
+@Base("Netzdienst erstellen") {
+    @helper.form(action = routes.NetServiceController.createNetService()) {
+        <div class="inputForm">
+        @helper.TextInput(form("name"), "Name")
+        </div>
+        <div class="inputControls">
+            <input type="submit" value="Netzdienst erstellen" />
+        </div>
+
+        @helper.CSRF.formField
+    }
+}
