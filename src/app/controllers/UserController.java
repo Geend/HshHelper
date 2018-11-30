@@ -63,10 +63,8 @@ public class UserController extends Controller {
     }
 
     public Result showAdminUsers() throws UnauthorizedException {
-        List<User> users = this.userManager.getAllUsers();
-        // TODO: db query instead local filtering
-        users = users.stream().filter(User::isAdmin).collect(Collectors.toList());
-        return ok(views.html.users.Users.render(asScala(users)));
+        List<User> admins = this.userManager.getAdminUsers();
+        return ok(views.html.users.Users.render(asScala(admins)));
     }
 
     public Result showConfirmDeleteForm() throws UnauthorizedException, InvalidArgumentException {
