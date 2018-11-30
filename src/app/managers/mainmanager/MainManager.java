@@ -34,4 +34,12 @@ public class MainManager {
     public User currentUser() {
         return sessionManager.currentUser();
     }
+
+    public int remainingSessionTime() {
+        return sessionManager.remainingSessionTime();
+    }
+
+    public int activeSessions() {
+        return sessionManager.sessionsByUser(sessionManager.currentUser()).size();
+    }
 }

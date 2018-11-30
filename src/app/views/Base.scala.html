@@ -1,9 +1,6 @@
 @import views.TemplateEnvironment
-@import policyenforcement.session.SessionManager.SessionInstance
-@import views.TemplateEnvironment
 @import dtos.file.SearchQueryDto
 @(title: String, searchForm: Form[SearchQueryDto] = null)(content: Html)
-
 
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
@@ -16,8 +13,8 @@
         <div class="main">
             <div class="logout">
             @helper.form(action = routes.LoginController.logout()) {
-                Angemeldet als @SessionInstance().currentUser().getUsername
-                @if(SessionInstance().currentUser().isAdmin) {
+                Angemeldet als @TemplateEnvironment.GetMainManager().currentUser().getUsername
+                @if(TemplateEnvironment.GetMainManager().currentUser().isAdmin) {
                     (Administrator)
                 }
                 -
@@ -68,7 +65,7 @@
                     <div class="box groups">
                         <h2>Mitgliedschaften</h2>
                         <div class="groupList menu">
-                        @for(group <- SessionInstance().currentUser().getGroups.asScala) {
+                        @for(group <- TemplateEnvironment.GetMainManager().currentUser().getGroups.asScala) {
                             @helper.MenuLink(
                                 group.getName,
                                 routes.GroupController.showGroupFiles(group.getGroupId),
@@ -81,9 +78,9 @@
                     <div class="box sessionInfo">
                         <h2>Session-Information</h2>
                         <p>
-                            Session endet in @SessionInstance().remainingSessionTime() Minuten<br>
+                            Session endet in @TemplateEnvironment.GetMainManager().remainingSessionTime() Minuten<br>
                             Aktive Sessions: <a href="@routes.UserController.showActiveUserSessions()">
-                        @SessionInstance().sessionsByUser(SessionInstance().currentUser()).size()
+                            @TemplateEnvironment.GetMainManager().activeSessions()
                         </a><br>
                             Quota:  <a href="@routes.FileController.showQuotaUsage()">@TemplateEnvironment.GetMainManager().getQuotaUsage()</a>
                         </p>

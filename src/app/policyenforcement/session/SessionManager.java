@@ -1,5 +1,8 @@
 package policyenforcement.session;
 
+import extension.Crypto.Cipher;
+import extension.Crypto.KeyGenerator;
+import extension.RandomDataGenerator;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import models.User;
@@ -11,6 +14,7 @@ import play.mvc.Http;
 import policyenforcement.ConstraintValues;
 import policyenforcement.Policy;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +23,6 @@ import java.util.UUID;
 
 @Singleton
 public class SessionManager {
-    // Hack for templates
-    public static SessionManager SessionInstance() {
-        return new SessionManager();
-    }
-
     private static final String CtxCurrentSession = "CurrentSession";
     private static final String CookieSessionName = "HsHSession";
 
@@ -35,6 +34,8 @@ public class SessionManager {
         dbs.setIssuedAt(DateTime.now());
         dbs.setUser(user);
         dbs.save();
+
+
 
         ctx.session().clear();
         ctx.session().put(CookieSessionName, dbs.getSessionKey().toString());

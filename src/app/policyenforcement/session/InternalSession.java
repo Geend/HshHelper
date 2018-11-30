@@ -18,6 +18,8 @@ public class InternalSession extends Model {
     @Id
     private UUID sessionKey;
     private String remoteAddress;
+    private byte[] initializationVectorCredentialKey;
+    private byte[] credentialKeyCipherText;
     private DateTime issuedAt;
 
     protected InternalSession() {}
@@ -56,6 +58,22 @@ public class InternalSession extends Model {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public byte[] getInitializationVectorCredentialKey() {
+        return initializationVectorCredentialKey;
+    }
+
+    public void setInitializationVectorCredentialKey(byte[] initializationVectorCredentialKey) {
+        this.initializationVectorCredentialKey = initializationVectorCredentialKey;
+    }
+
+    public byte[] getCredentialKeyCipherText() {
+        return credentialKeyCipherText;
+    }
+
+    public void setCredentialKeyCipherText(byte[] credentialKeyCipherText) {
+        this.credentialKeyCipherText = credentialKeyCipherText;
     }
 
     protected static Finder<UUID, InternalSession> finder = new Finder<>(InternalSession.class);
