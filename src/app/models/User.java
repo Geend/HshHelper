@@ -27,6 +27,9 @@ public class User extends Model {
 
     private Long quotaLimit;
 
+    private String twoFactorAuthSecret;
+    private String tempTwoFactorAuthSecret;
+
     @OneToMany(
         mappedBy = "owner",
         cascade = CascadeType.ALL
@@ -75,6 +78,22 @@ public class User extends Model {
         this.passwordResetRequired = passwordResetRequired;
         this.quotaLimit = quotaLimit;
         this.sessionTimeoutInMinutes = ConstraintValues.MIN_SESSION_TIMEOUT_MINUTES;
+    }
+
+    public String getTwoFactorAuthSecret() {
+        return twoFactorAuthSecret;
+    }
+
+    public void setTwoFactorAuthSecret(String twoFactorAuthSecret) {
+        this.twoFactorAuthSecret = twoFactorAuthSecret;
+    }
+
+    public String getTempTwoFactorAuthSecret() {
+        return tempTwoFactorAuthSecret;
+    }
+
+    public void setTempTwoFactorAuthSecret(String tempTwoFactorAuthSecret) {
+        this.tempTwoFactorAuthSecret = tempTwoFactorAuthSecret;
     }
 
     public List<File> getOwnedFiles() {

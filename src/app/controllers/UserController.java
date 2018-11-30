@@ -191,8 +191,8 @@ public class UserController extends Controller {
     }
 
     public Result twoFacBarcodeImage() throws IOException {
-        String secret = TimeBasedOneTimePasswordUtil.generateBase32Secret();
-        byte[] imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("identifier", secret);
+        String secret = this.userManager.generateNewTemporaryTwoFactorSecret();
+        byte[] imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", secret);
         return ok(imageSourceData).as("image/png");
     }
 

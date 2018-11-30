@@ -15,6 +15,7 @@ import policyenforcement.session.Authentication;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Optional;
 
 public class LoginController extends Controller {
@@ -57,12 +58,18 @@ public class LoginController extends Controller {
             loginData.setRecaptcha(recaptchaData.get());
         }
 
+        Integer twoFactorPin = 0;
+        if(loginData.getTwofactorpin() != null) {
+            twoFactorPin = Integer.parseInt(loginData.getTwofactorpin());
+        }
+
         try {
             loginManager.login(
                     loginData.getUsername(),
                     loginData.getPassword(),
                     loginData.getRecaptcha(),
-                    Http.Context.current().request());
+                    Http.Context.current().request(),
+                    twoFactorPin);
         } catch (CaptchaRequiredException e) {
             boundForm = boundForm.withGlobalError("Complete the Captcha!");
             return badRequest(views.html.login.Login.render(boundForm, true));
@@ -71,6 +78,8 @@ public class LoginController extends Controller {
             return badRequest(views.html.login.Login.render(boundForm, false));
         } catch (PasswordChangeRequiredException e) {
             return redirect(routes.LoginController.changePasswordAfterReset());
+        } catch (GeneralSecurityException e) {
+            return badRequest(views.html.login.Login.render(boundForm, false));
         }
 
         return redirect(routes.HomeController.index());
@@ -102,13 +111,16 @@ public class LoginController extends Controller {
                     changePasswordData.getCurrentPassword(),
                     changePasswordData.getPassword(),
                     changePasswordData.getRecaptcha(),
-                    Http.Context.current().request());
+                    Http.Context.current().request(),
+                    0);
         } catch (InvalidLoginException e) {
             boundForm = boundForm.withGlobalError("Invalid Login Data!");
             return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, false));
         } catch (CaptchaRequiredException e) {
             boundForm = boundForm.withGlobalError("Complete the Captcha!");
             return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, true));
+        } catch (GeneralSecurityException e) {
+            return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, false));
         }
 
         return redirect(routes.LoginController.login());

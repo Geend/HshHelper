@@ -21,6 +21,7 @@ import play.libs.mailer.MailerClient;
 import play.mvc.Http;
 import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
+import twofactorauth.TimeBasedOneTimePasswordUtil;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -56,6 +57,14 @@ public class UserManager {
         this.hashHelper = hashHelper;
         this.sessionManager = sessionManager;
         this.recaptchaHelper = recaptchaHelper;
+    }
+
+    public String generateNewTemporaryTwoFactorSecret() {
+        User currentUser = sessionManager.currentUser();
+        String temporarySecret = TimeBasedOneTimePasswordUtil.generateBase32Secret();
+        currentUser.setTempTwoFactorAuthSecret(temporarySecret);
+        this.ebeanServer.save(currentUser);
+        return temporarySecret;
     }
 
     public String createUser(String username, String email, Long quota) throws UnauthorizedException, UsernameAlreadyExistsException, EmailAlreadyExistsException, UsernameCannotBeAdmin {
