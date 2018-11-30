@@ -96,7 +96,7 @@ public class UserManager {
 
             this.ebeanServer.save(newUser);
             tx.commit();
-            logger.info(currentUser + " created user " + username);
+            logger.info(currentUser + " created user " + newUser);
         }
         return plaintextPassword;
     }
@@ -109,11 +109,11 @@ public class UserManager {
             throw new InvalidArgumentException("Dieser User existiert nicht.");
 
         if(!sessionManager.currentPolicy().canDeleteUser(userToDelete.get())) {
-            logger.error(currentUser + " tried to delete a user but he is not authorized");
+            logger.error(currentUser  + " tried to delete a user but he is not authorized");
             throw new UnauthorizedException();
         }
         ebeanServer.delete(userToDelete.get());
-        logger.info(currentUser + " deleted user " + userToDelete.get().getUsername());
+        logger.info(currentUser + " deleted user " + userToDelete.get());
     }
 
     public List<User> getAllUsers() throws UnauthorizedException {
@@ -134,7 +134,7 @@ public class UserManager {
         User user = userOptional.get();
 
         if(!recaptchaHelper.IsValidResponse(recaptchaData, request.remoteAddress())) {
-            logger.error(request.remoteAddress() + " has tried to reset the password for user " + username + " without a valid reCAPTCHA.");
+            logger.error(request.remoteAddress() + " has tried to reset the password for user " + user + " without a valid reCAPTCHA.");
             throw new CaptchaRequiredException();
         }
 
@@ -150,7 +150,7 @@ public class UserManager {
                 .addTo(user.getEmail())
                 .setBodyText("Your temp password is " + tempPassword);
         mailerClient.send(email);
-        logger.info("Created a new temp pw and send mail for user " + user.getUsername());
+       logger.info("Created a new temp pw and send mail for user " + user);
     }
 
     public UserMetaInfo getUserMetaInfo(Long userId) throws UnauthorizedException, InvalidArgumentException {

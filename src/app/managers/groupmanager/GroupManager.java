@@ -48,7 +48,7 @@ public class GroupManager {
         try(Transaction tx = ebeanServer.beginTransaction(TxIsolation.REPEATABLE_READ)) {
             Optional<Group> txGroup = groupFinder.byName(groupName);
             if(txGroup.isPresent()) {
-                logger.error(user + "tried to create group" + groupName + " but that name already exists");
+                logger.error(user + " tried to create group " + groupName + " but that name already exists");
                 throw new GroupNameAlreadyExistsException("Gruppe existiert bereits.");
             }
 
@@ -57,7 +57,7 @@ public class GroupManager {
             ebeanServer.save(group);
 
             tx.commit();
-            logger.info(user + "created group" + groupName);
+            logger.info(user + " created group" + group);
         }
     }
 
@@ -80,7 +80,7 @@ public class GroupManager {
         if(!sessionManager.currentPolicy().canSeeAllGroups())
             throw new UnauthorizedException();
 
-        logger.info(sessionManager.currentUser().getUsername() + " is looking at all groups.");
+        logger.info(sessionManager.currentUser() + " is looking at all groups.");
 
         return groupFinder.all();
     }
@@ -96,7 +96,7 @@ public class GroupManager {
         Group group = groupOptional.get();
 
         if(!sessionManager.currentPolicy().canViewGroupDetails(group)) {
-            logger.error(sessionManager.currentUser().getUsername() + " tried to access group " + group.getName() + " for which he is not authorized");
+            logger.error(sessionManager.currentUser() + " tried to access group " + group + " for which he is not authorized");
             throw new UnauthorizedException("Du bist nicht authorisiert auf diese Gruppe zuzugreifen.");
         }
 
@@ -107,7 +107,7 @@ public class GroupManager {
         Group group = getGroup(groupId);
 
         if (!sessionManager.currentPolicy().canViewGroupDetails(group)) {
-            logger.error(sessionManager.currentUser().getUsername() + " tried to see the members of group " + group.getName() + " for which he is not authorized");
+            logger.error(sessionManager.currentUser() + " tried to see the members of group " + group + " for which he is not authorized");
             throw new UnauthorizedException("Du bist nicht authorisiert, die Mitglieder dieser Gruppe zu sehen.");
         }
 
@@ -133,14 +133,14 @@ public class GroupManager {
         User toBeRemovedUser = tobeRemovedUserOptional.get();
 
         if(!sessionManager.currentPolicy().canRemoveGroupMember(g, toBeRemovedUser)) {
-            logger.error(sessionManager.currentUser().getUsername() + " tried to delete + " + toBeRemovedUser.getUsername() + " from group " + g.getName() + " but he is not authorized");
+            logger.error(sessionManager.currentUser() + " tried to delete + " + toBeRemovedUser + " from group " + g + " but he is not authorized");
             throw new UnauthorizedException("Du bist nicht authorisiert, einen Member aus dieser Gruppe zu loeschen.");
         }
 
         g.getMembers().remove(toBeRemovedUser);
         ebeanServer.save(g);
 
-        logger.info(sessionManager.currentUser().getUsername() + " deleted " + toBeRemovedUser.getUsername() + " from group " + g.getName());
+        logger.info(sessionManager.currentUser() + " deleted " + toBeRemovedUser + " from group " + g);
     }
 
     public void addGroupMember(Long userToAdd, Long groupId) throws UnauthorizedException, InvalidArgumentException {
@@ -160,14 +160,14 @@ public class GroupManager {
         User toBeAddedUser = tobeAddedUserOptional.get();
 
         if (!sessionManager.currentPolicy().canAddSpecificGroupMember(g, toBeAddedUser)) {
-            logger.error(sessionManager.currentUser().getUsername() + " tried to add + " + toBeAddedUser.getUsername() + " to group " + g.getName() + " but he is not authorized");
+            logger.error(sessionManager.currentUser() + " tried to add + " + toBeAddedUser + " to group " + g + " but he is not authorized");
             throw new UnauthorizedException("Du bist nicht authorisiert, einen Member zu dieser Gruppe hinzu zu fuegen.");
         }
 
         g.getMembers().add(toBeAddedUser);
         ebeanServer.save(g);
 
-        logger.info(sessionManager.currentUser().getUsername() + " added " + toBeAddedUser.getUsername() + " to group " + g.getName());
+        logger.info(sessionManager.currentUser() + " added " + toBeAddedUser + " to group " + g);
     }
 
     public void deleteGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
@@ -178,13 +178,14 @@ public class GroupManager {
         }
 
         Group g = groupOptional.get();
+
         if (!sessionManager.currentPolicy().canDeleteGroup(g)) {
-            logger.error(sessionManager.currentUser().getUsername() + " tried to delete group " + g.getName() + " but he is not authorized");
+            logger.error(sessionManager.currentUser() + " tried to delete group " + g + " but he is not authorized");
             throw new UnauthorizedException("Du bist nicht authorisiert, eine Gruppe zu loeschen.");
         }
 
         ebeanServer.delete(g);
-        logger.info(sessionManager.currentUser().getUsername() + " deleted group " + g.getName());
+        logger.info(sessionManager.currentUser() + " deleted group " + g);
     }
 
 }

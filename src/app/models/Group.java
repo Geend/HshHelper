@@ -115,4 +115,9 @@ public class Group extends Model {
     public int hashCode() {
         return Objects.hash(groupId, name);
     }
+
+    @Override
+    public String toString() {
+        return name + " (id: " + groupId + ")";
+    }
 }

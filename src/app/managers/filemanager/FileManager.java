@@ -65,7 +65,7 @@ public class FileManager {
     private void checkQuota(User user) throws QuotaExceededException {
         UserQuota uq = fileFinder.getUsedQuota(user.getUserId());
         if (user.getQuotaLimit() <= uq.getTotalUsage()) {
-            logger.error(user.getUsername() + " tried to exceed quota");
+            logger.error(user + " tried to exceed quota.");
             throw new QuotaExceededException();
         }
     }
@@ -115,8 +115,8 @@ public class FileManager {
             }
 
             tx.commit();
+            logger.info(currentUser + " added file " + file);
         }
-        logger.info(currentUser.getUsername() + " added a file");
     }
 
     public List<FileMeta> accessibleFiles() {
@@ -167,7 +167,7 @@ public class FileManager {
         File file = optFile.get();
 
         if(!sessionManager.currentPolicy().canGetFileMeta(file)) {
-            logger.error(sessionManager.currentUser().getUsername() + " tried to access file " + file.getName() + "'s meta info but he is not authorized");
+            logger.error(sessionManager.currentUser() + " tried to access file " + file + " meta info but he is not authorized");
             throw new UnauthorizedException();
         }
 
@@ -181,10 +181,11 @@ public class FileManager {
             throw new InvalidArgumentException();
 
         if (!sessionManager.currentPolicy().canReadFile(file.get())) {
-            logger.error(sessionManager.currentUser().getUsername() + " tried to access file " + file.get().getName() + " but he is not authorized");
+            logger.error(sessionManager.currentUser() + "  tried to access file " + file.get() + " but he is not authorized");
             throw new UnauthorizedException();
         }
 
+        logger.info(sessionManager.currentUser() + " is accessing file " + file.get());
         return file.get().getData();
     }
 
@@ -199,12 +200,12 @@ public class FileManager {
         File file = optFile.get();
 
         if (!sessionManager.currentPolicy().canDeleteFile(file)) {
-            logger.error(user.getUsername() + " tried to delete file " + file.getName() + " but he is not authorized");
+            logger.error(user + " tried to delete file " + file + " but he is not authorized");
             throw new UnauthorizedException("Du bist nicht autorisiert, diese Datei zu löschen.");
         }
 
         ebeanServer.delete(file);
-        logger.info(user.getUsername() + " deleted file " + file.getName());
+        logger.info(user + " deleted file " + file);
     }
 
     public void editFileContent(Long fileId, byte[] data) throws QuotaExceededException, UnauthorizedException, InvalidArgumentException {
@@ -217,7 +218,7 @@ public class FileManager {
                 throw new InvalidArgumentException();
 
             if (!sessionManager.currentPolicy().canWriteFile(fileOptional.get())) {
-                logger.error(user.getUsername() + " tried to change the content file with id " + fileId + " but he is not authorized");
+                logger.error(user + " tried to change the content file " + fileOptional.get() + " but he is not authorized");
                 throw new UnauthorizedException();
             }
 
@@ -232,9 +233,8 @@ public class FileManager {
             this.checkQuota(file.getOwner());
 
             tx.commit();
+            logger.info(user + " has changed the content of file " + file);
         }
-
-        logger.info(user.getUsername() + " has changed the content of file with id " + fileId);
     }
 
     public void editFileComment(Long fileId, String comment) throws InvalidArgumentException, UnauthorizedException, QuotaExceededException {
@@ -247,7 +247,7 @@ public class FileManager {
                 throw new InvalidArgumentException();
 
             if (!sessionManager.currentPolicy().canWriteFile(fileOptional.get())) {
-                logger.error(user.getUsername() + " tried to change the comment of file with id " + fileId + " but he is not authorized");
+                logger.error(user + " tried to change the comment of file " + fileOptional.get() + " but he is not authorized");
                 throw new UnauthorizedException();
             }
 
@@ -260,9 +260,8 @@ public class FileManager {
             this.checkQuota(file.getOwner());
 
             tx.commit();
+            logger.info(user + " has changed the comment of file " + file);
         }
-
-        logger.info(user.getUsername() + " has changed the comment of file with id " + fileId);
     }
 
     public List<FileMeta> searchFile(String query) {
