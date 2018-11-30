@@ -1,5 +1,6 @@
 package managers.usermanager;
 
+import extension.CredentialManager;
 import extension.RecaptchaHelper;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
@@ -37,6 +38,7 @@ public class UserManager {
     private final SessionManager sessionManager;
     private final RecaptchaHelper recaptchaHelper;
     private final UserFactory userFactory;
+    private final CredentialManager credentialManager;
 
     private static final Logger.ALogger logger = Logger.of(UserManager.class);
 
@@ -50,7 +52,7 @@ public class UserManager {
             EbeanServer server,
             SessionManager sessionManager,
             RecaptchaHelper recaptchaHelper,
-            UserFactory userFactory)
+            UserFactory userFactory, CredentialManager credentialManager)
     {
         this.groupFinder = groupFinder;
         this.ebeanServer = server;
@@ -61,6 +63,7 @@ public class UserManager {
         this.sessionManager = sessionManager;
         this.recaptchaHelper = recaptchaHelper;
         this.userFactory = userFactory;
+        this.credentialManager = credentialManager;
     }
 
     public void activateTwoFactorAuth() throws NoTempSecretAvailableException {
@@ -230,16 +233,21 @@ public class UserManager {
     }
 
     public void changeUserPassword(String currentPassword, String newPassword) throws UnauthorizedException {
-        User user = sessionManager.currentUser();
+        try(Transaction tx = this.ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
+            User user = sessionManager.currentUser();
 
+            if (!hashHelper.checkHash(currentPassword, user.getPasswordHash())) {
+                throw new UnauthorizedException();
+            }
 
-        if(!hashHelper.checkHash(currentPassword, user.getPasswordHash())){
-            throw new UnauthorizedException();
+            user.setPasswordHash(hashHelper.hashPassword(newPassword));
+
+            ebeanServer.save(user);
+
+            credentialManager.updateCredentialPassword(currentPassword, newPassword);
+
+            tx.commit();
         }
-
-        user.setPasswordHash(hashHelper.hashPassword(newPassword));
-
-        ebeanServer.save(user);
     }
 
     public Long getUserQuotaLimit(Long userId) throws UnauthorizedException, InvalidArgumentException {

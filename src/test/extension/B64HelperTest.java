@@ -10,7 +10,7 @@ public class B64HelperTest {
     private B64Helper b64Helper;
 
     @Before
-    private void setup() {
+    public void setup() {
         b64Helper = new B64Helper();
     }
 

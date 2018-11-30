@@ -1,5 +1,6 @@
 package managers.usermanager;
 
+import extension.CredentialManager;
 import extension.RecaptchaHelper;
 import managers.UnauthorizedException;
 import extension.HashHelper;
@@ -56,8 +57,9 @@ public class CreateUserUsernameNotAdminTests {
         when(userFinder.byName(any())).thenReturn(Optional.empty());
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserFactory userFactory = mock(UserFactory.class);
+        CredentialManager credentialManager = mock(CredentialManager.class);
 
-        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, sessionManager, recaptchaHelper, userFactory);
+        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, sessionManager, recaptchaHelper, userFactory, credentialManager);
         sut.createUser(this.username, "test@test.de", 5l);
     }
 }
