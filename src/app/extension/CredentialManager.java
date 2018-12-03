@@ -54,6 +54,7 @@ public class CredentialManager {
         byte[] credentialKey = randomDataGenerator.generateBytes(CryptoConstants.GENERATED_KEY_BYTE);
         CryptoResult cryptoResult = cipher.encrypt(key, credentialKey);
 
+        user.setCryptoSalt(salt);
         user.setInitializationVectorCredentialKey(
             cryptoResult.getInitializationVector()
         );

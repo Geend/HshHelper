@@ -67,51 +67,6 @@ public class UserManagerTest {
         defaultCredentialManager = mock(CredentialManager.class);
     }
 
-    @Test
-    public void testChangePassword() throws InvalidArgumentException, CaptchaRequiredException {
-
-        String testUsername = "test";
-        String newPassword = "0123456789";
-        String newPasswordHash = "abcdefg";
-
-        HashHelper hashHelper = mock(HashHelper.class);
-        when(hashHelper.hashPassword(newPassword)).thenReturn(newPasswordHash);
-
-        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        when(passwordGenerator.generatePassword(10)).thenReturn(newPassword);
-
-        User user = mock(User.class);
-        when(user.getUsername()).thenReturn(testUsername);
-
-        UserFinder userFinder = mock(UserFinder.class);
-        when(userFinder.byName(testUsername)).thenReturn(Optional.of(user));
-
-        when(recaptchaHelper.IsValidResponse(anyString(), anyString())).thenReturn(true);
-
-        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSessionManager, recaptchaHelper, defaultUserFactory, defaultCredentialManager);
-
-        userManager.resetPassword(testUsername, "", Helpers.fakeRequest().build());
-
-        verify(user).setPasswordHash(hashHelper.hashPassword(newPassword));
-        verify(user).setIsPasswordResetRequired(true);
-    }
-
-    @Test(expected = CaptchaRequiredException.class)
-    public void resetPasswordWillNotWorkWithoutCaptcha() throws CaptchaRequiredException, InvalidArgumentException {
-        HashHelper hashHelper = mock(HashHelper.class);
-        when(hashHelper.hashPassword("")).thenReturn("");
-
-        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        when(passwordGenerator.generatePassword(0)).thenReturn("");
-
-        User user = mock(User.class);
-        UserFinder userFinder = mock(UserFinder.class);
-        when(userFinder.byName("")).thenReturn(Optional.of(user));
-
-        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSessionManager, recaptchaHelper, defaultUserFactory, defaultCredentialManager);
-
-        userManager.resetPassword("", "", Helpers.fakeRequest().build());
-    }
 
     @Test(expected = UnauthorizedException.class)
     public void getAllObeysSpecification() throws UnauthorizedException {
@@ -191,18 +146,6 @@ public class UserManagerTest {
         assertEquals(addedUser.getUsername(), "klaus");
         assertEquals(addedUser.getEmail(), "test@test.de");
         assertEquals(addedUser.getQuotaLimit(), new Long(5L));
-    }
-
-    @Test(expected = InvalidArgumentException.class)
-    public void testChangePasswordWithNullInput() throws InvalidArgumentException, CaptchaRequiredException {
-
-        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
-        UserFinder userFinder= mock(UserFinder.class);
-        HashHelper hashHelper = mock(HashHelper.class);
-
-        userManager = new UserManager(userFinder, defaultGroupFinder, passwordGenerator, defaultMailerClient, hashHelper, defaultServer, defaultSessionManager, recaptchaHelper, defaultUserFactory, defaultCredentialManager);
-
-        userManager.resetPassword(null, "", Helpers.fakeRequest().build());
     }
 
     @Test

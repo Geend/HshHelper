@@ -7,11 +7,22 @@ import extension.Crypto.KeyGenerator;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
 import io.ebean.EbeanServer;
+import io.ebean.Transaction;
+import io.ebean.annotation.TxIsolation;
+import managers.InvalidArgumentException;
+import managers.UnauthorizedException;
+import models.PasswordResetToken;
 import models.User;
 import models.finders.LoginAttemptFinder;
+import models.finders.PasswordResetTokenFinder;
 import models.finders.UserFinder;
+import org.joda.time.DateTime;
 import org.junit.*;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import play.libs.mailer.MailerClient;
 import play.mvc.Http;
+import play.test.Helpers;
 import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
 import policyenforcement.ext.loginFirewall.Strategy;
@@ -20,9 +31,11 @@ import policyenforcement.session.SessionManager;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static policyenforcement.ConstraintValues.PASSWORD_RESET_TOKEN_TIMEOUT_HOURS;
 
 public class LoginManagerTest {
     private HashHelper defaultHashHelper;
@@ -38,6 +51,9 @@ public class LoginManagerTest {
     private RecaptchaHelper recaptchaHelper;
     private CredentialManager defaultCredentialManager;
     private byte[] defaultCredentialKey;
+    private MailerClient defaultMailerClient;
+    private PasswordResetTokenFinder defaultPasswordResetTokenFinder;
+    private LoginManager defaultLoginManager;
 
 
     @Before
@@ -63,6 +79,20 @@ public class LoginManagerTest {
         defaultCredentialManager = mock(CredentialManager.class);
         when(defaultCredentialManager.getCredentialPlaintext(any(), any())).thenReturn(defaultCredentialKey);
         when(defaultCredentialManager.getCredentialPlaintext(any())).thenReturn(defaultCredentialKey);
+
+        this.defaultMailerClient = mock(MailerClient.class);
+        this.defaultPasswordResetTokenFinder = mock(PasswordResetTokenFinder.class);
+
+        this.defaultLoginManager = new LoginManager(
+                defaultAuthentification,
+                defaultFirewall,
+                this.defaultSessionManager,
+                this.defaultHashHelper,
+                this.defaultEbeanServer,
+                this.defaultLoginAttemptFinder,
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
     }
 
     @Test
@@ -79,7 +109,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
         verify(sessionManager).startNewSession(authenticatedUser, defaultCredentialKey);
     }
@@ -98,7 +130,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -115,7 +149,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -137,7 +173,9 @@ public class LoginManagerTest {
                 hashHelper,
                 s,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
         verify(authenticatedUser).setIsPasswordResetRequired(false);
         verify(authenticatedUser).setPasswordHash("hashed");
@@ -158,7 +196,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -178,7 +218,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -199,7 +241,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -220,7 +264,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -240,7 +286,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -261,7 +309,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -282,7 +332,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -303,7 +355,9 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -324,7 +378,121 @@ public class LoginManagerTest {
                 this.defaultHashHelper,
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
-                this.recaptchaHelper, defaultCredentialManager);
+                this.recaptchaHelper, defaultCredentialManager,
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
+        );
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
+    }
+
+    @Test
+    public void validateTokenValidTokenTest() throws UnauthorizedException {
+        UUID tokenId = UUID.fromString("0bce3cf6-e7d7-422c-a2ad-0a080a2d4b68");
+
+        String remoteAddr = "12.2.21.2";
+        PasswordResetToken token = mock(PasswordResetToken.class);
+        when(token.getRemoteAddress()).thenReturn(remoteAddr);
+        when(token.getCreationDate()).thenReturn(DateTime.now());
+        when(defaultPasswordResetTokenFinder.byId(tokenId)).thenReturn(token);
+
+        defaultLoginManager.validateResetToken(tokenId, Helpers.fakeRequest().remoteAddress(remoteAddr).build());
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void validateTokenIpChangedTokenTest() throws UnauthorizedException {
+        UUID tokenId = UUID.fromString("0bce3cf6-e7d7-422c-a2ad-0a080a2d4b68");
+
+        String remoteAddr = "12.2.21.2";
+        PasswordResetToken token = mock(PasswordResetToken.class);
+        when(token.getRemoteAddress()).thenReturn(remoteAddr);
+        when(token.getCreationDate()).thenReturn(DateTime.now());
+        when(defaultPasswordResetTokenFinder.byId(tokenId)).thenReturn(token);
+
+        defaultLoginManager.validateResetToken(tokenId, Helpers.fakeRequest().remoteAddress("1"+remoteAddr).build());
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void validateTokenTimedOutTokenTest() throws UnauthorizedException {
+        UUID tokenId = UUID.fromString("0bce3cf6-e7d7-422c-a2ad-0a080a2d4b68");
+
+        String remoteAddr = "12.2.21.2";
+        PasswordResetToken token = mock(PasswordResetToken.class);
+        when(token.getRemoteAddress()).thenReturn(remoteAddr);
+        when(token.getCreationDate()).thenReturn(DateTime.now().minusHours(PASSWORD_RESET_TOKEN_TIMEOUT_HOURS).minusSeconds(1));
+        when(defaultPasswordResetTokenFinder.byId(tokenId)).thenReturn(token);
+
+        defaultLoginManager.validateResetToken(tokenId, Helpers.fakeRequest().remoteAddress(remoteAddr).build());
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void validateTokenNotFoundTokenTest() throws UnauthorizedException {
+        UUID tokenId = UUID.fromString("0bce3cf6-e7d7-422c-a2ad-0a080a2d4b68");
+
+        when(defaultPasswordResetTokenFinder.byId(tokenId)).thenReturn(null);
+
+        defaultLoginManager.validateResetToken(tokenId, Helpers.fakeRequest().build());
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void resetPasswordVerificationTest() throws UnauthorizedException {
+        when(defaultPasswordResetTokenFinder.byId(any())).thenReturn(null);
+        defaultLoginManager.resetPassword(UUID.randomUUID(), "123", Helpers.fakeRequest().build());
+    }
+
+    @Test
+    public void resetPasswordTest() throws UnauthorizedException {
+        UUID id = UUID.randomUUID();
+        String remoteAddr = "12.2.2.1";
+        String newPassword = "123";
+        String newPasswordHash = "123_HASH";
+
+        when(defaultHashHelper.hashPassword(newPassword)).thenReturn(newPasswordHash);
+        when(defaultEbeanServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
+        User user = mock(User.class);
+        PasswordResetToken token = mock(PasswordResetToken.class);
+        when(token.getCreationDate()).thenReturn(DateTime.now());
+        when(token.getRemoteAddress()).thenReturn(remoteAddr);
+        when(token.getAssociatedUser()).thenReturn(user);
+        when(defaultPasswordResetTokenFinder.byId(id)).thenReturn(token);
+
+        defaultLoginManager.resetPassword(id, newPassword, Helpers.fakeRequest().remoteAddress(remoteAddr).build());
+
+        verify(user).setPasswordHash(newPasswordHash);
+        verify(defaultCredentialManager).resetCredential(user, newPassword);
+        verify(defaultEbeanServer).save(user);
+        verify(defaultEbeanServer).delete(token);
+    }
+
+    @Test(expected = CaptchaRequiredException.class)
+    public void sendResetPasswordTokenCaptchaRequiredTest() throws CaptchaRequiredException, InvalidArgumentException {
+        when(recaptchaHelper.IsValidResponse(any(), any())).thenReturn(false);
+        defaultLoginManager.sendResetPasswordToken("123", "231", Helpers.fakeRequest().build());
+    }
+
+    @Test(expected = InvalidArgumentException.class)
+    public void sendResetPasswordTokenInvalidUserTest() throws CaptchaRequiredException, InvalidArgumentException {
+        when(recaptchaHelper.IsValidResponse(any(), any())).thenReturn(true);
+        when(defaultUserFinder.byName("123")).thenReturn(Optional.empty());
+        defaultLoginManager.sendResetPasswordToken("123", "231", Helpers.fakeRequest().build());
+    }
+
+    @Test
+    public void sendResetPasswordTokenTest() throws CaptchaRequiredException, InvalidArgumentException {
+        UUID tokenId = UUID.randomUUID();
+        String username = "xkac";
+        User user = mock(User.class);
+
+        when(recaptchaHelper.IsValidResponse(any(), any())).thenReturn(true);
+        when(defaultUserFinder.byName(username)).thenReturn(Optional.of(user));
+
+        doAnswer((Answer<PasswordResetToken>) invocation -> {
+            PasswordResetToken token = invocation.getArgument(0);
+            token.setId(tokenId);
+            return token;
+        }).when(defaultEbeanServer).save(any());
+
+        defaultLoginManager.sendResetPasswordToken(username, "231", Helpers.fakeRequest().build());
+
+        verify(defaultMailerClient).send(any());
+        verify(defaultEbeanServer).save(any(PasswordResetToken.class));
     }
 }
