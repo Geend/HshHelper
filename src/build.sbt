@@ -3,6 +3,10 @@ import play.sbt.PlayImport
 name := """HshHelper"""
 
 version := "1.0-SNAPSHOT"
+PlayKeys.externalizeResources := false
+
+// Workaround for Annotation.class See https://github.com/scala/scala-dev/issues/249
+scalacOptions in (Compile, doc) += "-no-java-comments"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 
