@@ -217,7 +217,9 @@ public class LoginManager {
             ebeanSever.refresh(user);
             user.setPasswordHash(hashHelper.hashPassword(newPassword));
             ebeanSever.save(user);
+
             credentialManager.resetCredential(user, newPassword);
+
             ebeanSever.delete(token);
 
             tx.commit();
