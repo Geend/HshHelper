@@ -4,6 +4,7 @@ import dtos.file.GroupPermissionDto;
 import dtos.file.UserPermissionDto;
 import extension.CanReadWrite;
 import extension.PermissionLevelConverter;
+import extension.logging.DangerousCharFilteringLogger;
 import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
@@ -30,7 +31,8 @@ public class FileManager {
     private final SessionManager sessionManager;
     private final FileMetaFactory fileMetaFactory;
 
-    private static final Logger.ALogger logger = Logger.of(FileManager.class);
+    private static final Logger.ALogger logger = new DangerousCharFilteringLogger(
+            FileManager.class);
 
     @Inject
     public FileManager(FileFinder fileFinder, UserFinder userFinder, EbeanServer ebeanServer, SessionManager sessionManager, GroupFinder groupFinder, FileMetaFactory fileMetaFactory) {

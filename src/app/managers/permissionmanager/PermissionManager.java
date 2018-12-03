@@ -2,6 +2,7 @@ package managers.permissionmanager;
 
 import extension.CanReadWrite;
 import extension.PermissionLevelConverter;
+import extension.logging.DangerousCharFilteringLogger;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.EbeanServer;
@@ -34,7 +35,7 @@ public class PermissionManager {
     private final String requestErrorMessage;
     private final FileManager fileManager;
 
-    private static final Logger.ALogger logger = Logger.of(PermissionManager.class);
+    private static final Logger.ALogger logger = new DangerousCharFilteringLogger(PermissionManager.class);
 
     @Inject
     public PermissionManager(
