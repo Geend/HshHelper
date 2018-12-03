@@ -158,7 +158,7 @@ public class UserController extends Controller {
 
         ResetUserPasswordDto resetUserPasswordDto = boundForm.get();
         try {
-            this.userManager.resetPassword(resetUserPasswordDto.getUsername(), resetUserPasswordData.getRecaptcha(), Http.Context.current().request());
+            this.userManager.resetPassword(resetUserPasswordDto.getUsername(), resetUserPasswordData.getRecaptcha(), Http.Context.current().request().remoteAddress());
         } catch (InvalidArgumentException e) {
             //Ignore the exception in order to not reveal potential usernames.
         } catch (CaptchaRequiredException e) {

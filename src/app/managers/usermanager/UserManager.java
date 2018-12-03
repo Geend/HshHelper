@@ -19,15 +19,12 @@ import models.finders.UserFinderQueryOptions;
 import play.Logger;
 import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
-import play.mvc.Http;
 import policyenforcement.ConstraintValues;
 import policyenforcement.session.SessionManager;
 import twofactorauth.TimeBasedOneTimePasswordUtil;
 
 import javax.inject.Inject;
 import java.util.*;
-
-import static extension.StringHelper.empty;
 
 public class UserManager {
     private final UserFinder userFinder;
@@ -154,15 +151,15 @@ public class UserManager {
         return this.userFinder.all();
     }
 
-    public void resetPassword(String username, String recaptchaData, Http.Request request) throws InvalidArgumentException, CaptchaRequiredException {
+    public void resetPassword(String username, String recaptchaData, String remoteIp) throws InvalidArgumentException, CaptchaRequiredException {
         Optional<User> userOptional = userFinder.byName(username);
         if (!userOptional.isPresent()) {
             throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
         User user = userOptional.get();
 
-        if(!recaptchaHelper.IsValidResponse(recaptchaData, request.remoteAddress())) {
-            logger.error(request.remoteAddress() + " has tried to reset the password for user " + user + " without a valid reCAPTCHA.");
+        if(!recaptchaHelper.IsValidResponse(recaptchaData, remoteIp)) {
+            logger.error(remoteIp + " has tried to reset the password for user " + user + " without a valid reCAPTCHA.");
             throw new CaptchaRequiredException();
         }
 
