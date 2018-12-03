@@ -14,9 +14,8 @@ public class QrCodeUtil {
         URLConnection connection = imageRequest.openConnection();
         Integer contentLength = connection.getContentLength();
         Integer readBytes = 0;
-        InputStream inputStream = connection.getInputStream();
         byte[] qrImageData = new byte[contentLength];
-        try {
+        try (InputStream inputStream = connection.getInputStream()) {
             while(readBytes.intValue() != contentLength.intValue()) {
                 Integer rb = inputStream.read(qrImageData, readBytes, contentLength - readBytes);
                 if(rb < 0) {
@@ -24,9 +23,6 @@ public class QrCodeUtil {
                 }
                 readBytes += rb;
             }
-        }
-        finally {
-            inputStream.close();
         }
 
         StringBuilder imageDataStringBuilder = new StringBuilder();
