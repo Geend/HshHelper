@@ -1,6 +1,5 @@
 import akka.actor.ActorSystem;
 import managers.loginmanager.LoginManager;
-import policyenforcement.ext.loginFirewall.Firewall;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.duration.Duration;
 

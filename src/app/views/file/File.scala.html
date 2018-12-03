@@ -1,16 +1,9 @@
-@import dtos.file.EditFileDto
-@import views.TemplateEnvironment
-@import dtos.file.EditFileCommentDto
-@import dtos.file.EditFileContentDto
-@import views.html.helper.StandaloneFileInput
-@import views.html.helper.FileInput
+@import dtos.file.{EditFileCommentDto, EditFileContentDto}
 @import extension.FileSizeFormatter.FormatSize
-@import managers.filemanager.dto.PermissionMeta.EType
-@import views.html.file.btn.EditPermissionBtn
-@import views.html.file.btn.DeletePermissionBtn
 @import managers.filemanager.dto.FileMeta
-
-@import dtos.file.EditFileCommentDto
+@import managers.filemanager.dto.PermissionMeta.EType
+@import views.html.file.btn.{DeletePermissionBtn, EditPermissionBtn}
+@import views.html.helper.FileInput
 @(fileMeta : FileMeta, editFileContentForm : Form[EditFileContentDto], editFileCommentForm : Form[EditFileCommentDto])
 
 @Base(fileMeta.getFilename() + " (Datei)") {

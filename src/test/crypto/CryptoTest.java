@@ -4,8 +4,9 @@ import extension.Crypto.Cipher;
 import extension.Crypto.CryptoKey;
 import extension.Crypto.CryptoResult;
 import extension.Crypto.KeyGenerator;
-import org.junit.*;
-import play.test.Helpers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class CryptoTest {
 

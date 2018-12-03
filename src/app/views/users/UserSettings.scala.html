@@ -1,5 +1,4 @@
-@import dtos.user.{ChangeOwnPasswordDto, ChangeUserSessionTimeoutDto, DeleteSessionDto}
-@import dtos.user.TwoFactorAuthDto
+@import dtos.user.{ChangeOwnPasswordDto, ChangeUserSessionTimeoutDto}
 @(sessionTimeoutForm: Form[ChangeUserSessionTimeoutDto], changePasswordForm: Form[ChangeOwnPasswordDto], twoFactorActive: Boolean)
 
 @Base("Benutzer-Einstellungen") {

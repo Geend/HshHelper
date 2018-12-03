@@ -1,6 +1,5 @@
-@import policyenforcement.Policy
-@import managers.filemanager.dto.FileMeta
 @import dtos.file.SearchQueryDto
+@import managers.filemanager.dto.FileMeta
 @(files: Seq[FileMeta],searchForm: Form[SearchQueryDto])
 
 @Base("Gefundene Dateien", searchForm) {

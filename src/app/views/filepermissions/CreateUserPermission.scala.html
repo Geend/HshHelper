@@ -1,5 +1,5 @@
-@import managers.filemanager.dto.FileMeta
 @import dtos.permissions.CreateUserPermissionDto
+@import managers.filemanager.dto.FileMeta
 @(form: Form[CreateUserPermissionDto], allUsers: Seq[User], possiblePermissions: Seq[PermissionLevel], relevantFile : FileMeta)
 
 @Base("Benutzerberechtigung erstellen"){

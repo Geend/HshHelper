@@ -1,28 +1,24 @@
 package managers.permissionmanager;
 
+import dtos.permissions.EditGroupPermissionDto;
+import dtos.permissions.EditUserPermissionDto;
 import extension.CanReadWrite;
 import extension.PermissionLevelConverter;
 import extension.logging.DangerousCharFilteringLogger;
+import io.ebean.EbeanServer;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
-import io.ebean.EbeanServer;
 import managers.filemanager.FileManager;
 import managers.filemanager.dto.FileMeta;
 import models.*;
-import models.File;
-import models.GroupPermission;
-import models.UserPermission;
-import dtos.permissions.EditGroupPermissionDto;
-import dtos.permissions.EditUserPermissionDto;
 import models.finders.*;
-import models.finders.FileFinder;
-import models.finders.GroupPermissionFinder;
-import models.finders.UserPermissionFinder;
 import play.Logger;
 import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public class PermissionManager {
     private final SessionManager sessionManager;

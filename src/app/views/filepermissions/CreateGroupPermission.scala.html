@@ -1,5 +1,5 @@
-@import managers.filemanager.dto.FileMeta
 @import dtos.permissions.CreateGroupPermissionDto
+@import managers.filemanager.dto.FileMeta
 @(form: Form[CreateGroupPermissionDto], allGroups: Seq[Group], possiblePermissions: Seq[PermissionLevel], relevantFile : FileMeta)
 
 @Base("Gruppenberechtigung erstellen"){

@@ -10,7 +10,6 @@ import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import java.util.List;
 
 import static play.libs.Scala.asScala;

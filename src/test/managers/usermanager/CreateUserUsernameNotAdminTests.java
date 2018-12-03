@@ -1,11 +1,11 @@
 package managers.usermanager;
 
 import extension.CredentialManager;
-import extension.RecaptchaHelper;
-import managers.UnauthorizedException;
 import extension.HashHelper;
 import extension.PasswordGenerator;
+import extension.RecaptchaHelper;
 import io.ebean.EbeanServer;
+import managers.UnauthorizedException;
 import models.factories.UserFactory;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;

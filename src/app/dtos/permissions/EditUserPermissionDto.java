@@ -3,7 +3,6 @@ package dtos.permissions;
 import models.PermissionLevel;
 import play.data.validation.Constraints;
 
-import javax.validation.Constraint;
 import java.util.List;
 
 import static policyenforcement.ConstraintValues.RETURN_URL_REGEX;

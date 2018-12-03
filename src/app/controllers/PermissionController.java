@@ -9,9 +9,9 @@ import managers.filemanager.dto.FileMeta;
 import managers.filemanager.dto.PermissionMeta;
 import managers.permissionmanager.InvalidDataException;
 import managers.permissionmanager.PermissionManager;
-import models.*;
-import models.User;
+import models.Group;
 import models.PermissionLevel;
+import models.User;
 import org.springframework.util.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
@@ -20,7 +20,8 @@ import play.mvc.Result;
 import policyenforcement.session.Authentication;
 import policyenforcement.session.SessionManager;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 import static play.libs.Scala.asScala;
 

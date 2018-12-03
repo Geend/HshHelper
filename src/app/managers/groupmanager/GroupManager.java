@@ -1,25 +1,24 @@
 package managers.groupmanager;
 
 import extension.logging.DangerousCharFilteringLogger;
-import managers.InvalidArgumentException;
-import managers.UnauthorizedException;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
+import managers.InvalidArgumentException;
+import managers.UnauthorizedException;
 import managers.filemanager.FileMetaFactory;
 import managers.filemanager.dto.FileMeta;
-import models.File;
 import models.Group;
 import models.User;
 import models.finders.FileFinder;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import play.Logger;
-import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GroupManager {

@@ -3,8 +3,6 @@ package dtos.login;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 
-import java.util.UUID;
-
 import static policyenforcement.ConstraintValues.MAX_PASSWORD_LENGTH;
 
 public class ResetPasswordDto implements Constraints.Validatable<ValidationError> {

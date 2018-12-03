@@ -1,17 +1,20 @@
 package managers.groupmanager;
 
-import managers.InvalidArgumentException;
-import managers.UnauthorizedException;
 import extension.HashHelper;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
+import managers.InvalidArgumentException;
+import managers.UnauthorizedException;
 import models.Group;
 import models.User;
 import models.finders.FileFinder;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;

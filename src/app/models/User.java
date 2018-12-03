@@ -1,12 +1,13 @@
 package models;
 
-import javax.persistence.*;
-
 import io.ebean.Model;
 import play.data.validation.Constraints;
 import policyenforcement.ConstraintValues;
 
-import java.util.*;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")

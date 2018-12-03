@@ -1,7 +1,6 @@
 package models.finders;
 
 import io.ebean.Finder;
-import models.NetService;
 import models.NetServiceCredential;
 
 import java.util.Optional;

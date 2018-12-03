@@ -1,15 +1,14 @@
 package managers.usermanager;
 
 import extension.CredentialManager;
-import extension.RecaptchaHelper;
-import managers.InvalidArgumentException;
-import managers.UnauthorizedException;
 import extension.HashHelper;
 import extension.PasswordGenerator;
+import extension.RecaptchaHelper;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
-import managers.loginmanager.CaptchaRequiredException;
+import managers.InvalidArgumentException;
+import managers.UnauthorizedException;
 import models.User;
 import models.factories.UserFactory;
 import models.finders.GroupFinder;
@@ -18,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import play.libs.mailer.MailerClient;
-import play.test.Helpers;
 import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 

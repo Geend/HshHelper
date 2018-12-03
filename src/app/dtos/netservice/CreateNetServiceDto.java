@@ -1,7 +1,6 @@
 package dtos.netservice;
 
 import play.data.validation.Constraints;
-import policyenforcement.ConstraintValues;
 
 public class CreateNetServiceDto {
     @Constraints.Required

@@ -1,17 +1,21 @@
 package extension;
 
+import com.typesafe.config.Config;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
-import play.*;
+import play.Environment;
 import play.api.OptionalSourceMapper;
 import play.api.UsefulException;
 import play.api.routing.Router;
 import play.http.DefaultHttpErrorHandler;
-import play.mvc.Http.*;
-import play.mvc.*;
-import com.typesafe.config.Config;
+import play.mvc.Http.Context;
+import play.mvc.Http.RequestHeader;
+import play.mvc.Result;
+import play.mvc.Results;
 
-import javax.inject.*;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 

@@ -1,5 +1,3 @@
-import javax.inject.*;
-
 import extension.HashHelper;
 import extension.logging.DangerousCharFilteringLogger;
 import models.*;
@@ -8,6 +6,8 @@ import org.joda.time.DateTime;
 import play.Logger;
 import play.db.Database;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Statement;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

@@ -1,9 +1,6 @@
 package managers.loginmanager;
 
 import extension.CredentialManager;
-import extension.CredentialSerializer.Credential;
-import extension.Crypto.Cipher;
-import extension.Crypto.KeyGenerator;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
 import io.ebean.EbeanServer;
@@ -17,8 +14,8 @@ import models.finders.LoginAttemptFinder;
 import models.finders.PasswordResetTokenFinder;
 import models.finders.UserFinder;
 import org.joda.time.DateTime;
-import org.junit.*;
-import org.mockito.invocation.InvocationOnMock;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import play.libs.mailer.MailerClient;
 import play.mvc.Http;

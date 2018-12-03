@@ -1,5 +1,8 @@
 package controllers;
 
+import dtos.group.CreateGroupDto;
+import dtos.group.DeleteGroupDto;
+import dtos.group.UserIdDto;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.filemanager.dto.FileMeta;
@@ -7,9 +10,6 @@ import managers.groupmanager.GroupManager;
 import managers.groupmanager.GroupNameAlreadyExistsException;
 import models.Group;
 import models.User;
-import dtos.group.CreateGroupDto;
-import dtos.group.DeleteGroupDto;
-import dtos.group.UserIdDto;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -19,7 +19,7 @@ import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.List;
 
 import static play.libs.Scala.asScala;
 

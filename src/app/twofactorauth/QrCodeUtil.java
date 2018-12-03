@@ -1,11 +1,11 @@
 package twofactorauth;
 
+import play.shaded.ahc.org.asynchttpclient.util.Base64;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-
-import play.shaded.ahc.org.asynchttpclient.util.Base64;
 
 public class QrCodeUtil {
     public static String LoadQrCodeImageDataFromGoogle(String identifier, String secret) throws IOException {

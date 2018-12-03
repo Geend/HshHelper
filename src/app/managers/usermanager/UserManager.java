@@ -1,16 +1,15 @@
 package managers.usermanager;
 
 import extension.CredentialManager;
-import extension.RecaptchaHelper;
-import extension.logging.DangerousCharFilteringLogger;
-import managers.InvalidArgumentException;
-import managers.UnauthorizedException;
 import extension.HashHelper;
 import extension.PasswordGenerator;
+import extension.RecaptchaHelper;
+import extension.logging.DangerousCharFilteringLogger;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
-import managers.loginmanager.CaptchaRequiredException;
+import managers.InvalidArgumentException;
+import managers.UnauthorizedException;
 import models.Group;
 import models.User;
 import models.factories.UserFactory;
@@ -18,7 +17,6 @@ import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import models.finders.UserFinderQueryOptions;
 import play.Logger;
-import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
 import policyenforcement.ConstraintValues;
 import policyenforcement.session.SessionManager;
@@ -26,7 +24,10 @@ import twofactorauth.TimeBasedOneTimePasswordUtil;
 
 import javax.inject.Inject;
 import java.security.GeneralSecurityException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class UserManager {
     private final UserFinder userFinder;

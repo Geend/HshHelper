@@ -5,7 +5,6 @@ import managers.filemanager.dto.PermissionMeta;
 import models.File;
 import models.GroupPermission;
 import models.UserPermission;
-import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;

@@ -12,12 +12,9 @@ import play.data.FormFactory;
 import play.libs.Json;
 import play.mvc.Result;
 import policyenforcement.session.Authentication;
-import views.html.netservice.CreateNetService;
-import views.html.netservice.CreateNetServiceCredential;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

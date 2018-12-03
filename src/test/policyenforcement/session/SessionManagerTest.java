@@ -20,7 +20,8 @@ import java.security.SecureRandom;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertThat;
 
 public class SessionManagerTest {
     public static Application app;

@@ -2,7 +2,6 @@ package endToEnd;
 
 import com.google.common.collect.ImmutableList;
 import extension.test.WSTestClientStateful;
-import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -12,8 +11,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
-import play.libs.ws.WSCookie;
-import play.libs.ws.WSRequest;
 import play.libs.ws.WSResponse;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -21,7 +18,8 @@ import play.test.Helpers;
 import play.test.TestServer;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

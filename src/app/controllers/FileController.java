@@ -1,7 +1,6 @@
 package controllers;
 
 import dtos.file.*;
-import dtos.file.GroupPermissionDto;
 import extension.NoFileSubmittedOnUploadException;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;

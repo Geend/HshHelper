@@ -1,6 +1,5 @@
 package dtos.netservice;
 
-import models.NetService;
 import play.data.validation.Constraints;
 
 public class CreateNetServiceCredentialsDto {

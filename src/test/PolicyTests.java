@@ -1,15 +1,14 @@
 import models.*;
 import org.junit.Before;
-import policyenforcement.Policy;
-import policyenforcement.session.Session;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import policyenforcement.Policy;
+import policyenforcement.session.Session;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.booleanThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

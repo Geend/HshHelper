@@ -1,6 +1,8 @@
 package models.finders;
 
-import io.ebean.*;
+import io.ebean.Finder;
+import io.ebean.SqlQuery;
+import io.ebean.SqlRow;
 import models.File;
 import models.User;
 
