@@ -88,8 +88,8 @@ Bei den View-spezifischen \enquote{Data Transfer Object}-Klassen sehen wir keine
 Bei diesen handelt es sich nur um \enquote{Plain Old Data}-Objekte, die außer trivialen Zugriffsmethoden (Getter und Setter) keine weiteren Methoden besitzen.
 Dies gilt für alle trivialen Zugriffsmethoden unserer Klassen. \newline
 Darüber hinaus gibt es keine direkten Tests, die verifizieren, ob eine simple Relation von EBean sachgerecht auf das richtige Objekt abgebildet wird.
-% TODO, Iteration 2: Files too
-Eine Ausnahme bilden hier die \texttt{User}-Entitäten, da beim Löschen eines Benutzers ebenfalls alle Gruppen gelöscht werden müssen, dessen Besitzer er ist. Für so eine kaskadierende Löschoperation wurde extra ein Test geschrieben.
+
+Eine Ausnahme bilden hier die \texttt{User}-Entitäten, da beim Löschen eines Benutzers ebenfalls alle Gruppen und Dateien gelöscht werden müssen, dessen Besitzer er ist. Für solche kaskadierende Löschoperationen wurden ebenfalls Tests geschrieben.
 
 Im Anhang befindet sich der Unittest Code Coverage Report \ref{unitcover}. Während sicherheitsrelevante Aspekte der Software wie z.B. die Policy oder die Login-Firewall eine sehr hohe Code Coverage aufweisen haben die Dtos eine sehr geringe. Diese Zahlen ergänzen sich mit der Zielsetzung eine sichere und gut funktionierende Software zu haben. Neben sicherheitsrelevanten Funktionen der Software erfahren auch die Manager-Klassen einen hohen Protzentwert. Die Code Coverage ermöglicht eine gute Übersicht über den Teststatus der Software, liefert aber keinen detaillierten Einblick welche sicherheitskritischen Aspekte durch diese abgedeckt sind. Diese Tests werden im nächsten Abschnitt im Detail betrachtet.
 
@@ -112,7 +112,7 @@ Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationste
     \item Das Play-Session-Cookie ist nicht vorhanden.
   \end{itemize}
 
-In dieser Anwendung beinhaltet das Play-Session-Cookie alle Informationen zur Session eines Benutzers und somit ist lediglich beim Login der CSRF Schutz ausgehebelt, da zu diesem Zeitpunkt noch nicht zwangsläufig ein Play-Session-Cookie vorhanden ist. 
+In dieser Anwendung beinhaltet das Play-Session-Cookie alle Informationen zur Session eines Benutzers und somit ist lediglich beim Login der CSRF Schutz ausgehebelt, da zu diesem Zeitpunkt noch nicht zwangsläufig ein Play-Session-Cookie vorhanden ist.
 
 Ein konkretes Angriffsszenario in dieser Anwendung könnte folgendermaßen aussehen: Das Opfer darf hierzu keinerlei Cookies von der HsH-Helfer Seite im Browser haben. Dies kann gegeben sein, wenn es seine Cookies gelöscht hat oder den \enquote{Incognito}-Modus im Browser verwendet. Ein Angreifer kann nun das Opfer auf eine von ihm präparierte Seite locken, wo durch das Klicken auf einen Link ein Login-Formular abgeschickt wird. Somit ist das Opfer angemeldet unter einem Benutzeraccount, welcher auch dem Angreifer bekannt ist. Ist das Opfer nun unvorsichtig und verifiziert den aktuellen Benutzeraccount nicht, lädt es möglicherweise unter einem Benutzeraccount Dateien hoch, auf welchen der Angreifer Zugriff hat.
 
