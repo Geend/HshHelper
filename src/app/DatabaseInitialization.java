@@ -148,7 +148,7 @@ public class DatabaseInitialization {
 
         NetService ns1 = new NetService();
         ns1.setName("Bibliothek");
-        ns1.setUrl("https://opac.tib.eu/loan/DB=4/SET=2/TTL=1/USERINFO_LOGIN");
+        ns1.setUrl("https://opac.tib.eu:443/loan/DB=4/SET=2/TTL=1/USERINFO");
         ns1.getParameters().add(new NetServiceParameter("BOR_U",NetServiceParameter.NetServiceParameterType.USERNAME));
         ns1.getParameters().add(new NetServiceParameter("BOR_PW", NetServiceParameter.NetServiceParameterType.PASSWORD));
         ns1.getParameters().add(new NetServiceParameter("ACT","UI_DATA", NetServiceParameter.NetServiceParameterType.HIDDEN));
