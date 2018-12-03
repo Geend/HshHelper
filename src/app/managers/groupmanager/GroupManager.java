@@ -42,7 +42,7 @@ public class GroupManager {
         this.fileMetaFactory = fileMetaFactory;
     }
 
-    public void createGroup(String groupName) throws GroupNameAlreadyExistsException, InvalidArgumentException {
+    public void createGroup(String groupName) throws GroupNameAlreadyExistsException {
         User user = sessionManager.currentUser();
 
         try(Transaction tx = ebeanServer.beginTransaction(TxIsolation.REPEATABLE_READ)) {
@@ -61,7 +61,7 @@ public class GroupManager {
         }
     }
 
-    public List<FileMeta> getGroupFiles(Group group) throws UnauthorizedException, InvalidArgumentException {
+    public List<FileMeta> getGroupFiles(Group group) {
         return fileMetaFactory.fromFiles(
             fileFinder.query()
             .where()
@@ -76,7 +76,7 @@ public class GroupManager {
         );
     }
 
-    public List<Group> getAllGroups() throws InvalidArgumentException, UnauthorizedException {
+    public List<Group> getAllGroups() throws UnauthorizedException {
         if(!sessionManager.currentPolicy().canSeeAllGroups())
             throw new UnauthorizedException();
 

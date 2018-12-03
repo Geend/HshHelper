@@ -77,7 +77,7 @@ public class PermissionManager {
         logger.info(user+ " changed permissions for group " + permission.get().getGroup() + "to canWrite: " + c.getCanWrite() + " and canRead: " + c.getCanRead());
     }
 
-    public EditGroupPermissionDto getGroupPermissionForEdit(Long groupPermissionId) throws InvalidDataException, InvalidArgumentException, UnauthorizedException {
+    public EditGroupPermissionDto getGroupPermissionForEdit(Long groupPermissionId) throws InvalidArgumentException, UnauthorizedException {
         User user = this.sessionManager.currentUser();
         Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
 
@@ -121,7 +121,7 @@ public class PermissionManager {
     // user permissions
     //
 
-    public EditUserPermissionDto getUserPermissionForEdit(Long userPermissionId) throws InvalidDataException, InvalidArgumentException, UnauthorizedException {
+    public EditUserPermissionDto getUserPermissionForEdit(Long userPermissionId) throws InvalidArgumentException, UnauthorizedException {
         User user = this.sessionManager.currentUser();
         Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
 

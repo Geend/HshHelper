@@ -191,7 +191,7 @@ public class FileController extends Controller {
         return ok(data).as("application/octet-stream").withHeader("Content-Disposition", "attachment; filename=" + fileMeta.getFilename());
     }
 
-    public Result editFileComment() throws UnauthorizedException, InvalidArgumentException, QuotaExceededException {
+    public Result editFileComment() throws UnauthorizedException, InvalidArgumentException {
         Form<EditFileCommentDto> boundForm = editFileCommentDtoForm.bindFromRequest();
         if (boundForm.hasErrors()) {
             EditFileCommentDto data = boundForm.get();
@@ -212,7 +212,7 @@ public class FileController extends Controller {
         return redirect(routes.FileController.showFile(boundForm.get().getFileId()));
     }
 
-    public Result editFileContent() throws UnauthorizedException, InvalidArgumentException, QuotaExceededException, IOException {
+    public Result editFileContent() throws UnauthorizedException, InvalidArgumentException, IOException {
         Form<EditFileContentDto> boundForm = editFileContentDtoForm.bindFromRequest();
         if (boundForm.hasErrors()) {
             EditFileContentDto formData = boundForm.get();
