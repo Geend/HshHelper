@@ -138,12 +138,29 @@ public class UserController extends Controller {
         return redirect(routes.UserController.showActiveUserSessions());
     }
 
-    public Result activateTwoFactorAuth() {
-        Form<TwoFactorAuthDto> boundForm = this.twoFactorAuthForm.bindFromRequest("secret");
+    public Result activateTwoFactorAuth() throws IOException {
+        Form<TwoFactorAuthDto> boundForm = this.twoFactorAuthForm.bindFromRequest();
         if(boundForm.hasErrors()) {
-            return redirect(routes.ErrorController.showBadRequestMessage());
+            String imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", boundForm.get().getSecret());
+            return badRequest(views.html.users.Confirm2FactorAuth.render(imageSourceData, boundForm));
         }
-        this.userManager.activateTwoFactorAuth(boundForm.get().getSecret());
+
+        TwoFactorAuthDto activationData = boundForm.get();
+
+        Integer activationToken = 0;
+        if(!empty(activationData.getActivationToken())) {
+            activationToken = Integer.parseInt(activationData.getActivationToken());
+        }
+
+        try {
+
+            this.userManager.activateTwoFactorAuth(activationData.getSecret(), activationToken);
+        } catch (Invalid2FATokenException e) {
+            String imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", boundForm.get().getSecret());
+            boundForm = boundForm.withError("activationToken", "Ungültiges Token!");
+            return badRequest(views.html.users.Confirm2FactorAuth.render(imageSourceData, boundForm));
+        }
+
         return redirect(routes.HomeController.index());
     }
 
@@ -152,22 +169,27 @@ public class UserController extends Controller {
         return redirect(routes.HomeController.index());
     }
 
+    public Result show2FactorAuthConfirmationForm() throws IOException {
+        String secret = this.userManager.generateTwoFactorSecret();
+        String imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", secret);
+
+        TwoFactorAuthDto dto = new TwoFactorAuthDto();
+        dto.setSecret(secret);
+
+        return ok(views.html.users.Confirm2FactorAuth.render(imageSourceData, twoFactorAuthForm.fill(dto)));
+    }
+
     public Result showUserSettings() throws IOException {
         User currentUser = this.sessionManager.currentUser();
         ChangeUserSessionTimeoutDto changeUserSessionTimeoutDto = new ChangeUserSessionTimeoutDto();
         changeUserSessionTimeoutDto.setValueInMinutes(sessionManager.currentUser().getSessionTimeoutInMinutes());
         Form<ChangeUserSessionTimeoutDto> filledForm = changeUserSessionTimeoutForm.fill(changeUserSessionTimeoutDto);
 
-        TwoFactorAuthDto twoFactorDto = new TwoFactorAuthDto();
-        String secret = this.userManager.generateTwoFactorSecret();
-        twoFactorDto.setSecret(secret);
-        String imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", secret);
         return ok(views.html.users.UserSettings.render(
                 filledForm,
                 changeOwnPasswordForm,
-                twoFactorDto,
-                empty(currentUser.getTwoFactorAuthSecret()),
-                imageSourceData));
+                empty(currentUser.getTwoFactorAuthSecret())
+                ));
     }
 
     public Result changeUserSessionTimeout() throws UnauthorizedException, InvalidArgumentException {

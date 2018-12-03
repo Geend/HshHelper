@@ -25,6 +25,7 @@ import policyenforcement.session.SessionManager;
 import twofactorauth.TimeBasedOneTimePasswordUtil;
 
 import javax.inject.Inject;
+import java.security.GeneralSecurityException;
 import java.util.*;
 
 public class UserManager {
@@ -65,7 +66,14 @@ public class UserManager {
         this.credentialManager = credentialManager;
     }
 
-    public void activateTwoFactorAuth(String secret) {
+    public void activateTwoFactorAuth(String secret, int activationToken) throws Invalid2FATokenException {
+        try {
+            if(!TimeBasedOneTimePasswordUtil.validateCurrentNumber(secret, activationToken, 60000))
+                throw new Invalid2FATokenException();
+        } catch (GeneralSecurityException e) {
+            throw new Invalid2FATokenException();
+        }
+
         User currentUser = sessionManager.currentUser();
         currentUser.setTwoFactorAuthSecret(secret);
         this.ebeanServer.save(currentUser);

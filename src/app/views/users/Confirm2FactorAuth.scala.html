@@ -1,0 +1,29 @@
+@import dtos.user.TwoFactorAuthDto
+@(imageSourceData: String, twoFactorForm: Form[TwoFactorAuthDto])
+
+@Base("Zwei-Faktor Authentifizierung aktivieren") {
+    <div class="message">
+        Scannen Sie den folgenden Code mit einer Authentifizierungsapp, die <a href="https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm">
+        Time-based One-time Password Algorithmus (TOTP)</a> unterstützt. Es können z.B. <a href="https://authy.com/">
+        Authy</a> oder <a href="https://support.google.com/accounts/answer/1066447">Google Authenticator</a>
+        verwendet werden.<br>
+        Generieren Sie anhand des Codes ein Token, um die Zwei-Faktor Authentifizierung zu aktivieren.
+    </div>
+
+    @helper.form(action = routes.UserController.activateTwoFactorAuth()) {
+        <div class="inputForm">
+            <input type="hidden" name="secret" value="@twoFactorForm("secret").value()" />
+            <div class="element">
+                <div class="label"><label>Code:</label></div>
+                <div class="input"><img src="@imageSourceData"/></div>
+            </div>
+            @helper.TextInput(twoFactorForm("activationToken"), "Aktivierungs-Token")
+        </div>
+
+        <div class="inputControls">
+            <input type="Submit" value="Aktivieren" />
+        </div>
+
+        @helper.CSRF.formField
+    }
+}

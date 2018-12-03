@@ -1,6 +1,6 @@
 @import dtos.user.{ChangeOwnPasswordDto, ChangeUserSessionTimeoutDto, DeleteSessionDto}
 @import dtos.user.TwoFactorAuthDto
-@(sessionTimeoutForm: Form[ChangeUserSessionTimeoutDto], changePasswordForm: Form[ChangeOwnPasswordDto], twoFactorForm: TwoFactorAuthDto, twoFactorActive: Boolean, imageSourceData: String)
+@(sessionTimeoutForm: Form[ChangeUserSessionTimeoutDto], changePasswordForm: Form[ChangeOwnPasswordDto], twoFactorActive: Boolean)
 
 @Base("Benutzer-Einstellungen") {
 
@@ -34,24 +34,12 @@
 
         @helper.CSRF.formField
     }
-    <h2>Zwei Faktor Authentifizierung</h2>
+    <h2>Zwei-Faktor Authentifizierung</h2>
     @if(twoFactorActive) {
-        @helper.form(action = routes.UserController.activateTwoFactorAuth()) {
-            <div class="inputForm">
-
-                <input type="hidden" name="secret" value="@twoFactorForm.getSecret" />
-                <div class="label">
-                    <label>Initialisierung:</label>
-                </div>
-                <div class="input">
-                    <img src="@imageSourceData"/>
-                </div>
-            </div>
+        @helper.form(action = routes.UserController.show2FactorAuthConfirmationForm()) {
             <div class="inputControls">
                 <input type="Submit" value="Aktivieren" />
             </div>
-
-            @helper.CSRF.formField
         }
     } else {
         @helper.form(action = routes.UserController.deactivateTwoFactorAuth()) {

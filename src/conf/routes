@@ -27,6 +27,7 @@ POST        /sessions/delete                                  controllers.UserCo
 GET         /settings                                         controllers.UserController.showUserSettings()
 POST        /settings/sessionTimeout                          controllers.UserController.changeUserSessionTimeout()
 POST        /settings/changePassword                          controllers.UserController.changeUserPassword()
+GET         /settings/confirmActivateTwoFactorAuth            controllers.UserController.show2FactorAuthConfirmationForm()
 POST        /settings/activateTwoFactorAuth                   controllers.UserController.activateTwoFactorAuth()
 POST        /settings/deactivateTwoFactorAuth                 controllers.UserController.deactivateTwoFactorAuth()
 
