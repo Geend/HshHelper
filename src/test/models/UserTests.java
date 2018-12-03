@@ -1,6 +1,7 @@
 package models;
 
 import io.ebean.Finder;
+import org.joda.time.DateTime;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -63,5 +64,37 @@ public class UserTests {
         assertNull(foundGroup);
         foundGroup = groupFinder.byId(group2.getGroupId());
         assertNull(foundGroup);
+    }
+
+    @Test
+    public void DeletingUsersDeletesHisFiles() {
+        User user = new User("testUser", "", "", false, 5l);
+        user.save();
+
+        File f1 = new File();
+        f1.setName("admin.txt");
+        f1.setComment("blablabla");
+        f1.setOwner(user);
+        f1.setData(new byte[]{1,2,1,2});
+        f1.setWrittenBy(user);
+        f1.setWrittenByDt(DateTime.now());
+        f1.save();
+
+        Finder<Long, User> userFinder = new Finder<>(User.class);
+        Finder<Long, File> fileFinder = new Finder<>(File.class);
+
+        assertNotEquals((long)user.getUserId(), 0);
+        assertNotEquals((long)f1.getFileId(), 0);
+
+        User foundUser = userFinder.byId(user.getUserId());
+        assertNotNull(foundUser);
+        File foundFile = fileFinder.byId(f1.getFileId());
+        assertNotNull(foundFile);
+        user.delete();
+
+        foundUser = userFinder.byId(user.getUserId());
+        assertNull(foundUser);
+        foundFile = fileFinder.byId(f1.getFileId());
+        assertNull(foundFile);
     }
 }

@@ -56,7 +56,7 @@ Hierbei haben wir darauf geachtet, dass es uns durch \enquote{Dependency Injecti
 Dadurch wird garantiert, dass lediglich das Verhalten einer Klasse getestet wird, und dass dieses Verhalten nur auf dem durchs Interface vorgeschriebene Verhalten seiner Abhängigkeiten basiert.
 
 \externaldocument[Arch1-]{architecture}
-Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-architecture:class_diagram}) aufgezeigten \enquote{Pakete} werden folgende Voraussetzungen sowie Nachbedingungen getestet:
+Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-architecture:class_diagram} \& \ref{Arch1-architecture:class_diagram2}) aufgezeigten \enquote{Pakete} werden folgende Voraussetzungen sowie Nachbedingungen getestet:
 
 \begin{itemize}
   \item Controller
@@ -88,8 +88,8 @@ Bei den View-spezifischen \enquote{Data Transfer Object}-Klassen sehen wir keine
 Bei diesen handelt es sich nur um \enquote{Plain Old Data}-Objekte, die außer trivialen Zugriffsmethoden (Getter und Setter) keine weiteren Methoden besitzen.
 Dies gilt für alle trivialen Zugriffsmethoden unserer Klassen. \newline
 Darüber hinaus gibt es keine direkten Tests, die verifizieren, ob eine simple Relation von EBean sachgerecht auf das richtige Objekt abgebildet wird.
-% TODO, Iteration 2: Files too
-Eine Ausnahme bilden hier die \texttt{User}-Entitäten, da beim Löschen eines Benutzers ebenfalls alle Gruppen gelöscht werden müssen, dessen Besitzer er ist. Für so eine kaskadierende Löschoperation wurde extra ein Test geschrieben.
+
+Eine Ausnahme bilden hier die \texttt{User}-Entitäten, da beim Löschen eines Benutzers ebenfalls alle Gruppen und Dateien gelöscht werden müssen, dessen Besitzer er ist. Für solche kaskadierende Löschoperationen wurden ebenfalls Tests geschrieben.
 
 Im Anhang befindet sich der Unittest Code Coverage Report \ref{unitcover}. Während sicherheitsrelevante Aspekte der Software wie z.B. die Policy oder die Login-Firewall eine sehr hohe Code Coverage aufweisen haben die Dtos eine sehr geringe. Diese Zahlen ergänzen sich mit der Zielsetzung eine sichere und gut funktionierende Software zu haben. Neben sicherheitsrelevanten Funktionen der Software erfahren auch die Manager-Klassen einen hohen Protzentwert. Die Code Coverage ermöglicht eine gute Übersicht über den Teststatus der Software, liefert aber keinen detaillierten Einblick welche sicherheitskritischen Aspekte durch diese abgedeckt sind. Diese Tests werden im nächsten Abschnitt im Detail betrachtet.
 
@@ -112,7 +112,7 @@ Um die Funktionalität der CSRF-Tokens sicherzustellen, wurde ein Penetrationste
     \item Das Play-Session-Cookie ist nicht vorhanden.
   \end{itemize}
 
-In dieser Anwendung beinhaltet das Play-Session-Cookie alle Informationen zur Session eines Benutzers und somit ist lediglich beim Login der CSRF Schutz ausgehebelt, da zu diesem Zeitpunkt noch nicht zwangsläufig ein Play-Session-Cookie vorhanden ist. 
+In dieser Anwendung beinhaltet das Play-Session-Cookie alle Informationen zur Session eines Benutzers und somit ist lediglich beim Login der CSRF Schutz ausgehebelt, da zu diesem Zeitpunkt noch nicht zwangsläufig ein Play-Session-Cookie vorhanden ist.
 
 Ein konkretes Angriffsszenario in dieser Anwendung könnte folgendermaßen aussehen: Das Opfer darf hierzu keinerlei Cookies von der HsH-Helfer Seite im Browser haben. Dies kann gegeben sein, wenn es seine Cookies gelöscht hat oder den \enquote{Incognito}-Modus im Browser verwendet. Ein Angreifer kann nun das Opfer auf eine von ihm präparierte Seite locken, wo durch das Klicken auf einen Link ein Login-Formular abgeschickt wird. Somit ist das Opfer angemeldet unter einem Benutzeraccount, welcher auch dem Angreifer bekannt ist. Ist das Opfer nun unvorsichtig und verifiziert den aktuellen Benutzeraccount nicht, lädt es möglicherweise unter einem Benutzeraccount Dateien hoch, auf welchen der Angreifer Zugriff hat.
 
@@ -155,8 +155,7 @@ Um Daten aus übermittelten Formularen zu empfangen, nutzt unsere Anwendung DTOs
 
 Im Zuge des Reviews wurde festgestellt, dass das vorhandene Design Race Condition begünstigt. Die Validierungen im DTO waren nicht ausdrücklich auf \enquote{statische} Tests begrenzt. Es wurden teilweise Validierungen vorgenommen, die Datenbankzugriffe beinhaltet haben, beispielsweise die Prüfung der Existenz eines Benutzernames. Wird im Controller die Formular-Validierung\footnote{boundForm.hasErrors()} aufgerufen, ist die im DTO vorgenommene Validierung sowie der Controller-Code nicht Teil einer Transaktion. D.h. wenn die Formular-Validation meldet, dass der Nutzername noch nicht existiert, ist dieser Zustand nicht mehr garantiert, wenn der Benutzer tatsächlich angelegt wird.
 
-Auch wenn dies im vorliegenden Fall aufgrund der Unique-Constraints in der Datenbank kein Sicherheitsproblem darstellt, haben wir uns dazu entschlossen, von einem solchen Design abzusehen. Ein Design, was in derartiger Weise Race Conditions begünstigt, ist objektiv schlecht. In den DTOs finden inzwischen nur noch \enquote{statische} Tests statt. Diese Entscheidung hat zur Entstehung der Manager-Klassen geführt. Diese bieten Methoden, die transaktionssicher sind und werfen beispielsweise eine Exception, wenn der Nutzer bereits existiert.
-% (vgl. [TODO: Verweis zu der Erklärung wie wir von Controller macht alles zu den Manager Klassen gelangt sind])
+Auch wenn dies im vorliegenden Fall aufgrund der Unique-Constraints in der Datenbank kein Sicherheitsproblem darstellt, haben wir uns dazu entschlossen, von einem solchen Design abzusehen. Ein Design, was in derartiger Weise Race Conditions begünstigt, ist objektiv schlecht. In den DTOs finden inzwischen nur noch \enquote{statische} Tests statt. Diese Entscheidung hat zur Entstehung der Manager-Klassen geführt (siehe Architekturdokument \ref{Arch1-architecture:manager-class-creation}). Diese bieten Methoden, die transaktionssicher sind und werfen beispielsweise eine Exception, wenn der Nutzer bereits existiert.
 
 \subsection{Bcrypt Password Hashing}
 Der Code zum sicheren Abspeichern eines Nutzerpassworts in der Datenbank wurde durch eine Person einem Review unterzogen. Die dabei aufgekommene Anregung wurde mit dem ganzen Team diskutiert. Das Passwort wird im Code von lediglich zwei Stellen aus gesetzt. Der \enquote{\texttt{UserManager}} verwendet sie beim Zurücksetzen des Passworts und der \enquote{\texttt{LoginManager}} beim Setzen eines neuen Passworts. In beiden Fällen wird direkt beim Aufruf des Setters der Hash durch die Verwendung des \enquote{\texttt{PasswordSecurityModule}} erzeugt. Somit ist sichergestellt, dass beim aktuellen Codestand keine Klartextpasswörter in der Datenbank abgespeichert werden. BCrypt wird verwendet um den Hash zu generieren und es wurde kurz diskutiert ob man nicht doch auf PBKDF2 wechselt. Da beide aber nicht ohne eine Third-Party-Library auskommen, wurde davon abgesehen. Dem Bcrypt-Code \autocite{BcryptCode} kann entnommen werden, dass das automatisch generierte Salt SecureRandom verwendet und somit ausreichend zufällige Salts für unterschiedliche Passwörter generiert und auch die Rundenanzahl, die explizit festgelegt wurde, ist ausreichend sicher.

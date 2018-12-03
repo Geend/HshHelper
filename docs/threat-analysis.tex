@@ -409,15 +409,15 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item \textbf{T6: XSS (Cross Site Scripting)}
   \begin{itemize}
   \item Zweck: Ausführung von JavaScript im HsH-Helfer Kontext eines Benutzers
-  \item Möglichkeiten: Eingaben, die ausgegeben werden, ohne Eingabevalidierung oder Ausgabecodierung auszuführen
+  \item Möglichkeiten: Eingaben, die ausgegeben werden, ohne Eingabevalidierung oder Ausgabekodierung auszuführen
   \item Risiko: Hoch
   \item Mögliche Gegenmaßnahmen:
 	\begin{itemize}
 		\item Eingabevalidierung (Kleinbuchstaben und Zahlen, valide E-Mail-Adressen)
 		\item X-XSS-Protection (vgl. \ref{x:xss:protection})
 		\item Content Security Policy (CSP) des Browsers aktivieren
-		\item Alte Browser bzw Browser, die CSP nicht können, aussperren (s. Zusatzfrage) %TODO: Das ist nicht implementiert und vllt auch garnicht so einfach. Ggf einfach in Assumptions aufnehmen, dass nur Browser verwendet werden, die CSP unterstützen
-		\item Ausgabecodierung
+		\item Alte Browser bzw Browser, die CSP nicht können, aussperren
+		\item Ausgabekodierung
 	\end{itemize}
   \end{itemize}
 
@@ -554,7 +554,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
       \item Login nur möglich, wenn Captcha gelöst wird
       \item IP Sperre bei auffälligem Verhalten
       \item Schwache Passwörter verbieten
-      \item Zwei-Faktor-Authentisierung % TODO: Ist nicht implementiert und ggf auch nicht mal eben so gemacht
+      \item Zwei-Faktor-Authentisierung
     \end{itemize}
   \end{itemize}
 \end{itemize}
@@ -611,9 +611,13 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \item \textbf{T21: Dateinamen, Kommmentarfeld oder Gruppennamen zur Dateispeicherung missbrauchen}
   \begin{itemize}
   \item Zweck: Speicherplatzlimit umgehen, Speicherverbrauch des Servers hochtreiben
-  \item Möglichkeiten: Dateiinhalt in Kommentarfeld oder Dateinamen schreiben, gegebenfalls sogar kodiert.
+  \item Möglichkeiten: Dateiinhalt in Kommentarfeld oder Dateinamen schreiben, gegebenfalls sogar kodiert
   \item Risiko: Mittel
-  \item Mögliche Gegenmaßnahmen: Kommentarfeldlänge und Dateinamenlänge zählen ins Speicherplatzlimit des Nutzers. Gruppennamen sind in der Länge begrenzt.
+  \item Mögliche Gegenmaßnahmen:
+  \begin{itemize}
+    \item Kommentarfeldlänge und Dateinamenlänge zählen ins Speicherplatzlimit des Nutzers
+    \item Maximallänge eines Gruppennamen begrenzen
+  \end{itemize}
   \end{itemize}
 \end{itemize}
 
@@ -664,14 +668,14 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \hypertarget{threat25}{}
   \item \textbf{T25: Open Redirect}
   \begin{itemize}
-    \item Zweck: Benutzer auf eine Angriffseite umleiten.
-    \item Möglichkeiten: Eigene URL als Redirect-Parameter angeben.
+    \item Zweck: Benutzer auf eine Angriffseite umleiten
+    \item Möglichkeiten: Eigene URL als Redirect-Parameter angeben
     \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
-      	\item Zugrundeliegende Funktionalität nicht per GET sondern per POST anbieten, das vom Play CSRF-Schutz gesichert wird.
-      	\item URL-Eingabe durch ein Regex prüfen.
-      	\item URL-Eingabe durch eine Whitelist prüfen.
+      	\item Zugrundeliegende Funktionalität nicht per GET sondern per POST anbieten, das vom Play CSRF-Schutz gesichert wird
+      	\item URL-Eingabe durch ein Regex prüfen
+      	\item URL-Eingabe durch eine Whitelist prüfen
       \end{itemize}
   \end{itemize}
 \end{itemize}
@@ -683,50 +687,62 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \hypertarget{threat26}{}
   \item \textbf{T26: Log Poisoning}
   \begin{itemize}
-  \item Zweck: Log-Einträge für real nicht stattgefundene Events erstellen / Anderem Nutzer etwas anhängen.
-  \item Möglichkeiten: User-Input in Logs mit Newline versehen.
+  \item Zweck: Log-Einträge für real nicht stattgefundene Events erstellen / Anderem Nutzer etwas anhängen
+  \item Möglichkeiten: User-Input in Logs mit Newline versehen
   \item Risiko: Mittel
-  \item Mögliche Gegenmaßnahmen: Ausgabecodierung von User-Input in Logdatei z.B. Base64.
+  \item Mögliche Gegenmaßnahmen:
+  \begin{itemize}
+    \item Ausgabekodierung von User-Input in Logdatei z.B. Base64
+    \item Eingabevalidierung, z.B.: Username, der durch Regex gefiltert wird
+    \item Eigenen Logger implementieren, der potentiell gefährliche Zeichen filtert
+  \end{itemize}
   \end{itemize}
 
   \hypertarget{threat27}{}
   \item \textbf{T27: Log Code Injection}
   \begin{itemize}
-  \item Zweck: Programme angreifen, welche die Log parsen/öffnen.
-  \item Möglichkeiten: Schadcode in User-Input eingeben, der in der Log-Datei landet.
+  \item Zweck: Programme angreifen, welche die Log parsen/öffnen
+  \item Möglichkeiten: Schadcode in User-Input eingeben, der in der Log-Datei landet
   \item Risiko: Low
-  \item Mögliche Gegenmaßnahmen: - Wird derzeit noch diskutiert -
+  \item Mögliche Gegenmaßnahmen:
+    \begin{itemize}
+      \item Nur User-Input loggen, in welchen kein Schadcode versteckt werden kann
+    \end{itemize}
   \end{itemize}
 
   \hypertarget{threat28}{}
   \item \textbf{T28: Speicherverbrauch durch Spammen von Requests}
   \begin{itemize}
-  \item Zweck: Speicher des Servers völlig mit Logs belegen -> Denial of Service.
-  \item Möglichkeiten: In endlosschleife Requests ausführen.
+  \item Zweck: Speicher des Servers völlig mit Logs belegen (Denial of Service)
+  \item Möglichkeiten: In Endlosschleife Requests an den Server senden
   \item Risiko: Mittel
-  \item Mögliche Gegenmaßnahmen: Log-Rotation verwenden.
+  \item Mögliche Gegenmaßnahmen: Log-Rotation verwenden, um ältere Logs auf externen Speicher persistieren
   \end{itemize}
 
   \hypertarget{threat29}{}
   \item \textbf{T29: Log-Deletion durch Spammen von Requests}
   \begin{itemize}
-  \item Zweck: Log-Rotation triggern, um eine Beweisvernichtung auszuführen.
-  \item Möglichkeiten: In endlosschleife Requests ausführen.
+  \item Zweck: Log-Rotation triggern, um eine Beweisvernichtung auszuführen
+  \item Möglichkeiten: In Endlosschleife Requests an den Server senden
   \item Risiko: Mittel
-  \item Mögliche Gegenmaßnahmen: - Wird derzeit noch diskutiert -
+  \item Mögliche Gegenmaßnahmen:
+    \begin{itemize}
+      \item Log-Rotation ohne automatische Löschung benutzen
+  	\end{itemize}
   \end{itemize}
 
   \hypertarget{threat30}{}
   \item \textbf{T30: Virensignatur in User-Input}
   \begin{itemize}
   \item Zweck: Denial of Service / Logging blockieren
-  \item Möglichkeiten: Eine Signatur in User-Input einbauen, die von einem Virenscanner erkannt wird. Virenscanner blockiert folgend Zugriffe auf die Log-Datei und Anwendung kann keine weiteren Logs schreiben.
+  \item Möglichkeiten: Eine Signatur in zuloggenden User-Input einbauen, die von einem Virenscanner erkannt wird, wodurch dieser Zugriff auf die Log-Datei blockiert
   \item Risiko: Low
   \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
-  	\item Keinen Virenscanner auf Applikationsserver verwenden.
-  	\item Anwendung in VM ohne Virenscanner laufen lassen.
-  	\item Log-Folder auf Whitelist des Virenscanner setzen.
+  	\item Keinen Virenscanner auf Applikationsserver verwenden
+  	\item Anwendung in VM ohne Virenscanner laufen lassen
+  	\item Log-Folder auf Whitelist des Virenscanner setzen
+  	\item Nur validierten User-Input loggen; beispielsweise Username, der durch ein Regex gefiltert wird
   \end{itemize}
   \end{itemize}
 \end{itemize}
@@ -738,13 +754,13 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \hypertarget{threat31}{}
   \item \textbf{T31: CSS Injection}
   \begin{itemize}
-  \item Zweck: Einfärbewarnung deaktivieren/manipulieren.
-  \item Möglichkeiten: Wie XSS, jedoch wird anstelle von Javascript Inline-CSS injeziert, das die CSS-Klasse überschreibt, welche für die Rotfärbung von Dateien verantwortlich ist.
+  \item Zweck: Einfärbewarnung deaktivieren/manipulieren
+  \item Möglichkeiten: Wie XSS, jedoch wird anstelle von Javascript Inline-CSS injiziert, das die CSS-Klasse überschreibt, welche für die Rotfärbung von Dateien verantwortlich ist
   \item Risiko: Mittel
   \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
-	  \item Ausgabecodierung.
-	  \item Content-Security-Policy, die Inline-CSS verbietet.
+	  \item Ausgabekodierung
+	  \item Content-Security-Policy, die Inline-CSS verbietet
   \end{itemize}
 \end{itemize}
 \end{itemize}
@@ -756,41 +772,40 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \hypertarget{threat32}{}
   \item \textbf{T32: Überlanges Session-Timeout einstellen}
   \begin{itemize}
-    \item Zweck: Umgehen des intendierten Schutzmechanismus (Session-Timeout).
-    \item Möglichkeiten: Einen extrem hohen Wert wählen.
+    \item Zweck: Umgehen des intendierten Schutzmechanismus (Session-Timeout)
+    \item Möglichkeiten: Einen extrem hohen Wert wählen
     \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
-      \item Einen Maximalwert definieren.
+      \item Einen Maximalwert definieren
       \end{itemize}
   \end{itemize}
 
   \hypertarget{threat33}{}
   \item \textbf{T33: Integer Overflow}
   \begin{itemize}
-    \item Zweck: Umgehen des intendierten Schutzmechanismus (Session-Timeout).
-    \item Möglichkeiten: Einen extrem hohen Wert wählen.
+    \item Zweck: Umgehen des intendierten Schutzmechanismus (Session-Timeout)
+    \item Möglichkeiten: Einen extrem hohen Wert wählen
     \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
-      \item Einen Maximalwert definieren.
-      \item Arithmetik verwenden, die nicht anfällig für Integer-Overflows ist.
+      \item Einen Maximalwert definieren
+      \item Arithmetik verwenden, die nicht anfällig für Integer-Overflows ist
       \end{itemize}
   \end{itemize}
 
   \hypertarget{threat34}{}
   \item \textbf{T34: Negatives Session Timeout}
   \begin{itemize}
-    \item Zweck: Umgehen des intendierten Schutzmechanismus (Session-Timeout).
-    \item Möglichkeiten: Einen sehr geringen (negativen) Wert wählen.
+    \item Zweck: Umgehen des intendierten Schutzmechanismus (Session-Timeout)
+    \item Möglichkeiten: Einen sehr geringen (negativen) Wert wählen
     \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
-      \item Einen Minimalwert definieren.
+      \item Einen Minimalwert definieren
       \end{itemize}
   \end{itemize}
 \end{itemize}
-
 
 \subsubsection{Mögliche Angriffe auf Zusatzfunktionalität: Nutzer kann eigenes Passwort ändern}
 
@@ -824,8 +839,8 @@ In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahme
   }
   \hline
   \textbf{Gegenmaßnahme} & \textbf{Angriff} & \textbf{Status}\\ \hline
-    Eingabevalidierung & \linktothreat{threat6}{T6}, \linktothreat{threat7}{T7}, \linktothreat{threat15}{T15}, \linktothreat{threat24}{T24} & \greencheckmark \\ \hline
-    Ausgabecodierung & \linktothreat{threat6}{T6}, \linktothreat{threat26}{T26}, \linktothreat{threat31}{T31} & \greencheckmark \\ \hline
+    Eingabevalidierung & \linktothreat{threat6}{T6}, \linktothreat{threat7}{T7}, \linktothreat{threat15}{T15}, \linktothreat{threat24}{T24}, \linktothreat{threat25}{T25}, \linktothreat{threat26}{T26} & \greencheckmark \\ \hline
+    Ausgabekodierung & \linktothreat{threat6}{T6}, \linktothreat{threat25}{T25}, \linktothreat{threat31}{T31} & \greencheckmark \\ \hline
     PreparedStatements & \linktothreat{threat7}{T7}  & \greencheckmark \\ \hline
     \texttt{ALLOW\_LITERALS=NONE} aktivieren & \linktothreat{threat7}{T7}  & \greencheckmark \\ \hline
     Salt auf Passwörter anwenden & \linktothreat{threat8}{T8}  & \greencheckmark \\ \hline
@@ -848,8 +863,9 @@ In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahme
     Hervorhebung der Nutzer-eigenen Datei & \linktothreat{threat22}{T22} & \greencheckmark \\ \hline
     Beim Download einer Datei HTTP-Header \texttt{Content-Type} auf \texttt{application/octet-stream} setzen & \linktothreat{threat23}{T23} & \greencheckmark \\ \hline
     Maximal-/Minimalwert für Session-Timeout definieren & \linktothreat{threat32}{T32}, \linktothreat{threat33}{T33}, \linktothreat{threat34}{T34} & \greencheckmark \\ \hline
-    Return-URL via Regex überprüfen & \linktothreat{threat26}{T26} & \greencheckmark \\ \hline
-    Funktionalität, die Return-URL benötigt, nur per POST akzeptieren & \linktothreat{threat26}{T26} & \greencheckmark \\ \hline
+    Return-URL via Regex überprüfen & \linktothreat{threat25}{threat25} & \greencheckmark \\ \hline
+    Funktionalität, die Return-URL benötigt, nur per POST akzeptieren & \linktothreat{threat25}{T25} & \greencheckmark \\ \hline
+    Eigenen Logger implementieren, der potentiell gefährliche Zeichen filtert & \linktothreat{threat26}{T26} & \greencheckmark \\ \hline
   \end{tabularx}
 \end{table*}
 
