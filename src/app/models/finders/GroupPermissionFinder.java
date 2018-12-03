@@ -1,6 +1,7 @@
 package models.finders;
 
 import io.ebean.Finder;
+import models.Group;
 import models.GroupPermission;
 
 import java.util.List;
@@ -11,9 +12,13 @@ public class GroupPermissionFinder extends Finder<Long, GroupPermission> {
         super(GroupPermission.class);
     }
 
-    public List<GroupPermission> findForFileId(Long fileId)
+    public List<GroupPermission> findExistingPermissionForGroup(Long fileId, Group group)
     {
-        return this.query().where().eq("fk_file_id", fileId).findList();
+        return this.query().where()
+                .eq("fk_file_id", fileId)
+                .and()
+                .eq("group.groupId", group.getGroupId())
+                .findList();
     }
 
     public Optional<GroupPermission> byIdOptional(Long id) {

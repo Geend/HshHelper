@@ -1,11 +1,8 @@
 package models.finders;
 
-import io.ebean.Finder;
-import io.ebean.SqlQuery;
-import io.ebean.SqlRow;
+import io.ebean.*;
 import models.File;
 import models.User;
-import play.Logger;
 
 import java.util.List;
 import java.util.Optional;
