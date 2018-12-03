@@ -89,15 +89,15 @@ GET         /netservices/create                               controllers.NetSer
 POST        /netservices/create                               controllers.NetServiceController.createNetService
 POST        /netservices/delete                               controllers.NetServiceController.deleteNetService
 GET         /netservices/edit/:netServiceId                   controllers.NetServiceController.showEditNetService(netServiceId:Long)
-POST        /netservices/addparameter                           controllers.NetServiceController.addNetServiceParameter
+POST        /netservices/addparameter                         controllers.NetServiceController.addNetServiceParameter
 
 
-GET         /netservice/credentials                           controllers.NetServiceController.showUserNetServiceCredentials
-GET         /netservice/credentials/create                    controllers.NetServiceController.showCreateNetServiceCredentialForm
-POST        /netservice/credentials/create                    controllers.NetServiceController.createNetServiceCredential
-POST        /netservice/credentials/delete                    controllers.NetServiceController.deleteNetServiceCredential
+GET         /credentials                                      controllers.NetServiceController.showUserNetServiceCredentials
+GET         /credentials/create                               controllers.NetServiceController.showCreateNetServiceCredentialForm
+POST        /credentials/create                               controllers.NetServiceController.createNetServiceCredential
+POST        /credentials/delete                               controllers.NetServiceController.deleteNetServiceCredential
 
-GET         /netservice/credentials/:credentialId             controllers.NetServiceController.decryptNetServiceCredential(credentialId : Long)
+GET         /credentials/:credentialId                        controllers.NetServiceController.decryptNetServiceCredential(credentialId : Long)
 # NetServiceController - END
 
 GET         /forbidden                                        controllers.ErrorController.showForbiddenMessage()

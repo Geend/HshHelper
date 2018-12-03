@@ -56,15 +56,14 @@
                             @if(TemplateEnvironment.policy.canViewAllUsers) {
                                 @helper.MenuLink("Benutzer", routes.UserController.showUsers(), "/users")
                             }
-
-                            @helper.MenuLink("Gruppen", routes.GroupController.showOwnMemberships(), "/groups")
-                            @helper.MenuLink("Dateien", routes.FileController.showOwnFiles(), "/files")
-                            @helper.MenuLink("Sessions", routes.UserController.showActiveUserSessions())
                             @if(TemplateEnvironment.policy.canSeeAllNetServices) {
                                 @helper.MenuLink("Netzdienste", routes.NetServiceController.showAllNetServices(), "/netservice")
                             }
-                            @helper.MenuLink("Single Sign-on", routes.NetServiceController.showUserNetServiceCredentials(), "/credentials")
 
+                            @helper.MenuLink("Gruppen", routes.GroupController.showOwnMemberships(), "/groups")
+                            @helper.MenuLink("Dateien", routes.FileController.showOwnFiles(), "/files")
+                            @helper.MenuLink("Single Sign-on", routes.NetServiceController.showUserNetServiceCredentials(), "/credentials")
+                            @helper.MenuLink("Sessions", routes.UserController.showActiveUserSessions())
                         </div>
                     </div>
 
