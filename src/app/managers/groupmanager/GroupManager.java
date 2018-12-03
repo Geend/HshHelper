@@ -58,7 +58,7 @@ public class GroupManager {
             ebeanServer.save(group);
 
             tx.commit();
-            logger.info(user + " created group" + group);
+            logger.info(user + " created group " + group);
         }
     }
 
