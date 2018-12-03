@@ -13,6 +13,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
 import policyenforcement.session.Authentication;
+import views.html.netservice.CreateNetService;
 import views.html.netservice.CreateNetServiceCredential;
 
 import javax.inject.Inject;
@@ -72,7 +73,8 @@ public class NetServiceController {
             return badRequest(views.html.netservice.CreateNetService.render(boundForm));
         }
 
-        netServiceManager.createNetService(boundForm.get().getName());
+        CreateNetServiceDto dto = boundForm.get();
+        netServiceManager.createNetService(dto.getName(), dto.getUrl(), dto.getUsernameParameterName(), dto.getPasswordParameterName());
         return redirect(routes.NetServiceController.showAllNetServices());
     }
 

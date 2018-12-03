@@ -142,6 +142,9 @@ public class DatabaseInitialization {
 
         NetService ns1 = new NetService();
         ns1.setName("Testnetzdienst");
+        ns1.setUrl("http://example.org/login");
+        ns1.setUsernameParameterName("username");
+        ns1.setPasswordParameterName("password");
         ns1.save();
 
         Logger.info("DatabaseInitialization - Prepare DB; Done adding new users and groups");

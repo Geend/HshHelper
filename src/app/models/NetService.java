@@ -1,6 +1,7 @@
 package models;
 
 import io.ebean.Model;
+import play.data.validation.Constraints;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +19,14 @@ public class NetService extends Model {
     @Column(unique = true)
     private String name;
 
+    private String url;
+
+    private String usernameParameterName;
+
+    private String passwordParameterName;
+
+
+
 
     public Long getNetServiceId() {
         return netServiceId;
@@ -29,6 +38,30 @@ public class NetService extends Model {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUsernameParameterName() {
+        return usernameParameterName;
+    }
+
+    public void setUsernameParameterName(String usernameParameterName) {
+        this.usernameParameterName = usernameParameterName;
+    }
+
+    public String getPasswordParameterName() {
+        return passwordParameterName;
+    }
+
+    public void setPasswordParameterName(String passwordParameterName) {
+        this.passwordParameterName = passwordParameterName;
     }
 
     @Override
