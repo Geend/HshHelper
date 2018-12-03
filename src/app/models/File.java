@@ -94,7 +94,7 @@ public class File extends Model {
         } else {
             this.data = data;
         }
-        this.dataSize = (long) data.length;
+        this.dataSize = (long) this.data.length;
     }
 
     public User getOwner() {
