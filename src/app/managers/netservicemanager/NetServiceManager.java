@@ -1,5 +1,9 @@
 package managers.netservicemanager;
 
+import extension.Crypto.Cipher;
+import extension.Crypto.CryptoKey;
+import extension.Crypto.CryptoResult;
+import extension.Crypto.KeyGenerator;
 import io.ebean.EbeanServer;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
@@ -20,12 +24,16 @@ public class NetServiceManager {
     private final SessionManager sessionManager;
     private final EbeanServer ebeanServer;
     private final NetServiceFinder netServiceFinder;
+    private final KeyGenerator keyGenerator;
+    private final Cipher cipher;
 
     @Inject
-    public NetServiceManager(SessionManager sessionManager, EbeanServer ebeanServer, NetServiceFinder netServiceFinder) {
+    public NetServiceManager(SessionManager sessionManager, EbeanServer ebeanServer, NetServiceFinder netServiceFinder, KeyGenerator keyGenerator, Cipher cipher) {
         this.sessionManager = sessionManager;
         this.ebeanServer = ebeanServer;
         this.netServiceFinder = netServiceFinder;
+        this.keyGenerator = keyGenerator;
+        this.cipher = cipher;
     }
 
 
@@ -75,7 +83,23 @@ public class NetServiceManager {
     }
 
     public void createNetUserCredential(Long netServiceId, String username, String password) {
-        //TODO
+        Optional<NetService> netService = netServiceFinder.byIdOptional(netServiceId);
+        if(!netService.isPresent()) {
+            throw new IllegalArgumentException("Unkown NetServiceId");
+        }
+
+        CryptoKey ck = keyGenerator.generate(sessionManager.getCredentialKey());
+        CryptoResult encUsername = cipher.encrypt(ck, username.getBytes());
+        CryptoResult encPassword = cipher.encrypt(ck, password.getBytes());
+
+        NetServiceCredential credential = new NetServiceCredential();
+        credential.setNetService(netService.get());
+        credential.setInitializationVectorUsername(encUsername.getInitializationVector());
+        credential.setUsernameCipherText(encUsername.getCiphertext());
+        credential.setInitializationVectorPassword(encPassword.getInitializationVector());
+        credential.setPasswordCipherText(encPassword.getCiphertext());
+        credential.setUser(sessionManager.currentUser());
+        ebeanServer.save(credential);
     }
 
     public void deleteNetServiceCredential(Long netServiceCredentialId) {
