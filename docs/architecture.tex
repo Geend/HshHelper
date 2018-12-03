@@ -139,7 +139,6 @@ Innerhalb des Headers ist gelistet, welcher Algorithmus genutzt wurde, um das JW
 Die Payload ist ein einfaches JSON-Objekt, in welchem Daten gespeichert werden können, die zu signieren sind.
 Diese Daten werden innerhalb des JWT-Formats als \enquote{Claims} bezeichnet.
 Zusätzlich werden innerhalb dieser Payload persistiert, zu welchem Zeitpunkt das JWT erstellt wurde, ab welchem Zeitpunkt es gültig ist und wann es ausläuft.
-% TODO: Vllt erwähnen, wie HMAC-SHA256 funktioniert?
 Für die Signatur werden Header sowie Payload durch \enquote{base64url} kodiert und dann zusammen mit einem Punkt als Trennelement konkateniert. Die dadurch entstehende Zeichenkette wird zusammen mit einem geheimen Schlüssel an den kryptografischen Signatur-Algorithmus weitergegeben, der zuvor im Header genannt wird.
 Play verwendet standardmäßig zur Signierung den HMAC-SHA256 Algorithmus.
 Dadurch kann die Integrität der Claims geprüft werden und zeitgleich können sie authentifiziert werden. \\
