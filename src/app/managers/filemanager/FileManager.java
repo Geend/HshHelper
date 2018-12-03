@@ -180,19 +180,21 @@ public class FileManager {
     }
 
     public byte[] getFileContent(long fileId) throws UnauthorizedException, InvalidArgumentException {
-        Optional<File> file = fileFinder.byIdOptional(fileId);
+        Optional<File> optFile = fileFinder.byIdOptional(fileId);
 
-        if (!file.isPresent())
+        if (!optFile.isPresent())
             throw new InvalidArgumentException();
 
-        if (!sessionManager.currentPolicy().canReadFile(file.get())) {
-            logger.error(sessionManager.currentUser() + "  tried to access file " + file.get() + " but he is not authorized");
+        File file = optFile.get();
+
+        if (!sessionManager.currentPolicy().canReadFile(file)) {
+            logger.error(sessionManager.currentUser() + "  tried to access file " + file + " but he is not authorized");
             throw new UnauthorizedException();
         }
 
-        logger.info(sessionManager.currentUser() + " is accessing file " + file.get());
+        logger.info(sessionManager.currentUser() + " is accessing file " + file);
 
-        return file.get().getData();
+        return file.getData();
     }
 
     public void deleteFile(long fileId) throws UnauthorizedException, InvalidArgumentException {
@@ -223,12 +225,13 @@ public class FileManager {
             if (!fileOptional.isPresent())
                 throw new InvalidArgumentException();
 
-            if (!sessionManager.currentPolicy().canWriteFile(fileOptional.get())) {
-                logger.error(user + " tried to change the content file " + fileOptional.get() + " but he is not authorized");
+            File file = fileOptional.get();
+
+            if (!sessionManager.currentPolicy().canWriteFile(file)) {
+                logger.error(user + " tried to change the content file " + file + " but he is not authorized");
                 throw new UnauthorizedException();
             }
 
-            File file = fileOptional.get();
             file.setData(data);
             file.setWrittenBy(user);
             file.setWrittenByDt(DateTime.now());
@@ -252,12 +255,13 @@ public class FileManager {
             if (!fileOptional.isPresent())
                 throw new InvalidArgumentException();
 
-            if (!sessionManager.currentPolicy().canWriteFile(fileOptional.get())) {
-                logger.error(user + " tried to change the comment of file " + fileOptional.get() + " but he is not authorized");
+            File file = fileOptional.get();
+
+            if (!sessionManager.currentPolicy().canWriteFile(file)) {
+                logger.error(user + " tried to change the comment of file " + file + " but he is not authorized");
                 throw new UnauthorizedException();
             }
 
-            File file = fileOptional.get();
             file.setComment(comment);
             ebeanServer.save(file);
 

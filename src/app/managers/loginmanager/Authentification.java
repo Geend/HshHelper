@@ -44,10 +44,10 @@ public class Authentification {
     }
 
     public Result Perform(String username, String password, Integer twoFactorPin) throws GeneralSecurityException {
-        Optional<User> user = userFinder.byName(username);
+        Optional<User> userOpt = userFinder.byName(username);
 
         // Nutzer existiert nicht!
-        if(!user.isPresent()) {
+        if(!userOpt.isPresent()) {
             // Statistik-Angriff verhindern.
             // Aufrufzeit darf sich nicht maßgeblich unterscheiden, wenn kein Nutzer existiert.
             hashHelper.hashPassword(password);
@@ -55,13 +55,15 @@ public class Authentification {
             return new Result(false, false, null);
         }
 
+        User user = userOpt.get();
+
         // Nutzer existiert
-        boolean success = hashHelper.checkHash(password, user.get().getPasswordHash());
-        String twoFactorSecret = user.get().getTwoFactorAuthSecret();
+        boolean success = hashHelper.checkHash(password, user.getPasswordHash());
+        String twoFactorSecret = user.getTwoFactorAuthSecret();
         if(success && !empty(twoFactorSecret)) {
             success = verifySecondFactor(twoFactorSecret, twoFactorPin);
         }
-        return new Result(success, true, user.get());
+        return new Result(success, true, user);
     }
 
     private Boolean verifySecondFactor(String secret, Integer suppliedSecondFactor) throws GeneralSecurityException {
