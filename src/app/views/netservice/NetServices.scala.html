@@ -29,12 +29,20 @@
         @for(netService <- netServices) {
             <tr>
                 <td>@netService.getName</td>
-                <td>@netService.getUrl</td>
+                <td>@helper.Truncate(netService.getUrl, 45)</td>
                 <td class="right">
                     <a href="@routes.NetServiceController.showEditNetService(netService.getNetServiceId)">Bearbeiten</a>
                 </td>
                 <td class="right">
-                    @DeleteNetServiceBtn(netService)
+                    @if(TemplateEnvironment.policy.canDeleteNetServices()) {
+                        @helper.form(action = routes.NetServiceController.deleteNetService()) {
+                            @helper.CSRF.formField
+                            <input type="hidden" name="netServiceId" value="@netService.getNetServiceId" />
+                            <button type="submit" class="linkBtn">Löschen</button>
+                        }
+                    } else {
+                        <button type="submit" class="linkBtn" disabled>Löschen</button>
+                    }
                 </td>
             </tr>
         }

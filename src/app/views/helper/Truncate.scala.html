@@ -1,0 +1,7 @@
+@(str : String, maxLen : Integer = 20)
+
+@if(str.length < maxLen) {
+    @str
+} else {
+    @str.take(maxLen).concat("...")
+}
