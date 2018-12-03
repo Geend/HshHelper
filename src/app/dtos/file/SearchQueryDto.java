@@ -1,13 +1,13 @@
 package dtos.file;
 
 import play.data.validation.Constraints;
+import policyenforcement.ConstraintValues;
 
 public class SearchQueryDto {
 
     @Constraints.Required
-    //TODO: Add filename regex constraint
+    @Constraints.Pattern(ConstraintValues.FILENAME_REGEX)
     private String query;
-
 
     public String getQuery() {
         return query;

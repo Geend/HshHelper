@@ -26,4 +26,6 @@ public class ConstraintValues {
 
     public static final int SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS = 60;
 
+    public static final int GENREATED_PASSWORD_LENGTH = 12;
+
 }

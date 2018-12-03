@@ -20,6 +20,7 @@ import play.Logger;
 import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
 import play.mvc.Http;
+import policyenforcement.ConstraintValues;
 import policyenforcement.session.SessionManager;
 import twofactorauth.TimeBasedOneTimePasswordUtil;
 
@@ -91,8 +92,7 @@ public class UserManager {
             throw new UnauthorizedException();
         }
 
-        //TODO: Include generated password length in policy
-        String plaintextPassword = passwordGenerator.generatePassword(10);
+        String plaintextPassword = passwordGenerator.generatePassword(ConstraintValues.GENREATED_PASSWORD_LENGTH);
         User newUser;
         if(Objects.equals(username.toLowerCase(), "admin")) {
             logger.info(currentUser + " tried to create user with the name \"admin\"");
@@ -167,7 +167,7 @@ public class UserManager {
         }
 
         //TODO: Include generated password length in policy
-        String tempPassword = passwordGenerator.generatePassword(10);
+        String tempPassword = passwordGenerator.generatePassword(ConstraintValues.GENREATED_PASSWORD_LENGTH);
         user.setPasswordHash(hashHelper.hashPassword(tempPassword));
         user.setIsPasswordResetRequired(true);
         user.save();
