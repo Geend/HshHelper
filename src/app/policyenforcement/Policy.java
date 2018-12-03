@@ -74,17 +74,6 @@ public class Policy {
     }
 
 
-    /* TODO: Die methode sollte entfernt werden */
-    /*
-    public boolean CanResetPassword(User currentUser) {
-        if(currentUser == null) {
-            return true;
-        }
-
-        return false;
-    }
-    */
-
     public boolean canDeleteGroup(Group group) {
         if (group.getIsAdminGroup() || group.getIsAllGroup()) {
             return false;

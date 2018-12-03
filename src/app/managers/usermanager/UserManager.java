@@ -19,14 +19,12 @@ import models.finders.UserFinderQueryOptions;
 import play.Logger;
 import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
-import play.mvc.Http;
+import policyenforcement.ConstraintValues;
 import policyenforcement.session.SessionManager;
 import twofactorauth.TimeBasedOneTimePasswordUtil;
 
 import javax.inject.Inject;
 import java.util.*;
-
-import static extension.StringHelper.empty;
 
 public class UserManager {
     private final UserFinder userFinder;
@@ -91,8 +89,7 @@ public class UserManager {
             throw new UnauthorizedException();
         }
 
-        //TODO: Include generated password length in policy
-        String plaintextPassword = passwordGenerator.generatePassword(10);
+        String plaintextPassword = passwordGenerator.generatePassword(ConstraintValues.GENREATED_PASSWORD_LENGTH);
         User newUser;
         if(Objects.equals(username.toLowerCase(), "admin")) {
             logger.info(currentUser + " tried to create user with the name \"admin\"");

@@ -28,4 +28,6 @@ public class ConstraintValues {
 
     public static final int PASSWORD_RESET_TOKEN_TIMEOUT_HOURS = 24;
 
+    public static final int GENREATED_PASSWORD_LENGTH = 12;
+
 }

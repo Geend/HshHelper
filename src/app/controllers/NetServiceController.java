@@ -2,6 +2,7 @@ package controllers;
 
 import dtos.netservice.CreateNetServiceCredentialsDto;
 import dtos.netservice.CreateNetServiceDto;
+import dtos.netservice.DeleteNetServiceCredentialsDto;
 import dtos.netservice.DeleteNetServiceDto;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
@@ -12,6 +13,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
 import policyenforcement.session.Authentication;
+import views.html.netservice.CreateNetService;
 import views.html.netservice.CreateNetServiceCredential;
 
 import javax.inject.Inject;
@@ -29,6 +31,7 @@ public class NetServiceController {
     private final Form<CreateNetServiceDto> createNetServiceDtoForm;
     private final Form<DeleteNetServiceDto> deleteNetServiceDtoForm;
     private final Form<CreateNetServiceCredentialsDto> createNetServiceCredentialsDtoForm;
+    private final Form<DeleteNetServiceCredentialsDto> deleteNetServiceCredentialsDtoForm;
 
     @Inject
     public NetServiceController(NetServiceManager netServiceManager, FormFactory formFactory){
@@ -36,6 +39,7 @@ public class NetServiceController {
         this.createNetServiceDtoForm = formFactory.form(CreateNetServiceDto.class);
         this.deleteNetServiceDtoForm = formFactory.form(DeleteNetServiceDto.class);
         this.createNetServiceCredentialsDtoForm = formFactory.form(CreateNetServiceCredentialsDto.class);
+        this.deleteNetServiceCredentialsDtoForm = formFactory.form(DeleteNetServiceCredentialsDto.class);
     }
 
 
@@ -69,7 +73,8 @@ public class NetServiceController {
             return badRequest(views.html.netservice.CreateNetService.render(boundForm));
         }
 
-        netServiceManager.createNetService(boundForm.get().getName());
+        CreateNetServiceDto dto = boundForm.get();
+        netServiceManager.createNetService(dto.getName(), dto.getUrl(), dto.getUsernameParameterName(), dto.getPasswordParameterName());
         return redirect(routes.NetServiceController.showAllNetServices());
     }
 
@@ -98,6 +103,16 @@ public class NetServiceController {
 
 
     public Result deleteNetServiceCredential(){
-        return play.mvc.Results.TODO;
+        Form<DeleteNetServiceCredentialsDto> boundForm = deleteNetServiceCredentialsDtoForm.bindFromRequest();
+
+        if(boundForm.hasErrors()){
+            return redirect(routes.NetServiceController.showUserNetServiceCredentials());
+        }
+
+        netServiceManager.deleteNetServiceCredential(boundForm.get().getNetServiceCredentialId());
+
+        return redirect(routes.NetServiceController.showUserNetServiceCredentials());
+
+
     }
 }

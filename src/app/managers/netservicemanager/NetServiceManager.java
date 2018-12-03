@@ -38,7 +38,7 @@ public class NetServiceManager {
         return netServiceFinder.all();
     }
 
-    public void createNetService(String name) throws UnauthorizedException {
+    public void createNetService(String name, String url, String usernameParameterName, String passwordParameterName) throws UnauthorizedException {
         if(!sessionManager.currentPolicy().canCreateNetService())
             throw new UnauthorizedException();
 
@@ -46,6 +46,9 @@ public class NetServiceManager {
 
         NetService netService = new NetService();
         netService.setName(name);
+        netService.setUrl(url);
+        netService.setUsernameParameterName(usernameParameterName);
+        netService.setPasswordParameterName(passwordParameterName);
 
         ebeanServer.save(netService);
     }
@@ -72,6 +75,10 @@ public class NetServiceManager {
     }
 
     public void createNetUserCredential(Long netServiceId, String username, String password) {
+        //TODO
+    }
+
+    public void deleteNetServiceCredential(Long netServiceCredentialId) {
         //TODO
     }
 }

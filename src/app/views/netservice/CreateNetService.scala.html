@@ -4,7 +4,10 @@
 @Base("Netzdienst erstellen") {
     @helper.form(action = routes.NetServiceController.createNetService()) {
         <div class="inputForm">
-        @helper.TextInput(form("name"), "Name")
+            @helper.TextInput(form("name"), "Name")
+            @helper.TextInput(form("url"), "URL")
+            @helper.TextInput(form("usernameParameterName"), "Benutzername Parameter")
+            @helper.TextInput(form("passwordParameterName"), "Passwort Parameter")
         </div>
         <div class="inputControls">
             <input type="submit" value="Netzdienst erstellen" />

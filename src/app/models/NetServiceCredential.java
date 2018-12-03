@@ -13,9 +13,7 @@ public class NetServiceCredential {
     @Id
     private Long netServiceCredentialId;
 
-
-
-    byte[] credential;
+    private byte[] credential;
 
     @ManyToOne
     private NetService netService;
