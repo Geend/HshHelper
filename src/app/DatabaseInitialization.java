@@ -34,6 +34,8 @@ public class DatabaseInitialization {
             stmt.execute("TRUNCATE TABLE user_permissions");
             stmt.execute("TRUNCATE TABLE internal_session");
             stmt.execute("TRUNCATE TABLE netservices");
+           // stmt.execute("TRUNCATE TABLE netservice_parameter");
+            //stmt.execute("TRUNCATE TABLE netservice_credential");
             stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
             stmt.execute("SET ALLOW_LITERALS NONE");
         });
@@ -143,16 +145,17 @@ public class DatabaseInitialization {
         NetService ns1 = new NetService();
         ns1.setName("Bibliothek");
         ns1.setUrl("https://opac.tib.eu/loan/DB=4/SET=2/TTL=1/USERINFO_LOGIN");
-        ns1.setUsernameParameterName("BOR_U");
-        ns1.setPasswordParameterName("BOR_PW");
+
+        //ns1.setUsernameParameterName("BOR_U");
+        //ns1.setPasswordParameterName("BOR_PW");
         ns1.save();
 
 
         NetService ns2 = new NetService();
         ns2.setName("ICMS");
         ns2.setUrl("https://icms.hs-hannover.de");
-        ns2.setUsernameParameterName("asdf");
-        ns2.setPasswordParameterName("fdsa");
+        ns2.getParameters().add(new NetServiceParameter("asdf",NetServiceParameter.NetServiceParameterType.USERNAME));
+        ns2.getParameters().add(new NetServiceParameter("fdsa", NetServiceParameter.NetServiceParameterType.PASSWORD));
         ns2.save();
 
 

@@ -3,10 +3,9 @@ package models;
 import io.ebean.Model;
 import play.data.validation.Constraints;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -21,11 +20,10 @@ public class NetService extends Model {
 
     private String url;
 
-    private String usernameParameterName;
-
-    private String passwordParameterName;
-
-
+    @OneToMany(
+            cascade = CascadeType.ALL
+    )
+    private List<NetServiceParameter> parameters = new ArrayList<>();
 
 
     public Long getNetServiceId() {
@@ -48,20 +46,13 @@ public class NetService extends Model {
         this.url = url;
     }
 
-    public String getUsernameParameterName() {
-        return usernameParameterName;
+
+    public List<NetServiceParameter> getParameters() {
+        return parameters;
     }
 
-    public void setUsernameParameterName(String usernameParameterName) {
-        this.usernameParameterName = usernameParameterName;
-    }
-
-    public String getPasswordParameterName() {
-        return passwordParameterName;
-    }
-
-    public void setPasswordParameterName(String passwordParameterName) {
-        this.passwordParameterName = passwordParameterName;
+    public void setParameters(List<NetServiceParameter> parameters) {
+        this.parameters = parameters;
     }
 
     @Override

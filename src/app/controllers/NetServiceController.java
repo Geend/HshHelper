@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static play.libs.Scala.asScala;
 import static play.mvc.Results.*;
@@ -30,6 +31,7 @@ public class NetServiceController {
     private final NetServiceManager netServiceManager;
     private final Form<CreateNetServiceDto> createNetServiceDtoForm;
     private final Form<DeleteNetServiceDto> deleteNetServiceDtoForm;
+    private final Form<AddNetServiceParameterDto> addNetServiceParameterDtoForm;
     private final Form<CreateNetServiceCredentialsDto> createNetServiceCredentialsDtoForm;
     private final Form<DeleteNetServiceCredentialsDto> deleteNetServiceCredentialsDtoForm;
 
@@ -38,6 +40,7 @@ public class NetServiceController {
         this.netServiceManager = netServiceManager;
         this.createNetServiceDtoForm = formFactory.form(CreateNetServiceDto.class);
         this.deleteNetServiceDtoForm = formFactory.form(DeleteNetServiceDto.class);
+        this.addNetServiceParameterDtoForm = formFactory.form(AddNetServiceParameterDto.class);
         this.createNetServiceCredentialsDtoForm = formFactory.form(CreateNetServiceCredentialsDto.class);
         this.deleteNetServiceCredentialsDtoForm = formFactory.form(DeleteNetServiceCredentialsDto.class);
     }
@@ -74,8 +77,34 @@ public class NetServiceController {
         }
 
         CreateNetServiceDto dto = boundForm.get();
-        netServiceManager.createNetService(dto.getName(), dto.getUrl(), dto.getUsernameParameterName(), dto.getPasswordParameterName());
+        netServiceManager.createNetService(dto.getName(), dto.getUrl());
         return redirect(routes.NetServiceController.showAllNetServices());
+    }
+
+    public Result showEditNetService(Long netServiceId) throws UnauthorizedException {
+        Optional<NetService> netService = netServiceManager.getNetService(netServiceId);
+
+        if(!netService.isPresent())
+            return badRequest();
+
+
+        AddNetServiceParameterDto addNetServiceParameterDto = new AddNetServiceParameterDto();
+        addNetServiceParameterDto.setNetServiceId(netServiceId);
+        Form<AddNetServiceParameterDto> filledForm = addNetServiceParameterDtoForm.fill(addNetServiceParameterDto);
+
+        return ok(views.html.netservice.EditNetService.render(netService.get(), filledForm));
+    }
+
+    public Result addNetServiceParameter() throws UnauthorizedException, InvalidArgumentException {
+        Form<AddNetServiceParameterDto> boundForm = addNetServiceParameterDtoForm.bindFromRequest();
+
+        if(boundForm.hasErrors()) {
+            return badRequest();
+        }
+
+        netServiceManager.addNetServiceParameter(boundForm.get().getNetServiceId(), boundForm.get().getName(), boundForm.get().getDefaultValue());
+        return redirect(routes.NetServiceController.showEditNetService(boundForm.get().getNetServiceId()));
+
     }
 
 

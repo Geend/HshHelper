@@ -366,6 +366,14 @@ public class Policy {
         return false;
     }
 
+    public boolean canEditNetService(NetService netService) {
+        if (associatedUser.isAdmin()) {
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean canReadCredential(NetServiceCredential netServiceCredential) {
         if(netServiceCredential.getUser().equals(associatedUser)) {
             return true;

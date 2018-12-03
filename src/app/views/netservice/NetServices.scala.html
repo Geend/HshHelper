@@ -20,8 +20,7 @@
             <tr>
                 <td>Name</td>
                 <td>URL</td>
-                <td>Benutzername Parameter</td>
-                <td>Passwort Parameter</td>
+                <td></td>
                 <td></td>
             </tr>
         </thead>
@@ -31,10 +30,11 @@
             <tr>
                 <td>@netService.getName</td>
                 <td>@netService.getUrl</td>
-                <td>@netService.getUsernameParameterName</td>
-                <td>@netService.getPasswordParameterName</td>
                 <td class="right">
-                @DeleteNetServiceBtn(netService)
+                    <a href="@routes.NetServiceController.showEditNetService(netService.getNetServiceId)">Bearbeiten</a>
+                </td>
+                <td class="right">
+                    @DeleteNetServiceBtn(netService)
                 </td>
             </tr>
         }

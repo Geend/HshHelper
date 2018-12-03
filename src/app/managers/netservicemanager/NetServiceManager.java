@@ -30,7 +30,7 @@ public class NetServiceManager {
     private final Cipher cipher;
 
     @Inject
-    public NetServiceManager(SessionManager sessionManager, EbeanServer ebeanServer, NetServiceFinder netServiceFinder, NetServiceCredentialFinder netServiceCredentialFinder, KeyGenerator keyGenerator, Cipher cipher) {
+    public NetServiceManager(SessionManager sessionManager, EbeanServer ebeanServer, NetServiceFinder netServiceFinder) {
         this.sessionManager = sessionManager;
         this.ebeanServer = ebeanServer;
         this.netServiceFinder = netServiceFinder;
@@ -49,7 +49,16 @@ public class NetServiceManager {
         return netServiceFinder.all();
     }
 
-    public void createNetService(String name, String url, String usernameParameterName, String passwordParameterName) throws UnauthorizedException {
+    public Optional<NetService> getNetService(Long netServiceId) throws UnauthorizedException {
+        if(!sessionManager.currentPolicy().canSeeAllNetServices())
+            throw new UnauthorizedException();
+
+        logger.info(sessionManager.currentUser() + " is looking at all net " + netServiceId + ".");
+
+        return netServiceFinder.byIdOptional(netServiceId);
+    }
+
+    public void createNetService(String name, String url) throws UnauthorizedException {
         if(!sessionManager.currentPolicy().canCreateNetService())
             throw new UnauthorizedException();
 
@@ -58,11 +67,32 @@ public class NetServiceManager {
         NetService netService = new NetService();
         netService.setName(name);
         netService.setUrl(url);
-        netService.setUsernameParameterName(usernameParameterName);
-        netService.setPasswordParameterName(passwordParameterName);
 
         ebeanServer.save(netService);
     }
+
+    public void addNetServiceParameter(Long netServiceId, String name, String defaultValue) throws UnauthorizedException, InvalidArgumentException {
+
+        Optional<NetService> netService = getNetService(netServiceId);
+
+        if(!netService.isPresent())
+            throw new InvalidArgumentException();
+
+        if(!sessionManager.currentPolicy().canEditNetService(netService.get()))
+            throw new UnauthorizedException();
+
+
+        NetServiceParameter parameter = new NetServiceParameter();
+        parameter.setName(name);
+        if(defaultValue != null){
+            parameter.setDefaultValue(defaultValue);
+        }
+
+        netService.get().getParameters().add(parameter);
+        ebeanServer.save(netService.get());
+
+    }
+
 
     public void deleteNetService(Long netServiceId) throws UnauthorizedException, InvalidArgumentException {
         if(!sessionManager.currentPolicy().canDeleteNetServices())
@@ -108,6 +138,9 @@ public class NetServiceManager {
     public void deleteNetServiceCredential(Long netServiceCredentialId) {
         //TODO
     }
+
+
+
 
     public PlaintextCredential decryptCredential(Long netServiceCredentialId) throws UnauthorizedException {
         Optional<NetServiceCredential> optCredential = netServiceCredentialFinder.byIdOptional(netServiceCredentialId);
