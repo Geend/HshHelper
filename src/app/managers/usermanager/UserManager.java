@@ -136,19 +136,21 @@ public class UserManager {
 
     public void deleteUser(Long userToBeDeletedId) throws UnauthorizedException, InvalidArgumentException {
         User currentUser = sessionManager.currentUser();
-        Optional<User> userToDelete = this.userFinder.byIdOptional(userToBeDeletedId);
+        Optional<User> userToDeleteOpt = this.userFinder.byIdOptional(userToBeDeletedId);
 
-        if(!userToDelete.isPresent())
+        if(!userToDeleteOpt.isPresent())
             throw new InvalidArgumentException("Dieser User existiert nicht.");
 
-        if(!sessionManager.currentPolicy().canDeleteUser(userToDelete.get())) {
+        User userToDelete = userToDeleteOpt.get();
+
+        if(!sessionManager.currentPolicy().canDeleteUser(userToDelete)) {
             logger.error(currentUser  + " tried to delete a user but he is not authorized");
             throw new UnauthorizedException();
         }
 
-        sessionManager.destroyAllUserSessions(userToDelete.get());
-        ebeanServer.delete(userToDelete.get());
-        logger.info(currentUser + " deleted user " + userToDelete.get());
+        sessionManager.destroyAllUserSessions(userToDelete);
+        ebeanServer.delete(userToDelete);
+        logger.info(currentUser + " deleted user " + userToDelete);
     }
 
     public List<User> getAllUsers() throws UnauthorizedException {

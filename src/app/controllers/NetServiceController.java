@@ -81,21 +81,22 @@ public class NetServiceController {
     }
 
     public Result showEditNetService(Long netServiceId) throws UnauthorizedException {
-        Optional<NetService> netService = netServiceManager.getNetService(netServiceId);
+        Optional<NetService> netServiceOpt = netServiceManager.getNetService(netServiceId);
 
-        if(!netService.isPresent())
+        if(!netServiceOpt.isPresent())
             return badRequest();
 
+        NetService netService = netServiceOpt.get();
 
         AddNetServiceParameterDto addNetServiceParameterDto = new AddNetServiceParameterDto();
         addNetServiceParameterDto.setNetServiceId(netServiceId);
         Form<AddNetServiceParameterDto> filledForm = addNetServiceParameterDtoForm.fill(addNetServiceParameterDto);
 
         EditNetserviceDetailsDto editNetserviceDetailsDto = new EditNetserviceDetailsDto(
-                netService.get().getName(), netService.get().getUrl()
+                netService.getName(), netService.getUrl()
         );
 
-        return ok(views.html.netservice.EditNetService.render(netService.get(), filledForm, editNetserviceDetailsDtoForm.fill(editNetserviceDetailsDto)));
+        return ok(views.html.netservice.EditNetService.render(netService, filledForm, editNetserviceDetailsDtoForm.fill(editNetserviceDetailsDto)));
     }
 
     public Result addNetServiceParameter() throws UnauthorizedException, InvalidArgumentException {

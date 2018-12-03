@@ -59,37 +59,39 @@ public class PermissionManager {
 
     public void editGroupPermission(Long groupPermissionId, PermissionLevel newLevel) throws InvalidArgumentException, UnauthorizedException {
         User user = this.sessionManager.currentUser();
-        Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
+        Optional<GroupPermission> permissionOpt = this.groupPermissionFinder.byIdOptional(groupPermissionId);
 
-        if (!permission.isPresent())
+        if (!permissionOpt.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!sessionManager.currentPolicy().canEditGroupPermission(permission.get())) {
-            logger.error(user + " tried to change the permissions for group " + permission.get().getGroup() + " but he is not authorized");
+        GroupPermission permission = permissionOpt.get();
+
+        if (!sessionManager.currentPolicy().canEditGroupPermission(permission)) {
+            logger.error(user + " tried to change the permissions for group " + permission.getGroup() + " but he is not authorized");
             throw new UnauthorizedException();
         }
 
         CanReadWrite c = PermissionLevelConverter.ToReadWrite(newLevel);
-        permission.get().setCanWrite(c.getCanWrite());
-        permission.get().setCanRead(c.getCanRead());
+        permission.setCanWrite(c.getCanWrite());
+        permission.setCanRead(c.getCanRead());
 
-        this.ebeanServer.save(permission.get());
-        logger.info(user+ " changed permissions for group " + permission.get().getGroup() + "to canWrite: " + c.getCanWrite() + " and canRead: " + c.getCanRead());
+        this.ebeanServer.save(permission);
+        logger.info(user+ " changed permissions for group " + permission.getGroup() + "to canWrite: " + c.getCanWrite() + " and canRead: " + c.getCanRead());
     }
 
     public EditGroupPermissionDto getGroupPermissionForEdit(Long groupPermissionId) throws InvalidArgumentException, UnauthorizedException {
         User user = this.sessionManager.currentUser();
-        Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
+        Optional<GroupPermission> permissionOpt = this.groupPermissionFinder.byIdOptional(groupPermissionId);
 
-        if (!permission.isPresent())
+        if (!permissionOpt.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!sessionManager.currentPolicy().canEditGroupPermission(permission.get())) {
-            logger.error(user + " tried to edit the permissions for group " + permission.get().getGroup() + " but he is not authorized");
+        GroupPermission gp = permissionOpt.get();
+
+        if (!sessionManager.currentPolicy().canEditGroupPermission(gp)) {
+            logger.error(user + " tried to edit the permissions for group " + gp.getGroup() + " but he is not authorized");
             throw new UnauthorizedException();
         }
-
-        GroupPermission gp = permission.get();
 
         return new EditGroupPermissionDto(
             gp.getGroupPermissionId(),
@@ -103,18 +105,20 @@ public class PermissionManager {
 
     public void deleteGroupPermission(Long groupPermissionId) throws InvalidArgumentException, UnauthorizedException {
         User user = this.sessionManager.currentUser();
-        Optional<GroupPermission> permission = this.groupPermissionFinder.byIdOptional(groupPermissionId);
+        Optional<GroupPermission> permissionOpt = this.groupPermissionFinder.byIdOptional(groupPermissionId);
 
-        if (!permission.isPresent())
+        if (!permissionOpt.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!sessionManager.currentPolicy().canDeleteGroupPermission(permission.get())) {
-            logger.error(user + " tried to delete permissions for group " + permission.get().getGroup() + " but he is not authorized");
+        GroupPermission permission = permissionOpt.get();
+
+        if (!sessionManager.currentPolicy().canDeleteGroupPermission(permission)) {
+            logger.error(user + " tried to delete permissions for group " + permission.getGroup() + " but he is not authorized");
             throw new UnauthorizedException();
         }
 
-        this.ebeanServer.delete(permission.get());
-        logger.info(user + " deleted permissions for group" + permission.get().getGroup());
+        this.ebeanServer.delete(permission);
+        logger.info(user + " deleted permissions for group" + permission.getGroup());
     }
 
     //
@@ -123,61 +127,67 @@ public class PermissionManager {
 
     public EditUserPermissionDto getUserPermissionForEdit(Long userPermissionId) throws InvalidArgumentException, UnauthorizedException {
         User user = this.sessionManager.currentUser();
-        Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
+        Optional<UserPermission> permissionOpt = this.userPermissionFinder.byIdOptional(userPermissionId);
 
-        if (!permission.isPresent())
+        if (!permissionOpt.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!sessionManager.currentPolicy().canEditUserPermission(permission.get())) {
-            logger.error(user + " tried to edit permissions for user " + permission.get().getUser() + " but he is not authorized");
+        UserPermission permission = permissionOpt.get();
+
+        if (!sessionManager.currentPolicy().canEditUserPermission(permission)) {
+            logger.error(user + " tried to edit permissions for user " + permission.getUser() + " but he is not authorized");
             throw new UnauthorizedException();
         }
 
-        PermissionLevel permissionLevel = PermissionLevelConverter.FromReadWrite(permission.get().getCanRead(), permission.get().getCanWrite());
+        PermissionLevel permissionLevel = PermissionLevelConverter.FromReadWrite(permission.getCanRead(), permission.getCanWrite());
         List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
 
         return new EditUserPermissionDto(
-                permission.get().getUserPermissionId(),
+                permission.getUserPermissionId(),
                 permissionLevel, possiblePermissions,
-                permission.get().getUser().getUsername(),
-                permission.get().getFile().getFileId(),
-                permission.get().getFile().getName()
+                permission.getUser().getUsername(),
+                permission.getFile().getFileId(),
+                permission.getFile().getName()
         );
     }
 
     public void deleteUserPermission(Long userPermissionId) throws InvalidArgumentException, UnauthorizedException {
         User user = this.sessionManager.currentUser();
-        Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
+        Optional<UserPermission> permissionOpt = this.userPermissionFinder.byIdOptional(userPermissionId);
 
-        if (!permission.isPresent())
+        if (!permissionOpt.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!sessionManager.currentPolicy().canDeleteUserPermission(permission.get())) {
-            logger.error(user + " tried to delete permissions for user " + permission.get().getUser() + " but he is not authorized");
+        UserPermission permission = permissionOpt.get();
+
+        if (!sessionManager.currentPolicy().canDeleteUserPermission(permission)) {
+            logger.error(user + " tried to delete permissions for user " + permission.getUser() + " but he is not authorized");
             throw new UnauthorizedException();
         }
 
-        this.ebeanServer.delete(permission.get());
-        logger.info(user + " deleted permissions for user" + permission.get().getUser());
+        this.ebeanServer.delete(permission);
+        logger.info(user + " deleted permissions for user" + permission.getUser());
     }
 
     public void editUserPermission(Long userPermissionId, PermissionLevel newLevel) throws InvalidArgumentException, UnauthorizedException {
         User user = this.sessionManager.currentUser();
-        Optional<UserPermission> permission = this.userPermissionFinder.byIdOptional(userPermissionId);
+        Optional<UserPermission> permissionOpt = this.userPermissionFinder.byIdOptional(userPermissionId);
 
-        if (!permission.isPresent())
+        if (!permissionOpt.isPresent())
             throw new InvalidArgumentException(requestErrorMessage);
 
-        if (!sessionManager.currentPolicy().canEditUserPermission(permission.get())) {
-            logger.error(user + " tried to change the permissions for user " + permission.get().getUser() + " but he is not authorized");
+        UserPermission permission = permissionOpt.get();
+
+        if (!sessionManager.currentPolicy().canEditUserPermission(permission)) {
+            logger.error(user + " tried to change the permissions for user " + permission.getUser() + " but he is not authorized");
             throw new UnauthorizedException();
         }
 
         CanReadWrite c = PermissionLevelConverter.ToReadWrite(newLevel);
-        permission.get().setCanWrite(c.getCanWrite());
-        permission.get().setCanRead(c.getCanRead());
-        this.ebeanServer.save(permission.get());
-        logger.info(user + " changed permissions for user " + permission.get().getUser() + "to canWrite: " + c.getCanWrite() + " and canRead: " + c.getCanRead());
+        permission.setCanWrite(c.getCanWrite());
+        permission.setCanRead(c.getCanRead());
+        this.ebeanServer.save(permission);
+        logger.info(user + " changed permissions for user " + permission.getUser() + "to canWrite: " + c.getCanWrite() + " and canRead: " + c.getCanRead());
     }
 
     //
@@ -186,67 +196,73 @@ public class PermissionManager {
 
     public void createUserPermission(Long fileId, Long userId, PermissionLevel permissionLevel) throws InvalidArgumentException, UnauthorizedException {
         User currentUser = this.sessionManager.currentUser();
-        Optional<File> file = fileFinder.byIdOptional(fileId);
-        Optional<User> user = userFinder.byIdOptional(userId);
+        Optional<File> fileOpt = fileFinder.byIdOptional(fileId);
+        Optional<User> userOpt = userFinder.byIdOptional(userId);
 
-        if (!user.isPresent())
+        if (!userOpt.isPresent())
             throw new InvalidArgumentException(this.requestErrorMessage);
 
-        if (!file.isPresent())
+        if (!fileOpt.isPresent())
             throw new InvalidArgumentException(this.requestErrorMessage);
 
-        if (!sessionManager.currentPolicy().canCreateUserPermission(file.get())) {
-            logger.error(currentUser + " tried to create permissions for file " + file.get() + " but he is not authorized");
+        User user = userOpt.get();
+        File file = fileOpt.get();
+
+        if (!sessionManager.currentPolicy().canCreateUserPermission(file)) {
+            logger.error(currentUser + " tried to create permissions for file " + file + " but he is not authorized");
             throw new UnauthorizedException();
         }
 
-        boolean userAlreadyHasPermission = userPermissionFinder.findExistingPermissionForUser(fileId, user.get()).size() > 0;
+        boolean userAlreadyHasPermission = userPermissionFinder.findExistingPermissionForUser(fileId, user).size() > 0;
         if(userAlreadyHasPermission)
             throw new InvalidArgumentException("Es existiert bereits eine Berechtigung");
 
         UserPermission permission = new UserPermission();
-        permission.setFile(file.get());
-        permission.setUser(user.get());
+        permission.setFile(file);
+        permission.setUser(user);
 
         CanReadWrite c = PermissionLevelConverter.ToReadWrite(permissionLevel);
         permission.setCanWrite(c.getCanWrite());
         permission.setCanRead(c.getCanRead());
 
         ebeanServer.save(permission);
-        logger.info(currentUser + " created new permissions for user " + user.get() +  " on file " + file.get());
+        logger.info(currentUser + " created new permissions for user " + user +  " on file " + file);
     }
 
     public void createGroupPermission(Long fileId, Long groupId, PermissionLevel permissionLevel) throws InvalidArgumentException, UnauthorizedException {
         User currentUser = this.sessionManager.currentUser();
-        Optional<File> file = fileFinder.byIdOptional(fileId);
-        Optional<Group> group = groupFinder.byIdOptional(groupId);
+        Optional<File> fileOpt = fileFinder.byIdOptional(fileId);
+        Optional<Group> groupOpt = groupFinder.byIdOptional(groupId);
 
-        if (!group.isPresent())
+        if (!groupOpt.isPresent())
             throw new InvalidArgumentException(this.requestErrorMessage);
 
-        if (!file.isPresent())
+        if (!fileOpt.isPresent())
             throw new InvalidArgumentException(this.requestErrorMessage);
 
-        if (!sessionManager.currentPolicy().canCreateGroupPermission(file.get(), group.get())) {
-            logger.error(currentUser + " tried to create permissions for group " + group.get() + " for file " + file.get() + " but he is not authorized");
+        Group group = groupOpt.get();
+        File file = fileOpt.get();
+
+        if (!sessionManager.currentPolicy().canCreateGroupPermission(file, group)) {
+            logger.error(currentUser + " tried to create permissions for group " + group + " for file " + file + " but he is not authorized");
             throw new UnauthorizedException();
         }
 
-        boolean groupAlreadyHasPermission = groupPermissionFinder.findExistingPermissionForGroup(fileId, group.get()).size() > 0;
+        boolean groupAlreadyHasPermission = groupPermissionFinder.findExistingPermissionForGroup(fileId, group).size() > 0;
         if(groupAlreadyHasPermission)
             throw new InvalidArgumentException("Es existiert bereits eine Berechtigung");
 
 
         GroupPermission permission = new GroupPermission();
-        permission.setFile(file.get());
-        permission.setGroup(group.get());
+        permission.setFile(file);
+        permission.setGroup(group);
 
         CanReadWrite c = PermissionLevelConverter.ToReadWrite(permissionLevel);
         permission.setCanWrite(c.getCanWrite());
         permission.setCanRead(c.getCanRead());
 
         ebeanServer.save(permission);
-        logger.info(currentUser+ " created new permissions for group " + group.get() + " on file " + file.get());
+        logger.info(currentUser + " created new permissions for group " + group + " on file " + file);
     }
 
     public List<User> getAllOtherUsers(Long userId) {

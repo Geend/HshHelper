@@ -89,7 +89,6 @@ public class GroupManager {
     public Group getGroup(Long groupId) throws InvalidArgumentException, UnauthorizedException {
         Optional<Group> groupOptional = groupFinder.byIdOptional(groupId);
         if (!groupOptional.isPresent()) {
-            // TODO: change into a correct exception.
             throw new InvalidArgumentException("Diese Gruppe existiert nicht.");
         }
 
@@ -121,11 +120,9 @@ public class GroupManager {
         Optional<Group> groupOptional = groupFinder.byIdOptional(groupId);
 
         if (!groupOptional.isPresent()) {
-            // TODO: change into a correct exception.
             throw new InvalidArgumentException("Diese Gruppe existiert nicht.");
         }
         if (!tobeRemovedUserOptional.isPresent()) {
-            // TODO: change into a correct exception.
             throw new InvalidArgumentException("Dieser User kann nicht geloescht werden, weil er nicht existiert.");
         }
 
@@ -148,11 +145,9 @@ public class GroupManager {
         Optional<Group> groupOptional = groupFinder.byIdOptional(groupId);
 
         if (!groupOptional.isPresent()) {
-            // TODO: change into a correct exception.
             throw new InvalidArgumentException("Diese Gruppe existiert nicht.");
         }
         if (!tobeAddedUserOptional.isPresent()) {
-            // TODO: change into a correct exception.
             throw new InvalidArgumentException("Dieser User kann nicht hinzugefuegt werden, weil er nicht existiert.");
         }
 
@@ -173,7 +168,6 @@ public class GroupManager {
     public void deleteGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Optional<Group> groupOptional = groupFinder.byIdOptional(groupId);
         if (!groupOptional.isPresent()) {
-            // TODO: change into a correct exception.
             throw new InvalidArgumentException("Diese Gruppe existiert nicht.");
         }
 

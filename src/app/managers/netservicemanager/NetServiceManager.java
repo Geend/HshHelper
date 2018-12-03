@@ -75,12 +75,14 @@ public class NetServiceManager {
 
     public void addNetServiceParameter(Long netServiceId, String name, String defaultValue) throws UnauthorizedException, InvalidArgumentException {
 
-        Optional<NetService> netService = getNetService(netServiceId);
+        Optional<NetService> netServiceOpt = getNetService(netServiceId);
 
-        if(!netService.isPresent())
+        if(!netServiceOpt.isPresent())
             throw new InvalidArgumentException();
 
-        if(!sessionManager.currentPolicy().canEditNetService(netService.get()))
+        NetService netService = netServiceOpt.get();
+
+        if(!sessionManager.currentPolicy().canEditNetService(netService))
             throw new UnauthorizedException();
 
 
@@ -90,8 +92,8 @@ public class NetServiceManager {
             parameter.setDefaultValue(defaultValue);
         }
 
-        netService.get().getParameters().add(parameter);
-        ebeanServer.save(netService.get());
+        netService.getParameters().add(parameter);
+        ebeanServer.save(netService);
 
     }
 
@@ -101,15 +103,17 @@ public class NetServiceManager {
             throw new UnauthorizedException();
 
 
-        Optional<NetService> netService =  netServiceFinder.byIdOptional(netServiceId);
+        Optional<NetService> netServiceOpt =  netServiceFinder.byIdOptional(netServiceId);
 
-        if(!netService.isPresent()){
+        if(!netServiceOpt.isPresent()){
             throw new InvalidArgumentException();
         }
 
-        logger.info(sessionManager.currentUser() + " is deleting net service " + netService.get().getName());
+        NetService netService = netServiceOpt.get();
 
-        ebeanServer.delete(netService.get());
+        logger.info(sessionManager.currentUser() + " is deleting net service " + netService.getName());
+
+        ebeanServer.delete(netService);
 
     }
 
