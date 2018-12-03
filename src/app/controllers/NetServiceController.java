@@ -145,14 +145,7 @@ public class NetServiceController {
     }
 
     public Result decryptNetServiceCredential(Long credentialId) throws UnauthorizedException {
-        NetService service = netServiceManager.getCredentialNetService(credentialId);
         PlaintextCredential credential = netServiceManager.decryptCredential(credentialId);
-
-        ServiceCredentialDto dto = new ServiceCredentialDto(
-            credential.getUsername(), credential.getPassword(),
-            service.getUrl(), Collections.emptyList()
-        );
-
-        return ok(Json.toJson(dto));
+        return ok(Json.toJson(credential));
     }
 }

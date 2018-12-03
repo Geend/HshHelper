@@ -163,7 +163,7 @@ public class DatabaseInitialization {
 
         NetService ns2 = new NetService();
         ns2.setName("ICMS");
-        ns2.setUrl("https://icms.hs-hannover.de");
+        ns2.setUrl("https://icms.hs-hannover.de/qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm");
         ns2.getParameters().add(new NetServiceParameter("asdf",NetServiceParameter.NetServiceParameterType.USERNAME));
         ns2.getParameters().add(new NetServiceParameter("fdsa", NetServiceParameter.NetServiceParameterType.PASSWORD));
         ns2.save();
