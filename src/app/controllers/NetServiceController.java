@@ -1,16 +1,15 @@
 package controllers;
 
-import dtos.netservice.CreateNetServiceCredentialsDto;
-import dtos.netservice.CreateNetServiceDto;
-import dtos.netservice.DeleteNetServiceCredentialsDto;
-import dtos.netservice.DeleteNetServiceDto;
+import dtos.netservice.*;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.netservicemanager.NetServiceManager;
+import managers.netservicemanager.PlaintextCredential;
 import models.NetService;
 import models.NetServiceCredential;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
 import play.mvc.Result;
 import policyenforcement.session.Authentication;
 import views.html.netservice.CreateNetService;
@@ -18,6 +17,7 @@ import views.html.netservice.CreateNetServiceCredential;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collections;
 import java.util.List;
 
 import static play.libs.Scala.asScala;
@@ -101,7 +101,6 @@ public class NetServiceController {
         return redirect(routes.NetServiceController.showUserNetServiceCredentials());
     }
 
-
     public Result deleteNetServiceCredential(){
         Form<DeleteNetServiceCredentialsDto> boundForm = deleteNetServiceCredentialsDtoForm.bindFromRequest();
 
@@ -114,5 +113,17 @@ public class NetServiceController {
         return redirect(routes.NetServiceController.showUserNetServiceCredentials());
 
 
+    }
+
+    public Result decryptNetServiceCredential(Long credentialId) throws UnauthorizedException {
+        NetService service = netServiceManager.getCredentialNetService(credentialId);
+        PlaintextCredential credential = netServiceManager.decryptCredential(credentialId);
+
+        ServiceCredentialDto dto = new ServiceCredentialDto(
+            credential.getUsername(), credential.getPassword(),
+            service.getUrl(), Collections.emptyList()
+        );
+
+        return ok(Json.toJson(dto));
     }
 }

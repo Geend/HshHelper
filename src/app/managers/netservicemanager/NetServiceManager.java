@@ -9,6 +9,7 @@ import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import models.NetService;
 import models.NetServiceCredential;
+import models.finders.NetServiceCredentialFinder;
 import models.finders.NetServiceFinder;
 import play.Logger;
 import policyenforcement.session.SessionManager;
@@ -24,14 +25,16 @@ public class NetServiceManager {
     private final SessionManager sessionManager;
     private final EbeanServer ebeanServer;
     private final NetServiceFinder netServiceFinder;
+    private final NetServiceCredentialFinder netServiceCredentialFinder;
     private final KeyGenerator keyGenerator;
     private final Cipher cipher;
 
     @Inject
-    public NetServiceManager(SessionManager sessionManager, EbeanServer ebeanServer, NetServiceFinder netServiceFinder, KeyGenerator keyGenerator, Cipher cipher) {
+    public NetServiceManager(SessionManager sessionManager, EbeanServer ebeanServer, NetServiceFinder netServiceFinder, NetServiceCredentialFinder netServiceCredentialFinder, KeyGenerator keyGenerator, Cipher cipher) {
         this.sessionManager = sessionManager;
         this.ebeanServer = ebeanServer;
         this.netServiceFinder = netServiceFinder;
+        this.netServiceCredentialFinder = netServiceCredentialFinder;
         this.keyGenerator = keyGenerator;
         this.cipher = cipher;
     }
@@ -104,5 +107,41 @@ public class NetServiceManager {
 
     public void deleteNetServiceCredential(Long netServiceCredentialId) {
         //TODO
+    }
+
+    public PlaintextCredential decryptCredential(Long netServiceCredentialId) throws UnauthorizedException {
+        Optional<NetServiceCredential> optCredential = netServiceCredentialFinder.byIdOptional(netServiceCredentialId);
+        if(!optCredential.isPresent()) {
+            throw new IllegalArgumentException("credentialId does not exist");
+        }
+
+        NetServiceCredential credential = optCredential.get();
+        if(!sessionManager.currentPolicy().canReadCredential(credential)) {
+            throw new UnauthorizedException();
+        }
+
+        CryptoKey ck = keyGenerator.generate(sessionManager.getCredentialKey());
+
+        byte[] usernamePlaintext = cipher.decrypt(ck, credential.getInitializationVectorUsername(), credential.getUsernameCipherText());
+        byte[] passwordPlaintext = cipher.decrypt(ck, credential.getInitializationVectorPassword(), credential.getPasswordCipherText());
+
+        return new PlaintextCredential(
+            new String(usernamePlaintext),
+            new String(passwordPlaintext)
+        );
+    }
+
+    public NetService getCredentialNetService(Long credentialId) throws UnauthorizedException {
+        Optional<NetServiceCredential> optCredential = netServiceCredentialFinder.byIdOptional(credentialId);
+        if(!optCredential.isPresent()) {
+            throw new IllegalArgumentException("credentialId does not exist");
+        }
+
+        NetServiceCredential credential = optCredential.get();
+        if(!sessionManager.currentPolicy().canReadCredential(credential)) {
+            throw new UnauthorizedException();
+        }
+
+        return credential.getNetService();
     }
 }

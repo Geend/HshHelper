@@ -365,4 +365,12 @@ public class Policy {
 
         return false;
     }
+
+    public boolean canReadCredential(NetServiceCredential netServiceCredential) {
+        if(netServiceCredential.getUser().equals(associatedUser)) {
+            return true;
+        }
+
+        return false;
+    }
 }

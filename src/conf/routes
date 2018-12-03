@@ -94,6 +94,7 @@ GET         /netservice/credentials/create                    controllers.NetSer
 POST        /netservice/credentials/create                    controllers.NetServiceController.createNetServiceCredential
 POST        /netservice/credentials/delete                    controllers.NetServiceController.deleteNetServiceCredential
 
+GET         /netservice/credentials/:credentialId             controllers.NetServiceController.decryptNetServiceCredential(credentialId : Long)
 # NetServiceController - END
 
 GET         /forbidden                                        controllers.ErrorController.showForbiddenMessage()
