@@ -88,6 +88,8 @@
   \item Unauthentisierter Benutzer (U-)
   \item E-Mail Server (EM)
   \item Google reCAPTCHA Server (GR)
+  \item Externer Netzdienst (N)
+  \item Zwei-Faktor-Authentisierungsserver (2FAS)
 \end{itemize}
 
 Sofern nicht explizit anders geschildert, haben alle Akteure über dem \enquote{Authentisierten Benutzer} die selben Basisrechte wie diese Privilegienstufe.
@@ -97,13 +99,13 @@ Sofern nicht explizit anders geschildert, haben alle Akteure über dem \enquote{
 \begin{itemize}
   \item Netzwerkschnittstellen
   \begin{itemize}
-    \item \textbf{EP1:} HTTP (Port 80)  [U-, U+, GM, GO, A]
+    \item \textbf{EP1:} HTTP (Port 80)  [U-, U+]
     \item \textbf{EP2:} SMTP (Port 587) [U-]
   \end{itemize}
   \item \textbf{EP3:} Eingebettetes Google reCAPTCHA JavaScript [U-, GR]
 \end{itemize}
 
-Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Durchführen einer Aktion über EP1.
+Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset oder das Durchführen einer Aktion über EP1.
 
 \chapter{Assets}
 
@@ -118,9 +120,14 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
   \item Dateien
   \begin{itemize}
     \item \textbf{AS5:} Dateiname [DR, DW, DA, DO]
-    \item \textbf{AS6:} Dateiinhalt [DR, DA, DO]
+    \item \textbf{AS6:} Dateiinhalt [DR, DW, DA, DO]
     \item \textbf{AS7:} Kommentar [DR, DW, DA, DO]
     \item \textbf{AS8:} Zugriffsberechtigungen [DO]
+  \end{itemize}
+  \item Netzdienste
+  \begin{itemize}
+    \item \textbf{AS9:} Netzdienstanmelde-URL [A]
+    \item \textbf{AS10:} Zugangsdaten eines Nutzers für einen externen Netzdienst [-]
   \end{itemize}
 \end{itemize}
 
@@ -129,18 +136,21 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
 \begin{itemize}
   \item \textbf{AK1:} Einloggen [U-, GR] (Zusätzlich EP3)
   \item \textbf{AK2:} Ausloggen [U+]
+
   \item \textbf{AK3:} Nutzerkonto erstellen [A]
   \item \textbf{AK4:} Nutzerkonto löschen [A]
   \item \textbf{AK5:} Passwort zurücksetzen lassen [U-, EM, GR] (Zusätzlich EP2 \& EP3)
   \item \textbf{AK6:} Passwort nach Zurücksetzung anpassen [U+]
   \item \textbf{AK7:} Aktive Sessions anzeigen lassen [U+]
   \item \textbf{AK8:} Aktive Sessions zerstören [U+]
+
   \item \textbf{AK9:} Gruppe erstellen [U+]
   \item \textbf{AK10:} Gruppe löschen [GO, A]
   \item \textbf{AK11:} Nutzer zu einer Gruppe hinzufügen [GO, A]
   \item \textbf{AK12:} Nutzer aus einer Gruppe entfernen [GO, A]
   \item \textbf{AK13:} Gruppen anzeigen lassen [GM, GO, A]
   \item \textbf{AK14:} Mitglieder einer Gruppe sehen [GM, GO, A]
+
   \item \textbf{AK15:} Eine Datei hochladen [U+]
   \item \textbf{AK16:} Eine Datei löschen [DO]
   \item \textbf{AK17:} Eine Datei runterladen [DR, DA, DO]
@@ -153,6 +163,15 @@ Sofern nicht anders geschildert, geschieht ein Zugriff auf ein Asset oder das Du
   \item \textbf{AK24:} Nutzer kann Session-Timeout einstellen [U+]
   \item \textbf{AK25:} Nutzer kann Passwort ändern [U+]
   \item \textbf{AK26:} Nutzer kann nach Dateien suchen [DR, DW, DA, DO]
+
+  \item \textbf{AK27:} Nutzer kann neuen Netzdienst hinzufügen [A]
+  \item \textbf{AK28:} Nutzer kann bestehenden Netzdienst löschen [A]
+  \item \textbf{AK29:} Nutzer kann Zugangsdaten für einen Netzdienst hinzufügen [U+]
+  \item \textbf{AK30:} Nutzer kann hinterlegte Zugangsdaten für einen Netzdienst löschen [U+]
+  \item \textbf{AK31:} Nutzer kann sich bei einem Netzdienst mit hinterlegten Zugangsdaten anmelden (Single Sign-On) [U+]
+
+  \item \textbf{AK32:} Nutzer kann Zwei-Faktor-Authentisierung für Nutzerkonto aktivieren [U+]
+  \item \textbf{AK33:} Nutzer kann Zwei-Faktor-Authentisierung für Nutzerkonto deaktivieren [U+]
 \end{itemize}
 
 \chapter{Richtlinien}
