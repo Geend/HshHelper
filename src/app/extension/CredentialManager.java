@@ -1,9 +1,7 @@
 package extension;
 
-import extension.Crypto.Cipher;
-import extension.Crypto.CryptoKey;
-import extension.Crypto.CryptoResult;
-import extension.Crypto.KeyGenerator;
+import extension.Crypto.*;
+import io.ebean.EbeanServer;
 import models.User;
 import policyenforcement.session.SessionManager;
 
@@ -13,12 +11,16 @@ public class CredentialManager {
     private final SessionManager sessionManager;
     private final KeyGenerator keyGenerator;
     private final Cipher cipher;
+    private final RandomDataGenerator randomDataGenerator;
+    private final EbeanServer ebeanServer;
 
     @Inject
-    public CredentialManager(SessionManager sessionManager, KeyGenerator keyGenerator, Cipher cipher) {
+    public CredentialManager(SessionManager sessionManager, KeyGenerator keyGenerator, Cipher cipher, RandomDataGenerator randomDataGenerator, EbeanServer ebeanServer) {
         this.sessionManager = sessionManager;
         this.keyGenerator = keyGenerator;
         this.cipher = cipher;
+        this.randomDataGenerator = randomDataGenerator;
+        this.ebeanServer = ebeanServer;
     }
 
     public byte[] getCredentialPlaintext(String password) {
@@ -42,6 +44,24 @@ public class CredentialManager {
         currentUser.setCryptoSalt(salt);
         currentUser.setInitializationVectorCredentialKey(result.getInitializationVector());
         currentUser.setCredentialKeyCipherText(result.getCiphertext());
-        currentUser.save();
+        ebeanServer.save(currentUser);
+    }
+
+    public void resetCredential(User user, String newPassword) {
+        byte[] salt = keyGenerator.generateSalt();
+        CryptoKey key = keyGenerator.generate(newPassword, salt);
+
+        byte[] credentialKey = randomDataGenerator.generateBytes(CryptoConstants.GENERATED_KEY_BYTE);
+        CryptoResult cryptoResult = cipher.encrypt(key, credentialKey);
+
+        user.setInitializationVectorCredentialKey(
+            cryptoResult.getInitializationVector()
+        );
+        user.setCredentialKeyCipherText(
+            cryptoResult.getCiphertext()
+        );
+
+        ebeanServer.save(user);
+        ebeanServer.deleteAll(user.getNetServiceCredentials());
     }
 }

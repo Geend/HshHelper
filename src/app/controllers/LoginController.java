@@ -1,5 +1,9 @@
 package controllers;
 
+import dtos.login.RequestResetPasswordDto;
+import dtos.login.ResetPasswordDto;
+import managers.InvalidArgumentException;
+import managers.UnauthorizedException;
 import managers.loginmanager.*;
 import dtos.login.ChangePasswordAfterResetDto;
 import dtos.login.UserLoginDto;
@@ -16,6 +20,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Optional;
+import java.util.UUID;
 
 import static extension.StringHelper.empty;
 
@@ -23,6 +28,8 @@ public class LoginController extends Controller {
 
     private final Form<UserLoginDto> loginForm;
     private final Form<ChangePasswordAfterResetDto> changePasswordForm;
+    private final Form<RequestResetPasswordDto> requestResetPasswordForm;
+    private final Form<ResetPasswordDto> resetPasswordForm;
     private final LoginManager loginManager;
 
     @Inject
@@ -30,6 +37,8 @@ public class LoginController extends Controller {
             FormFactory formFactory, LoginManager loginManager) {
         this.loginForm = formFactory.form(UserLoginDto.class);
         this.changePasswordForm = formFactory.form(ChangePasswordAfterResetDto.class);
+        this.requestResetPasswordForm = formFactory.form(RequestResetPasswordDto.class);
+        this.resetPasswordForm = formFactory.form(ResetPasswordDto.class);
         this.loginManager = loginManager;
     }
 
@@ -126,6 +135,54 @@ public class LoginController extends Controller {
 
         return redirect(routes.LoginController.login());
     }
+
+    @Authentication.NotAllowed
+    public Result showResetPasswordForm() {
+        return ok(views.html.login.RequestResetPassword.render(requestResetPasswordForm));
+    }
+
+    @Authentication.NotAllowed
+    public Result requestResetPassword() {
+        Form<RequestResetPasswordDto> boundForm = requestResetPasswordForm.bindFromRequest("username");
+        if (boundForm.hasErrors()) {
+            return badRequest(views.html.login.RequestResetPassword.render(boundForm));
+        }
+
+        RequestResetPasswordDto resetPasswordData = boundForm.get();
+        Optional<String> recaptchaData = boundForm.field("g-recaptcha-response").getValue();
+        recaptchaData.ifPresent(resetPasswordData::setRecaptcha);
+
+        try {
+            this.loginManager.sendResetPasswordToken(resetPasswordData.getUsername(), resetPasswordData.getRecaptcha(), Http.Context.current().request());
+        } catch (InvalidArgumentException e) {
+            //Ignore the exception in order to not reveal potential usernames.
+        } catch (CaptchaRequiredException e) {
+            boundForm = boundForm.withGlobalError("Complete the captcha!");
+            return badRequest(views.html.login.RequestResetPassword.render(boundForm));
+        }
+
+        return ok(views.html.login.RequestResetPasswordSuccess.render());
+    }
+
+    @Authentication.NotAllowed
+    public Result showResetPasswordWithTokenForm(UUID tokenId) throws UnauthorizedException {
+        this.loginManager.validateResetToken(tokenId, Http.Context.current().request());
+        return ok(views.html.login.ResetPassword.render(resetPasswordForm, tokenId));
+    }
+
+    @Authentication.NotAllowed
+    public Result resetPasswordWithToken(UUID tokenId) throws UnauthorizedException {
+        Form<ResetPasswordDto> boundForm = resetPasswordForm.bindFromRequest();
+        if(boundForm.hasErrors()) {
+            return badRequest(views.html.login.ResetPassword.render(resetPasswordForm, tokenId));
+        }
+
+        ResetPasswordDto data = boundForm.get();
+        this.loginManager.resetPassword(tokenId, data.getNewPassword(), Http.Context.current().request());
+
+        return redirect(routes.LoginController.login());
+    }
+
 
     @Authentication.Required
     public Result logout() {

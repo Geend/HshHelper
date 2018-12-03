@@ -1,17 +1,23 @@
 package managers.loginmanager;
 
 import extension.CredentialManager;
-import extension.Crypto.Cipher;
-import extension.Crypto.CryptoKey;
-import extension.Crypto.KeyGenerator;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
 import io.ebean.EbeanServer;
+import io.ebean.Transaction;
+import io.ebean.annotation.TxIsolation;
+import managers.InvalidArgumentException;
+import managers.UnauthorizedException;
 import models.LoginAttempt;
+import models.PasswordResetToken;
 import models.User;
 import models.finders.LoginAttemptFinder;
+import models.finders.PasswordResetTokenFinder;
+import models.finders.UserFinder;
 import org.joda.time.DateTime;
 import play.Logger;
+import play.libs.mailer.Email;
+import play.libs.mailer.MailerClient;
 import play.mvc.Http;
 import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
@@ -24,11 +30,14 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Optional;
+import java.util.UUID;
 
+import static policyenforcement.ConstraintValues.PASSWORD_RESET_TOKEN_TIMEOUT_HOURS;
 import static policyenforcement.ConstraintValues.SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS;
 
 public class LoginManager {
 
+    private final UserFinder userFinder;
     private final EbeanServer ebeanSever;
     private Authentification authentification;
     private Firewall loginFirewall;
@@ -37,6 +46,8 @@ public class LoginManager {
     private LoginAttemptFinder loginAttemptFinder;
     private final RecaptchaHelper recaptchaHelper;
     private final CredentialManager credentialManager;
+    private final MailerClient mailerClient;
+    private final PasswordResetTokenFinder passwordResetTokenFinder;
 
     private static final Logger.ALogger logger = Logger.of(LoginManager.class);
 
@@ -48,7 +59,8 @@ public class LoginManager {
             HashHelper hashHelper,
             EbeanServer ebeanServer,
             LoginAttemptFinder loginAttemptFinder,
-            RecaptchaHelper recaptchaHelper, CredentialManager credentialManager)
+            RecaptchaHelper recaptchaHelper, CredentialManager credentialManager,
+            UserFinder userFinder, MailerClient mailerClient, PasswordResetTokenFinder passwordResetTokenFinder)
     {
         this.loginAttemptFinder = loginAttemptFinder;
         this.ebeanSever = ebeanServer;
@@ -58,6 +70,9 @@ public class LoginManager {
         this.hashHelper = hashHelper;
         this.recaptchaHelper = recaptchaHelper;
         this.credentialManager = credentialManager;
+        this.userFinder = userFinder;
+        this.mailerClient = mailerClient;
+        this.passwordResetTokenFinder = passwordResetTokenFinder;
     }
 
     private User authenticate(String username, String password, String captchaToken, Http.Request request, Integer twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, IOException, GeneralSecurityException {
@@ -149,5 +164,64 @@ public class LoginManager {
                 .lt("dateTime",DateTime.now().minusDays(SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS)).delete();
 
         Logger.info("Deleted "+deletedSessions+" Login-Logs");
+    }
+
+    public void sendResetPasswordToken(String username, String recaptcha, Http.Request request) throws CaptchaRequiredException, InvalidArgumentException {
+        if(!recaptchaHelper.IsValidResponse(recaptcha, request.remoteAddress())) {
+            // TODO: encode username -> log injection
+            logger.error(request.remoteAddress() + " has tried to reset the password for user " + username + " without a valid reCAPTCHA.");
+            throw new CaptchaRequiredException();
+        }
+
+        Optional<User> userOptional = userFinder.byName(username);
+        if (!userOptional.isPresent()) {
+            throw new InvalidArgumentException("Dieser User existiert nicht.");
+        }
+        User user = userOptional.get();
+
+        PasswordResetToken token = new PasswordResetToken(
+            user,
+            request.remoteAddress()
+        );
+        ebeanSever.save(token);
+
+        Email email = new Email()
+                .setSubject("HshHelper Password-Reset")
+                .setFrom("HshHelper <hshhelper@t-voltmer.net>")
+                .addTo(user.getEmail())
+                .setBodyText("Click on the following Link to reset your Password: "+ controllers.routes.LoginController.showResetPasswordWithTokenForm(token.getId()).absoluteURL(request));
+        mailerClient.send(email);
+
+        logger.info("Created a reset token and send mail for user " + user);
+    }
+
+    public PasswordResetToken validateResetToken(UUID tokenId, Http.Request request) throws UnauthorizedException {
+        PasswordResetToken token = passwordResetTokenFinder.byId(tokenId);
+        if(token == null)
+            throw new UnauthorizedException();
+
+        if(!token.getRemoteAddress().equals(request.remoteAddress()))
+            throw new UnauthorizedException();
+
+        if(!token.getCreationDate().plusHours(PASSWORD_RESET_TOKEN_TIMEOUT_HOURS).isAfterNow())
+            throw new UnauthorizedException();
+
+        return token;
+    }
+
+    public void resetPassword(UUID tokenId, String newPassword, Http.Request request) throws UnauthorizedException {
+        try(Transaction tx = ebeanSever.beginTransaction(TxIsolation.SERIALIZABLE)) {
+            PasswordResetToken token = validateResetToken(tokenId, request);
+
+            User user = token.getAssociatedUser();
+            ebeanSever.refresh(user);
+            user.setPasswordHash(hashHelper.hashPassword(newPassword));
+            ebeanSever.save(user);
+            credentialManager.resetCredential(user, newPassword);
+            ebeanSever.delete(token);
+
+            tx.commit();
+        }
+
     }
 }

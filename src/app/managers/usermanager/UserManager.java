@@ -154,33 +154,6 @@ public class UserManager {
         return this.userFinder.all();
     }
 
-    public void resetPassword(String username, String recaptchaData, Http.Request request) throws InvalidArgumentException, CaptchaRequiredException {
-        Optional<User> userOptional = userFinder.byName(username);
-        if (!userOptional.isPresent()) {
-            throw new InvalidArgumentException("Dieser User existiert nicht.");
-        }
-        User user = userOptional.get();
-
-        if(!recaptchaHelper.IsValidResponse(recaptchaData, request.remoteAddress())) {
-            logger.error(request.remoteAddress() + " has tried to reset the password for user " + user + " without a valid reCAPTCHA.");
-            throw new CaptchaRequiredException();
-        }
-
-        //TODO: Include generated password length in policy
-        String tempPassword = passwordGenerator.generatePassword(10);
-        user.setPasswordHash(hashHelper.hashPassword(tempPassword));
-        user.setIsPasswordResetRequired(true);
-        user.save();
-
-        Email email = new Email()
-                .setSubject("HshHelper Password Rest")
-                .setFrom("HshHelper <hshhelper@hs-hannover.de>")
-                .addTo(user.getEmail())
-                .setBodyText("Your temp password is " + tempPassword);
-        mailerClient.send(email);
-       logger.info("Created a new temp pw and send mail for user " + user);
-    }
-
     public UserMetaInfo getUserMetaInfo(Long userId) throws UnauthorizedException, InvalidArgumentException {
         Optional<User> optUser = userFinder.byIdOptional(userId);
         if(!optUser.isPresent()) {

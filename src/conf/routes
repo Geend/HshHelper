@@ -6,6 +6,10 @@ POST        /login                                            controllers.LoginC
 POST        /logout                                           controllers.LoginController.logout
 GET         /changePasswordAfterReset                         controllers.LoginController.showChangePasswordAfterResetForm
 POST        /changePasswordAfterReset                         controllers.LoginController.changePasswordAfterReset
+GET         /resetPassword                                    controllers.LoginController.showResetPasswordForm
+POST        /resetPassword                                    controllers.LoginController.requestResetPassword
+GET         /resetPassword/:tokenId                           controllers.LoginController.showResetPasswordWithTokenForm(tokenId : java.util.UUID)
+POST        /resetPassword/:tokenId                           controllers.LoginController.resetPasswordWithToken(tokenId : java.util.UUID)
 
 
 # UserController - Start
@@ -18,8 +22,6 @@ POST        /users/delete                                     controllers.UserCo
 GET         /users/:userId/settings                           controllers.UserController.showUserAdminSettings(userId:Long)
 POST        /users/editQuota                                  controllers.UserController.changeUserQuotaLimit
 
-GET         /resetpassword                                    controllers.UserController.showResetUserPasswordForm
-POST        /resetpassword                                    controllers.UserController.resetUserPassword
 GET         /sessions                                         controllers.UserController.showActiveUserSessions()
 POST        /sessions/delete                                  controllers.UserController.deleteUserSession()
 GET         /settings                                         controllers.UserController.showUserSettings()
