@@ -142,6 +142,9 @@ public class FileManager {
 
     public List<FileMeta> sharedByCurrentUserFiles() {
         User user = sessionManager.currentUser();
+        // EBean or rather H2 "ALLOW_LITERALS" do not allow to write this as query as EBean uses
+        // query: exists (select 1 from group_permissions x where x.fk_file_id = t0.file_id))
+        // to verify if a row exists.
         List<File> files = user.getOwnedFiles().stream().filter(x -> x.getGroupPermissions().size() > 0 || x.getUserPermissions().size() > 0).collect(Collectors.toList());
         return fileMetaFactory.fromFiles(files);
     }

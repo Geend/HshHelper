@@ -1,6 +1,7 @@
 package models.finders;
 
 import io.ebean.Finder;
+import models.User;
 import models.UserPermission;
 
 import java.util.List;
@@ -11,9 +12,13 @@ public class UserPermissionFinder extends Finder<Long, UserPermission> {
         super(UserPermission.class);
     }
 
-    public List<UserPermission> findForFileId(Long fileId)
+    public List<UserPermission> findExistingPermissionForUser(Long fileId, User user)
     {
-        return this.query().where().eq("fk_file_id", fileId).findList();
+        return this.query().where()
+                .eq("fk_file_id", fileId)
+                .and()
+                .eq("user.userId", user.getUserId())
+                .findList();
     }
 
     public Optional<UserPermission> byIdOptional(Long id) {

@@ -151,6 +151,20 @@ public class UserManager {
         return this.userFinder.all();
     }
 
+    public List<User> getAdminUsers() throws UnauthorizedException {
+        User currentUser = sessionManager.currentUser();
+
+        if(!sessionManager.currentPolicy().canViewAllUsers()) {
+            logger.error(currentUser + " tried to access all users but he is not authorized");
+            throw new UnauthorizedException();
+        }
+
+        // TODO: Extract the grp name as static var
+        return this.userFinder.query().where()
+                .eq("groups.name", "Administrators")
+                .findList();
+    }
+    
     public UserMetaInfo getUserMetaInfo(Long userId) throws UnauthorizedException, InvalidArgumentException {
         Optional<User> optUser = userFinder.byIdOptional(userId);
         if(!optUser.isPresent()) {
