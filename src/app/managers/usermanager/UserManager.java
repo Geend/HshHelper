@@ -2,6 +2,7 @@ package managers.usermanager;
 
 import extension.CredentialManager;
 import extension.RecaptchaHelper;
+import extension.logging.DangerousCharFilteringLogger;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import extension.HashHelper;
@@ -38,7 +39,7 @@ public class UserManager {
     private final UserFactory userFactory;
     private final CredentialManager credentialManager;
 
-    private static final Logger.ALogger logger = Logger.of(UserManager.class);
+    private static final Logger.ALogger logger = new DangerousCharFilteringLogger(UserManager.class);
 
     @Inject
     public UserManager(

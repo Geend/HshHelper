@@ -3,6 +3,7 @@ package policyenforcement.session;
 import extension.B64Helper;
 import extension.Crypto.*;
 import extension.RandomDataGenerator;
+import extension.logging.DangerousCharFilteringLogger;
 import io.ebean.Ebean;
 import io.ebean.Update;
 import managers.InvalidArgumentException;
@@ -33,6 +34,9 @@ public class SessionManager {
     private final Cipher cipher;
     private final RandomDataGenerator randomDataGenerator;
     private final B64Helper b64Helper;
+
+    private static final Logger.ALogger logger = new DangerousCharFilteringLogger(
+            SessionManager.class);
 
     @Inject
     public SessionManager(KeyGenerator keyGenerator, Cipher cipher, RandomDataGenerator randomDataGenerator, B64Helper b64Helper){
@@ -163,7 +167,7 @@ public class SessionManager {
             .lt("issuedAt", DateTime.now().minusHours(ConstraintValues.MAX_SESSION_TIMEOUT_HOURS))
             .delete();
 
-        Logger.info("REWRITE/ Delete "+deletedSessions+" Sessions");
+        logger.info("REWRITE/ Delete "+deletedSessions+" Sessions");
     }
 
     public int remainingSessionTime(){

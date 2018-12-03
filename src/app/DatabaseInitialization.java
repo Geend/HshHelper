@@ -1,6 +1,7 @@
 import javax.inject.*;
 
 import extension.HashHelper;
+import extension.logging.DangerousCharFilteringLogger;
 import models.*;
 import models.factories.UserFactory;
 import org.joda.time.DateTime;
@@ -14,15 +15,18 @@ import java.util.stream.Stream;
 @Singleton
 public class DatabaseInitialization {
 
+    private static final Logger.ALogger logger = new DangerousCharFilteringLogger(
+            DatabaseInitialization.class);
+
     @Inject
     public DatabaseInitialization(Database db, HashHelper hashHelper, UserFactory userFactory) {
-        Logger.info("DatabaseInitialization - Prepare DB");
+        logger.info("DatabaseInitialization - Prepare DB");
 
         // TODO: Add new tables for truncation
         // This whole process is super fragile
         // Each new table must be manually added if there has to be data added to the table
         // before the application starts.
-        Logger.info("DatabaseInitialization - Prepare DB; Truncate all tables.");
+        logger.info("DatabaseInitialization - Prepare DB; Truncate all tables.");
         db.withConnection(connection -> {
             Statement stmt = connection.createStatement();
             stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
@@ -39,9 +43,9 @@ public class DatabaseInitialization {
             stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
             stmt.execute("SET ALLOW_LITERALS NONE");
         });
-        Logger.info("DatabaseInitialization - Prepare DB; Truncated");
+        logger.info("DatabaseInitialization - Prepare DB; Truncated");
 
-        Logger.info("ApplicationStart - Prepare DB; Add new users and groups");
+        logger.info("ApplicationStart - Prepare DB; Add new users and groups");
         User u1 = userFactory.CreateUser("admin", "hsh.helper+admin@gmail.com", "admin", false, 1000L);
         User u2 = userFactory.CreateUser("peter", "hsh.helper+peter@gmail.com",  "peter", false, 10L);
         User u3 = userFactory.CreateUser("klaus", "hsh.helper+klaus@gmail.com",  "klaus", false, 10L);
@@ -160,6 +164,6 @@ public class DatabaseInitialization {
 
 
 
-        Logger.info("DatabaseInitialization - Prepare DB; Done adding new users and groups");
+        logger.info("DatabaseInitialization - Prepare DB; Done adding new users and groups");
     }
 }

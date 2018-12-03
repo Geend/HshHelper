@@ -4,6 +4,7 @@ import extension.Crypto.Cipher;
 import extension.Crypto.CryptoKey;
 import extension.Crypto.CryptoResult;
 import extension.Crypto.KeyGenerator;
+import extension.logging.DangerousCharFilteringLogger;
 import io.ebean.EbeanServer;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
@@ -21,7 +22,7 @@ import java.util.Optional;
 
 public class NetServiceManager {
 
-    private static final Logger.ALogger logger = Logger.of(NetServiceManager.class);
+    private static final Logger.ALogger logger = new DangerousCharFilteringLogger(NetServiceManager.class);
 
     private final SessionManager sessionManager;
     private final EbeanServer ebeanServer;

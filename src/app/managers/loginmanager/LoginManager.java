@@ -3,6 +3,7 @@ package managers.loginmanager;
 import extension.CredentialManager;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
+import extension.logging.DangerousCharFilteringLogger;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
@@ -49,7 +50,7 @@ public class LoginManager {
     private final MailerClient mailerClient;
     private final PasswordResetTokenFinder passwordResetTokenFinder;
 
-    private static final Logger.ALogger logger = Logger.of(LoginManager.class);
+    private static final Logger.ALogger logger = new DangerousCharFilteringLogger(LoginManager.class);
 
     @Inject
     public LoginManager(
@@ -163,7 +164,7 @@ public class LoginManager {
         int deletedSessions = loginAttemptFinder.query().where()
                 .lt("dateTime",DateTime.now().minusDays(SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS)).delete();
 
-        Logger.info("Deleted "+deletedSessions+" Login-Logs");
+        logger.info("Deleted "+deletedSessions+" Login-Logs");
     }
 
     public void sendResetPasswordToken(String username, String recaptcha, Http.Request request) throws CaptchaRequiredException, InvalidArgumentException {

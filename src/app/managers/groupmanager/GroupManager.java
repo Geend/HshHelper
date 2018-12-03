@@ -1,5 +1,6 @@
 package managers.groupmanager;
 
+import extension.logging.DangerousCharFilteringLogger;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import io.ebean.EbeanServer;
@@ -30,7 +31,7 @@ public class GroupManager {
     private final FileFinder fileFinder;
     private final FileMetaFactory fileMetaFactory;
 
-    private static final Logger.ALogger logger = Logger.of(GroupManager.class);
+    private static final Logger.ALogger logger = new DangerousCharFilteringLogger(GroupManager.class);
 
     @Inject
     public GroupManager(GroupFinder groupFinder, UserFinder userFinder, EbeanServer ebeanServer, SessionManager sessionManager, FileFinder fileFinder, FileMetaFactory fileMetaFactory) {

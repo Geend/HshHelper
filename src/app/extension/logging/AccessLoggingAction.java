@@ -18,7 +18,7 @@ public class AccessLoggingAction implements play.http.ActionCreator {
     @Inject
     public AccessLoggingAction(SessionManager sessionManager) {
         this.sessionManager = sessionManager;
-        accessLogger = Logger.of("access");
+        accessLogger = new DangerousCharFilteringLogger("access");
     }
 
     @Override
@@ -37,11 +37,8 @@ public class AccessLoggingAction implements play.http.ActionCreator {
                         throw e;
                     }
                 }
-                accessLogger.info("{} - {} \"{} {}\"",
-                        request.remoteAddress(),
-                        username,
-                        request.method(),
-                        request.uri());
+                accessLogger.info(request.remoteAddress() + " - "
+                                + username + " \"" +  request.method() + " " + request.uri() + "\"");
 
                 return delegate.call(ctx);
             }
