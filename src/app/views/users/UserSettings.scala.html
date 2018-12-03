@@ -5,6 +5,9 @@
 @Base("Benutzer-Einstellungen") {
 
     <h2>Session-Timeout</h2>
+    <div class="message error">
+        Wenn es zu einer Zeitumstellung (Winter/Sommerzeit) kommt, kann es dazu kommen, dass die Session-Dauer temporär um eine Stunde verlängert wird.
+    </div>
     @helper.form(action = routes.UserController.changeUserSessionTimeout()) {
         <div class="inputForm">
         @helper.TextInput(sessionTimeoutForm("valueInMinutes"), "Timeout (in min)")
