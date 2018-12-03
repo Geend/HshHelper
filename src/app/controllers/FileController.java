@@ -164,7 +164,7 @@ public class FileController extends Controller {
     public Result showQuotaUsage() {
         UserQuota uq = fileManager.getCurrentQuotaUsage();
         UserQuotaDto dto = new UserQuotaDto(
-                (long) sessionManager.currentUser().getQuotaLimit(),
+                sessionManager.currentUser().getQuotaLimit(),
                 uq.getNameUsage(),
                 uq.getCommentUsage(),
                 uq.getFileContentUsage());
