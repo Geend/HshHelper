@@ -74,4 +74,8 @@ public class NetServiceManager {
     public void createNetUserCredential(Long netServiceId, String username, String password) {
         //TODO
     }
+
+    public void deleteNetServiceCredential(Long netServiceCredentialId) {
+        //TODO
+    }
 }
