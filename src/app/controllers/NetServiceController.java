@@ -34,6 +34,7 @@ public class NetServiceController {
     private final Form<AddNetServiceParameterDto> addNetServiceParameterDtoForm;
     private final Form<CreateNetServiceCredentialsDto> createNetServiceCredentialsDtoForm;
     private final Form<DeleteNetServiceCredentialsDto> deleteNetServiceCredentialsDtoForm;
+    private final Form<EditNetserviceDetailsDto> editNetserviceDetailsDtoForm;
 
     @Inject
     public NetServiceController(NetServiceManager netServiceManager, FormFactory formFactory){
@@ -43,6 +44,7 @@ public class NetServiceController {
         this.addNetServiceParameterDtoForm = formFactory.form(AddNetServiceParameterDto.class);
         this.createNetServiceCredentialsDtoForm = formFactory.form(CreateNetServiceCredentialsDto.class);
         this.deleteNetServiceCredentialsDtoForm = formFactory.form(DeleteNetServiceCredentialsDto.class);
+        this.editNetserviceDetailsDtoForm = formFactory.form(EditNetserviceDetailsDto.class);
     }
 
 
@@ -92,7 +94,11 @@ public class NetServiceController {
         addNetServiceParameterDto.setNetServiceId(netServiceId);
         Form<AddNetServiceParameterDto> filledForm = addNetServiceParameterDtoForm.fill(addNetServiceParameterDto);
 
-        return ok(views.html.netservice.EditNetService.render(netService.get(), filledForm));
+        EditNetserviceDetailsDto editNetserviceDetailsDto = new EditNetserviceDetailsDto(
+                netService.get().getName(), netService.get().getUrl()
+        );
+
+        return ok(views.html.netservice.EditNetService.render(netService.get(), filledForm, editNetserviceDetailsDtoForm.fill(editNetserviceDetailsDto)));
     }
 
     public Result addNetServiceParameter() throws UnauthorizedException, InvalidArgumentException {

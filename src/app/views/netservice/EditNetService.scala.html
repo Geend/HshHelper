@@ -1,57 +1,57 @@
 @import dtos.netservice.AddNetServiceParameterDto
 @import models.NetServiceParameter.NetServiceParameterType
-@(netService:NetService, form: Form[AddNetServiceParameterDto])
+@import dtos.netservice.EditNetserviceDetailsDto
+@(netService:NetService, form: Form[AddNetServiceParameterDto], editDetailsForm : Form[EditNetserviceDetailsDto])
 
 @Base("Netzdienst bearbeiten") {
 
-    <p>
-        Name: @netService.getName
-    </p>
+    <h2>Details</h2>
+    @helper.form(action = routes.NetServiceController.addNetServiceParameter()) {
+        <div class="inputForm">
+            @helper.TextInput(editDetailsForm("name"), "Name")
+            @helper.TextInput(editDetailsForm("url"), "Url")
 
-    <p>
-        URL: @netService.getUrl
-    </p>
-
-
-    <p>
-
-
-        <table>
-            <thead>
-                <tr>
-                    <td>Name</td>
-                    <td>Default</td>
-                    <td>Type</td>
-                    <td></td>
-                </tr>
-            </thead>
-
-            <tbody>
-            @for(parameter <- netService.getParameters) {
-                <tr>
-                    <td>@parameter.getName</td>
-                    <td>@parameter.getDefaultValue</td>
-                    <td>@parameter.getParameterType</td>
-
-                </tr>
-            }
-            </tbody>
-        </table>
+            <div class="inputControls">
+                <input type="submit" value="Ändern" />
+            </div>
+        </div>
+    }
 
 
-    </p>
+    <h2>Parameter</h2>
+    <table>
+        <thead>
+            <tr>
+                <td>Name</td>
+                <td>Default</td>
+                <td>Type</td>
+                <td></td>
+            </tr>
+        </thead>
+
+        <tbody>
+        @for(parameter <- netService.getParameters) {
+            <tr>
+                <td>@parameter.getName</td>
+                <td>@parameter.getDefaultValue</td>
+                <td>@parameter.getParameterType</td>
+                <td class="right">Löschen</td>
+            </tr>
+        }
+        </tbody>
+    </table>
 
 
     @helper.form(action = routes.NetServiceController.addNetServiceParameter()) {
         <div class="inputForm">
-            @helper.TextInput(form("name"), "Name")
+            @helper.TextInput(form("serviceName"), "Name")
             @helper.TextInput(form("defaultValue"), "Default")
             @helper.SelectInput(
                 form("parameterType"),
                 "Type",
                 NetServiceParameterType.values().map(parameterType => parameterType.toString -> parameterType.toString))
         </div>
-        <input type="hidden" value="@form("netServiceId").getValue.get" name="netServiceId" />
+        <input type="hidden" value="@form("netServiceId").getValue.get" serviceName="netServiceId" />
 
         <div class="inputControls">
             <input type="submit" value="Parameter hinzufügen" />
