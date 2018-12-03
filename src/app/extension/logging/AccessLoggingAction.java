@@ -5,6 +5,7 @@ import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
 import policyenforcement.session.SessionManager;
+import policyenforcement.session.exceptions.NoUserWithActiveSessionException;
 
 import javax.inject.Inject;
 import java.lang.reflect.Method;
@@ -32,10 +33,8 @@ public class AccessLoggingAction implements play.http.ActionCreator {
                 String username = "unauthorized user";
                 try {
                     username = sessionManager.currentUser().getUsername();
-                } catch (RuntimeException e) {
-                    if (!e.getMessage().equals("There is no active session")) {
-                        throw e;
-                    }
+                } catch (NoUserWithActiveSessionException e) {
+                    // continue
                 }
                 accessLogger.info(request.remoteAddress() + " - "
                                 + username + " \"" +  request.method() + " " + request.uri() + "\"");

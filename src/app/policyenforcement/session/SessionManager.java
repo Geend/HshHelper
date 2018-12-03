@@ -16,6 +16,7 @@ import play.Logger;
 import play.mvc.Http;
 import policyenforcement.ConstraintValues;
 import policyenforcement.Policy;
+import policyenforcement.session.exceptions.NoUserWithActiveSessionException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -98,7 +99,7 @@ public class SessionManager {
 
     public User currentUser() {
         if(!hasActiveSession()) {
-            throw new RuntimeException("There is no active session");
+            throw new NoUserWithActiveSessionException("There is no active session");
         }
 
         return currentSession().getUser();
