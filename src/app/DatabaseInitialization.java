@@ -141,11 +141,21 @@ public class DatabaseInitialization {
 
 
         NetService ns1 = new NetService();
-        ns1.setName("Testnetzdienst");
-        ns1.setUrl("http://example.org/login");
-        ns1.setUsernameParameterName("username");
-        ns1.setPasswordParameterName("password");
+        ns1.setName("Bibliothek");
+        ns1.setUrl("https://opac.tib.eu/loan/DB=4/SET=2/TTL=1/USERINFO_LOGIN");
+        ns1.setUsernameParameterName("BOR_U");
+        ns1.setPasswordParameterName("BOR_PW");
         ns1.save();
+
+
+        NetService ns2 = new NetService();
+        ns2.setName("ICMS");
+        ns2.setUrl("https://icms.hs-hannover.de");
+        ns2.setUsernameParameterName("asdf");
+        ns2.setPasswordParameterName("fdsa");
+        ns2.save();
+
+
 
         Logger.info("DatabaseInitialization - Prepare DB; Done adding new users and groups");
     }
