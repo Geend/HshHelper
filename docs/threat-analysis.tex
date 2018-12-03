@@ -80,8 +80,20 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/changePasswordAfterReset}
       \begin{enumerate}
-        \item GET - \texttt{showChangePasswordAfterResetForm}
+        \item GET - \texttt{showChangePasswordAfterResetForm()}
         \item POST - \texttt{changePasswordAfterReset(username, currentPassword, password, passwordRepeat, recaptcha)}
+      \end{enumerate}
+
+      \item \texttt{/resetPassword}
+      \begin{enumerate}
+        \item GET - \texttt{showResetPasswordForm()}
+        \item POST - \texttt{requestResetPassword(username, recaptcha)}
+      \end{enumerate}
+
+      \item \texttt{/resetPassword/:tokenId}
+      \begin{enumerate}
+        \item GET - \texttt{showResetPasswordWithTokenForm(tokenId)}
+        \item POST - \texttt{resetPasswordWithToken(tokenId, newPassword)}
       \end{enumerate}
     \end{enumerate}
 
@@ -117,18 +129,9 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
         \item GET - \texttt{changeUserQuotaLimit(userId,
         newQuotaLimit)}
       \end{enumerate}
-      \item \texttt{/resetpassword}
-      \begin{enumerate}
-        \item GET - \texttt{showResetUserPasswordForm}
-        \item POST - \texttt{resetUserPassword(username, recaptcha)}
-      \end{enumerate}
       \item \texttt{/sessions}
       \begin{enumerate}
         \item GET - \texttt{showActiveUserSessions(userId)}
-      \end{enumerate}
-      \item \texttt{/sessions/changePassword}
-      \begin{enumerate}
-        \item POST - \texttt{changeUserPassword()}
       \end{enumerate}
       \item \texttt{/sessions/delete}
       \begin{enumerate}
@@ -145,6 +148,19 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \item \texttt{/settings/sessionTimeout}
       \begin{enumerate}
         \item POST - \texttt{changeUserSessionTimeout(newSessionTimeout)}
+      \end{enumerate}
+
+      \item \texttt{/settings/confirmActivateTwoFactorAuth}
+      \begin{enumerate}
+        \item GET - \texttt{show2FactorAuthConfirmationForm(generatedTwoFactorSecret, QRCodeImage)}
+      \end{enumerate}
+      \item \texttt{/settings/activateTwoFactorAuth}
+      \begin{enumerate}
+        \item POST - \texttt{activateTwoFactorAuth(twoFactorSecret, activationToken)}
+      \end{enumerate}
+      \item \texttt{/settings/deactivateTwoFactorAuth}
+      \begin{enumerate}
+        \item POST - \texttt{deactivateTwoFactorAuth()}
       \end{enumerate}
     \end{enumerate}
 
@@ -300,10 +316,6 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \begin{enumerate}
         \item POST - \texttt{deleteUserPermission(userPermissionId, returnUrl)}
       \end{enumerate}
-      \item \texttt{/permissions/editGroupPermission/submit}
-      \begin{enumerate}
-        \item POST - \texttt{editGroupPermission()}
-      \end{enumerate}
     \end{enumerate}
 
     \item \texttt{ErrorController}
@@ -315,6 +327,50 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \item \texttt{/badrequest}
       \begin{enumerate}
         \item GET - \texttt{showBadRequestMessage()}
+      \end{enumerate}
+    \end{enumerate}
+
+    \item \texttt{NetServiceController}
+    \begin{enumerate}
+      \item \texttt{/netservices/all}
+        \begin{enumerate}
+          \item GET - \texttt{showAllNetServices()}
+        \end{enumerate}
+      \item \texttt{/netservices/create}
+        \begin{enumerate}
+          \item GET - \texttt{showAddNetServiceForm()}
+          \item POST - \texttt{createNetService(netServiceName, netServiceURL)}
+        \end{enumerate}
+      \item \texttt{/netservices/delete}
+        \begin{enumerate}
+          \item POST - \texttt{deleteNetService(netServiceId)}
+        \end{enumerate}
+      \item \texttt{/netservices/edit/:netServiceId}
+        \begin{enumerate}
+          \item GET - \texttt{showEditNetService(netServiceId)}
+        \end{enumerate}
+      \item \texttt{/netservices/addparameter}
+        \begin{enumerate}
+          \item POST - \texttt{addNetServiceParameter(netServiceId, netServiceName, defaultValue)}
+        \end{enumerate}
+
+
+     \item \texttt{/credentials}
+      \begin{enumerate}
+        \item GET - \texttt{showUserNetServiceCredentials()}
+      \end{enumerate}
+      \item \texttt{/credentials/:credentialId}
+      \begin{enumerate}
+        \item GET - \texttt{decryptNetServiceCredential(credentialId)}
+      \end{enumerate}
+      \item \texttt{/credentials/create}
+      \begin{enumerate}
+        \item GET - \texttt{showCreateNetServiceCredentialForm()}
+        \item POST - \texttt{createNetServiceCredential(netServiceId, netServiceCredentialUsername, netServiceCredentialPassword)}
+      \end{enumerate}
+      \item \texttt{/credentials/delete}
+      \begin{enumerate}
+        \item GET - \texttt{deleteNetServiceCredential(netServiceCredentialId)}
       \end{enumerate}
     \end{enumerate}
 
