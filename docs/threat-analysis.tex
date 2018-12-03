@@ -664,14 +664,14 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \hypertarget{threat25}{}
   \item \textbf{T25: Open Redirect}
   \begin{itemize}
-    \item Zweck: Benutzer auf eine Angriffseite umleiten.
-    \item Möglichkeiten: Eigene URL als Redirect-Parameter angeben.
+    \item Zweck: Benutzer auf eine Angriffseite umleiten
+    \item Möglichkeiten: Eigene URL als Redirect-Parameter angeben
     \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
-      	\item Zugrundeliegende Funktionalität nicht per GET sondern per POST anbieten, das vom Play CSRF-Schutz gesichert wird.
-      	\item URL-Eingabe durch ein Regex prüfen.
-      	\item URL-Eingabe durch eine Whitelist prüfen.
+      	\item Zugrundeliegende Funktionalität nicht per GET sondern per POST anbieten, das vom Play CSRF-Schutz gesichert wird
+      	\item URL-Eingabe durch ein Regex prüfen
+      	\item URL-Eingabe durch eine Whitelist prüfen
       \end{itemize}
   \end{itemize}
 \end{itemize}
@@ -683,17 +683,17 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \hypertarget{threat26}{}
   \item \textbf{T26: Log Poisoning}
   \begin{itemize}
-  \item Zweck: Log-Einträge für real nicht stattgefundene Events erstellen / Anderem Nutzer etwas anhängen.
-  \item Möglichkeiten: User-Input in Logs mit Newline versehen.
+  \item Zweck: Log-Einträge für real nicht stattgefundene Events erstellen / Anderem Nutzer etwas anhängen
+  \item Möglichkeiten: User-Input in Logs mit Newline versehen
   \item Risiko: Mittel
-  \item Mögliche Gegenmaßnahmen: Ausgabecodierung von User-Input in Logdatei z.B. Base64.
+  \item Mögliche Gegenmaßnahmen: Ausgabecodierung von User-Input in Logdatei z.B. Base64
   \end{itemize}
 
   \hypertarget{threat27}{}
   \item \textbf{T27: Log Code Injection}
   \begin{itemize}
-  \item Zweck: Programme angreifen, welche die Log parsen/öffnen.
-  \item Möglichkeiten: Schadcode in User-Input eingeben, der in der Log-Datei landet.
+  \item Zweck: Programme angreifen, welche die Log parsen/öffnen
+  \item Möglichkeiten: Schadcode in User-Input eingeben, der in der Log-Datei landet
   \item Risiko: Low
   \item Mögliche Gegenmaßnahmen: - Wird derzeit noch diskutiert -
   \end{itemize}
@@ -701,17 +701,17 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \hypertarget{threat28}{}
   \item \textbf{T28: Speicherverbrauch durch Spammen von Requests}
   \begin{itemize}
-  \item Zweck: Speicher des Servers völlig mit Logs belegen -> Denial of Service.
-  \item Möglichkeiten: In endlosschleife Requests ausführen.
+  \item Zweck: Speicher des Servers völlig mit Logs belegen (Denial of Service)
+  \item Möglichkeiten: In endlosschleife Requests ausführen
   \item Risiko: Mittel
-  \item Mögliche Gegenmaßnahmen: Log-Rotation verwenden.
+  \item Mögliche Gegenmaßnahmen: Log-Rotation verwenden
   \end{itemize}
 
   \hypertarget{threat29}{}
   \item \textbf{T29: Log-Deletion durch Spammen von Requests}
   \begin{itemize}
-  \item Zweck: Log-Rotation triggern, um eine Beweisvernichtung auszuführen.
-  \item Möglichkeiten: In endlosschleife Requests ausführen.
+  \item Zweck: Log-Rotation triggern, um eine Beweisvernichtung auszuführen
+  \item Möglichkeiten: In endlosschleife Requests ausführen
   \item Risiko: Mittel
   \item Mögliche Gegenmaßnahmen: - Wird derzeit noch diskutiert -
   \end{itemize}
@@ -720,13 +720,13 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \item \textbf{T30: Virensignatur in User-Input}
   \begin{itemize}
   \item Zweck: Denial of Service / Logging blockieren
-  \item Möglichkeiten: Eine Signatur in User-Input einbauen, die von einem Virenscanner erkannt wird. Virenscanner blockiert folgend Zugriffe auf die Log-Datei und Anwendung kann keine weiteren Logs schreiben.
+  \item Möglichkeiten: Eine Signatur in User-Input einbauen, die von einem Virenscanner erkannt wird. Virenscanner blockiert folgend Zugriffe auf die Log-Datei und Anwendung kann keine weiteren Logs schreiben
   \item Risiko: Low
   \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
-  	\item Keinen Virenscanner auf Applikationsserver verwenden.
-  	\item Anwendung in VM ohne Virenscanner laufen lassen.
-  	\item Log-Folder auf Whitelist des Virenscanner setzen.
+  	\item Keinen Virenscanner auf Applikationsserver verwenden
+  	\item Anwendung in VM ohne Virenscanner laufen lassen
+  	\item Log-Folder auf Whitelist des Virenscanner setzen
   \end{itemize}
   \end{itemize}
 \end{itemize}
@@ -738,13 +738,13 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \hypertarget{threat31}{}
   \item \textbf{T31: CSS Injection}
   \begin{itemize}
-  \item Zweck: Einfärbewarnung deaktivieren/manipulieren.
-  \item Möglichkeiten: Wie XSS, jedoch wird anstelle von Javascript Inline-CSS injeziert, das die CSS-Klasse überschreibt, welche für die Rotfärbung von Dateien verantwortlich ist.
+  \item Zweck: Einfärbewarnung deaktivieren/manipulieren
+  \item Möglichkeiten: Wie XSS, jedoch wird anstelle von Javascript Inline-CSS injeziert, das die CSS-Klasse überschreibt, welche für die Rotfärbung von Dateien verantwortlich ist
   \item Risiko: Mittel
   \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
 	  \item Ausgabecodierung.
-	  \item Content-Security-Policy, die Inline-CSS verbietet.
+	  \item Content-Security-Policy, die Inline-CSS verbietet
   \end{itemize}
 \end{itemize}
 \end{itemize}
