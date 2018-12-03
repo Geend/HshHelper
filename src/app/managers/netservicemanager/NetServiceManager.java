@@ -9,6 +9,7 @@ import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import models.NetService;
 import models.NetServiceCredential;
+import models.NetServiceParameter;
 import models.finders.NetServiceCredentialFinder;
 import models.finders.NetServiceFinder;
 import play.Logger;
@@ -30,7 +31,7 @@ public class NetServiceManager {
     private final Cipher cipher;
 
     @Inject
-    public NetServiceManager(SessionManager sessionManager, EbeanServer ebeanServer, NetServiceFinder netServiceFinder) {
+    public NetServiceManager(SessionManager sessionManager, EbeanServer ebeanServer, NetServiceFinder netServiceFinder, NetServiceCredentialFinder netServiceCredentialFinder, KeyGenerator keyGenerator, Cipher cipher) {
         this.sessionManager = sessionManager;
         this.ebeanServer = ebeanServer;
         this.netServiceFinder = netServiceFinder;
