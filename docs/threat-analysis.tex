@@ -114,7 +114,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/users/editQuota}
       \begin{enumerate}
-        \item GET - \texttt{changeUserQuotaLimit(userId, 
+        \item GET - \texttt{changeUserQuotaLimit(userId,
         newQuotaLimit)}
       \end{enumerate}
       \item \texttt{/resetpassword}
@@ -291,7 +291,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \begin{enumerate}
         \item POST - \texttt{createGroupPermission(fileId, groupId, permissionLevel)}
       \end{enumerate}
-      
+
       \item \texttt{/permissions/deleteGroupPermission}
       \begin{enumerate}
         \item POST - \texttt{deleteGroupPermission(groupPermissionId, returnUrl)}
@@ -672,7 +672,7 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
       	\item Zugrundeliegende Funktionalität nicht per GET sondern per POST anbieten, das vom Play CSRF-Schutz gesichert wird.
       	\item URL-Eingabe durch ein Regex prüfen.
       	\item URL-Eingabe durch eine Whitelist prüfen.
-      \end{itemize} 
+      \end{itemize}
   \end{itemize}
 \end{itemize}
 
@@ -706,7 +706,7 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \item Risiko: Mittel
   \item Mögliche Gegenmaßnahmen: Log-Rotation verwenden.
   \end{itemize}
-  
+
   \hypertarget{threat29}{}
   \item \textbf{T29: Log-Deletion durch Spammen von Requests}
   \begin{itemize}
@@ -762,7 +762,7 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
       \item Einen Maximalwert definieren.
-      \end{itemize} 
+      \end{itemize}
   \end{itemize}
 
   \hypertarget{threat33}{}
@@ -836,7 +836,7 @@ In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahme
     Session an IP-Adresse binden & \linktothreat{threat10}{T10} & \greencheckmark \\ \hline
     Session-Lebenszeit stark begrenzen & \linktothreat{threat10}{T10} & \greencheckmark \\ \hline
     Aktionen inkl. User, IP-Adresse und Zeit loggen & \linktothreat{threat11}{T11} & \greencheckmark \\ \hline
-    Zwei-Faktor-Authentisierung & \linktothreat{threat13}{T13}, \linktothreat{threat17}{T17} & \redxmark \\ \hline
+    Zwei-Faktor-Authentisierung & \linktothreat{threat13}{T13}, \linktothreat{threat17}{T17} & \greencheckmark \\ \hline
     bcrypt als Hashing-Algorithmus verwenden & \linktothreat{threat15}{T15} & \greencheckmark \\ \hline
     Operationen unter konstanter, gleichbleibender Laufzeit - auch bei unterschiedlichen Ausführungssträngen - ausführen & \linktothreat{threat16}{T16}, \linktothreat{threat19}{T19}  & \greencheckmark \\ \hline
     Verbieten schwacher Passwörter & \linktothreat{threat17}{T17} & \redxmark \\ \hline
