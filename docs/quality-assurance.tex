@@ -305,6 +305,8 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
   Mögliche Race Conditions während der Validation eines Nutzernamens & Review & 0.5 \\ \hline
   Mögliche Side-Channel-Attacke beim Loginversuch durch die Login-Firewall & Review & 0.75 \\ \hline
   Endlosschleife von Redirects beim Login eines Nutzers mit valider Session aber unterschiedlicher IP & Review & 1.5 \\ \hline
+  NullPointerException beim Herunterladen einer 0-Byte Datei & Review & 0.5 \\ \hline
+  Vergleich zweier boxed Integers via \texttt{!=} statt \texttt{equals()} & Review & 0.25 \\ \hline
   \end{tabularx}
 \end{table}
 
