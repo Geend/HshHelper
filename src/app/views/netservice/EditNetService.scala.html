@@ -39,7 +39,18 @@
                 <td>@parameter.getName</td>
                 <td>@parameter.getDefaultValue</td>
                 <td>@parameter.getParameterType</td>
-                <td class="right">Löschen</td>
+                <td class="right">
+                    @helper.form(action = routes.NetServiceController.removeNetServiceParameter()){
+                        <input type="hidden" value="@editDetailsForm("netServiceId").getValue.get" name="netServiceId" />
+                        <input type="hidden" value="@parameter.getNetServiceParameterId()" name="netServiceParameterId" />
+
+                        <div class="inputControls">
+                            <input type="submit" value="Löschen" />
+                        </div>
+
+                        @helper.CSRF.formField
+                    }
+                </td>
             </tr>
         }
         </tbody>
@@ -48,7 +59,7 @@
 
     @helper.form(action = routes.NetServiceController.addNetServiceParameter()) {
         <div class="inputForm">
-            @helper.TextInput(form("serviceName"), "Name")
+            @helper.TextInput(form("name"), "Name")
             @helper.TextInput(form("defaultValue"), "Default")
             @helper.SelectInput(
                 form("parameterType"),

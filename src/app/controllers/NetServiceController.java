@@ -30,6 +30,7 @@ public class NetServiceController {
     private final Form<DeleteNetServiceDto> deleteNetServiceDtoForm;
     private final Form<EditNetserviceDto> editNetserviceDtoForm;
     private final Form<AddNetServiceParameterDto> addNetServiceParameterDtoForm;
+    private final Form<RemoveNetServiceParameterDto> removeNetServiceParameterDtoForm;
     private final Form<CreateNetServiceCredentialsDto> createNetServiceCredentialsDtoForm;
     private final Form<DeleteNetServiceCredentialsDto> deleteNetServiceCredentialsDtoForm;
 
@@ -40,6 +41,7 @@ public class NetServiceController {
         this.deleteNetServiceDtoForm = formFactory.form(DeleteNetServiceDto.class);
         this.editNetserviceDtoForm = formFactory.form(EditNetserviceDto.class);
         this.addNetServiceParameterDtoForm = formFactory.form(AddNetServiceParameterDto.class);
+        this.removeNetServiceParameterDtoForm = formFactory.form(RemoveNetServiceParameterDto.class);
         this.createNetServiceCredentialsDtoForm = formFactory.form(CreateNetServiceCredentialsDto.class);
         this.deleteNetServiceCredentialsDtoForm = formFactory.form(DeleteNetServiceCredentialsDto.class);
     }
@@ -117,14 +119,23 @@ public class NetServiceController {
         Form<AddNetServiceParameterDto> boundForm = addNetServiceParameterDtoForm.bindFromRequest();
 
         if(boundForm.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         netServiceManager.addNetServiceParameter(boundForm.get().getNetServiceId(), boundForm.get().getName(), boundForm.get().getDefaultValue());
         return redirect(routes.NetServiceController.showEditNetService(boundForm.get().getNetServiceId()));
-
     }
 
+    public Result removeNetServiceParameter() throws UnauthorizedException, InvalidArgumentException {
+        Form<RemoveNetServiceParameterDto> boundForm = removeNetServiceParameterDtoForm.bindFromRequest();
+
+        if(boundForm.hasErrors()) {
+            throw new InvalidArgumentException();
+        }
+
+        netServiceManager.removeNetServiceParameter(boundForm.get().getNetServiceId(), boundForm.get().getNetServiceParameterId());
+        return redirect(routes.NetServiceController.showEditNetService(boundForm.get().getNetServiceId()));
+    }
 
     public Result showUserNetServiceCredentials(){
 
@@ -143,8 +154,6 @@ public class NetServiceController {
         }
 
         netServiceManager.createNetUserCredential(boundForm.get().getNetServiceId(), boundForm.get().getUsername(), boundForm.get().getPassword());
-
-
         return redirect(routes.NetServiceController.showUserNetServiceCredentials());
     }
 
@@ -158,8 +167,6 @@ public class NetServiceController {
         netServiceManager.deleteNetServiceCredential(boundForm.get().getNetServiceCredentialId());
 
         return redirect(routes.NetServiceController.showUserNetServiceCredentials());
-
-
     }
 
     public Result decryptNetServiceCredential(Long credentialId) throws UnauthorizedException {

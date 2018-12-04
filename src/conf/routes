@@ -91,8 +91,8 @@ POST        /netservices/create                               controllers.NetSer
 POST        /netservices/delete                               controllers.NetServiceController.deleteNetService
 GET         /netservices/edit/:netServiceId                   controllers.NetServiceController.showEditNetService(netServiceId:Long)
 POST        /netservices/edit                                 controllers.NetServiceController.editNetService
-
 POST        /netservices/addparameter                         controllers.NetServiceController.addNetServiceParameter
+POST        /netservices/removeparameter                      controllers.NetServiceController.removeNetServiceParameter
 
 
 GET         /credentials                                      controllers.NetServiceController.showUserNetServiceCredentials
