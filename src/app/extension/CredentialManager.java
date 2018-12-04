@@ -34,17 +34,22 @@ public class CredentialManager {
     }
 
     public void updateCredentialPassword(String oldPassword, String newPassword) {
-        byte[] currentCredentialPlaintext = getCredentialPlaintext(oldPassword);
+        User currentUser = sessionManager.currentUser();
+        updateCredentialPassword(currentUser, oldPassword, newPassword);
+    }
+
+    public void updateCredentialPassword(User user, String oldPassword, String newPassword) {
+        byte[] currentCredentialPlaintext = getCredentialPlaintext(user, oldPassword);
 
         byte[] salt = keyGenerator.generateSalt();
         CryptoKey key = keyGenerator.generate(newPassword, salt);
         CryptoResult result = cipher.encrypt(key, currentCredentialPlaintext);
 
-        User currentUser = sessionManager.currentUser();
-        currentUser.setCryptoSalt(salt);
-        currentUser.setInitializationVectorCredentialKey(result.getInitializationVector());
-        currentUser.setCredentialKeyCipherText(result.getCiphertext());
-        ebeanServer.save(currentUser);
+        ebeanServer.refresh(user);
+        user.setCryptoSalt(salt);
+        user.setInitializationVectorCredentialKey(result.getInitializationVector());
+        user.setCredentialKeyCipherText(result.getCiphertext());
+        ebeanServer.save(user);
     }
 
     public void resetCredential(User user, String newPassword) {

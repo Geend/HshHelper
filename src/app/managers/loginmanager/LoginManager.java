@@ -159,7 +159,7 @@ public class LoginManager {
         }
 
         try(Transaction tx = ebeanSever.beginTransaction(TxIsolation.SERIALIZABLE)) {
-            credentialManager.updateCredentialPassword(currentPassword, newPassword);
+            credentialManager.updateCredentialPassword(authenticatedUser, currentPassword, newPassword);
             authenticatedUser.setIsPasswordResetRequired(false);
             authenticatedUser.setPasswordHash(hashHelper.hashPassword(newPassword));
             ebeanSever.save(authenticatedUser);

@@ -90,7 +90,10 @@ public class LoginController extends Controller {
             boundForm = boundForm.withGlobalError("Invalid Login Data!");
             return badRequest(views.html.login.Login.render(boundForm, false));
         } catch (PasswordChangeRequiredException e) {
-            return redirect(routes.LoginController.changePasswordAfterReset());
+            ChangePasswordAfterResetDto dto = new ChangePasswordAfterResetDto();
+            dto.setUsername(loginData.getUsername());
+            dto.setCurrentPassword(loginData.getPassword());
+            return ok(views.html.login.ChangePasswordAfterReset.render(this.changePasswordForm.fill(dto), false));
         } catch (GeneralSecurityException e) {
             return badRequest(views.html.login.Login.render(boundForm, false));
         }
