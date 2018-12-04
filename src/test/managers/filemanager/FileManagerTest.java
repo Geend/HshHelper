@@ -511,5 +511,16 @@ public class FileManagerTest {
         assertThat(savedObjects.getValue().getComment(), is(newComment));
     }
 
+    @Test
+    public void getCurrentQuotaUsageTest() {
+        UserQuota quota = mock(UserQuota.class);
+        User currentUser = mock(User.class);
+        when(sessionManager.currentUser()).thenReturn(currentUser);
+        when(currentUser.getUserId()).thenReturn(1L);
+        when(fileFinder.getUsedQuota(1L)).thenReturn(quota);
+
+        UserQuota result = fileManager.getCurrentQuotaUsage();
+        assertThat(result, is(quota));
+    }
 
 }
