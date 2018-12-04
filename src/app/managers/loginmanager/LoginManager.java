@@ -179,6 +179,13 @@ public class LoginManager {
         logger.info("Deleted "+deletedSessions+" Login-Logs");
     }
 
+    public void deleteOldPasswordResetTokens() {
+        int deleteTokens = passwordResetTokenFinder.query().where()
+                .lt("creationDate", DateTime.now().minusHours(PASSWORD_RESET_TOKEN_TIMEOUT_HOURS)).delete();
+
+        logger.info("Deleted "+deleteTokens+" Password-Reset-Tokens");
+    }
+
     public void sendResetPasswordToken(String username, String recaptcha, Http.Request request) throws CaptchaRequiredException, InvalidArgumentException {
         if(!recaptchaHelper.IsValidResponse(recaptcha, request.remoteAddress())) {
             // TODO: encode username -> log injection

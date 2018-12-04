@@ -23,5 +23,12 @@ public class LoginManagerInitialization {
                 this.loginManager::deleteOldLoginRecords,
                 this.executionContext
         );
+
+        this.actorSystem.scheduler().schedule(
+                Duration.create(0, TimeUnit.SECONDS), // initialDelay
+                Duration.create(5, TimeUnit.MINUTES), // interval
+                this.loginManager::deleteOldPasswordResetTokens,
+                this.executionContext
+        );
     }
 }
