@@ -7,7 +7,7 @@ $(document).ready(function() {
 
             $.ajax({
                 dataType: "json",
-                url: "/netservice/credentials/"+credentialId,
+                url: "/credentials/"+credentialId,
                 async: false,
                 success: function(data) {
                     form.find(".username").each(function () {
