@@ -137,23 +137,24 @@ public class UserController extends Controller {
         return redirect(routes.UserController.showActiveUserSessions());
     }
 
-    public Result activateTwoFactorAuth() throws IOException {
+    public Result activateTwoFactorAuth() throws IOException, InvalidArgumentException {
         Form<TwoFactorAuthDto> boundForm = this.twoFactorAuthForm.bindFromRequest();
+
         if(boundForm.hasErrors()) {
-            String imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", boundForm.get().getSecret());
+            String secret = boundForm.rawData().get("secret");
+            if(secret == null) {
+                throw new InvalidArgumentException();
+            }
+
+            String imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", secret);
             return badRequest(views.html.users.Confirm2FactorAuth.render(imageSourceData, boundForm));
         }
 
         TwoFactorAuthDto activationData = boundForm.get();
 
-        Integer activationToken = 0;
-        if(!empty(activationData.getActivationToken())) {
-            activationToken = Integer.parseInt(activationData.getActivationToken());
-        }
-
         try {
 
-            this.userManager.activateTwoFactorAuth(activationData.getSecret(), activationToken);
+            this.userManager.activateTwoFactorAuth(activationData.getSecret(), activationData.getActivationToken());
         } catch (Invalid2FATokenException e) {
             String imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", boundForm.get().getSecret());
             boundForm = boundForm.withError("activationToken", "Ungültiges Token!");
