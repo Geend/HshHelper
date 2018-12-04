@@ -60,7 +60,7 @@ public class NetServiceManager {
         return netServiceFinder.byIdOptional(netServiceId);
     }
 
-    public void createNetService(String name, String url) throws UnauthorizedException {
+    public NetService createNetService(String name, String url) throws UnauthorizedException {
         if(!sessionManager.currentPolicy().canCreateNetService())
             throw new UnauthorizedException();
 
@@ -70,6 +70,26 @@ public class NetServiceManager {
         netService.setName(name);
         netService.setUrl(url);
 
+        ebeanServer.save(netService);
+        return netService;
+    }
+
+    public void editNetService(Long netServiceId, String newName, String newUrl) throws UnauthorizedException, InvalidArgumentException {
+        Optional<NetService> netServiceOptional = netServiceFinder.byIdOptional(netServiceId);
+        if(!netServiceOptional.isPresent()) {
+            throw new InvalidArgumentException("Unkown NetServiceId");
+        }
+
+        NetService netService = netServiceOptional.get();
+
+        if(!sessionManager.currentPolicy().canEditNetService(netService)){
+            throw new UnauthorizedException();
+        }
+
+        logger.info(sessionManager.currentUser() + " is editing net service " + netService.getName());
+
+        netService.setName(newName);
+        netService.setUrl(newUrl);
         ebeanServer.save(netService);
     }
 
@@ -183,4 +203,6 @@ public class NetServiceManager {
 
         return credential.getNetService();
     }
+
+
 }
