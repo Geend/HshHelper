@@ -10,8 +10,9 @@
     <div class="left_right">
         <div class="left">
             <div class="fileMeta @helper.TrustworthyFileClass(fileMeta)">
-                Dateiname: @fileMeta.getFilename()<br>
-                Größe: @FormatSize(fileMeta.getSize())<br>
+                Dateiname: @fileMeta.getFilename<br>
+                Dateigröße: @FormatSize(fileMeta.getSize)<br>
+                Quota-Größe: @FormatSize(fileMeta.getTotalSize)<br>
                 Eigentümer: @fileMeta.getOwnerName<br>
                 Geschrieben von: @fileMeta.getWrittenByName am @fileMeta.getWrittenByDt.toString("dd.MM.yyyy - HH:mm:ss")<br>
 

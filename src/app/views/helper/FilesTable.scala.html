@@ -26,7 +26,7 @@
                 <td class="name"><b><a href="@routes.FileController.showFile(file.getFileId)">@file.getFilename</a></b></td>
                 <td>@helper.Truncate(file.getComment)</td>
                 <td>@file.getOwnerName</td>
-                <td>@extension.FileSizeFormatter.FormatSize(file.getTotalSize)</td>
+                <td>@extension.FileSizeFormatter.FormatSize(file.getSize)</td>
                 <td>@permissions(file)</td>
             </tr>
         }
