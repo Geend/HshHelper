@@ -8,8 +8,6 @@ import javax.persistence.Id;
 @Entity
 public class NetServiceParameter {
 
-
-
     public enum NetServiceParameterType{
         HIDDEN,
         USERNAME,
@@ -46,6 +44,7 @@ public class NetServiceParameter {
         this.name = name;
         this.defaultValue = defaultValue;
     }
+
 
     public Long getNetServiceParameterId() {
         return netServiceParameterId;

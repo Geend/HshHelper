@@ -43,7 +43,7 @@ public class NetServiceManager {
 
 
     public List<NetService> getAllNetServices() throws UnauthorizedException {
-        if(!sessionManager.currentPolicy().canSeeAllNetServices())
+        if (!sessionManager.currentPolicy().canSeeAllNetServices())
             throw new UnauthorizedException();
 
         logger.info(sessionManager.currentUser() + " is looking at all net services.");
@@ -52,7 +52,7 @@ public class NetServiceManager {
     }
 
     public Optional<NetService> getNetService(Long netServiceId) throws UnauthorizedException {
-        if(!sessionManager.currentPolicy().canSeeAllNetServices())
+        if (!sessionManager.currentPolicy().canSeeAllNetServices())
             throw new UnauthorizedException();
 
         logger.info(sessionManager.currentUser() + " is looking at all net " + netServiceId + ".");
@@ -60,8 +60,8 @@ public class NetServiceManager {
         return netServiceFinder.byIdOptional(netServiceId);
     }
 
-    public void createNetService(String name, String url) throws UnauthorizedException {
-        if(!sessionManager.currentPolicy().canCreateNetService())
+    public NetService createNetService(String name, String url) throws UnauthorizedException {
+        if (!sessionManager.currentPolicy().canCreateNetService())
             throw new UnauthorizedException();
 
         logger.info(sessionManager.currentUser() + " is creating net service " + name);
@@ -71,24 +71,43 @@ public class NetServiceManager {
         netService.setUrl(url);
 
         ebeanServer.save(netService);
+        return netService;
+    }
+
+    public void editNetService(Long netServiceId, String newName, String newUrl) throws UnauthorizedException, InvalidArgumentException {
+        Optional<NetService> netServiceOptional = netServiceFinder.byIdOptional(netServiceId);
+        if (!netServiceOptional.isPresent()) {
+            throw new InvalidArgumentException("Unkown NetServiceId");
+        }
+
+        NetService netService = netServiceOptional.get();
+
+        if (!sessionManager.currentPolicy().canEditNetService(netService)) {
+            throw new UnauthorizedException();
+        }
+
+        logger.info(sessionManager.currentUser() + " is editing net service " + netService.getName());
+
+        netService.setName(newName);
+        netService.setUrl(newUrl);
+        ebeanServer.save(netService);
     }
 
     public void addNetServiceParameter(Long netServiceId, String name, String defaultValue) throws UnauthorizedException, InvalidArgumentException {
-
         Optional<NetService> netServiceOpt = getNetService(netServiceId);
 
-        if(!netServiceOpt.isPresent())
+        if (!netServiceOpt.isPresent())
             throw new InvalidArgumentException();
 
         NetService netService = netServiceOpt.get();
 
-        if(!sessionManager.currentPolicy().canEditNetService(netService))
+        if (!sessionManager.currentPolicy().canEditNetService(netService))
             throw new UnauthorizedException();
 
-
+        //TODO: Check if NetService alread has parameter of type username/password and if one of such types is supposed to be added here
         NetServiceParameter parameter = new NetServiceParameter();
         parameter.setName(name);
-        if(defaultValue != null){
+        if (defaultValue != null) {
             parameter.setDefaultValue(defaultValue);
         }
 
@@ -97,15 +116,36 @@ public class NetServiceManager {
 
     }
 
+    public void removeNetServiceParameter(Long netServiceId, Long netServiceParameterId) throws UnauthorizedException, InvalidArgumentException {
+        Optional<NetService> netServiceOpt = getNetService(netServiceId);
+
+        if (!netServiceOpt.isPresent())
+            throw new InvalidArgumentException();
+
+        NetService netService = netServiceOpt.get();
+
+        if (!sessionManager.currentPolicy().canEditNetService(netService))
+            throw new UnauthorizedException();
+
+        Optional<NetServiceParameter> parameter = netService.getParameters().stream().filter(x -> x.getNetServiceParameterId().equals(netServiceParameterId)).findAny();
+
+        if (parameter.isPresent()) {
+            netService.getParameters().remove(parameter.get());
+            ebeanServer.save(netService);
+            ebeanServer.delete(parameter.get());
+        } else {
+            throw new InvalidArgumentException();
+        }
+    }
 
     public void deleteNetService(Long netServiceId) throws UnauthorizedException, InvalidArgumentException {
-        if(!sessionManager.currentPolicy().canDeleteNetServices())
+        if (!sessionManager.currentPolicy().canDeleteNetServices())
             throw new UnauthorizedException();
 
 
-        Optional<NetService> netServiceOpt =  netServiceFinder.byIdOptional(netServiceId);
+        Optional<NetService> netServiceOpt = netServiceFinder.byIdOptional(netServiceId);
 
-        if(!netServiceOpt.isPresent()){
+        if (!netServiceOpt.isPresent()) {
             throw new InvalidArgumentException();
         }
 
@@ -121,10 +161,10 @@ public class NetServiceManager {
         return sessionManager.currentUser().getNetServiceCredentials();
     }
 
-    public void createNetUserCredential(Long netServiceId, String username, String password) {
+    public void createNetUserCredential(Long netServiceId, String username, String password) throws InvalidArgumentException {
         Optional<NetService> netService = netServiceFinder.byIdOptional(netServiceId);
-        if(!netService.isPresent()) {
-            throw new IllegalArgumentException("Unkown NetServiceId");
+        if (!netService.isPresent()) {
+            throw new InvalidArgumentException("Unkown NetServiceId");
         }
 
         CryptoKey ck = keyGenerator.generate(sessionManager.getCredentialKey());
@@ -138,24 +178,33 @@ public class NetServiceManager {
         credential.setInitializationVectorPassword(encPassword.getInitializationVector());
         credential.setPasswordCipherText(encPassword.getCiphertext());
         credential.setUser(sessionManager.currentUser());
+
         ebeanServer.save(credential);
     }
 
-    public void deleteNetServiceCredential(Long netServiceCredentialId) {
-        //TODO
+    public void deleteNetServiceCredential(Long netServiceCredentialId) throws InvalidArgumentException, UnauthorizedException {
+        Optional<NetServiceCredential> credentialOpt = netServiceCredentialFinder.byIdOptional(netServiceCredentialId);
+
+        if(!credentialOpt.isPresent()){
+            throw new InvalidArgumentException();
+        }
+
+        if(!sessionManager.currentPolicy().canDeleteNetServicesCredential(credentialOpt.get())){
+            throw new UnauthorizedException();
+        }
+
+        ebeanServer.delete(credentialOpt.get());
     }
 
 
-
-
-    public PlaintextCredential decryptCredential(Long netServiceCredentialId) throws UnauthorizedException {
+    public PlaintextCredential decryptCredential(Long netServiceCredentialId) throws UnauthorizedException, InvalidArgumentException {
         Optional<NetServiceCredential> optCredential = netServiceCredentialFinder.byIdOptional(netServiceCredentialId);
-        if(!optCredential.isPresent()) {
-            throw new IllegalArgumentException("credentialId does not exist");
+        if (!optCredential.isPresent()) {
+            throw new InvalidArgumentException("credentialId does not exist");
         }
 
         NetServiceCredential credential = optCredential.get();
-        if(!sessionManager.currentPolicy().canReadCredential(credential)) {
+        if (!sessionManager.currentPolicy().canReadCredential(credential)) {
             throw new UnauthorizedException();
         }
 
@@ -165,22 +214,24 @@ public class NetServiceManager {
         byte[] passwordPlaintext = cipher.decrypt(ck, credential.getInitializationVectorPassword(), credential.getPasswordCipherText());
 
         return new PlaintextCredential(
-            new String(usernamePlaintext),
-            new String(passwordPlaintext)
+                new String(usernamePlaintext),
+                new String(passwordPlaintext)
         );
     }
 
-    public NetService getCredentialNetService(Long credentialId) throws UnauthorizedException {
+    public NetService getCredentialNetService(Long credentialId) throws UnauthorizedException, InvalidArgumentException {
         Optional<NetServiceCredential> optCredential = netServiceCredentialFinder.byIdOptional(credentialId);
-        if(!optCredential.isPresent()) {
-            throw new IllegalArgumentException("credentialId does not exist");
+        if (!optCredential.isPresent()) {
+            throw new InvalidArgumentException("credentialId does not exist");
         }
 
         NetServiceCredential credential = optCredential.get();
-        if(!sessionManager.currentPolicy().canReadCredential(credential)) {
+        if (!sessionManager.currentPolicy().canReadCredential(credential)) {
             throw new UnauthorizedException();
         }
 
         return credential.getNetService();
     }
+
+
 }

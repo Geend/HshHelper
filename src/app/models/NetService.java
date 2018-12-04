@@ -24,6 +24,9 @@ public class NetService extends Model {
     )
     private List<NetServiceParameter> parameters = new ArrayList<>();
 
+    @OneToMany(mappedBy = "netService", cascade = CascadeType.ALL)
+    private List<NetServiceCredential> credentials = new ArrayList<>();
+
 
     public Long getNetServiceId() {
         return netServiceId;
@@ -45,6 +48,13 @@ public class NetService extends Model {
         this.url = url;
     }
 
+    public List<NetServiceCredential> getCredentials() {
+        return credentials;
+    }
+
+    public void setCredentials(List<NetServiceCredential> credentials) {
+        this.credentials = credentials;
+    }
 
     public List<NetServiceParameter> getParameters() {
         return parameters;
