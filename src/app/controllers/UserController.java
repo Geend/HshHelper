@@ -140,9 +140,9 @@ public class UserController extends Controller {
     public Result activateTwoFactorAuth() throws IOException, InvalidArgumentException {
         Form<TwoFactorAuthDto> boundForm = this.twoFactorAuthForm.bindFromRequest();
 
-        if(boundForm.hasErrors()) {
+        if (boundForm.hasErrors()) {
             String secret = boundForm.rawData().get("secret");
-            if(secret == null) {
+            if (secret == null) {
                 throw new InvalidArgumentException();
             }
 
@@ -171,7 +171,7 @@ public class UserController extends Controller {
 
     public Result deactivateSpecificUserTwoFactorAuth() throws UnauthorizedException, InvalidArgumentException {
         Form<UserIdDto> boundForm = disable2FAForm.bindFromRequest();
-        if(boundForm.hasErrors()) {
+        if (boundForm.hasErrors()) {
             throw new InvalidArgumentException();
         }
 
@@ -205,7 +205,7 @@ public class UserController extends Controller {
     public Result changeUserSessionTimeout() throws UnauthorizedException, InvalidArgumentException {
         Form<ChangeUserSessionTimeoutDto> boundForm = changeUserSessionTimeoutForm.bindFromRequest("valueInMinutes");
 
-        if(boundForm.hasErrors()) {
+        if (boundForm.hasErrors()) {
             return badRequest(views.html.users.UserSettings.render(
                     boundForm,
                     changeOwnPasswordForm,
@@ -221,7 +221,7 @@ public class UserController extends Controller {
     public Result changeUserPassword() throws UnauthorizedException {
         Form<ChangeOwnPasswordDto> boundForm = changeOwnPasswordForm.bindFromRequest();
 
-        if(boundForm.hasErrors()){
+        if (boundForm.hasErrors()) {
             boundForm = boundForm.withError("newPassword", "Das Passwort ist zu schwach!");
             return badRequest(views.html.users.UserSettings.render(
                     changeUserSessionTimeoutForm,
@@ -235,9 +235,9 @@ public class UserController extends Controller {
         } catch (WeakPasswordException e) {
             boundForm = boundForm.withError("newPassword", "Das Passwort ist zu schwach!");
             return badRequest(views.html.users.UserSettings.render(
-                changeUserSessionTimeoutForm,
-                boundForm,
-                sessionManager.currentUser().has2FA()
+                    changeUserSessionTimeoutForm,
+                    boundForm,
+                    sessionManager.currentUser().has2FA()
             ));
         }
 
@@ -260,14 +260,18 @@ public class UserController extends Controller {
     public Result changeUserQuotaLimit() throws UnauthorizedException, InvalidArgumentException {
         Form<ChangeUserQuotaLimitDto> boundForm = changeUserQuotaLimitForm.bindFromRequest();
 
-        boundForm.hasErrors();
-        Long userId = boundForm.get().getUserId();
-        UserMetaInfo metaInfo = userManager.getUserMetaInfo(userId);
-
-        if(boundForm.hasErrors()){
-            return badRequest(views.html.users.UserAdminSettings.render(boundForm, metaInfo.getHas2FA(), userId));
+        if (boundForm.hasErrors()) {
+            try {
+                Long userId = Long.parseLong(boundForm.rawData().get("userId"));
+                UserMetaInfo metaInfo = userManager.getUserMetaInfo(userId);
+                return badRequest(views.html.users.UserAdminSettings.render(boundForm, metaInfo.getHas2FA(), userId));
+            } catch (NumberFormatException e) {
+                throw new InvalidArgumentException();
+            }
         }
 
+        Long userId = boundForm.get().getUserId();
+        UserMetaInfo metaInfo = userManager.getUserMetaInfo(userId);
         userManager.changeUserQuotaLimit(boundForm.get().getUserId(), boundForm.get().getNewQuotaLimit());
         return ok(views.html.users.UserAdminSettings.render(boundForm, metaInfo.getHas2FA(), userId));
     }
