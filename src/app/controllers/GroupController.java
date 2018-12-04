@@ -123,7 +123,7 @@ public class GroupController extends Controller {
         Form<DeleteGroupDto> form = deleteGroupForm.bindFromRequest();
 
         if (form.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         Group group = groupManager.getGroup(form.get().getGroupId());
@@ -135,7 +135,7 @@ public class GroupController extends Controller {
         Form<DeleteGroupDto> form = deleteGroupForm.bindFromRequest();
 
         if (form.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         groupManager.deleteGroup(form.get().getGroupId());
@@ -146,7 +146,7 @@ public class GroupController extends Controller {
     public Result removeGroupMember(Long groupId) throws UnauthorizedException, InvalidArgumentException {
         Form<UserIdDto> form = removeGroupUserForm.bindFromRequest();
         if (form.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         UserIdDto ru = form.get();

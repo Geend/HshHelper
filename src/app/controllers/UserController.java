@@ -69,7 +69,7 @@ public class UserController extends Controller {
     public Result showConfirmDeleteForm() throws UnauthorizedException, InvalidArgumentException {
         Form<UserIdDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
         if (boundForm.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         Long userToDeleteId = boundForm.get().getUserId();
@@ -81,7 +81,7 @@ public class UserController extends Controller {
     public Result deleteUser() throws UnauthorizedException, InvalidArgumentException {
         Form<UserIdDto> boundForm = this.deleteUserForm.bindFromRequest("userId");
         if (boundForm.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
         Long userToDeleteId = boundForm.get().getUserId();
 
@@ -171,7 +171,7 @@ public class UserController extends Controller {
     public Result deactivateSpecificUserTwoFactorAuth() throws UnauthorizedException, InvalidArgumentException {
         Form<UserIdDto> boundForm = disable2FAForm.bindFromRequest();
         if(boundForm.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         this.userManager.deactivateTwoFactorAuth(boundForm.get().getUserId());

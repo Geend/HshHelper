@@ -71,7 +71,7 @@ public class FileController extends Controller {
     public Result deleteFile() throws UnauthorizedException, InvalidArgumentException {
         Form<DeleteFileDto> boundForm = deleteFileForm.bindFromRequest();
         if (boundForm.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         fileManager.deleteFile(boundForm.get().getFileId());

@@ -72,7 +72,7 @@ public class PermissionController extends Controller {
     public Result deleteUserPermission() throws UnauthorizedException, InvalidArgumentException {
         Form<UserPermissionIdDto> boundForm = this.deleteUserPermissionForm.bindFromRequest("userPermissionId", "returnUrl");
         if (boundForm.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         this.manager.deleteUserPermission(boundForm.get().getUserPermissionId());
@@ -87,7 +87,7 @@ public class PermissionController extends Controller {
     public Result editUserPermission() throws InvalidArgumentException, UnauthorizedException {
         Form<EditUserPermissionDto> boundForm = this.editUserPermissionForm.bindFromRequest("userPermissionId", "permissionLevel", "returnUrl");
         if (boundForm.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
         EditUserPermissionDto dto = boundForm.get();
 
@@ -121,7 +121,7 @@ public class PermissionController extends Controller {
     public Result deleteGroupPermission() throws UnauthorizedException, InvalidArgumentException {
         Form<GroupPermissionIdDto> boundForm = deleteGroupPermissionForm.bindFromRequest("groupPermissionId", "returnUrl");
         if (boundForm.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         this.manager.deleteGroupPermission(boundForm.get().getGroupPermissionId());
@@ -136,7 +136,7 @@ public class PermissionController extends Controller {
     public Result editGroupPermission() throws InvalidArgumentException, UnauthorizedException {
         Form<EditGroupPermissionDto> boundForm = this.editGroupPermissionForm.bindFromRequest("groupPermissionId", "permissionLevel", "returnUrl");
         if (boundForm.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         EditGroupPermissionDto dto = boundForm.get();
@@ -194,7 +194,7 @@ public class PermissionController extends Controller {
     public Result createGroupPermission() throws UnauthorizedException, InvalidArgumentException {
         Form<CreateGroupPermissionDto> boundForm = createGroupPermissionForm.bindFromRequest("fileId", "groupId", "permissionLevel");
         if (boundForm.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         CreateGroupPermissionDto createUserPermissionDto = boundForm.get();
@@ -211,7 +211,7 @@ public class PermissionController extends Controller {
     public Result createUserPermission() throws UnauthorizedException, InvalidArgumentException {
         Form<CreateUserPermissionDto> boundForm = createUserPermissionForm.bindFromRequest("fileId", "userId", "permissionLevel");
         if (boundForm.hasErrors()) {
-            return badRequest();
+            throw new InvalidArgumentException();
         }
 
         CreateUserPermissionDto createUserPermissionDto = boundForm.get();
