@@ -8,6 +8,8 @@
 
 \usepackage{hshhelper_base}
 
+\usepackage{dirtree}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}    % hier gehts los
   \thispagestyle{empty} % Titelseite
@@ -36,12 +38,42 @@
 
 \chapter{Installation des HsH-Helpers}
 
+Zusätzlich zu dieser Installations- und Bedienungsanleitung haben sie eine ZIP-Datei erhalten.
+Diese ZIP-Datei können sie in einem beliebligen Verzeichnis extrahieren.
+Dabei entsteht folgende Ordnerstruktur: \\
+\dirtree{%
+.1 bin.
+.2 hshhelper.
+.2 hshhelper.bat.
+.1 conf.
+.2 application.conf.
+.2 secrets.conf.
+.2 logback.xml.
+.1 lib.
+.2 hshhelper.hshhelper-1.0-SNAPSHOT.jar.
+.2 // Alle Abhängigkeiten.
+}
+
+Im \texttt{bin}-Ordner befinden sich Startskripte für Windows sowie UNIX.
+Diese können auf der Kommandozeile ausgeführt werden, um die HsH-Helfer Applikation zu starten.
+
+Nach dem Start der Applikation werden Sie auf der Kommandozeile von einigen Logging-Ausgaben begrüßt.
+Sobald Sie die Zeile \texttt{[info] p.c.s.AkkaHttpServer - Listening for HTTP on /0:0:0:0:0:0:0:0:9000} sehen, ist der Server betriebsbereit.
+Danach können sie den HsH-Helfer von ihrem Browser erreichen, in dem sie \texttt{\url{http://localhost:9000}} ansurfen, sofern sie die IP-Adresse / Hostname sowie Port nicht verändert haben (siehe \autoref{manual:configuration})
+
+Während des Hochfahrens der Applikation wird ein Ordner \texttt{logs/} in dem Applikationsverzeichnis erstellt.
+Innerhalb dieses Verzeichnisses befinden sich die Zugriffs- und Applikationslogs.
+
 \chapter{Konfiguration}
+\label{manual:configuration}
 
 Der HsH-Helper ist an verschiedenen Punkten konfigurierbar.
 Die Werkseinstellungen können Sie notfalls auch dem Anhang \ref{app-default-configuration} entnehmen, sofern Sie anders nicht mehr darauf zugreifen können.
 Die hier genannten Einstellungen sind Einstellungen, die wir unterstützen und dessen Sicherheit wir garantieren können.
 Sollten Sie aus irgendwelchen Gründen bestimmte Zusatzfeatures\footnote{Menge aller möglichen Einstellungen, siehe \url{https://www.playframework.com/documentation/2.6.x/ProductionConfiguration}} nutzen wollen, sind Sie auf sich allein gestellt.
+
+Für den Fall, dass Sie die Applikation mit einer komplett separaten Konfigurationsdatei ausführen wollen, so können sie diese beim Start der Applikation auf der Kommandozeile hinzufügen, in dem sie folgenden Parameter anhängen: \\
+\texttt{-Dconfig.file=/path/to/config/file.conf}
 
 \section{Serverkonfiguration}
 
