@@ -22,24 +22,26 @@
 
 
     <h2>Parameter</h2>
-    <table>
-        <thead>
-            <tr>
-                <td>Name</td>
-                <td>Default</td>
-                <td>Type</td>
-                <td></td>
-            </tr>
-        </thead>
 
-        <tbody>
-        @for(parameter <- netService.getParameters) {
-            <tr>
-                <td>@parameter.getName</td>
-                <td>@parameter.getDefaultValue</td>
-                <td>@parameter.getParameterType</td>
-                <td class="right">
-                    @helper.form(action = routes.NetServiceController.removeNetServiceParameter()){
+    @if(netService.getParameters.nonEmpty) {
+        <table>
+            <thead>
+                <tr>
+                    <td>Name</td>
+                    <td>Default</td>
+                    <td>Type</td>
+                    <td></td>
+                </tr>
+            </thead>
+
+            <tbody>
+            @for(parameter <- netService.getParameters) {
+                <tr>
+                    <td>@parameter.getName</td>
+                    <td>@parameter.getDefaultValue</td>
+                    <td>@parameter.getParameterType</td>
+                    <td class="right">
+                    @helper.form(action = routes.NetServiceController.removeNetServiceParameter()) {
                         <input type="hidden" value="@editDetailsForm("netServiceId").getValue.get" name="netServiceId" />
                         <input type="hidden" value="@parameter.getNetServiceParameterId()" name="netServiceParameterId" />
 
@@ -49,11 +51,16 @@
 
                         @helper.CSRF.formField
                     }
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    } else {
+        <div class="message">
+            Keine Parameter vorhanden!
+        </div>
+    }
 
 
     @helper.form(action = routes.NetServiceController.addNetServiceParameter()) {

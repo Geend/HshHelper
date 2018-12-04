@@ -5,33 +5,34 @@
 
     <div class="inline-menu lr">
         <div class="left">
-
+            <span class="title">Ansicht:</span>
+            @helper.MenuLink("Alle", routes.NetServiceController.showAllNetServices())
         </div>
         <div class="right">
-        @helper.MenuLink("Netzdienst erstellen", routes.NetServiceController.showAddNetServiceForm())
+            @helper.MenuLink("Netzdienst erstellen", routes.NetServiceController.showAddNetServiceForm())
         </div>
     </div>
 
+    @if(netServices.nonEmpty) {
+        <table>
+            <thead>
+                <tr>
+                    <td>Name</td>
+                    <td>URL</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
 
-    <table>
-        <thead>
-            <tr>
-                <td>Name</td>
-                <td>URL</td>
-                <td></td>
-                <td></td>
-            </tr>
-        </thead>
-
-        <tbody>
-        @for(netService <- netServices) {
-            <tr>
-                <td>@netService.getName</td>
-                <td>@helper.Truncate(netService.getUrl, 45)</td>
-                <td class="right">
-                    <a href="@routes.NetServiceController.showEditNetService(netService.getNetServiceId)">Bearbeiten</a>
-                </td>
-                <td class="right">
+            <tbody>
+            @for(netService <- netServices) {
+                <tr>
+                    <td>@netService.getName</td>
+                    <td>@helper.Truncate(netService.getUrl, 45)</td>
+                    <td class="right">
+                        <a href="@routes.NetServiceController.showEditNetService(netService.getNetServiceId)">Bearbeiten</a>
+                    </td>
+                    <td class="right">
                     @if(TemplateEnvironment.policy.canDeleteNetServices()) {
                         @helper.form(action = routes.NetServiceController.showDeleteNetServiceConfirmation()) {
                             @helper.CSRF.formField
@@ -41,9 +42,14 @@
                     } else {
                         <button type="submit" class="linkBtn" disabled>Löschen</button>
                     }
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    } else {
+        <div class="message">
+            Keine Netzdienste vorhanden!
+        </div>
+    }
 }
