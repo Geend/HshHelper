@@ -35,7 +35,7 @@ public class NetServiceController {
     private final Form<DeleteNetServiceCredentialsDto> deleteNetServiceCredentialsDtoForm;
 
     @Inject
-    public NetServiceController(NetServiceManager netServiceManager, FormFactory formFactory){
+    public NetServiceController(NetServiceManager netServiceManager, FormFactory formFactory) {
         this.netServiceManager = netServiceManager;
         this.createNetServiceDtoForm = formFactory.form(CreateNetServiceDto.class);
         this.deleteNetServiceDtoForm = formFactory.form(DeleteNetServiceDto.class);
@@ -47,33 +47,31 @@ public class NetServiceController {
     }
 
 
-
     public Result showAllNetServices() throws UnauthorizedException {
         List<NetService> netServices = netServiceManager.getAllNetServices();
         return ok(views.html.netservice.NetServices.render(asScala(netServices)));
     }
-    
-    
+
+
     public Result deleteNetService() throws UnauthorizedException, InvalidArgumentException {
         Form<DeleteNetServiceDto> boundForm = deleteNetServiceDtoForm.bindFromRequest();
 
-        if(boundForm.hasErrors()){
-            return redirect(routes.NetServiceController.showAllNetServices());
+        if (boundForm.hasErrors()) {
+            throw new InvalidArgumentException();
         }
 
         netServiceManager.deleteNetService(boundForm.get().getNetServiceId());
         return redirect(routes.NetServiceController.showAllNetServices());
     }
-    
-    public Result showAddNetServiceForm(){
+
+    public Result showAddNetServiceForm() {
         return ok(views.html.netservice.CreateNetService.render(createNetServiceDtoForm));
     }
-    
+
     public Result createNetService() throws UnauthorizedException {
         Form<CreateNetServiceDto> boundForm = createNetServiceDtoForm.bindFromRequest();
 
-        if(boundForm.hasErrors())
-        {
+        if (boundForm.hasErrors()) {
             return badRequest(views.html.netservice.CreateNetService.render(boundForm));
         }
 
@@ -87,7 +85,7 @@ public class NetServiceController {
     public Result showEditNetService(Long netServiceId) throws UnauthorizedException {
         Optional<NetService> netServiceOpt = netServiceManager.getNetService(netServiceId);
 
-        if(!netServiceOpt.isPresent())
+        if (!netServiceOpt.isPresent())
             return redirect(routes.NetServiceController.showAllNetServices());
 
         NetService netService = netServiceOpt.get();
@@ -106,11 +104,11 @@ public class NetServiceController {
     public Result editNetService() throws UnauthorizedException, InvalidArgumentException {
         Form<EditNetserviceDto> boundForm = editNetserviceDtoForm.bindFromRequest();
 
-        if(boundForm.hasErrors()){
+        if (boundForm.hasErrors()) {
             return showEditNetService(boundForm.get().getNetServiceId());
         }
 
-        netServiceManager.editNetService(boundForm.get().getNetServiceId(),boundForm.get().getName(), boundForm.get().getUrl());
+        netServiceManager.editNetService(boundForm.get().getNetServiceId(), boundForm.get().getName(), boundForm.get().getUrl());
 
         return showEditNetService(boundForm.get().getNetServiceId());
     }
@@ -118,7 +116,7 @@ public class NetServiceController {
     public Result addNetServiceParameter() throws UnauthorizedException, InvalidArgumentException {
         Form<AddNetServiceParameterDto> boundForm = addNetServiceParameterDtoForm.bindFromRequest();
 
-        if(boundForm.hasErrors()) {
+        if (boundForm.hasErrors()) {
             throw new InvalidArgumentException();
         }
 
@@ -129,7 +127,7 @@ public class NetServiceController {
     public Result removeNetServiceParameter() throws UnauthorizedException, InvalidArgumentException {
         Form<RemoveNetServiceParameterDto> boundForm = removeNetServiceParameterDtoForm.bindFromRequest();
 
-        if(boundForm.hasErrors()) {
+        if (boundForm.hasErrors()) {
             throw new InvalidArgumentException();
         }
 
@@ -137,11 +135,12 @@ public class NetServiceController {
         return redirect(routes.NetServiceController.showEditNetService(boundForm.get().getNetServiceId()));
     }
 
-    public Result showUserNetServiceCredentials(){
+    public Result showUserNetServiceCredentials() {
 
         List<NetServiceCredential> credentials = netServiceManager.getUserNetServiceCredentials();
         return ok(views.html.netservice.NetServiceCredentials.render(asScala(credentials)));
     }
+
     public Result showCreateNetServiceCredentialForm() throws UnauthorizedException {
         return ok(views.html.netservice.CreateNetServiceCredential.render(asScala(netServiceManager.getAllNetServices()), createNetServiceCredentialsDtoForm));
     }
@@ -149,8 +148,8 @@ public class NetServiceController {
     public Result createNetServiceCredential() throws UnauthorizedException, InvalidArgumentException {
         Form<CreateNetServiceCredentialsDto> boundForm = createNetServiceCredentialsDtoForm.bindFromRequest();
 
-        if(boundForm.hasErrors()){
-            return badRequest(views.html.netservice.CreateNetServiceCredential.render(asScala(netServiceManager.getAllNetServices()),boundForm));
+        if (boundForm.hasErrors()) {
+            return badRequest(views.html.netservice.CreateNetServiceCredential.render(asScala(netServiceManager.getAllNetServices()), boundForm));
         }
 
         netServiceManager.createNetUserCredential(boundForm.get().getNetServiceId(), boundForm.get().getUsername(), boundForm.get().getPassword());
@@ -160,8 +159,8 @@ public class NetServiceController {
     public Result deleteNetServiceCredential() throws UnauthorizedException, InvalidArgumentException {
         Form<DeleteNetServiceCredentialsDto> boundForm = deleteNetServiceCredentialsDtoForm.bindFromRequest();
 
-        if(boundForm.hasErrors()){
-            return redirect(routes.NetServiceController.showUserNetServiceCredentials());
+        if (boundForm.hasErrors()) {
+            throw new InvalidArgumentException();
         }
 
         netServiceManager.deleteNetServiceCredential(boundForm.get().getNetServiceCredentialId());

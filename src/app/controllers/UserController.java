@@ -189,14 +189,13 @@ public class UserController extends Controller {
         return ok(views.html.users.Confirm2FactorAuth.render(imageSourceData, twoFactorAuthForm.fill(dto)));
     }
 
-    public Result showUserSettings() throws IOException {
+    public Result showUserSettings() {
         User currentUser = this.sessionManager.currentUser();
         ChangeUserSessionTimeoutDto changeUserSessionTimeoutDto = new ChangeUserSessionTimeoutDto();
         changeUserSessionTimeoutDto.setValueInMinutes(sessionManager.currentUser().getSessionTimeoutInMinutes());
-        Form<ChangeUserSessionTimeoutDto> filledForm = changeUserSessionTimeoutForm.fill(changeUserSessionTimeoutDto);
 
         return ok(views.html.users.UserSettings.render(
-                filledForm,
+                changeUserSessionTimeoutForm.fill(changeUserSessionTimeoutDto),
                 changeOwnPasswordForm,
                 currentUser.has2FA()
         ));
@@ -206,7 +205,11 @@ public class UserController extends Controller {
         Form<ChangeUserSessionTimeoutDto> boundForm = changeUserSessionTimeoutForm.bindFromRequest("valueInMinutes");
 
         if(boundForm.hasErrors()) {
-            return redirect(routes.UserController.showUserSettings());
+            return badRequest(views.html.users.UserSettings.render(
+                    boundForm,
+                    changeOwnPasswordForm,
+                    this.sessionManager.currentUser().has2FA()
+            ));
         }
 
         userManager.changeUserSessionTimeout(boundForm.get().getValueInMinutes());
