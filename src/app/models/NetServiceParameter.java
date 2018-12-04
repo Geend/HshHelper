@@ -1,9 +1,6 @@
 package models;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class NetServiceParameter {
@@ -18,6 +15,8 @@ public class NetServiceParameter {
     private Long netServiceParameterId;
 
     private String name;
+
+
     private String defaultValue;
 
 

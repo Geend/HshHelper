@@ -107,7 +107,6 @@ public class LoginController extends Controller {
         return ok(views.html.login.ChangePasswordAfterReset.render(this.changePasswordForm, false));
     }
 
-    // TODO: Sollte man nach password reset eingelogged sein?!
     @Authentication.NotAllowed
     public Result changePasswordAfterReset() throws IOException {
         Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat");

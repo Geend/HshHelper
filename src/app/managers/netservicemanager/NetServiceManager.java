@@ -117,16 +117,32 @@ public class NetServiceManager {
         if (!sessionManager.currentPolicy().canEditNetService())
             throw new UnauthorizedException();
 
-        //TODO: Check if NetService alread has parameter of type username/password and if one of such types is supposed to be added here
-        NetServiceParameter parameter = new NetServiceParameter();
-        parameter.setName(name);
-        if (defaultValue != null) {
-            parameter.setDefaultValue(defaultValue);
-        }
-        parameter.setParameterType(type);
+        try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
+            if (type == NetServiceParameter.NetServiceParameterType.USERNAME || type == NetServiceParameter.NetServiceParameterType.PASSWORD) {
+                boolean typeAlreadyExists = netService.getParameters().stream().anyMatch(x -> x.getParameterType() == type);
+                if (typeAlreadyExists) {
+                    throw new InvalidArgumentException("Ein Parameter mit diesem Type existiert bereits.");
+                }
+            }
 
-        netService.getParameters().add(parameter);
-        ebeanServer.save(netService);
+            boolean nameAlreadyExists = netService.getParameters().stream().anyMatch(x -> x.getName().equals(name));
+            if (nameAlreadyExists) {
+                throw new InvalidArgumentException("Ein Parameter mit diesem Namen existiert bereits.");
+            }
+
+            NetServiceParameter parameter = new NetServiceParameter();
+            parameter.setName(name);
+            if (defaultValue != null) {
+                parameter.setDefaultValue(defaultValue);
+            }
+            parameter.setParameterType(type);
+
+            netService.getParameters().add(parameter);
+            ebeanServer.save(netService);
+
+            tx.commit();
+
+        }
 
     }
 
@@ -227,20 +243,5 @@ public class NetServiceManager {
                 new String(passwordPlaintext)
         );
     }
-
-    public NetService getCredentialNetService(Long credentialId) throws UnauthorizedException, InvalidArgumentException {
-        Optional<NetServiceCredential> optCredential = netServiceCredentialFinder.byIdOptional(credentialId);
-        if (!optCredential.isPresent()) {
-            throw new InvalidArgumentException("credentialId does not exist");
-        }
-
-        NetServiceCredential credential = optCredential.get();
-        if (!sessionManager.currentPolicy().canReadCredential(credential)) {
-            throw new UnauthorizedException();
-        }
-
-        return credential.getNetService();
-    }
-
 
 }

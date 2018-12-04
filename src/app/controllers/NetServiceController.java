@@ -135,7 +135,6 @@ public class NetServiceController {
     }
 
     public Result showUserNetServiceCredentials() {
-
         List<NetServiceCredential> credentials = netServiceManager.getUserNetServiceCredentials();
         return ok(views.html.netservice.NetServiceCredentials.render(asScala(credentials)));
     }
