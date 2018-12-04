@@ -14,6 +14,7 @@ import play.data.FormFactory;
 import play.libs.Json;
 import play.mvc.Result;
 import policyenforcement.session.Authentication;
+import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,6 +28,7 @@ import static play.mvc.Results.*;
 @Authentication.Required
 public class NetServiceController {
 
+    private final SessionManager sessionManager;
     private final NetServiceManager netServiceManager;
     private final Form<CreateNetServiceDto> createNetServiceDtoForm;
     private final Form<DeleteNetServiceDto> deleteNetServiceDtoForm;
@@ -38,7 +40,8 @@ public class NetServiceController {
     private final Form<DeleteNetServiceDto> confirmNetServiceDeleteForm;
 
     @Inject
-    public NetServiceController(NetServiceManager netServiceManager, FormFactory formFactory) {
+    public NetServiceController(SessionManager sessionManager, NetServiceManager netServiceManager, FormFactory formFactory) {
+        this.sessionManager = sessionManager;
         this.netServiceManager = netServiceManager;
         this.createNetServiceDtoForm = formFactory.form(CreateNetServiceDto.class);
         this.deleteNetServiceDtoForm = formFactory.form(DeleteNetServiceDto.class);
@@ -52,6 +55,9 @@ public class NetServiceController {
 
 
     public Result showAllNetServices() throws UnauthorizedException {
+        if(!sessionManager.currentPolicy().canSeeNetServiceOverviewPage())
+            throw new UnauthorizedException();
+
         List<NetService> netServices = netServiceManager.getAllNetServices();
         return ok(views.html.netservice.NetServices.render(asScala(netServices)));
     }

@@ -77,7 +77,7 @@ public class GroupManager {
     }
 
     public List<Group> getAllGroups() throws UnauthorizedException {
-        if(!sessionManager.currentPolicy().canSeeAllGroups())
+        if(!sessionManager.currentPolicy().canViewAllGroupsList())
             throw new UnauthorizedException();
 
         logger.info(sessionManager.currentUser() + " is looking at all groups.");

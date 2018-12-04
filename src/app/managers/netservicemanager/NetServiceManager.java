@@ -57,7 +57,7 @@ public class NetServiceManager {
         if (!sessionManager.currentPolicy().canSeeAllNetServices())
             throw new UnauthorizedException();
 
-        logger.info(sessionManager.currentUser() + " is looking at all net " + netServiceId + ".");
+        logger.info(sessionManager.currentUser() + " is looking at net service " + netServiceId + ".");
 
         Optional<NetService> netService = netServiceFinder.byIdOptional(netServiceId);
         if(!netService.isPresent()) {
@@ -100,7 +100,7 @@ public class NetServiceManager {
 
         NetService netService = netServiceOptional.get();
 
-        if (!sessionManager.currentPolicy().canEditNetService(netService)) {
+        if (!sessionManager.currentPolicy().canEditNetService()) {
             throw new UnauthorizedException();
         }
 
@@ -114,7 +114,7 @@ public class NetServiceManager {
     public void addNetServiceParameter(Long netServiceId, NetServiceParameter.NetServiceParameterType type, String name, String defaultValue) throws UnauthorizedException, InvalidArgumentException {
         NetService netService = getNetService(netServiceId);
 
-        if (!sessionManager.currentPolicy().canEditNetService(netService))
+        if (!sessionManager.currentPolicy().canEditNetService())
             throw new UnauthorizedException();
 
         //TODO: Check if NetService alread has parameter of type username/password and if one of such types is supposed to be added here
@@ -133,7 +133,7 @@ public class NetServiceManager {
     public void removeNetServiceParameter(Long netServiceId, Long netServiceParameterId) throws UnauthorizedException, InvalidArgumentException {
         NetService netService = getNetService(netServiceId);
 
-        if (!sessionManager.currentPolicy().canEditNetService(netService))
+        if (!sessionManager.currentPolicy().canEditNetService())
             throw new UnauthorizedException();
 
         Optional<NetServiceParameter> parameter = netService.getParameters().stream().filter(x -> x.getNetServiceParameterId().equals(netServiceParameterId)).findAny();
