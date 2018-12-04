@@ -157,7 +157,7 @@ public class NetServiceController {
         return redirect(routes.NetServiceController.showUserNetServiceCredentials());
     }
 
-    public Result deleteNetServiceCredential(){
+    public Result deleteNetServiceCredential() throws UnauthorizedException, InvalidArgumentException {
         Form<DeleteNetServiceCredentialsDto> boundForm = deleteNetServiceCredentialsDtoForm.bindFromRequest();
 
         if(boundForm.hasErrors()){

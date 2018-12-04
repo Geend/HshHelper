@@ -182,8 +182,18 @@ public class NetServiceManager {
         ebeanServer.save(credential);
     }
 
-    public void deleteNetServiceCredential(Long netServiceCredentialId) {
-        //TODO
+    public void deleteNetServiceCredential(Long netServiceCredentialId) throws InvalidArgumentException, UnauthorizedException {
+        Optional<NetServiceCredential> credentialOpt = netServiceCredentialFinder.byIdOptional(netServiceCredentialId);
+
+        if(!credentialOpt.isPresent()){
+            throw new InvalidArgumentException();
+        }
+
+        if(!sessionManager.currentPolicy().canDeleteNetServicesCredential(credentialOpt.get())){
+            throw new UnauthorizedException();
+        }
+
+        ebeanServer.delete(credentialOpt.get());
     }
 
 
