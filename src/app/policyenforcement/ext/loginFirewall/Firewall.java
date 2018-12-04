@@ -49,7 +49,7 @@ public class Firewall {
         Ebean.createSqlUpdate(cleanSql).execute();
     }
 
-    public Instance get(String remoteIp) {
-        return new Instance(remoteIp);
+    public Instance get(String remoteIp, IPWhitelist ipWhitelist) {
+        return new Instance(remoteIp, ipWhitelist);
     }
 }

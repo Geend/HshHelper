@@ -1,9 +1,6 @@
 package managers.loginmanager;
 
-import extension.CredentialManager;
-import extension.HashHelper;
-import extension.RecaptchaHelper;
-import extension.WeakPasswords;
+import extension.*;
 import extension.logging.DangerousCharFilteringLogger;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
@@ -52,6 +49,7 @@ public class LoginManager {
     private final MailerClient mailerClient;
     private final PasswordResetTokenFinder passwordResetTokenFinder;
     private final WeakPasswords weakPasswords;
+    private final IPWhitelist ipWhitelist;
 
     private static final Logger.ALogger logger = new DangerousCharFilteringLogger(LoginManager.class);
 
@@ -64,7 +62,7 @@ public class LoginManager {
             EbeanServer ebeanServer,
             LoginAttemptFinder loginAttemptFinder,
             RecaptchaHelper recaptchaHelper, CredentialManager credentialManager,
-            UserFinder userFinder, MailerClient mailerClient, PasswordResetTokenFinder passwordResetTokenFinder, WeakPasswords weakPasswords)
+            UserFinder userFinder, MailerClient mailerClient, PasswordResetTokenFinder passwordResetTokenFinder, WeakPasswords weakPasswords, IPWhitelist ipWhitelist)
     {
         this.loginAttemptFinder = loginAttemptFinder;
         this.ebeanSever = ebeanServer;
@@ -78,6 +76,7 @@ public class LoginManager {
         this.mailerClient = mailerClient;
         this.passwordResetTokenFinder = passwordResetTokenFinder;
         this.weakPasswords = weakPasswords;
+        this.ipWhitelist = ipWhitelist;
     }
 
     private User authenticate(String username, String password, String captchaToken, Http.Request request, Integer twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, IOException, GeneralSecurityException {
@@ -94,7 +93,7 @@ public class LoginManager {
             uid = fakeUid;
         }
 
-        Instance fw = loginFirewall.get(request.remoteAddress());
+        Instance fw = loginFirewall.get(request.remoteAddress(), ipWhitelist);
         Strategy strategy = fw.getStrategy(uid);
 
         if(strategy.equals(Strategy.BLOCK)) {

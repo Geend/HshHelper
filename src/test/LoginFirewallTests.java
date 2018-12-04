@@ -6,15 +6,15 @@ import org.joda.time.DateTimeUtils;
 import org.junit.*;
 import play.Application;
 import play.test.Helpers;
-import policyenforcement.ext.loginFirewall.Firewall;
-import policyenforcement.ext.loginFirewall.Instance;
-import policyenforcement.ext.loginFirewall.LaggyDT;
-import policyenforcement.ext.loginFirewall.Strategy;
+import policyenforcement.ext.loginFirewall.*;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /*
     Fake app: https://ankushthakur.com/blog/using-separate-database-for-unit-tests-in-play-framework/
@@ -23,16 +23,17 @@ public class LoginFirewallTests {
     public static Application app;
 
     private static Long validUid = 1L;
-    private static Instance fwInstanceOne;
-    private static Instance fwInstanceTwo;
     private static long currentDt = 1540117115508L;
-    private static Firewall firewall;
+
+    private Instance fwInstanceOne;
+    private Instance fwInstanceTwo;
+    private Firewall firewall;
+    private IPWhitelist ipWhitelist;
 
     @BeforeClass
     public static void startApp() {
         app = Helpers.fakeApplication();
         Helpers.start(app);
-        firewall = new Firewall();
     }
 
     @AfterClass
@@ -42,9 +43,15 @@ public class LoginFirewallTests {
 
     @Before
     public void setup() {
+        firewall = new Firewall();
+
         firewall.flush();
-        fwInstanceOne = firewall.get("12.21.12.21");
-        fwInstanceTwo = firewall.get("21.21.12.21");
+
+        ipWhitelist = mock(IPWhitelist.class);
+        when(ipWhitelist.isWhitelisted(anyString())).thenReturn(false);
+
+        fwInstanceOne = firewall.get("12.21.12.21", ipWhitelist);
+        fwInstanceTwo = firewall.get("21.21.12.21", ipWhitelist);
     }
 
     @After
@@ -224,6 +231,26 @@ public class LoginFirewallTests {
         assertThat(rows.size(), is(2));
         assertThat(rows.get(0).getInteger("count"), is(Firewall.NIPLoginsTriggerVerification-1));
         assertThat(rows.get(1).getInteger("count"), is(1));
+    }
+
+    @Test
+    public void usesWhitelist() {
+        assertThat(Firewall.NUidLoginsTriggerVerification, lessThan(Firewall.NIPLoginsTriggerBan));
+        assertThat(Firewall.NUidLoginsTriggerVerification, lessThan(Firewall.NIPLoginsTriggerVerification));
+
+        // BLOCK erzeugen
+        for(int i=0; i<Firewall.NIPLoginsTriggerBan; i++) {
+            fwInstanceOne.fail();
+        }
+
+        Strategy strategy = fwInstanceOne.getStrategy();
+        assertThat(strategy, is(Strategy.BLOCK));
+
+        // Wenn die IP Whitelisted ist, darf kein Block erfolgen!
+        when(ipWhitelist.isWhitelisted(anyString())).thenReturn(true);
+
+        strategy = fwInstanceOne.getStrategy();
+        assertThat(strategy, is(Strategy.VERIFY));
     }
 
     @Test

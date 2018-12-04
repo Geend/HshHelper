@@ -8,9 +8,11 @@ import org.joda.time.DateTime;
 
 public class Instance {
     private String remoteIp;
+    private IPWhitelist ipWhitelist;
 
-    protected Instance(String remoteIp) {
+    protected Instance(String remoteIp, IPWhitelist ipWhitelist) {
         this.remoteIp = remoteIp;
+        this.ipWhitelist = ipWhitelist;
     }
 
     public Strategy getStrategy() {
@@ -25,7 +27,7 @@ public class Instance {
             accountFailedLogins = getKeyCount(uid.toString());
         }
 
-        if(ipFailedLogins >= Firewall.NIPLoginsTriggerBan) {
+        if(!ipWhitelist.isWhitelisted(remoteIp) && ipFailedLogins >= Firewall.NIPLoginsTriggerBan) {
             return Strategy.BLOCK;
         }
 

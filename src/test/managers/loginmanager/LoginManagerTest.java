@@ -1,10 +1,6 @@
 package managers.loginmanager;
 
-import com.google.j2objc.annotations.Weak;
-import extension.CredentialManager;
-import extension.HashHelper;
-import extension.RecaptchaHelper;
-import extension.WeakPasswords;
+import extension.*;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
@@ -55,6 +51,7 @@ public class LoginManagerTest {
     private PasswordResetTokenFinder defaultPasswordResetTokenFinder;
     private LoginManager defaultLoginManager;
     private WeakPasswords defaultWeakPasswords;
+    private IPWhitelist defaultIpWhitelist;
 
 
     @Before
@@ -74,7 +71,7 @@ public class LoginManagerTest {
         this.defaultFirewallInstance = mock(Instance.class);
         this.recaptchaHelper = mock(RecaptchaHelper.class);
         when(this.defaultFirewallInstance.getStrategy(any(Long.class))).thenReturn(Strategy.BYPASS);
-        when(defaultFirewall.get(any(String.class))).thenReturn(this.defaultFirewallInstance);
+        when(defaultFirewall.get(any(String.class), any(IPWhitelist.class))).thenReturn(this.defaultFirewallInstance);
 
         defaultCredentialKey = new byte[]{1,2,3,4};
         defaultCredentialManager = mock(CredentialManager.class);
@@ -87,6 +84,8 @@ public class LoginManagerTest {
 
         when(defaultEbeanServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
 
+        defaultIpWhitelist = mock(IPWhitelist.class);
+
         this.defaultLoginManager = new LoginManager(
                 defaultAuthentification,
                 defaultFirewall,
@@ -96,7 +95,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
     }
 
     @Test
@@ -115,7 +114,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
         verify(sessionManager).startNewSession(authenticatedUser, defaultCredentialKey);
     }
@@ -136,7 +135,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -155,7 +154,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -178,7 +177,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
         verify(authenticatedUser).setIsPasswordResetRequired(false);
         verify(authenticatedUser).setPasswordHash("hashed");
@@ -201,7 +200,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -212,7 +211,7 @@ public class LoginManagerTest {
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
-        when(fw.get(any(String.class))).thenReturn(i);
+        when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
         when(i.getStrategy(any(Long.class))).thenReturn(Strategy.VERIFY);
         LoginManager sut = new LoginManager(
                 auth,
@@ -223,7 +222,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -235,7 +234,7 @@ public class LoginManagerTest {
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
-        when(fw.get(any(String.class))).thenReturn(i);
+        when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
         when(i.getStrategy(any(Long.class))).thenReturn(Strategy.VERIFY);
         LoginManager sut = new LoginManager(
                 auth,
@@ -246,7 +245,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -258,7 +257,7 @@ public class LoginManagerTest {
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
-        when(fw.get(any(String.class))).thenReturn(i);
+        when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
         when(i.getStrategy(any(Long.class))).thenReturn(Strategy.BLOCK);
         LoginManager sut = new LoginManager(
                 auth,
@@ -269,7 +268,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -280,7 +279,7 @@ public class LoginManagerTest {
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
-        when(fw.get(any(String.class))).thenReturn(i);
+        when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
         when(i.getStrategy(any(Long.class))).thenReturn(Strategy.BLOCK);
         LoginManager sut = new LoginManager(
                 auth,
@@ -291,7 +290,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -303,7 +302,7 @@ public class LoginManagerTest {
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
-        when(fw.get(any(String.class))).thenReturn(i);
+        when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
         when(i.getStrategy(any(Long.class))).thenReturn(Strategy.VERIFY);
         LoginManager sut = new LoginManager(
                 auth,
@@ -314,7 +313,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -326,7 +325,7 @@ public class LoginManagerTest {
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
-        when(fw.get(any(String.class))).thenReturn(i);
+        when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
         when(i.getStrategy(any(Long.class))).thenReturn(Strategy.VERIFY);
         LoginManager sut = new LoginManager(
                 auth,
@@ -337,7 +336,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -349,7 +348,7 @@ public class LoginManagerTest {
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
-        when(fw.get(any(String.class))).thenReturn(i);
+        when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
         when(i.getStrategy(any(Long.class))).thenReturn(Strategy.BLOCK);
         LoginManager sut = new LoginManager(
                 auth,
@@ -360,7 +359,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -372,7 +371,7 @@ public class LoginManagerTest {
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
-        when(fw.get(any(String.class))).thenReturn(i);
+        when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
         when(i.getStrategy(any(Long.class))).thenReturn(Strategy.BLOCK);
         LoginManager sut = new LoginManager(
                 auth,
@@ -383,7 +382,7 @@ public class LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords);
+                defaultWeakPasswords, defaultIpWhitelist);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
