@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static policyenforcement.ConstraintValues.TIME_WINDOW_2FA_MS;
+
 public class UserManager {
     private final UserFinder userFinder;
     private final GroupFinder groupFinder;
@@ -69,7 +71,7 @@ public class UserManager {
 
     public void activateTwoFactorAuth(String secret, int activationToken) throws Invalid2FATokenException {
         try {
-            if(!TimeBasedOneTimePasswordUtil.validateCurrentNumber(secret, activationToken, 60000))
+            if(!TimeBasedOneTimePasswordUtil.validateCurrentNumber(secret, activationToken, TIME_WINDOW_2FA_MS))
                 throw new Invalid2FATokenException();
         } catch (GeneralSecurityException e) {
             throw new Invalid2FATokenException();

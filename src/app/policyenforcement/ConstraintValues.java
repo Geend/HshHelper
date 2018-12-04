@@ -30,4 +30,6 @@ public class ConstraintValues {
 
     public static final int GENREATED_PASSWORD_LENGTH = 12;
 
+    public static final int TIME_WINDOW_2FA_MS = 60000;
+
 }

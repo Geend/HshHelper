@@ -10,6 +10,7 @@ import java.security.GeneralSecurityException;
 import java.util.Optional;
 
 import static extension.StringHelper.empty;
+import static policyenforcement.ConstraintValues.TIME_WINDOW_2FA_MS;
 
 public class Authentification {
     public static class Result {
@@ -68,6 +69,6 @@ public class Authentification {
 
     private Boolean verifySecondFactor(String secret, Integer suppliedSecondFactor) throws GeneralSecurityException {
         // 60 sekunden zeitfenster
-        return TimeBasedOneTimePasswordUtil.validateCurrentNumber(secret, suppliedSecondFactor, 60000);
+        return TimeBasedOneTimePasswordUtil.validateCurrentNumber(secret, suppliedSecondFactor, TIME_WINDOW_2FA_MS);
     }
 }
