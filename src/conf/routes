@@ -31,7 +31,6 @@ POST        /settings/changePassword                          controllers.UserCo
 GET         /settings/confirmActivateTwoFactorAuth            controllers.UserController.show2FactorAuthConfirmationForm()
 POST        /settings/activateTwoFactorAuth                   controllers.UserController.activateTwoFactorAuth()
 POST        /settings/deactivateTwoFactorAuth                 controllers.UserController.deactivateTwoFactorAuth()
-
 # UserController - End
 
 
@@ -89,6 +88,7 @@ GET         /permissions/createGroupPermission/:fileId        controllers.Permis
 GET         /netservices/all                                  controllers.NetServiceController.showAllNetServices
 GET         /netservices/create                               controllers.NetServiceController.showAddNetServiceForm
 POST        /netservices/create                               controllers.NetServiceController.createNetService
+POST        /netservices/confirmDelete                        controllers.NetServiceController.showDeleteNetServiceConfirmation
 POST        /netservices/delete                               controllers.NetServiceController.deleteNetService
 GET         /netservices/edit/:netServiceId                   controllers.NetServiceController.showEditNetService(netServiceId:Long)
 POST        /netservices/edit                                 controllers.NetServiceController.editNetService

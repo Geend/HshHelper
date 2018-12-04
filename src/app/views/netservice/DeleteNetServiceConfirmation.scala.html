@@ -1,0 +1,21 @@
+@import managers.usermanager.UserMetaInfo
+@(netService: NetService)
+
+@Base("Netzdienst löschen") {
+    <div class="message notice">
+        <b>Sie sind im Begriff den Netzdienst <u>@netService.getName</u> zu löschen.</b><br>
+        Die Aktion ist irreversibel und löscht sämtliche Credentials, die Nutzer für diesen Netzdienst hinterlegt haben.
+    </div>
+
+    <div class="inputControls">
+        @helper.form(action = routes.NetServiceController.showAllNetServices()) {
+            <input type="submit" value="Abbrechen" />
+        }
+
+        @helper.form(action = routes.NetServiceController.deleteNetService()) {
+            @helper.CSRF.formField
+            <input type="hidden" name="netServiceId" value="@netService.getNetServiceId" />
+            <input type="submit" value="@netService.getName Löschen" />
+        }
+    </div>
+}

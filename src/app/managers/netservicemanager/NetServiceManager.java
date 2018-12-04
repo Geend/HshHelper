@@ -53,13 +53,18 @@ public class NetServiceManager {
         return netServiceFinder.all();
     }
 
-    public Optional<NetService> getNetService(Long netServiceId) throws UnauthorizedException {
+    public NetService getNetService(Long netServiceId) throws UnauthorizedException, InvalidArgumentException {
         if (!sessionManager.currentPolicy().canSeeAllNetServices())
             throw new UnauthorizedException();
 
         logger.info(sessionManager.currentUser() + " is looking at all net " + netServiceId + ".");
 
-        return netServiceFinder.byIdOptional(netServiceId);
+        Optional<NetService> netService = netServiceFinder.byIdOptional(netServiceId);
+        if(!netService.isPresent()) {
+            throw new InvalidArgumentException("NetService existiert nicht");
+        }
+
+        return netService.get();
     }
 
     public NetService createNetService(String name, String url) throws UnauthorizedException, NetServiceAlreadyExistsException {
@@ -107,12 +112,7 @@ public class NetServiceManager {
     }
 
     public void addNetServiceParameter(Long netServiceId, NetServiceParameter.NetServiceParameterType type, String name, String defaultValue) throws UnauthorizedException, InvalidArgumentException {
-        Optional<NetService> netServiceOpt = getNetService(netServiceId);
-
-        if (!netServiceOpt.isPresent())
-            throw new InvalidArgumentException();
-
-        NetService netService = netServiceOpt.get();
+        NetService netService = getNetService(netServiceId);
 
         if (!sessionManager.currentPolicy().canEditNetService(netService))
             throw new UnauthorizedException();
@@ -131,12 +131,7 @@ public class NetServiceManager {
     }
 
     public void removeNetServiceParameter(Long netServiceId, Long netServiceParameterId) throws UnauthorizedException, InvalidArgumentException {
-        Optional<NetService> netServiceOpt = getNetService(netServiceId);
-
-        if (!netServiceOpt.isPresent())
-            throw new InvalidArgumentException();
-
-        NetService netService = netServiceOpt.get();
+        NetService netService = getNetService(netServiceId);
 
         if (!sessionManager.currentPolicy().canEditNetService(netService))
             throw new UnauthorizedException();

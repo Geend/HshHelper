@@ -33,7 +33,7 @@
                 </td>
                 <td class="right">
                     @if(TemplateEnvironment.policy.canDeleteNetServices()) {
-                        @helper.form(action = routes.NetServiceController.deleteNetService()) {
+                        @helper.form(action = routes.NetServiceController.showDeleteNetServiceConfirmation()) {
                             @helper.CSRF.formField
                             <input type="hidden" name="netServiceId" value="@netService.getNetServiceId" />
                             <button type="submit" class="linkBtn">Löschen</button>
