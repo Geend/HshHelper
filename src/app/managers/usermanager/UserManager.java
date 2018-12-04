@@ -69,11 +69,14 @@ public class UserManager {
         this.weakPasswords = weakPasswords;
     }
 
-    public void activateTwoFactorAuth(String secret, int activationToken) throws Invalid2FATokenException {
+    public void activateTwoFactorAuth(String secret, String activationToken) throws Invalid2FATokenException {
         try {
-            if(!TimeBasedOneTimePasswordUtil.validateCurrentNumber(secret, activationToken, TIME_WINDOW_2FA_MS))
+            String tokenWithoutWhiteSpace = activationToken.replaceAll(" ", "");
+            int intToken = Integer.parseInt(tokenWithoutWhiteSpace);
+
+            if(!TimeBasedOneTimePasswordUtil.validateCurrentNumber(secret, intToken, TIME_WINDOW_2FA_MS))
                 throw new Invalid2FATokenException();
-        } catch (GeneralSecurityException e) {
+        } catch (GeneralSecurityException | NumberFormatException e) {
             throw new Invalid2FATokenException();
         }
 
