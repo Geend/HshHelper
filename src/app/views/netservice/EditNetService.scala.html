@@ -9,8 +9,7 @@
         <div class="inputForm">
             @helper.TextInput(editDetailsForm("name"), "Name")
             @helper.TextInput(editDetailsForm("url"), "Url")
-
-            <input type="hidden" value="@editDetailsForm("netServiceId").getValue.get" name="netServiceId" />
+            @helper.HiddenInput(editDetailsForm("netServiceId"))
 
             <div class="inputControls">
                 <input type="submit" value="Ändern" />
@@ -66,7 +65,8 @@
                 "Type",
                 NetServiceParameterType.values().map(parameterType => parameterType.toString -> parameterType.toString))
         </div>
-        <input type="hidden" value="@form("netServiceId").getValue.get" name="netServiceId" />
+
+        @helper.HiddenInput(form("netServiceId"))
 
         <div class="inputControls">
             <input type="submit" value="Parameter hinzufügen" />

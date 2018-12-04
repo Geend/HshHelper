@@ -12,7 +12,7 @@
 
     @helper.form(action = routes.UserController.activateTwoFactorAuth()) {
         <div class="inputForm">
-            <input type="hidden" name="secret" value="@twoFactorForm("secret").value()" />
+            @helper.HiddenInput(twoFactorForm("secret"))
             <div class="element">
                 <div class="label"><label>Code:</label></div>
                 <div class="input"><img src="@imageSourceData"/></div>
