@@ -331,6 +331,8 @@ Ergänzend zu den Datei-Bezogenen Sichten haben wir noch folgende Sichten implem
 	\item Details zum Quota-Verbrauch des aktuellen Nutzer aufgeschlüsselt nach Kategorien.
 \end{itemize}
 
+\section{Zwei Faktor Authentifizierung}
+Um die Sicherheit der Anwendung weiter zu erhöhen hat sich das Team dazu entschieden Zwei-Faktor-Authentifizierung zu unterstützen. Hierbei handelt es sich um ein Time-Based-One-Time-Password, welches in RFC 6238 \autocite{rfc6238} definiert wurde. Der Nutzer kann dazu in seinen persönlichen Einstellungen, durch Einscannen des Barcodes, das Shared-Secret in seine mobile Anwendung importieren. Ein weiterer Klick auf \enquote{Aktivieren} legt fest, dass ab der nächsten Anmeldung, zusätzlich zum Passwort, das Einmalpasswort mit angegeben werden muss. Von einem Mechanismus für Administratoren, für den Fall das dass Token verloren geht wurde abgesehen, da dies die gewonnene Sicherheit durch den zweiten Faktor wieder abschwächt. Das Sicherste für einen Benutzer ist, einfach die Einstellungsseite mit dem Barcode auszudrucken und an einem sicheren Ort aufzubewahren. Hat sich der Benutzer erfolgreich am System angemeldet kann er die Zweifaktor Authentifizierung in den Einstellungen auch wieder deaktivieren.
 
 \chapter{Verworfene Entwürfe}
 
