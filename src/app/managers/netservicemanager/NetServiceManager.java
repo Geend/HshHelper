@@ -6,6 +6,8 @@ import extension.Crypto.CryptoResult;
 import extension.Crypto.KeyGenerator;
 import extension.logging.DangerousCharFilteringLogger;
 import io.ebean.EbeanServer;
+import io.ebean.Transaction;
+import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import models.NetService;
@@ -60,17 +62,28 @@ public class NetServiceManager {
         return netServiceFinder.byIdOptional(netServiceId);
     }
 
-    public NetService createNetService(String name, String url) throws UnauthorizedException {
+    public NetService createNetService(String name, String url) throws UnauthorizedException, NetServiceAlreadyExistsException {
         if (!sessionManager.currentPolicy().canCreateNetService())
             throw new UnauthorizedException();
 
         logger.info(sessionManager.currentUser() + " is creating net service " + name);
 
-        NetService netService = new NetService();
-        netService.setName(name);
-        netService.setUrl(url);
+        NetService netService;
+        try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
+            Optional<NetService> optNetService = netServiceFinder.byName(name);
+            if(optNetService.isPresent()) {
+                throw new NetServiceAlreadyExistsException();
+            }
 
-        ebeanServer.save(netService);
+            netService = new NetService();
+            netService.setName(name);
+            netService.setUrl(url);
+
+            ebeanServer.save(netService);
+
+            tx.commit();
+        }
+
         return netService;
     }
 
@@ -93,7 +106,7 @@ public class NetServiceManager {
         ebeanServer.save(netService);
     }
 
-    public void addNetServiceParameter(Long netServiceId, String name, String defaultValue) throws UnauthorizedException, InvalidArgumentException {
+    public void addNetServiceParameter(Long netServiceId, NetServiceParameter.NetServiceParameterType type, String name, String defaultValue) throws UnauthorizedException, InvalidArgumentException {
         Optional<NetService> netServiceOpt = getNetService(netServiceId);
 
         if (!netServiceOpt.isPresent())
@@ -110,6 +123,7 @@ public class NetServiceManager {
         if (defaultValue != null) {
             parameter.setDefaultValue(defaultValue);
         }
+        parameter.setParameterType(type);
 
         netService.getParameters().add(parameter);
         ebeanServer.save(netService);

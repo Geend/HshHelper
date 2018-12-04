@@ -3,6 +3,7 @@ package controllers;
 import dtos.netservice.*;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import managers.netservicemanager.NetServiceAlreadyExistsException;
 import managers.netservicemanager.NetServiceManager;
 import managers.netservicemanager.PlaintextCredential;
 import models.NetService;
@@ -76,7 +77,13 @@ public class NetServiceController {
         }
 
         CreateNetServiceDto dto = boundForm.get();
-        NetService netService = netServiceManager.createNetService(dto.getName(), dto.getUrl());
+        NetService netService = null;
+        try {
+            netService = netServiceManager.createNetService(dto.getName(), dto.getUrl());
+        } catch (NetServiceAlreadyExistsException e) {
+            boundForm = boundForm.withError("name", "Existiert bereits!");
+            return badRequest(views.html.netservice.CreateNetService.render(boundForm));
+        }
 
 
         return redirect(routes.NetServiceController.showEditNetService(netService.getNetServiceId()));
@@ -120,7 +127,7 @@ public class NetServiceController {
             throw new InvalidArgumentException();
         }
 
-        netServiceManager.addNetServiceParameter(boundForm.get().getNetServiceId(), boundForm.get().getName(), boundForm.get().getDefaultValue());
+        netServiceManager.addNetServiceParameter(boundForm.get().getNetServiceId(), boundForm.get().getParameterType(), boundForm.get().getName(), boundForm.get().getDefaultValue());
         return redirect(routes.NetServiceController.showEditNetService(boundForm.get().getNetServiceId()));
     }
 
