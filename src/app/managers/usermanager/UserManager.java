@@ -1,15 +1,13 @@
 package managers.usermanager;
 
-import extension.CredentialManager;
-import extension.HashHelper;
-import extension.PasswordGenerator;
-import extension.RecaptchaHelper;
+import extension.*;
 import extension.logging.DangerousCharFilteringLogger;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import managers.WeakPasswordException;
 import models.Group;
 import models.User;
 import models.factories.UserFactory;
@@ -40,6 +38,7 @@ public class UserManager {
     private final RecaptchaHelper recaptchaHelper;
     private final UserFactory userFactory;
     private final CredentialManager credentialManager;
+    private final WeakPasswords weakPasswords;
 
     private static final Logger.ALogger logger = new DangerousCharFilteringLogger(UserManager.class);
 
@@ -53,7 +52,7 @@ public class UserManager {
             EbeanServer server,
             SessionManager sessionManager,
             RecaptchaHelper recaptchaHelper,
-            UserFactory userFactory, CredentialManager credentialManager)
+            UserFactory userFactory, CredentialManager credentialManager, WeakPasswords weakPasswords)
     {
         this.groupFinder = groupFinder;
         this.ebeanServer = server;
@@ -65,6 +64,7 @@ public class UserManager {
         this.recaptchaHelper = recaptchaHelper;
         this.userFactory = userFactory;
         this.credentialManager = credentialManager;
+        this.weakPasswords = weakPasswords;
     }
 
     public void activateTwoFactorAuth(String secret, int activationToken) throws Invalid2FATokenException {
@@ -222,7 +222,10 @@ public class UserManager {
         ebeanServer.save(user);
     }
 
-    public void changeUserPassword(String currentPassword, String newPassword) throws UnauthorizedException {
+    public void changeUserPassword(String currentPassword, String newPassword) throws UnauthorizedException, WeakPasswordException {
+        if(weakPasswords.isWeakPw(newPassword))
+            throw new WeakPasswordException();
+
         try(Transaction tx = this.ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
             User user = sessionManager.currentUser();
 

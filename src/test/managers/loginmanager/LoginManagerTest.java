@@ -1,13 +1,16 @@
 package managers.loginmanager;
 
+import com.google.j2objc.annotations.Weak;
 import extension.CredentialManager;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
+import extension.WeakPasswords;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import managers.WeakPasswordException;
 import models.PasswordResetToken;
 import models.User;
 import models.finders.LoginAttemptFinder;
@@ -51,6 +54,7 @@ public class LoginManagerTest {
     private MailerClient defaultMailerClient;
     private PasswordResetTokenFinder defaultPasswordResetTokenFinder;
     private LoginManager defaultLoginManager;
+    private WeakPasswords defaultWeakPasswords;
 
 
     @Before
@@ -79,6 +83,9 @@ public class LoginManagerTest {
 
         this.defaultMailerClient = mock(MailerClient.class);
         this.defaultPasswordResetTokenFinder = mock(PasswordResetTokenFinder.class);
+        this.defaultWeakPasswords = mock(WeakPasswords.class);
+
+        when(defaultEbeanServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
 
         this.defaultLoginManager = new LoginManager(
                 defaultAuthentification,
@@ -88,8 +95,8 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
     }
 
     @Test
@@ -107,8 +114,8 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
         verify(sessionManager).startNewSession(authenticatedUser, defaultCredentialKey);
     }
@@ -128,8 +135,8 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -147,14 +154,14 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
 
     @Test
-    public void successfulChangePassword() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
+    public void successfulChangePassword() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
         User authenticatedUser = mock(User.class);
         when(authenticatedUser.getUserId()).thenReturn(5l);
         when(authenticatedUser.getIsPasswordResetRequired()).thenReturn(true);
@@ -162,25 +169,24 @@ public class LoginManagerTest {
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
         HashHelper hashHelper = mock(HashHelper.class);
         when(hashHelper.hashPassword(any(String.class))).thenReturn("hashed");
-        EbeanServer s = mock(EbeanServer.class);
         LoginManager sut = new LoginManager(
                 auth,
                 this.defaultFirewall,
                 this.defaultSessionManager,
                 hashHelper,
-                s,
+                defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
         verify(authenticatedUser).setIsPasswordResetRequired(false);
         verify(authenticatedUser).setPasswordHash("hashed");
-        verify(s).save(authenticatedUser);
+        verify(defaultEbeanServer).save(authenticatedUser);
     }
 
     @Test(expected = InvalidLoginException.class)
-    public void failedChangePassword() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
+    public void failedChangePassword() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
         User authenticatedUser = mock(User.class);
         when(authenticatedUser.getUserId()).thenReturn(5l);
         when(authenticatedUser.getIsPasswordResetRequired()).thenReturn(true);
@@ -194,8 +200,8 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -216,8 +222,8 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -239,8 +245,8 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -262,8 +268,8 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
@@ -284,14 +290,14 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.login("lydia", "lydia", "", this.defaultRequest, 0);
     }
 
 
     @Test(expected = CaptchaRequiredException.class)
-    public void validPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
+    public void validPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
@@ -307,14 +313,14 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
 
     @Test(expected = CaptchaRequiredException.class)
-    public void invalidPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
+    public void invalidPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
@@ -330,14 +336,14 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
 
     @Test(expected = InvalidLoginException.class)
-    public void validPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
+    public void validPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
@@ -353,14 +359,14 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
 
     @Test(expected = InvalidLoginException.class)
-    public void invalidPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
+    public void invalidPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
         when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
@@ -376,8 +382,8 @@ public class LoginManagerTest {
                 this.defaultEbeanServer,
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialManager,
-                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder
-        );
+                defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
+                defaultWeakPasswords);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
     }
 
@@ -430,13 +436,13 @@ public class LoginManagerTest {
     }
 
     @Test(expected = UnauthorizedException.class)
-    public void resetPasswordVerificationTest() throws UnauthorizedException {
+    public void resetPasswordVerificationTest() throws UnauthorizedException, WeakPasswordException {
         when(defaultPasswordResetTokenFinder.byId(any())).thenReturn(null);
         defaultLoginManager.resetPassword(UUID.randomUUID(), "123", Helpers.fakeRequest().build());
     }
 
     @Test
-    public void resetPasswordTest() throws UnauthorizedException {
+    public void resetPasswordTest() throws UnauthorizedException, WeakPasswordException {
         UUID id = UUID.randomUUID();
         String remoteAddr = "12.2.2.1";
         String newPassword = "123";

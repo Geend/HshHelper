@@ -6,6 +6,7 @@ import dtos.login.ResetPasswordDto;
 import dtos.login.UserLoginDto;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import managers.WeakPasswordException;
 import managers.loginmanager.CaptchaRequiredException;
 import managers.loginmanager.InvalidLoginException;
 import managers.loginmanager.LoginManager;
@@ -133,6 +134,9 @@ public class LoginController extends Controller {
             return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, true));
         } catch (GeneralSecurityException e) {
             return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, false));
+        } catch (WeakPasswordException e) {
+            boundForm = boundForm.withError("password", "Das Passwort ist zu schwach!");
+            return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, false));
         }
 
         return redirect(routes.LoginController.login());
@@ -180,7 +184,13 @@ public class LoginController extends Controller {
         }
 
         ResetPasswordDto data = boundForm.get();
-        this.loginManager.resetPassword(tokenId, data.getNewPassword(), Http.Context.current().request());
+
+        try {
+            this.loginManager.resetPassword(tokenId, data.getNewPassword(), Http.Context.current().request());
+        } catch (WeakPasswordException e) {
+            boundForm = boundForm.withError("newPassword", "Das Passwort ist zu schwach!");
+            return badRequest(views.html.login.ResetPassword.render(boundForm, tokenId));
+        }
 
         return redirect(routes.LoginController.login());
     }

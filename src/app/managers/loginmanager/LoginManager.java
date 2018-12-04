@@ -3,12 +3,14 @@ package managers.loginmanager;
 import extension.CredentialManager;
 import extension.HashHelper;
 import extension.RecaptchaHelper;
+import extension.WeakPasswords;
 import extension.logging.DangerousCharFilteringLogger;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import managers.WeakPasswordException;
 import models.LoginAttempt;
 import models.PasswordResetToken;
 import models.User;
@@ -49,6 +51,7 @@ public class LoginManager {
     private final CredentialManager credentialManager;
     private final MailerClient mailerClient;
     private final PasswordResetTokenFinder passwordResetTokenFinder;
+    private final WeakPasswords weakPasswords;
 
     private static final Logger.ALogger logger = new DangerousCharFilteringLogger(LoginManager.class);
 
@@ -61,7 +64,7 @@ public class LoginManager {
             EbeanServer ebeanServer,
             LoginAttemptFinder loginAttemptFinder,
             RecaptchaHelper recaptchaHelper, CredentialManager credentialManager,
-            UserFinder userFinder, MailerClient mailerClient, PasswordResetTokenFinder passwordResetTokenFinder)
+            UserFinder userFinder, MailerClient mailerClient, PasswordResetTokenFinder passwordResetTokenFinder, WeakPasswords weakPasswords)
     {
         this.loginAttemptFinder = loginAttemptFinder;
         this.ebeanSever = ebeanServer;
@@ -74,6 +77,7 @@ public class LoginManager {
         this.userFinder = userFinder;
         this.mailerClient = mailerClient;
         this.passwordResetTokenFinder = passwordResetTokenFinder;
+        this.weakPasswords = weakPasswords;
     }
 
     private User authenticate(String username, String password, String captchaToken, Http.Request request, Integer twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, IOException, GeneralSecurityException {
@@ -147,12 +151,21 @@ public class LoginManager {
         logger.info(authenticatedUser + " has logged in.");
     }
 
-    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken, Http.Request request, Integer twoFactorPin) throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException {
+    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken, Http.Request request, Integer twoFactorPin) throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
         User authenticatedUser = this.authenticate(username, currentPassword, captchaToken, request, twoFactorPin);
 
-        authenticatedUser.setIsPasswordResetRequired(false);
-        authenticatedUser.setPasswordHash(hashHelper.hashPassword(newPassword));
-        this.ebeanSever.save(authenticatedUser);
+        if(weakPasswords.isWeakPw(newPassword)) {
+            throw new WeakPasswordException();
+        }
+
+        try(Transaction tx = ebeanSever.beginTransaction(TxIsolation.SERIALIZABLE)) {
+            credentialManager.updateCredentialPassword(currentPassword, newPassword);
+            authenticatedUser.setIsPasswordResetRequired(false);
+            authenticatedUser.setPasswordHash(hashHelper.hashPassword(newPassword));
+            ebeanSever.save(authenticatedUser);
+            tx.commit();
+        }
+
         logger.info(authenticatedUser + " changed his password.");
     }
 
@@ -210,7 +223,11 @@ public class LoginManager {
         return token;
     }
 
-    public void resetPassword(UUID tokenId, String newPassword, Http.Request request) throws UnauthorizedException {
+    public void resetPassword(UUID tokenId, String newPassword, Http.Request request) throws UnauthorizedException, WeakPasswordException {
+        if(weakPasswords.isWeakPw(newPassword)) {
+            throw new WeakPasswordException();
+        }
+
         try(Transaction tx = ebeanSever.beginTransaction(TxIsolation.SERIALIZABLE)) {
             PasswordResetToken token = validateResetToken(tokenId, request);
 

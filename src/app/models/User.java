@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static extension.StringHelper.empty;
+
 @Entity
 @Table(name = "users")
 public class User extends Model {
@@ -109,6 +111,10 @@ public class User extends Model {
 
     public boolean isAdmin() {
         return this.groups.stream().anyMatch(Group::getIsAdminGroup);
+    }
+
+    public boolean has2FA() {
+        return empty(getTwoFactorAuthSecret());
     }
 
     public Long getUserId() {

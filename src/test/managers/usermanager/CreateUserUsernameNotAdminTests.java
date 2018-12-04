@@ -1,9 +1,6 @@
 package managers.usermanager;
 
-import extension.CredentialManager;
-import extension.HashHelper;
-import extension.PasswordGenerator;
-import extension.RecaptchaHelper;
+import extension.*;
 import io.ebean.EbeanServer;
 import managers.UnauthorizedException;
 import models.factories.UserFactory;
@@ -58,8 +55,9 @@ public class CreateUserUsernameNotAdminTests {
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserFactory userFactory = mock(UserFactory.class);
         CredentialManager credentialManager = mock(CredentialManager.class);
+        WeakPasswords weakPasswords = mock(WeakPasswords.class);
 
-        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, sessionManager, recaptchaHelper, userFactory, credentialManager);
+        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, sessionManager, recaptchaHelper, userFactory, credentialManager, weakPasswords);
         sut.createUser(this.username, "test@test.de", 5l);
     }
 }

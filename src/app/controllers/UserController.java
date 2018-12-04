@@ -4,6 +4,7 @@ import dtos.group.UserIdDto;
 import dtos.user.*;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import managers.WeakPasswordException;
 import managers.usermanager.*;
 import models.User;
 import play.data.Form;
@@ -184,7 +185,7 @@ public class UserController extends Controller {
         return ok(views.html.users.UserSettings.render(
                 filledForm,
                 changeOwnPasswordForm,
-                empty(currentUser.getTwoFactorAuthSecret())
+                currentUser.has2FA()
                 ));
     }
 
@@ -204,10 +205,24 @@ public class UserController extends Controller {
         Form<ChangeOwnPasswordDto> boundForm = changeOwnPasswordForm.bindFromRequest();
 
         if(boundForm.hasErrors()){
-            return redirect(routes.UserController.showUserSettings());
+            boundForm = boundForm.withError("newPassword", "Das Passwort ist zu schwach!");
+            return badRequest(views.html.users.UserSettings.render(
+                    changeUserSessionTimeoutForm,
+                    boundForm,
+                    sessionManager.currentUser().has2FA()
+            ));
         }
 
-        userManager.changeUserPassword(boundForm.get().getCurrentPassword(), boundForm.get().getNewPassword());
+        try {
+            userManager.changeUserPassword(boundForm.get().getCurrentPassword(), boundForm.get().getNewPassword());
+        } catch (WeakPasswordException e) {
+            boundForm = boundForm.withError("newPassword", "Das Passwort ist zu schwach!");
+            return badRequest(views.html.users.UserSettings.render(
+                changeUserSessionTimeoutForm,
+                boundForm,
+                sessionManager.currentUser().has2FA()
+            ));
+        }
 
         return redirect(routes.UserController.showUserSettings());
     }
