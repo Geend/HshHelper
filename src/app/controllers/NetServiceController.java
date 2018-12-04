@@ -146,7 +146,7 @@ public class NetServiceController {
         return ok(views.html.netservice.CreateNetServiceCredential.render(asScala(netServiceManager.getAllNetServices()), createNetServiceCredentialsDtoForm));
     }
 
-    public Result createNetServiceCredential() throws UnauthorizedException {
+    public Result createNetServiceCredential() throws UnauthorizedException, InvalidArgumentException {
         Form<CreateNetServiceCredentialsDto> boundForm = createNetServiceCredentialsDtoForm.bindFromRequest();
 
         if(boundForm.hasErrors()){
@@ -169,7 +169,7 @@ public class NetServiceController {
         return redirect(routes.NetServiceController.showUserNetServiceCredentials());
     }
 
-    public Result decryptNetServiceCredential(Long credentialId) throws UnauthorizedException {
+    public Result decryptNetServiceCredential(Long credentialId) throws UnauthorizedException, InvalidArgumentException {
         PlaintextCredential credential = netServiceManager.decryptCredential(credentialId);
         return ok(Json.toJson(credential));
     }

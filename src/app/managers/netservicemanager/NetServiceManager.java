@@ -161,10 +161,10 @@ public class NetServiceManager {
         return sessionManager.currentUser().getNetServiceCredentials();
     }
 
-    public void createNetUserCredential(Long netServiceId, String username, String password) {
+    public void createNetUserCredential(Long netServiceId, String username, String password) throws InvalidArgumentException {
         Optional<NetService> netService = netServiceFinder.byIdOptional(netServiceId);
         if (!netService.isPresent()) {
-            throw new IllegalArgumentException("Unkown NetServiceId");
+            throw new InvalidArgumentException("Unkown NetServiceId");
         }
 
         CryptoKey ck = keyGenerator.generate(sessionManager.getCredentialKey());
@@ -187,10 +187,10 @@ public class NetServiceManager {
     }
 
 
-    public PlaintextCredential decryptCredential(Long netServiceCredentialId) throws UnauthorizedException {
+    public PlaintextCredential decryptCredential(Long netServiceCredentialId) throws UnauthorizedException, InvalidArgumentException {
         Optional<NetServiceCredential> optCredential = netServiceCredentialFinder.byIdOptional(netServiceCredentialId);
         if (!optCredential.isPresent()) {
-            throw new IllegalArgumentException("credentialId does not exist");
+            throw new InvalidArgumentException("credentialId does not exist");
         }
 
         NetServiceCredential credential = optCredential.get();
@@ -209,10 +209,10 @@ public class NetServiceManager {
         );
     }
 
-    public NetService getCredentialNetService(Long credentialId) throws UnauthorizedException {
+    public NetService getCredentialNetService(Long credentialId) throws UnauthorizedException, InvalidArgumentException {
         Optional<NetServiceCredential> optCredential = netServiceCredentialFinder.byIdOptional(credentialId);
         if (!optCredential.isPresent()) {
-            throw new IllegalArgumentException("credentialId does not exist");
+            throw new InvalidArgumentException("credentialId does not exist");
         }
 
         NetServiceCredential credential = optCredential.get();
