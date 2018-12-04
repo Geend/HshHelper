@@ -1,10 +1,9 @@
 package models;
 
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class NetServiceCredential {
@@ -17,7 +16,9 @@ public class NetServiceCredential {
     private byte[] passwordCipherText;
 
     @ManyToOne
+    @JoinColumn(name="fk_net_service_id", referencedColumnName = "net_service_id")
     private NetService netService;
+
 
     @ManyToOne
     @JoinColumn(name = "fk_user_id", referencedColumnName = "user_id")

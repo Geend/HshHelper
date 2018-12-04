@@ -178,6 +178,7 @@ public class NetServiceManager {
         credential.setInitializationVectorPassword(encPassword.getInitializationVector());
         credential.setPasswordCipherText(encPassword.getCiphertext());
         credential.setUser(sessionManager.currentUser());
+
         ebeanServer.save(credential);
     }
 
