@@ -64,7 +64,7 @@ public class FileManager {
         return userPermissions;
     }
 
-    private void checkQuota(User user) throws QuotaExceededException {
+    public void checkQuota(User user) throws QuotaExceededException {
         UserQuota uq = fileFinder.getUsedQuota(user.getUserId());
         if (user.getQuotaLimit() <= uq.getTotalUsage()) {
             logger.error(user + " tried to exceed quota.");
