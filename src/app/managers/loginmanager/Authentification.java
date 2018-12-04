@@ -61,7 +61,7 @@ public class Authentification {
         // Nutzer existiert
         boolean success = hashHelper.checkHash(password, user.getPasswordHash());
         String twoFactorSecret = user.getTwoFactorAuthSecret();
-        if(success && !empty(twoFactorSecret)) {
+        if(success && user.has2FA()) {
             success = verifySecondFactor(twoFactorSecret, twoFactorPin);
         }
         return new Result(success, true, user);

@@ -35,17 +35,17 @@
     }
     <h2>Zwei-Faktor Authentifizierung</h2>
     @if(twoFactorActive) {
-        @helper.form(action = routes.UserController.show2FactorAuthConfirmationForm()) {
-            <div class="inputControls">
-                <input type="Submit" value="Aktivieren" />
-            </div>
-        }
-    } else {
         @helper.form(action = routes.UserController.deactivateTwoFactorAuth()) {
             <div class="inputControls">
                 <input type="Submit" value="Deaktivieren" />
             </div>
             @helper.CSRF.formField
+        }
+    } else {
+        @helper.form(action = routes.UserController.show2FactorAuthConfirmationForm()) {
+            <div class="inputControls">
+                <input type="Submit" value="Aktivieren" />
+            </div>
         }
     }
 }

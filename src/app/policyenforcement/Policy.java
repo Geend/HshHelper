@@ -381,4 +381,14 @@ public class Policy {
 
         return false;
     }
+
+    public boolean canDisable2FA(User toDeDisabled) {
+        if(toDeDisabled.equals(associatedUser))
+            return true;
+
+        if(associatedUser.isAdmin())
+            return true;
+
+        return false;
+    }
 }

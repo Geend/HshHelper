@@ -114,7 +114,7 @@ public class User extends Model {
     }
 
     public boolean has2FA() {
-        return empty(getTwoFactorAuthSecret());
+        return !empty(getTwoFactorAuthSecret());
     }
 
     public Long getUserId() {

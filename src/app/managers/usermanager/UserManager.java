@@ -82,10 +82,25 @@ public class UserManager {
         this.ebeanServer.save(currentUser);
     }
 
-    public void deactivateTwoFactorAuth() {
-        User currentUser = sessionManager.currentUser();
-        currentUser.setTwoFactorAuthSecret("");
-        this.ebeanServer.save(currentUser);
+    public void deactivateTwoFactorAuth() throws InvalidArgumentException, UnauthorizedException {
+        Long currentUid = sessionManager.currentUser().getUserId();
+        deactivateTwoFactorAuth(currentUid);
+    }
+
+    public void deactivateTwoFactorAuth(Long userId) throws InvalidArgumentException, UnauthorizedException {
+        Optional<User> optUser = userFinder.byIdOptional(userId);
+        if(!optUser.isPresent()) {
+            throw new InvalidArgumentException("Ungültige userId");
+        }
+
+        User user = optUser.get();
+        if(!sessionManager.currentPolicy().canDisable2FA(user)) {
+            throw new UnauthorizedException();
+        }
+
+        user.setTwoFactorAuthSecret("");
+
+        this.ebeanServer.save(user);
     }
 
     public String generateTwoFactorSecret() {
@@ -194,7 +209,7 @@ public class UserManager {
         return new UserMetaInfo(
             user.getUsername(),
             user.getOwnerOf().size(),
-            user.getOwnedFiles().size()
+            user.has2FA()
         );
     }
 

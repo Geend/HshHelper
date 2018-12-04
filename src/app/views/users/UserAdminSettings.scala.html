@@ -1,5 +1,5 @@
 @import dtos.user.ChangeUserQuotaLimitDto
-@(changeUserQuotaLimitForm: Form[ChangeUserQuotaLimitDto])
+@(changeUserQuotaLimitForm: Form[ChangeUserQuotaLimitDto], twoFactorActive : Boolean, userId : Long)
 
 @Base("Benutzer-Einstellungen") {
 
@@ -16,6 +16,22 @@
         </div>
 
         @helper.CSRF.formField
+    }
+
+
+    <h2>Zwei-Faktor Authentifizierung</h2>
+    @if(twoFactorActive) {
+        @helper.form(action = routes.UserController.deactivateSpecificUserTwoFactorAuth()) {
+            <input type="hidden" name="userId" value="@userId" />
+            <div class="inputControls">
+                <input type="Submit" value="Deaktivieren" />
+            </div>
+            @helper.CSRF.formField
+        }
+    } else {
+        <div class="inputControls">
+            <input type="Submit" value="Deaktivieren" disabled="disabled" />
+        </div>
     }
 
 

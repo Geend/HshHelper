@@ -35,6 +35,7 @@ public class UserController extends Controller {
     private final Form<ChangeOwnPasswordDto> changeOwnPasswordForm;
     private final Form<ChangeUserQuotaLimitDto> changeUserQuotaLimitForm;
     private final Form<TwoFactorAuthDto> twoFactorAuthForm;
+    private final Form<UserIdDto> disable2FAForm;
 
     private final SessionManager sessionManager;
 
@@ -50,6 +51,7 @@ public class UserController extends Controller {
         this.changeOwnPasswordForm = formFactory.form(ChangeOwnPasswordDto.class);
         this.changeUserQuotaLimitForm = formFactory.form(ChangeUserQuotaLimitDto.class);
         this.twoFactorAuthForm = formFactory.form(TwoFactorAuthDto.class);
+        this.disable2FAForm = formFactory.form(UserIdDto.class);
 
         this.sessionManager = sessionManager;
     }
@@ -161,9 +163,20 @@ public class UserController extends Controller {
         return redirect(routes.HomeController.index());
     }
 
-    public Result deactivateTwoFactorAuth() {
+    public Result deactivateTwoFactorAuth() throws UnauthorizedException, InvalidArgumentException {
         this.userManager.deactivateTwoFactorAuth();
         return redirect(routes.HomeController.index());
+    }
+
+    public Result deactivateSpecificUserTwoFactorAuth() throws UnauthorizedException, InvalidArgumentException {
+        Form<UserIdDto> boundForm = disable2FAForm.bindFromRequest();
+        if(boundForm.hasErrors()) {
+            return badRequest();
+        }
+
+        this.userManager.deactivateTwoFactorAuth(boundForm.get().getUserId());
+
+        return redirect(routes.UserController.showUserAdminSettings(boundForm.get().getUserId()));
     }
 
     public Result show2FactorAuthConfirmationForm() throws IOException {
@@ -186,7 +199,7 @@ public class UserController extends Controller {
                 filledForm,
                 changeOwnPasswordForm,
                 currentUser.has2FA()
-                ));
+        ));
     }
 
     public Result changeUserSessionTimeout() throws UnauthorizedException, InvalidArgumentException {
@@ -233,18 +246,25 @@ public class UserController extends Controller {
         userQuotaLimitDto.setNewQuotaLimit(userManager.getUserQuotaLimit(userId));
 
         Form<ChangeUserQuotaLimitDto> filledForm = changeUserQuotaLimitForm.fill(userQuotaLimitDto);
-        return ok(views.html.users.UserAdminSettings.render(filledForm));
+
+        UserMetaInfo metaInfo = userManager.getUserMetaInfo(userId);
+
+        return ok(views.html.users.UserAdminSettings.render(filledForm, metaInfo.getHas2FA(), userId));
     }
 
 
     public Result changeUserQuotaLimit() throws UnauthorizedException, InvalidArgumentException {
         Form<ChangeUserQuotaLimitDto> boundForm = changeUserQuotaLimitForm.bindFromRequest();
 
+        boundForm.hasErrors();
+        Long userId = boundForm.get().getUserId();
+        UserMetaInfo metaInfo = userManager.getUserMetaInfo(userId);
+
         if(boundForm.hasErrors()){
-            return badRequest(views.html.users.UserAdminSettings.render(boundForm));
+            return badRequest(views.html.users.UserAdminSettings.render(boundForm, metaInfo.getHas2FA(), userId));
         }
 
         userManager.changeUserQuotaLimit(boundForm.get().getUserId(), boundForm.get().getNewQuotaLimit());
-        return ok(views.html.users.UserAdminSettings.render(boundForm));
+        return ok(views.html.users.UserAdminSettings.render(boundForm, metaInfo.getHas2FA(), userId));
     }
 }

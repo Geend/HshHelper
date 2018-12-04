@@ -21,6 +21,7 @@ POST        /users/confirmDelete                              controllers.UserCo
 POST        /users/delete                                     controllers.UserController.deleteUser
 GET         /users/:userId/settings                           controllers.UserController.showUserAdminSettings(userId:Long)
 POST        /users/editQuota                                  controllers.UserController.changeUserQuotaLimit
+POST        /users/deactivateTwoFactorAuth                    controllers.UserController.deactivateSpecificUserTwoFactorAuth
 
 GET         /sessions                                         controllers.UserController.showActiveUserSessions()
 POST        /sessions/delete                                  controllers.UserController.deleteUserSession()

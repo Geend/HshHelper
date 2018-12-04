@@ -3,12 +3,12 @@ package managers.usermanager;
 public class UserMetaInfo {
     private String username;
     private Integer ownedGroups;
-    private Integer ownedFiles;
+    private Boolean has2FA;
 
-    protected UserMetaInfo(String username, Integer ownedGroups, Integer ownedFiles) {
+    protected UserMetaInfo(String username, Integer ownedGroups, Boolean has2FA) {
         this.username = username;
         this.ownedGroups = ownedGroups;
-        this.ownedFiles = ownedFiles;
+        this.has2FA = has2FA;
     }
 
     public String getUsername() {
@@ -27,11 +27,11 @@ public class UserMetaInfo {
         this.ownedGroups = ownedGroups;
     }
 
-    public Integer getOwnedFiles() {
-        return ownedFiles;
+    public Boolean getHas2FA() {
+        return has2FA;
     }
 
-    protected void setOwnedFiles(Integer ownedFiles) {
-        this.ownedFiles = ownedFiles;
+    public void setHas2FA(Boolean has2FA) {
+        this.has2FA = has2FA;
     }
 }
