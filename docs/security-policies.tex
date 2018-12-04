@@ -81,7 +81,6 @@
   \item Gruppenbesitzer (GO)
   \item Gruppenmitglied (GM)
   \item Dateibesitzer (DO)
-  \item Authentisierter Benutzer mit Berechtigung zum Lesen und Schreiben auf eine Datei (DA)
   \item Authentisierter Benutzer mit Schreibeberechtigung auf eine Datei (DW)
   \item Authentisierter Benutzer mit Leseberechtigung auf eine Datei (DR)
   \item Authentisierter Benutzer (U+)
@@ -119,9 +118,9 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
   \item \textbf{AS4:} Nutzerkonto [A]
   \item Dateien
   \begin{itemize}
-    \item \textbf{AS5:} Dateiname [DR, DW, DA, DO]
-    \item \textbf{AS6:} Dateiinhalt [DR, DW, DA, DO]
-    \item \textbf{AS7:} Kommentar [DR, DW, DA, DO]
+    \item \textbf{AS5:} Dateiname [DR, DW, DO]
+    \item \textbf{AS6:} Dateiinhalt [DR, DW, DO]
+    \item \textbf{AS7:} Kommentar [DR, DW, DO]
     \item \textbf{AS8:} Zugriffsberechtigungen [DO]
   \end{itemize}
   \item Netzdienste
@@ -153,8 +152,8 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
 
   \item \textbf{AK15:} Eine Datei hochladen [U+]
   \item \textbf{AK16:} Eine Datei löschen [DO]
-  \item \textbf{AK17:} Eine Datei runterladen [DR, DA, DO]
-  \item \textbf{AK18:} Dateiinhalt und/oder -kommentar verändern [DW, DA, DO]
+  \item \textbf{AK17:} Eine Datei runterladen [DR, DO]
+  \item \textbf{AK18:} Dateiinhalt und/oder -kommentar verändern [DW, DO]
   \item \textbf{AK19:} Dateien anzeigen lassen [U+]
   \item \textbf{AK20:} Nutzerberechtigungen einer Datei verwalten [DO]
   \item \textbf{AK21:} Gruppenberechtigungen einer Datei verwalten [DO]
@@ -162,7 +161,7 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
   \item \textbf{AK23:} Speicherplatzlimit eines Nutzers anpassen [A]
   \item \textbf{AK24:} Nutzer kann Session-Timeout einstellen [U+]
   \item \textbf{AK25:} Nutzer kann Passwort ändern [U+]
-  \item \textbf{AK26:} Nutzer kann nach Dateien suchen [DR, DW, DA, DO]
+  \item \textbf{AK26:} Nutzer kann nach Dateien suchen [DR, DW, DO]
 
   \item \textbf{AK27:} Nutzer kann neuen Netzdienst hinzufügen [A]
   \item \textbf{AK28:} Nutzer kann bestehenden Netzdienst löschen [A]
@@ -181,33 +180,33 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
 \begin{table}[ht]
   \begin{tabularx}{\textwidth}{| l | Y | Y | Y | Y | Y | Y | Y | Y | Y |}
       \hline
-      Aktion     & A & GO & GM & DO & DA & DW & DR & U+ & U-    \\ \hline
-      AK1        & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \greencheckmark\\ \hline
-      AK2        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
-      AK3        & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK4        & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK5        & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \greencheckmark \\ \hline
-      AK6        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
-      AK7        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
-      AK8        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
-      AK9        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
-      AK10       & \greencheckmark & \greencheckmark  & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK11       & \greencheckmark & \greencheckmark  & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK12       & \greencheckmark & \greencheckmark  & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK13       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK14       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK15       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
-      AK16       & \redxmark & \redxmark & \redxmark & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK17       & \redxmark & \redxmark & \redxmark & \greencheckmark & \greencheckmark & \redxmark & \greencheckmark & \redxmark & \redxmark \\ \hline
-      AK18       & \redxmark & \redxmark & \redxmark & \greencheckmark & \greencheckmark & \greencheckmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK19       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
-      AK20       & \redxmark & \redxmark & \redxmark & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK21       & \redxmark & \redxmark & \redxmark & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK22       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
-      AK23       & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
-      AK24       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
-      AK25       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
-      AK26       & \redxmark & \redxmark & \redxmark & \greencheckmark & \greencheckmark & \greencheckmark & \greencheckmark & \redxmark & \redxmark \\ \hline
+      Aktion     & A & GO & GM & DO & DW & DR & U+ & U-    \\ \hline
+      AK1        & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \greencheckmark\\ \hline
+      AK2        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK3        & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK4        & \greencheckmark & \redxmark & \redxmark & \redxmark  & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK5        & \redxmark & \redxmark & \redxmark & \redxmark  & \redxmark & \redxmark & \redxmark & \greencheckmark \\ \hline
+      AK6        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK7        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK8        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK9        & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK10       & \greencheckmark & \greencheckmark  & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK11       & \greencheckmark & \greencheckmark  & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK12       & \greencheckmark & \greencheckmark  & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK13       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK14       & \greencheckmark & \greencheckmark  & \greencheckmark & \redxmark  & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK15       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK16       & \redxmark & \redxmark & \redxmark & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK17       & \redxmark & \redxmark & \redxmark & \greencheckmark & \redxmark & \greencheckmark & \redxmark & \redxmark \\ \hline
+      AK18       & \redxmark & \redxmark & \redxmark & \greencheckmark & \greencheckmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK19       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK20       & \redxmark & \redxmark & \redxmark & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK21       & \redxmark & \redxmark & \redxmark & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK22       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK23       & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK24       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK25       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK26       & \redxmark & \redxmark & \redxmark & \greencheckmark & \greencheckmark & \greencheckmark & \redxmark & \redxmark \\ \hline
   \end{tabularx}
 \end{table}
 
@@ -231,13 +230,13 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
   \item Ein Nutzer [U+] darf nur eine Datei hochladen (AK15), solange dessen Dateiname (AS5), -inhalt (AS6) und der Kommentar (AS7) zusammen nicht sein Speicherplatzlimit überschreiten.
   \item Ein Nutzer [DO] darf nur eine Datei löschen (AK16), wenn er dessen Besitzer ist.
   \item Ein Nutzer [DR] darf beim lesenden Zugriff auf eine Datei (AK17) keine Informationen verändern.
-  \item Ein Nutzer [DW, DA, DO] darf beim Verändern des Dateiinhalts oder des Kommentars (AK18) niemals den Dateinamen anpassen.
+  \item Ein Nutzer [DW, DO] darf beim Verändern des Dateiinhalts oder des Kommentars (AK18) niemals den Dateinamen anpassen.
   \item Ein Nutzer [U+] darf sich nur Dateien anzeigen lassen (AK19), zu welchen mindestens zum Lesen oder Schreiben berechtigt ist.
   \item Ein Nutzer [DO] darf die Nutzer- und Gruppenberechtigungen einer Datei jederzeit anpassen (AK20, 21); bedeutet löschen, hinzufügen, verändern.
   \item Ein Nutzer [U+] darf sich nur zu seinem eigenem Speicherplatzlimit informieren (AK22) und hat keinen Zugriff auf die Speicherplatzlimit anderer Nutzerkonten.
   \item Ein Nutzer [U+] darf seinen eigenen Session-Timeout (AK24) einstellen.
   \item Ein Nutzer [U+] darf sein eigenes Passwort (AK25) einstellen.
-  \item Nur der Dateibesitzer [DO] darf schreibend auf den Dateinamen (AS5) zugreifen, alle anderen [DR, DW, DA] nur lesend.
+  \item Nur der Dateibesitzer [DO] darf schreibend auf den Dateinamen (AS5) zugreifen, alle anderen [DR, DW] nur lesend.
 \end{itemize}
 
 \printbibliography
