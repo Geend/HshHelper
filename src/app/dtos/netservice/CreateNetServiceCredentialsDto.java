@@ -2,12 +2,16 @@ package dtos.netservice;
 
 import play.data.validation.Constraints;
 
+import javax.validation.Constraint;
+
 public class CreateNetServiceCredentialsDto {
 
     @Constraints.Required
+    @Constraints.MaxLength(40)
     private String username;
 
     @Constraints.Required
+    @Constraints.MaxLength(40)
     private String password;
 
     @Constraints.Required
