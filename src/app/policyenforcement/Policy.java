@@ -174,14 +174,6 @@ public class Policy {
         return false;
     }
 
-    public boolean canSeeAllGroups() {
-        if (associatedUser.isAdmin()) {
-            return true;
-        }
-
-        return false;
-    }
-
     public boolean canReadFile(File file) {
         if (file == null)
             return false;
@@ -290,7 +282,7 @@ public class Policy {
         if (file == null || group == null)
             return false;
 
-        if (group.getMembers().contains(associatedUser))
+        if (group.getMembers().contains(associatedUser) && file.getOwner().equals(associatedUser))
             return true;
 
         return false;
@@ -317,7 +309,7 @@ public class Policy {
         return false;
     }
 
-    public boolean canViewUserMetaInfo(User toBeViewed) {
+    public boolean canViewUserMetaInfo() {
         if (associatedUser.isAdmin())
             return true;
 
@@ -331,18 +323,19 @@ public class Policy {
         return false;
     }
 
-    public boolean canReadWriteQuotaLimit(User toBeChanged) {
+    public boolean canReadWriteQuotaLimit() {
         if (associatedUser.isAdmin())
             return true;
 
         return false;
     }
 
+
     public boolean canSeeAllNetServices() {
         return true;
     }
 
-    public boolean canDeleteNetServices() {
+    public boolean canSeeNetServiceOverviewPage(){
         if (associatedUser.isAdmin()) {
             return true;
         }
@@ -358,21 +351,23 @@ public class Policy {
         return false;
     }
 
-    public boolean canDeleteNetServicesCredential(NetServiceCredential netServiceCredential) {
-        if (netServiceCredential.getUser().equals(associatedUser)) {
-            return true;
-        }
 
-        return false;
-    }
-
-    public boolean canEditNetService(NetService netService) {
+    public boolean canEditNetService() {
         if (associatedUser.isAdmin()) {
             return true;
         }
 
         return false;
     }
+
+    public boolean canDeleteNetServices() {
+        if (associatedUser.isAdmin()) {
+            return true;
+        }
+
+        return false;
+    }
+
 
     public boolean canReadCredential(NetServiceCredential netServiceCredential) {
         if(netServiceCredential.getUser().equals(associatedUser)) {
@@ -381,6 +376,16 @@ public class Policy {
 
         return false;
     }
+
+    public boolean canDeleteNetServicesCredential(NetServiceCredential netServiceCredential) {
+        if (netServiceCredential.getUser().equals(associatedUser)) {
+            return true;
+        }
+
+        return false;
+    }
+
+
 
     public boolean canDisable2FA(User toDeDisabled) {
         if(toDeDisabled.equals(associatedUser))

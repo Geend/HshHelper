@@ -205,7 +205,7 @@ public class UserManager {
 
         User user = optUser.get();
 
-        if(!sessionManager.currentPolicy().canViewUserMetaInfo(user)) {
+        if(!sessionManager.currentPolicy().canViewUserMetaInfo()) {
             throw new UnauthorizedException();
         }
 
@@ -266,7 +266,7 @@ public class UserManager {
     public Long getUserQuotaLimit(Long userId) throws UnauthorizedException, InvalidArgumentException {
         User currentUser = sessionManager.currentUser();
 
-        if(!sessionManager.currentPolicy().canReadWriteQuotaLimit(currentUser)){
+        if(!sessionManager.currentPolicy().canReadWriteQuotaLimit()){
             throw new UnauthorizedException();
         }
 
@@ -282,7 +282,7 @@ public class UserManager {
     public void changeUserQuotaLimit(Long userId, Long newQuotaLimit) throws UnauthorizedException, InvalidArgumentException {
         User currentUser = sessionManager.currentUser();
 
-        if(!sessionManager.currentPolicy().canReadWriteQuotaLimit(currentUser)){
+        if(!sessionManager.currentPolicy().canReadWriteQuotaLimit()){
             throw new UnauthorizedException();
         }
 

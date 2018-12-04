@@ -56,7 +56,7 @@
                             @if(TemplateEnvironment.policy.canViewAllUsers) {
                                 @helper.MenuLink("Benutzer", routes.UserController.showUsers(), "/users")
                             }
-                            @if(TemplateEnvironment.policy.canSeeAllNetServices) {
+                            @if(TemplateEnvironment.policy.canSeeNetServiceOverviewPage) {
                                 @helper.MenuLink("Netzdienste", routes.NetServiceController.showAllNetServices(), "/netservice")
                             }
 
