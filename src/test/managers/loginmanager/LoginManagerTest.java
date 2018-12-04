@@ -33,7 +33,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static policyenforcement.ConstraintValues.PASSWORD_RESET_TOKEN_TIMEOUT_HOURS;
 
-public class LoginManagerTest {
+public class     //TODO: Include validChars for generated Passwords in policy
+LoginManagerTest {
     private HashHelper defaultHashHelper;
     private UserFinder defaultUserFinder;
     private Firewall defaultFirewall;

@@ -468,29 +468,6 @@ public class PolicyTests {
     }
 
     /*
-        Password reset
-     */
-    /* TODO: Entfernen?
-    @Test
-    public void adminCannotResetPassword() {
-        boolean actual = Policy.ForUser(admin).canResetPassword();
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void userCanResetPassword() {
-        boolean actual = Policy.ForUser().canResetPassword(peter);
-        assertThat(actual).isFalse();
-    }
-
-    @Test
-    public void nonAuthorizedUserCanResetPassword() {
-        boolean actual = Policy.ForUser().canResetPassword(null);
-        assertThat(actual).isTrue();
-    }
-    */
-
-    /*
         Password Update
      */
     @Test
