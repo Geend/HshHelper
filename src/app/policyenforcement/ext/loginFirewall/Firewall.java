@@ -9,8 +9,8 @@ import javax.inject.Singleton;
 public class Firewall {
     public static int LaggyTsIntervalHours = 1; // 1 Std
     public static int RelevantHours = 5;
-    public static int NIPLoginsTriggerVerification = 50;
-    public static int NIPLoginsTriggerBan = 100;
+    public static int NIPLoginsTriggerVerification = 15;
+    public static int NIPLoginsTriggerBan = 30;
     public static int NUidLoginsTriggerVerification = 5;
 
     public Firewall() {
