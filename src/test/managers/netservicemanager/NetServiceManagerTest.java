@@ -1,17 +1,17 @@
 package managers.netservicemanager;
 
 import extension.Crypto.Cipher;
+import extension.Crypto.CryptoConstants;
+import extension.Crypto.CryptoKey;
 import extension.Crypto.KeyGenerator;
 import extension.HashHelper;
+import extension.RandomDataGenerator;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
-import models.Group;
-import models.NetService;
-import models.NetServiceParameter;
-import models.User;
+import models.*;
 import models.finders.NetServiceCredentialFinder;
 import models.finders.NetServiceFinder;
 import org.junit.Assert;
@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -50,10 +51,9 @@ public class NetServiceManagerTest {
     @Mock
     SessionManager sessionManager;
 
-    @Mock
+
     KeyGenerator keyGenerator;
 
-    @Mock
     Cipher cipher;
 
     @Rule
@@ -62,32 +62,22 @@ public class NetServiceManagerTest {
     @Rule
     public ExpectedException expected = ExpectedException.none();
 
-    public NetServiceManager nsm;
+    private NetServiceManager nsm;
 
 
-    public User admin;
-    public Long adminId = 1L;
-    public User peter;
-    public Long peterId = 2L;
-    public User klaus;
-    public Long klausId = 3L;
+    private User admin;
+    private User peter;
+    private User klaus;
 
-    public Group all;
-    public Long allId = 4L;
-    public Group admins;
-    public Long adminsGrpId = 5L;
-    public Group petersGroup;
-    public Long petersGrpId = 6L;
-
+    private Group all;
+    private Group admins;
+    private Group petersGroup;
 
     @Before
     public void setup() {
-
-        HashHelper hashHelper = new HashHelper();
-
-        admin = new User("admin", "hsh.helper+admin@gmail.com", hashHelper.hashPassword("admin"), false, 10l);
-        peter = new User("peter", "hsh.helper+peter@gmail.com", hashHelper.hashPassword("peter"), false, 10l);
-        klaus = new User("klaus", "hsh.helper+klaus@gmail.com", hashHelper.hashPassword("klaus"), false, 10l);
+        admin = new User("admin", "hsh.helper+admin@gmail.com", "admin", false, 10l);
+        peter = new User("peter", "hsh.helper+peter@gmail.com", "peter", false, 10l);
+        klaus = new User("klaus", "hsh.helper+klaus@gmail.com", "klaus", false, 10l);
 
         all = new Group("All", admin);
         admins = new Group("Administrators", admin);
@@ -106,10 +96,10 @@ public class NetServiceManagerTest {
         klaus.setGroups(Stream.of(all).collect(Collectors.toList()));
 
 
+        cipher = new Cipher();
+        keyGenerator = new KeyGenerator();
         nsm = new NetServiceManager(sessionManager, defaultServer, netServiceFinder, netServiceCredentialFinder, keyGenerator, cipher);
-        //gm = new GroupManager(groupFinder, userFinder, defaultServer, sessionManager, defaultFileFinder, null);
     }
-
 
 
     /*
@@ -190,7 +180,7 @@ public class NetServiceManagerTest {
         when(netServiceFinder.byIdOptional(0L)).thenReturn(Optional.of(netService));
 
         expected.expect(UnauthorizedException.class);
-        nsm.editNetService(0L,"testName","testUrl");
+        nsm.editNetService(0L, "testName", "testUrl");
 
         verify(defaultServer, times(0)).save(netService);
     }
@@ -201,7 +191,7 @@ public class NetServiceManagerTest {
      */
 
     @Test
-    public void testAddNetServiceParameter () throws UnauthorizedException, InvalidArgumentException {
+    public void testAddNetServiceParameter() throws UnauthorizedException, InvalidArgumentException {
         when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(admin));
         when(sessionManager.currentUser()).thenReturn(admin);
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
@@ -224,7 +214,7 @@ public class NetServiceManagerTest {
     }
 
     @Test
-    public void testAddNetServiceParameterNoAdmin () throws UnauthorizedException, InvalidArgumentException {
+    public void testAddNetServiceParameterNoAdmin() throws UnauthorizedException, InvalidArgumentException {
         when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(peter));
         when(sessionManager.currentUser()).thenReturn(peter);
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
@@ -241,7 +231,7 @@ public class NetServiceManagerTest {
     }
 
     @Test
-    public void testAddNetServiceParameterDobuleTypeAdd () throws UnauthorizedException, InvalidArgumentException {
+    public void testAddNetServiceParameterDobuleTypeAdd() throws UnauthorizedException, InvalidArgumentException {
         when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(admin));
         when(sessionManager.currentUser()).thenReturn(admin);
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
@@ -261,7 +251,7 @@ public class NetServiceManagerTest {
     }
 
     @Test
-    public void testAddNetServiceParameterDobuleNameAdd () throws UnauthorizedException, InvalidArgumentException {
+    public void testAddNetServiceParameterDobuleNameAdd() throws UnauthorizedException, InvalidArgumentException {
         when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(admin));
         when(sessionManager.currentUser()).thenReturn(admin);
         when(defaultServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
@@ -379,11 +369,47 @@ public class NetServiceManagerTest {
     /*
         getUserNetServiceCredentials
      */
-    //TODO
+    @Test
+    public void testGetUserNetServiceCredentials() {
+        User testUser = mock(User.class);
+        when(sessionManager.currentUser()).thenReturn(testUser);
+
+        List<NetServiceCredential> netServiceCredentials = mock(List.class);
+        when(testUser.getNetServiceCredentials()).thenReturn(netServiceCredentials);
+
+        Assert.assertEquals(netServiceCredentials, nsm.getUserNetServiceCredentials());
+    }
 
     /*
         createNetUserCredential
      */
+    @Test
+    public void testCreateNetUserCredential() throws InvalidArgumentException {
+        when(sessionManager.currentUser()).thenReturn(peter);
+
+        NetService netService = mock(NetService.class);
+        when(netServiceFinder.byIdOptional(0L)).thenReturn(Optional.of(netService));
+
+        byte[] credentialKey = (new RandomDataGenerator(new SecureRandom())).generateBytes(CryptoConstants.GENERATED_KEY_BYTE);
+        when(sessionManager.getCredentialKey()).thenReturn(credentialKey);
+
+        nsm.createNetUserCredential(0L, "usr", "pwd");
+
+        ArgumentCaptor<NetServiceCredential> captor = ArgumentCaptor.forClass(NetServiceCredential.class);
+        verify(defaultServer, times(1)).save(captor.capture());
+
+
+        CryptoKey key = keyGenerator.generate(credentialKey);
+
+        Assert.assertEquals(netService, captor.getValue().getNetService());
+        Assert.assertArrayEquals("usr".getBytes(), cipher.decrypt(key,
+                captor.getValue().getInitializationVectorUsername(),
+                captor.getValue().getUsernameCipherText()));
+        Assert.assertArrayEquals("pwd".getBytes(), cipher.decrypt(key,
+                captor.getValue().getInitializationVectorPassword(),
+                captor.getValue().getPasswordCipherText()));
+
+    }
     //TODO
 
     /*
