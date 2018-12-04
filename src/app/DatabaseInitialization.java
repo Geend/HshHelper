@@ -4,7 +4,13 @@ import models.*;
 import models.factories.UserFactory;
 import org.joda.time.DateTime;
 import play.Logger;
+import play.api.Configuration;
+import play.api.Environment;
+import play.api.db.DBApi;
+import play.api.db.evolutions.DynamicEvolutions;
+import play.api.inject.ApplicationLifecycle;
 import play.db.Database;
+import play.db.ebean.EbeanConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

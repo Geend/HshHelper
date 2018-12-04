@@ -47,3 +47,34 @@ libraryDependencies += "io.github.keetraxx" % "recaptcha" % "0.5"
 libraryDependencies += ws
 
 javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
+
+// Build options and steps
+
+enablePlugins(UniversalPlugin)
+enablePlugins(JavaAppPackaging)
+
+def filterOut(name: String): Boolean = {
+  ! (name.endsWith(".gitignore") ||
+    name.endsWith("secrets.conf") ||
+    name.endsWith("application.conf") ||
+    name.endsWith("application.test.conf") ||
+    name.endsWith("routes") ||
+    name.endsWith("logback.xml") ||
+    name.endsWith("logback-test.xml"))
+}
+
+mappings in (Compile, packageDoc) := Seq()
+
+mappings in (Compile,packageBin) ~= {
+  (ms: Seq[(File,String)]) =>
+    ms filter { case (file, toPath) => filterOut(toPath) }
+}
+
+mappings in Universal ++= (baseDirectory.value / "conf" * "application.conf" get) map
+  (x => x -> ("conf/" + x.getName))
+mappings in Universal ++= (baseDirectory.value / "conf" * "secrets.conf" get) map
+  (x => x -> ("conf/" + x.getName))
+mappings in Universal ++= (baseDirectory.value / "conf" * "logback.xml" get) map
+  (x => x -> ("conf/" + x.getName))
+
+bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/application.conf""""

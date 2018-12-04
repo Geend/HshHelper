@@ -13,14 +13,8 @@ public class StartModule extends AbstractModule {
         bind(LoginFwInitialization.class).asEagerSingleton();
         bind(SessionInitialization.class).asEagerSingleton();
         bind(LoginManagerInitialization.class).asEagerSingleton();
-        bind(EbeanServer.class).toProvider(new EbeanServerProvider());
+        bind(EbeanServer.class).toProvider(new EBeanServerProvider());
 
         requestStaticInjection(TemplateEnvironment.class);
-    }
-
-    public class EbeanServerProvider implements Provider<EbeanServer> {
-        public EbeanServer get() {
-            return Ebean.getDefaultServer();
-        }
     }
 }
