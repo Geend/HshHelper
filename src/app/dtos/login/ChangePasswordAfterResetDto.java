@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import static policyenforcement.ConstraintValues.MAX_PASSWORD_LENGTH;
 import static policyenforcement.ConstraintValues.MAX_USERNAME_LENGTH;
+import static policyenforcement.ConstraintValues.MIN_PASSWORD_LENGTH;
 
 @Constraints.Validate
 public class ChangePasswordAfterResetDto implements Constraints.Validatable<ValidationError>{
@@ -23,10 +24,12 @@ public class ChangePasswordAfterResetDto implements Constraints.Validatable<Vali
 
     @Constraints.Required
     @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
+    @Constraints.MinLength(MIN_PASSWORD_LENGTH)
     private String password;
 
     @Constraints.Required
     @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
+    @Constraints.MinLength(MIN_PASSWORD_LENGTH)
     private String passwordRepeat;
 
     private String recaptcha;

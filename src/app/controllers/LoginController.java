@@ -71,10 +71,6 @@ public class LoginController extends Controller {
             loginData.setRecaptcha(recaptchaData.get());
         }
 
-        Integer twoFactorPin = 0;
-        if(!empty(loginData.getTwofactorpin())) {
-            twoFactorPin = Integer.parseInt(loginData.getTwofactorpin());
-        }
 
         try {
             loginManager.login(
@@ -82,7 +78,7 @@ public class LoginController extends Controller {
                     loginData.getPassword(),
                     loginData.getRecaptcha(),
                     Http.Context.current().request(),
-                    twoFactorPin);
+                    loginData.getTwofactorpin());
         } catch (CaptchaRequiredException e) {
             boundForm = boundForm.withGlobalError("Complete the Captcha!");
             return badRequest(views.html.login.Login.render(boundForm, true));
