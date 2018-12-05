@@ -9,10 +9,8 @@ import static policyenforcement.ConstraintValues.MIN_PASSWORD_LENGTH;
 @Constraints.Validate
 public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationError>{
 
-
     @Constraints.Required
     @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
-    @Constraints.MinLength(MIN_PASSWORD_LENGTH)
     private String currentPassword;
 
 
