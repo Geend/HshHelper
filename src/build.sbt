@@ -97,7 +97,7 @@ batScriptExtraDefines += """call :add_java "-Dlogger.file=%APP_HOME%\conf\logbac
 //// variable. The batch template allows that however.
 //// Therefore we set the classpath for both scripts and then just override it
 //// for windows
-scriptClasspath := Seq("$lib_dir/../conf/:$lib_dir/*")
+scriptClasspath := Seq("../conf/:$lib_dir/*")
 batScriptExtraDefines += """set "APP_CLASSPATH=%APP_LIB_DIR%\*;%APP_HOME%\conf\;""""
 
 javaOptions in Universal ++= Seq(
