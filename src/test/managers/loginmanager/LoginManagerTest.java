@@ -116,7 +116,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
+        sut.login("lydia", "lydia", "", this.defaultRequest, "0");
         verify(sessionManager).startNewSession(authenticatedUser, defaultCredentialKey);
     }
 
@@ -137,7 +137,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
+        sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
     @Test(expected = InvalidLoginException.class)
@@ -156,7 +156,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
+        sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
 
@@ -224,7 +224,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
+        sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
 
@@ -247,7 +247,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
+        sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
 
@@ -270,7 +270,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
+        sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
     @Test(expected = InvalidLoginException.class)
@@ -292,7 +292,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.login("lydia", "lydia", "", this.defaultRequest, 0);
+        sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
 
