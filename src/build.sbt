@@ -102,6 +102,6 @@ batScriptExtraDefines += """set "APP_CLASSPATH=%APP_LIB_DIR%\*;%APP_HOME%\conf\;
 
 javaOptions in Universal ++= Seq(
   // -J params will be added as jvm parameters
-  "-J-Xmx2048m",
-  "-J-Xms8192m"
+  "-J-Xms2048m",
+  "-J-Xmx8192m"
 )
