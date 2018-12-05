@@ -4,6 +4,7 @@ import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 
 import static policyenforcement.ConstraintValues.MAX_PASSWORD_LENGTH;
+import static policyenforcement.ConstraintValues.MIN_PASSWORD_LENGTH;
 
 @Constraints.Validate
 public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationError>{
@@ -11,15 +12,18 @@ public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationE
 
     @Constraints.Required
     @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
+    @Constraints.MinLength(MIN_PASSWORD_LENGTH)
     private String currentPassword;
 
 
     @Constraints.Required
     @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
+    @Constraints.MinLength(MIN_PASSWORD_LENGTH)
     private String newPassword;
 
     @Constraints.Required
     @Constraints.MaxLength(MAX_PASSWORD_LENGTH)
+    @Constraints.MinLength(MIN_PASSWORD_LENGTH)
     private String newPasswordRepeat;
 
 
