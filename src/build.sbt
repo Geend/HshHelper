@@ -76,6 +76,8 @@ mappings in Universal ++= (baseDirectory.value / "conf" * "secrets.conf" get) ma
   (x => x -> ("conf/" + x.getName))
 mappings in Universal ++= (baseDirectory.value / "conf" * "logback.xml" get) map
   (x => x -> ("conf/" + x.getName))
+
+scriptClasspath := Seq("*")
 // add jvm parameter for typesafe config
 bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/application.conf""""
 batScriptExtraDefines += """call :add_java "-Dconfig.file=%APP_HOME%\conf\application.conf""""
