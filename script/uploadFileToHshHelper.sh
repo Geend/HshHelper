@@ -1,3 +1,4 @@
+#!/bin/bash
 # parameter $1 = identifier
 # parameter $2 = filename
 # parameter $3 = comment
