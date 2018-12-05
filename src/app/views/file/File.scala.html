@@ -79,7 +79,7 @@
     @if(fileMeta.canReadPermissions()) {
         <h2>Berechtigungen</h2>
         @if(fileMeta.getPermissions.isEmpty) {
-            <p>Keine Berechtigungen gesetzt</p>
+            <div class="message">Keine Berechtigungen gesetzt</div>
         } else {
             <table>
                 <thead>
