@@ -104,7 +104,12 @@ public class NetServiceController {
         Form<EditNetserviceDto> boundForm = editNetserviceDtoForm.bindFromRequest();
 
         if (boundForm.hasErrors()) {
-            return showEditNetService(boundForm.get().getNetServiceId());
+            String netServiceId = boundForm.rawData().get("netServiceId");
+            try{
+                return showEditNetService(Long.parseLong(netServiceId));
+            }catch (NumberFormatException e){
+                throw new InvalidArgumentException();
+            }
         }
 
         netServiceManager.editNetService(boundForm.get().getNetServiceId(), boundForm.get().getName(), boundForm.get().getUrl());

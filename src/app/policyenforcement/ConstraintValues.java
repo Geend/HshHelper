@@ -10,7 +10,7 @@ public class ConstraintValues {
     public static final String SECOND_FACTOR_SECRET = "[A-Z2-7]{16}";
 
     public static final int MAX_FILENAME_LENGTH = 40;
-    public static final String FILENAME_REGEX = "[a-zA-Zäüöß0-9.,#%+&!\"':;~-]+";
+    public static final String FILENAME_REGEX = "[a-zA-ZäüöÄÜÖß0-9.,#%+&!\"':;~-]+";
 
 
     public static final int GROUPNAME_MIN_LENGTH = 3;
