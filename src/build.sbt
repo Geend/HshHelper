@@ -60,12 +60,14 @@ def filterOut(name: String): Boolean = {
     name.endsWith("application.test.conf") ||
     name.endsWith("routes") ||
     name.endsWith("logback.xml") ||
-    name.endsWith("logback-test.xml"))
+    name.endsWith("logback-test.xml") ||
+    name.endsWith("ip_whitelist.txt") ||
+    name.endsWith("password_blacklist.txt"))
 }
 
 mappings in (Compile, packageDoc) := Seq()
 
-mappings in (Compile,packageBin) ~= {
+mappings in (Compile, packageBin) ~= {
   (ms: Seq[(File,String)]) =>
     ms filter { case (file, toPath) => filterOut(toPath) }
 }
@@ -76,8 +78,11 @@ mappings in Universal ++= (baseDirectory.value / "conf" * "secrets.conf" get) ma
   (x => x -> ("conf/" + x.getName))
 mappings in Universal ++= (baseDirectory.value / "conf" * "logback.xml" get) map
   (x => x -> ("conf/" + x.getName))
+mappings in Universal ++= (baseDirectory.value / "conf" * "ip_whitelist.txt" get) map
+  (x => x -> ("conf/" + x.getName))
+mappings in Universal ++= (baseDirectory.value / "conf" * "password_blacklist.txt" get) map
+  (x => x -> ("conf/" + x.getName))
 
-scriptClasspath := Seq("*")
 // add jvm parameter for typesafe config
 bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/application.conf""""
 batScriptExtraDefines += """call :add_java "-Dconfig.file=%APP_HOME%\conf\application.conf""""
@@ -85,3 +90,12 @@ batScriptExtraDefines += """call :add_java "-Dconfig.file=%APP_HOME%\conf\applic
 // add log config to application startup
 bashScriptExtraDefines += """addJava "-Dlogger.file=${app_home}/../conf/logback.xml""""
 batScriptExtraDefines += """call :add_java "-Dlogger.file=%APP_HOME%\conf\logback.xml""""
+
+// hack classpaths for windows and linux
+//// this works for both scripts - but the problem is, that the bash template
+//// declares the app_classpath variable to be readonly, so we cannot alter the
+//// variable. The batch template allows that however.
+//// Therefore we set the classpath for both scripts and then just override it
+//// for windows
+scriptClasspath := Seq("$lib_dir/../conf/:$lib_dir/*")
+batScriptExtraDefines += """set "APP_CLASSPATH=%APP_LIB_DIR%\*;%APP_HOME%\conf\;""""
