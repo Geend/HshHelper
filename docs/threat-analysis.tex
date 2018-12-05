@@ -400,7 +400,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck:
   	\begin{itemize}
   		\item Ausspähen von Anmeldedaten der Benutzer
-  		\item Ausspähen von Dateien, die ein Benutzer beim Hsh-Helfer hochladen möchte
+  		\item Ausspähen von Dateien, die ein Benutzer beim Hsh-Helper hochladen möchte
   	\end{itemize}
   \item Möglichkeiten:
   	\begin{itemize}
@@ -456,7 +456,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   		\item Spoofing des Servers
   		\item Man-in-the-Middle-Angriffe
    \end{itemize}
-  \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HsH-Helfer Domain ausgestellt werden. Für HsH-Helfer Benutzer ist das nicht sofort einsehbar\footnote{Bereits geschehen durch türkischen Geheimdienst: \url{https://arstechnica.com/information-technology/2013/01/turkish-government-agency-spoofed-google-certificate-accidentally/}}.
+  \item Möglichkeiten: Kontrolliert man eine anerkannten Zertifizierungsstelle, können gefälschte Zertifikate für die HsH-Helper Domain ausgestellt werden. Für HsH-Helper Benutzer ist das nicht sofort einsehbar\footnote{Bereits geschehen durch türkischen Geheimdienst: \url{https://arstechnica.com/information-technology/2013/01/turkish-government-agency-spoofed-google-certificate-accidentally/}}.
   \item Risiko: Gering
   \item Mögliche Gegenmaßnahmen: HTTP Public Key Pinning (HPKP)
   \end{itemize}
@@ -464,7 +464,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \hypertarget{threat6}{}
   \item \textbf{T6: XSS (Cross Site Scripting)}
   \begin{itemize}
-  \item Zweck: Ausführung von JavaScript im HsH-Helfer Kontext eines Benutzers
+  \item Zweck: Ausführung von JavaScript im HsH-Helper Kontext eines Benutzers
   \item Möglichkeiten: Eingaben, die ausgegeben werden, ohne Eingabevalidierung oder Ausgabekodierung auszuführen
   \item Risiko: Hoch
   \item Mögliche Gegenmaßnahmen:
@@ -627,7 +627,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
   \item Einbau eines Captchas
-  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den \enquote{Passwort nach Zurücksetzung ändern}-Prozess anzustoßen. Der Link muss einen geheimen Token beinhalten, der nur HsH-Helfer und dem Empfänger der E-Mail bekannt ist. Das temporäre Passwort wird erst generiert, sobald auf den Link geklickt wird.
+  \item Dem Benutzer einen Link schicken, der geöffnet werden muss, um den \enquote{Passwort nach Zurücksetzung ändern}-Prozess anzustoßen. Der Link muss einen geheimen Token beinhalten, der nur HsH-Helper und dem Empfänger der E-Mail bekannt ist. Das temporäre Passwort wird erst generiert, sobald auf den Link geklickt wird.
   \end{itemize}
 \end{itemize}
 

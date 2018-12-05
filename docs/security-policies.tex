@@ -59,14 +59,14 @@
   \item \enquote{\gls{jwt}}-Format ist kryptografisch sicher zur Speicherung von Session- sowie Cookie-Daten.
   \item Die von JWT verwendete Signatur (HMAC-SHA256) verhindert, dass eine Manipulation von JWT-Cookies erfolgen kann.
   \item Applikation kann nur über die definierten Eintrittspunkte verwendet werden.
-  \item Benutzer des HsH-Helfers verraten nicht ihr Passwort an andere.
+  \item Benutzer des HsH-Helpers verraten nicht ihr Passwort an andere.
   \item Initialer Benutzer \enquote{admin} ist vertrauenswürdig.
   \item Autogenerierte IDs der Datenbank \enquote{h2} sind aufsteigend und positiv. Sie werden nicht wiederverwendet, sofern eine ID wieder frei wird.
   \item Angreifer verfügen nur über einen begrenzten Pool an IP-Adressen, die \enquote{Anschaffung} großer Mengen von IP-Adressen für einen Login-Brute-Force ist unwirtschaftlich.
   \item Zertifikate sind grundsätzlich vertrauenswürdig. Certificate Authorities stellen keine Zertifikate für missbräuchliche Zwecke aus.
   \item Die Quelle der kryptografisch-sicheren Zufallszahlen versiegt nicht (\texttt{/dev/random} (Linux), Cryptography API: Next Generation (Windows) \autocite{Windows.SecureRandom}).
-  \item Der gewählte Datentyp \texttt{Long} der Identifikatoren in der \enquote{h2-Datenbank} ist für den Benutzungskontext des HsH-Helfers ausreichend lang.
-  \item Nutzer des HsH-Helfers verwenden moderne, aktuelle Browser, die spezifische sicherheitsrelevante HTTP-Header unterstützen (Browser nach 2013 für CSP).
+  \item Der gewählte Datentyp \texttt{Long} der Identifikatoren in der \enquote{h2-Datenbank} ist für den Benutzungskontext des HsH-Helpers ausreichend lang.
+  \item Nutzer des HsH-Helpers verwenden moderne, aktuelle Browser, die spezifische sicherheitsrelevante HTTP-Header unterstützen (Browser nach 2013 für CSP).
   \item Alle Browser respektieren den HTTP-Header \texttt{Content-Type: application/octet\\-stream}.
   \item Unserer In-Memory-Datenbank geht niemals der Speicher aus, zumindest in Rahmen dieses Projekts.
   \item Nutzer unserer Applikation greifen nur innerhalb einer Sandbox auf eine Datei zu.

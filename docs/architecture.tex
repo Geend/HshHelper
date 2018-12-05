@@ -112,10 +112,10 @@ Generell loggen wir folgende Aktionen:
 \end{itemize}
 
 \chapter{Kryptografisch relevante Informationen}
-Folgender Abschnitt enthält gesammelte Informationen über die kryptographischen Algorithmen, die im HsH-Helfer Anwendung finden. Die für die Algorithmen benötigten Geheimnisse und deren Verwaltung wird ebenfalls hier dokumentiert, da die Sicherheit von der Geheimhaltung dieser abhängt.
+Folgender Abschnitt enthält gesammelte Informationen über die kryptographischen Algorithmen, die im HsH-Helper Anwendung finden. Die für die Algorithmen benötigten Geheimnisse und deren Verwaltung wird ebenfalls hier dokumentiert, da die Sicherheit von der Geheimhaltung dieser abhängt.
 
 \section{Passwörter}
-Die Passwörter, die Benutzer verwenden um sich beim HsH-Helfer zu authentisieren, werden grundsätzlich nur als Hash persistiert. Konkret wird die Hashfunktion bcrypt zum Hashen der Passwörter verwendet.
+Die Passwörter, die Benutzer verwenden um sich beim HsH-Helper zu authentisieren, werden grundsätzlich nur als Hash persistiert. Konkret wird die Hashfunktion bcrypt zum Hashen der Passwörter verwendet.
 
 Um ein Passwort mit bcrypt zu hashen, muss zunächst ein Salt generiert werden. Neben dem Salt und dem gehashten Passwort wird bei bcrypt außerdem noch die bcyrpt Version und die Anzahl der Runden gespeichert. Über die Anzahl der Runden kann die Laufzeit, die bcrypt benötigt, um ein Passwort zu hashen, beeinflusst werden.
 
