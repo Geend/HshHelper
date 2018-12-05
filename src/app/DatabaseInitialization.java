@@ -3,14 +3,9 @@ import extension.logging.DangerousCharFilteringLogger;
 import models.*;
 import models.factories.UserFactory;
 import org.joda.time.DateTime;
+import play.Environment;
 import play.Logger;
-import play.api.Configuration;
-import play.api.Environment;
-import play.api.db.DBApi;
-import play.api.db.evolutions.DynamicEvolutions;
-import play.api.inject.ApplicationLifecycle;
 import play.db.Database;
-import play.db.ebean.EbeanConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,8 +19,40 @@ public class DatabaseInitialization {
     private static final Logger.ALogger logger = new DangerousCharFilteringLogger(
             DatabaseInitialization.class);
 
+    private Database db;
+    private HashHelper hashHelper;
+    private UserFactory userFactory;
+    private Environment environment;
+
     @Inject
-    public DatabaseInitialization(Database db, HashHelper hashHelper, UserFactory userFactory) {
+    public DatabaseInitialization(Database db, HashHelper hashHelper, UserFactory userFactory, Environment environment) {
+        this.db = db;
+        this.hashHelper = hashHelper;
+        this.userFactory = userFactory;
+        this.environment = environment;
+
+        if(environment.isProd()) {
+            prodInitialization();
+        }
+        if(environment.isDev()) {
+            devEnvInitialization();
+        }
+    }
+
+    private void prodInitialization() {
+        User u1 = userFactory.CreateUser("admin", "hsh.helper+admin@gmail.com", "admin", true, 1000L);
+        Group g1 = new Group("All", u1);
+        Group g2 = new Group("Administrators", u1);
+        g1.setIsAllGroup(true);
+        g2.setIsAdminGroup(true);
+        g1.setMembers(Stream.of(u1).collect(Collectors.toList()));
+        g2.setMembers(Stream.of(u1).collect(Collectors.toList()));
+        u1.save();
+        g1.save();
+        g2.save();
+    }
+
+    private void devEnvInitialization() {
         logger.info("DatabaseInitialization - Prepare DB");
 
         // TODO: Add new tables for truncation
@@ -44,7 +71,7 @@ public class DatabaseInitialization {
             stmt.execute("TRUNCATE TABLE user_permissions");
             stmt.execute("TRUNCATE TABLE internal_session");
             stmt.execute("TRUNCATE TABLE netservices");
-           // stmt.execute("TRUNCATE TABLE netservice_parameter");
+            // stmt.execute("TRUNCATE TABLE netservice_parameter");
             //stmt.execute("TRUNCATE TABLE netservice_credential");
             stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
             stmt.execute("SET ALLOW_LITERALS NONE");
@@ -173,7 +200,6 @@ public class DatabaseInitialization {
         ns2.getParameters().add(new NetServiceParameter("asdf",NetServiceParameter.NetServiceParameterType.USERNAME));
         ns2.getParameters().add(new NetServiceParameter("fdsa", NetServiceParameter.NetServiceParameterType.PASSWORD));
         ns2.save();
-
 
 
         logger.info("DatabaseInitialization - Prepare DB; Done adding new users and groups");
