@@ -66,6 +66,8 @@ def filterOut(name: String): Boolean = {
 }
 
 mappings in (Compile, packageDoc) := Seq()
+sources in (Compile, doc) := Seq.empty
+publishArtifact in (Compile, packageDoc) := false
 
 mappings in (Compile, packageBin) ~= {
   (ms: Seq[(File,String)]) =>
