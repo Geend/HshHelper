@@ -38,9 +38,10 @@
 
 \chapter{Installation des HsH-Helpers}
 
-Zu dieser Installations- und Bedienungsanleitung haben sie eine ZIP-Datei erhalten.
-Diese ZIP-Datei können sie in einem beliebligen Verzeichnis extrahieren.
+Zu dieser Installations- und Bedienungsanleitung haben Sie eine ZIP-Datei erhalten.
+Diese ZIP-Datei können Sie in einem beliebigen Verzeichnis extrahieren.
 Dabei entsteht folgende Ordnerstruktur: \\
+
 \dirtree{%
 .1 bin.
 .2 hshhelper.
@@ -49,31 +50,34 @@ Dabei entsteht folgende Ordnerstruktur: \\
 .2 application.conf.
 .2 secrets.conf.
 .2 logback.xml.
+.2 ip\_whitelist.txt.
+.2 password\_blacklist.txt.
 .1 lib.
 .2 hshhelper.hshhelper-1.0-SNAPSHOT.jar.
 .2 // Alle Bibliotheken, von denen unsere Applikation abhängt.
 }
+
 \bigskip
 Im \texttt{bin}-Ordner befinden sich Startskripte für Windows sowie UNIX.
 Diese können auf der Kommandozeile ausgeführt werden, um die HsH-Helper Applikation zu starten.
 
 \chapter{Betrieb}
 
-Um die Applikation zu starten, müssen Sie sich auf der Kommandozeile ihres Betriebssystems in den Ordner bewegen, in dem sie zuvor den HsH-Helper extrahiert haben.
+Um die Applikation zu starten, müssen Sie sich auf der Kommandozeile ihres Betriebssystems in den Ordner bewegen, in dem Sie zuvor den HsH-Helper extrahiert haben.
 Mit folgenden Befehlen können Sie dann von dort aus den HsH-Helper starten:
 
 \begin{lstlisting}[label=server-operation, caption={Kommandozeilenbefehle zum Ausführen der Applikation}, captionpos=b]
 // UNIX
-$ ./hshhelper
+$ ./bin/hshhelper
 // Windows
-> hshhelper.bat
+> bin\hshhelper.bat
 \end{lstlisting}
 
 Nach dem Start der Applikation werden Sie auf der Kommandozeile von einigen Logging-Ausgaben begrüßt.
 Der Server ist betriebsbereit, sobald Sie folgende Zeile in ihrem Kommandozeileninterface sehen: \\
 \texttt{[info] p.c.s.AkkaHttpServer - Listening for HTTP on /0:0:0:0:0:0:0:0:9000}
 
-Danach können sie den HsH-Helper von ihrem Browser erreichen, in dem sie \texttt{\url{http://localhost:9000}} ansurfen, sofern sie die IP-Adresse / Hostname sowie Port nicht verändert haben (siehe \autoref{manual:configuration})
+Danach können Sie den HsH-Helper von ihrem Browser erreichen, in dem Sie \texttt{\url{http://localhost:9000}} ansurfen, sofern Sie die IP-Adresse / Hostname sowie Port nicht verändert haben (siehe \autoref{manual:configuration})
 
 Während des Hochfahrens der Applikation wird ein Ordner namens \texttt{logs/} in dem Applikationsverzeichnis erstellt.
 Innerhalb dieses Verzeichnisses befinden sich die Zugriffs- und Applikationslogs.
@@ -86,18 +90,35 @@ Die Werkseinstellungen können Sie notfalls auch dem Anhang \ref{app-default-con
 Die hier genannten Einstellungen sind Einstellungen, die wir unterstützen und dessen Sicherheit wir garantieren können.
 Sollten Sie aus irgendwelchen Gründen bestimmte Zusatzfeatures\footnote{Menge aller möglichen Einstellungen, siehe \url{https://www.playframework.com/documentation/2.6.x/ProductionConfiguration}} nutzen wollen, sind Sie auf sich allein gestellt.
 
-Für den Fall, dass Sie die Applikation mit einer komplett separaten Konfigurationsdatei ausführen wollen, so können sie diese beim Start der Applikation auf der Kommandozeile hinzufügen, in dem sie folgenden Parameter anhängen: \\
+Für den Fall, dass Sie die Applikation mit einer komplett separaten Konfigurationsdatei ausführen wollen, so können Sie diese beim Start der Applikation auf der Kommandozeile hinzufügen, in dem Sie folgenden Parameter anhängen: \\
 \texttt{-Dconfig.file=/path/to/config/file.conf}
 
 \section{Serverkonfiguration}
 
+\subsection{Dateien größer als ~200 MB hochladen}
+
+Falls Sie während des Betriebs des HsH-Helpers den Nutzern erlauben möchten, Dateien hochzuladen, dessen Größe mehr als 200 Megabyte beträgt, so müssen Sie innerhalb der Konfigurationsdatei 2 Einstellungen ändern.
+Bei diesen Einstellungen handelt es sich um die maximale Größe eines HTTP-Pakets, die das Play Framework verarbeiten darf.
+Rechnen Sie also sicherheitshalber ein paar Megabyte mehr dazu.
+
+\begin{lstlisting}[label=server-max-file-upload, caption={"Dateigröße und HTTP-Paketgröße"-Einstellung innerhalb der Konfigurationsdatei}, captionpos=b]
+play.http.parser.maxDiskBuffer = 200MB
+parsers.anyContent.maxLength = 200MB
+\end{lstlisting}
+
+\subsection{IP-Adresse auf eine Whitelist setzen, so dass sie nicht blockiert wird}
+
+Sollten Sie wünschen, bestimmte IP-Adressen auf eine Whitelist zu setzen, damit diese nicht von unserer \enquote{Login-Firewall} blockiert wird, so müssen sie diese IP-Adressen in die \texttt{conf/ip\_whitelist.txt} schreiben.
+Dabei sollte jede IP-Adresse auf eine eigene Zeile geschrieben werden.
+Diese Funktionalität eignet sich besonders, um eine Universität freizuschalten, damit die Studenten, die gegebenfalls mit der selben IP-Adresse ihre Seite ansurfen nicht vom HsH-Helper ausgeschlossen werden können.
+
 \subsection{Server auf einer anderen IP-Adresse/einem anderen Port laufen lassen}
 
-Sollten sie die IP-Adresse oder den Port ändern wollen, auf dem der HsH-Helper standardmäßig läuft, so müssen sie das beim Start der Applikation angeben, in dem sie folgende Parameter auf der Kommandozeile hinzufügen: \\
+Sollten Sie die IP-Adresse oder den Port ändern wollen, auf dem der HsH-Helper standardmäßig läuft, so müssen Sie das beim Start der Applikation angeben, in dem Sie folgende Parameter auf der Kommandozeile hinzufügen: \\
 \texttt{-Dhttp.port=1234 -Dhttp.address=123.123.123.123}
 
-Bei einer Anpassung der Adresse müssen sie zusätzlich die Content Security Policy anpassen.
-Wie das geht, können sie in \autoref{server-adjust-csp} nachlesen.
+Bei einer Anpassung der Adresse müssen Sie zusätzlich die Content Security Policy anpassen.
+Wie das geht, können Sie in \autoref{server-adjust-csp} nachlesen.
 
 \subsection{Server auf einer anderen Domäne als \texttt{localhost} anbieten}
 
@@ -122,7 +143,7 @@ play.filters {
 \subsection{Server von einem anderen Host als \texttt{localhost} ansteuern}
 \label{server-subsubsection-different-host}
 
-Damit Clienten, die sich nicht auf ihrem lokalen Host befinden, den HsH-Helper ansteuern können, müssen sie entweder deren Hostnamen / IP-Adressen in der Einstellung, siehe \autoref{server-foreign-allowed-hosts}, explizit eintragen oder die Einstellung \texttt{allowed} vollständig auskommentieren, damit jeder Host Zugriff hat.
+Damit Clienten, die sich nicht auf ihrem lokalen Host befinden, den HsH-Helper ansteuern können, müssen Sie entweder deren Hostnamen / IP-Adressen in der Einstellung, siehe \autoref{server-foreign-allowed-hosts}, explizit eintragen oder die Einstellung \texttt{allowed} vollständig auskommentieren, damit jeder Host Zugriff hat.
 
 \begin{lstlisting}[label=server-foreign-allowed-hosts, caption={"Erlaubte Hosts"-Einstellung innerhalb der Konfigurationsdatei},captionpos=b]
 play.filters {
@@ -131,6 +152,14 @@ play.filters {
   }
 }
 \end{lstlisting}
+
+\subsection{Testing: reCAPTCHA automatisierbar testen}
+
+Für den Fall, dass Sie den HsH-Helper automatisierbaren Tests unterziehen wollen, ihnen dabei aber das reCAPTCHA in die Quere kommt, besteht die Möglichkeit, ein reCAPTCHA extra für Testzwecke einzubauen.
+Dazu müssen Sie den geheimen Schlüssel sowie den Schlüssel der Seite in der \texttt{secrets.conf} auszutauschen.
+Hierfür entnehmen Sie bitte der Seite \url{https://developers.google.com/recaptcha/docs/faq\#id-like-to-run-automated-tests-with-recaptcha-what-should-i-do} die Schlüssel, die Google anbietet, um automatisierbare Tests durchzuführen.
+\textbf{Vorsicht:} Bevor Sie das tun, sollten sie die alten Schlüssel sicher abspeichern.
+Ohne diese können Sie kein echtes reCAPTCHA verwenden.
 
 \section{Datenbankkonfiguration}
 
@@ -154,7 +183,7 @@ db {
 \begin{sloppypar}
 Um die Datenbank in einer Datei zu persistieren, die für einen späteren Applikationsstart wieder verwendet werden kann, sollten Sie \texttt{default.url} auf \texttt{"jdbc:h2:file:./hsh-helper;mode=mysql"} (inkl. Anführungsstriche) setzen.
 \end{sloppypar}
-Andere, mögliche Verbindungsmodi können der \texttt{h2}-Dokumentation\footnote{Für weitere Verbindungsmodi siehe \url{http://www.h2database.com/html/features.html\#database_url}} entnommen werden.
+Andere, mögliche Verbindungsmodi können der \texttt{h2}-Dokumentation\footnote{Für weitere Verbindungsmodi siehe \url{http://www.h2database.com/html/features.html\#database\_url}} entnommen werden.
 
 \chapter{Bedienungsanleitung}
 
@@ -179,7 +208,7 @@ Wegen der Implementation der verschlüsselten Netzdienstanmeldeinformationen ist
 Falls ein Nutzer zusätzliche Sicherheit wünscht, so kann er eine Zwei-Faktor-Authentisierung aktivieren.
 Beim Klick auf den Knopf zum Aktivieren, wird ein Nutzer auf eine andere Ansicht (siehe Anhang \ref{manual:two-auth-factor}) weitergeleitet, auf welcher ihm ein QR-Code angezeigt wird.
 Dieser QR-Code enthält ein Geheimnis, welches von einer Handy-Applikation wie \href{https://authy.com/}{Authy}
- oder \href{https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en}{Google Authenticator} gescannt werden kann.
+ oder \href{https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2\&hl=en}{Google Authenticator} gescannt werden kann.
 Nachdem der Nutzer diesen QR-Code mit der Applikation seiner Wahl gescannt hat, muss er sich einen neues Aktivierungstoken generieren lassen und dieses angeben, um die Zwei-Faktor-Authentisierung für sein Nutzerkonto zu aktivieren.
 
 \section{Sessions}
@@ -215,6 +244,7 @@ Dadurch loggt man sich effektiv selbst aus.
 \label{app-default-configuration}
 \lstinputlisting{../src/conf/application.conf}
 
+
 \chapter{Benutzersicht für Zusatzfunktionalität \enquote{Benutzereinstellungen}}
 \begin{figure}[!htb]
 	\hspace*{-1cm}
@@ -235,6 +265,7 @@ Dadurch loggt man sich effektiv selbst aus.
 	\includegraphics[width=0.8\paperwidth]{resources/sessions-manual.png}
   \label{manual:sessions}
 \end{figure}
+
 
 \end{appendices}
 
