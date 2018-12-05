@@ -99,3 +99,9 @@ batScriptExtraDefines += """call :add_java "-Dlogger.file=%APP_HOME%\conf\logbac
 //// for windows
 scriptClasspath := Seq("$lib_dir/../conf/:$lib_dir/*")
 batScriptExtraDefines += """set "APP_CLASSPATH=%APP_LIB_DIR%\*;%APP_HOME%\conf\;""""
+
+javaOptions in Universal ++= Seq(
+  // -J params will be added as jvm parameters
+  "-J-Xmx2048m",
+  "-J-Xms8192m"
+)
