@@ -62,7 +62,10 @@ public class NetServiceController {
         return ok(views.html.netservice.NetServices.render(asScala(netServices)));
     }
 
-    public Result showAddNetServiceForm() {
+    public Result showAddNetServiceForm() throws UnauthorizedException {
+        if(!sessionManager.currentPolicy().canCreateNetService()){
+            throw new UnauthorizedException();
+        }
         return ok(views.html.netservice.CreateNetService.render(createNetServiceDtoForm));
     }
 
@@ -87,6 +90,10 @@ public class NetServiceController {
     }
 
     public Result showEditNetService(Long netServiceId) throws UnauthorizedException, InvalidArgumentException {
+        if(!sessionManager.currentPolicy().canCreateNetService()){
+            throw new UnauthorizedException();
+        }
+
         NetService netService = netServiceManager.getNetService(netServiceId);
 
         AddNetServiceParameterDto addNetServiceParameterDto = new AddNetServiceParameterDto();
