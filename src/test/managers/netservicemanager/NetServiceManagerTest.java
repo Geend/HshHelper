@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.internal.matchers.Any;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import policyenforcement.Policy;
@@ -408,18 +409,122 @@ public class NetServiceManagerTest {
         Assert.assertArrayEquals("pwd".getBytes(), cipher.decrypt(key,
                 captor.getValue().getInitializationVectorPassword(),
                 captor.getValue().getPasswordCipherText()));
-
     }
-    //TODO
+
+    @Test
+    public void testDoubleCreateNetUserCredential() throws InvalidArgumentException {
+        NetService netService = mock(NetService.class);
+        when(netServiceFinder.byIdOptional(0L)).thenReturn(Optional.of(netService));
+
+        byte[] credentialKey = (new RandomDataGenerator(new SecureRandom())).generateBytes(CryptoConstants.GENERATED_KEY_BYTE);
+        when(sessionManager.getCredentialKey()).thenReturn(credentialKey);
+
+        nsm.createNetUserCredential(0L, "usr1", "pwd1");
+
+        nsm.createNetUserCredential(0L, "usr2", "pwd2");
+
+        ArgumentCaptor<NetServiceCredential> captor = ArgumentCaptor.forClass(NetServiceCredential.class);
+
+        verify(defaultServer, times(2)).save(captor.capture());
+    }
+
 
     /*
         deleteNetServiceCredential
      */
-    //TODO
+    @Test
+    public void testDeleteNetServiceCredential() throws UnauthorizedException, InvalidArgumentException {
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(peter));
+
+        NetServiceCredential credential = mock(NetServiceCredential.class);
+        when(netServiceCredentialFinder.byIdOptional(0L)).thenReturn(Optional.of(credential));
+        when(credential.getUser()).thenReturn(peter);
+
+        nsm.deleteNetServiceCredential(0L);
+        verify(defaultServer, times(1)).delete(credential);
+    }
+
+    @Test
+    public void testDeleteNetServiceCredentialByForeignUser() throws UnauthorizedException, InvalidArgumentException {
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(admin));
+
+        NetServiceCredential credential = mock(NetServiceCredential.class);
+        when(netServiceCredentialFinder.byIdOptional(0L)).thenReturn(Optional.of(credential));
+        when(credential.getUser()).thenReturn(peter);
+
+        expected.expect(UnauthorizedException.class);
+        nsm.deleteNetServiceCredential(0L);
+        verify(defaultServer, times(0)).delete(credential);
+    }
+
+
+    @Test
+    public void testDeleteNotExistingNetServiceCredential() throws UnauthorizedException, InvalidArgumentException {
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(peter));
+
+        expected.expect(InvalidArgumentException.class);
+        nsm.deleteNetServiceCredential(1L);
+    }
+
 
     /*
         decryptCredential
      */
-    //TODO
+    @Test
+    public void testDecryptCredential() throws InvalidArgumentException, UnauthorizedException {
+        when(sessionManager.currentUser()).thenReturn(peter);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(peter));
+
+        NetService netService = mock(NetService.class);
+        when(netServiceFinder.byIdOptional(0L)).thenReturn(Optional.of(netService));
+
+        byte[] credentialKey = (new RandomDataGenerator(new SecureRandom())).generateBytes(CryptoConstants.GENERATED_KEY_BYTE);
+        when(sessionManager.getCredentialKey()).thenReturn(credentialKey);
+
+        nsm.createNetUserCredential(0L, "usr", "pwd");
+
+        ArgumentCaptor<NetServiceCredential> captor = ArgumentCaptor.forClass(NetServiceCredential.class);
+        verify(defaultServer, times(1)).save(captor.capture());
+
+
+        NetServiceCredential netServiceCredential = captor.getValue();
+        netServiceCredential.setUser(peter);
+        when(netServiceCredentialFinder.byIdOptional(0L)).thenReturn(Optional.ofNullable(netServiceCredential));
+
+
+        PlaintextCredential plaintextCredential = nsm.decryptCredential(0L);
+
+        Assert.assertEquals("usr", plaintextCredential.getUsername());
+        Assert.assertEquals("pwd", plaintextCredential.getPassword());
+
+    }
+
+    @Test
+    public void testDecryptCredentialByForeignUser() throws InvalidArgumentException, UnauthorizedException {
+        when(sessionManager.currentUser()).thenReturn(peter);
+        when(sessionManager.currentPolicy()).thenReturn(Policy.ForUser(peter));
+
+        NetService netService = mock(NetService.class);
+        when(netServiceFinder.byIdOptional(0L)).thenReturn(Optional.of(netService));
+
+        byte[] credentialKey = (new RandomDataGenerator(new SecureRandom())).generateBytes(CryptoConstants.GENERATED_KEY_BYTE);
+        when(sessionManager.getCredentialKey()).thenReturn(credentialKey);
+
+        nsm.createNetUserCredential(0L, "usr", "pwd");
+
+        ArgumentCaptor<NetServiceCredential> captor = ArgumentCaptor.forClass(NetServiceCredential.class);
+        verify(defaultServer, times(1)).save(captor.capture());
+
+
+        NetServiceCredential netServiceCredential = captor.getValue();
+        netServiceCredential.setUser(admin);
+
+        when(netServiceCredentialFinder.byIdOptional(0L)).thenReturn(Optional.ofNullable(netServiceCredential));
+
+        expected.expect(UnauthorizedException.class);
+        nsm.decryptCredential(0L);
+
+        verify(cipher, times(0)).decrypt(any(), any(), any());
+    }
 
 }
