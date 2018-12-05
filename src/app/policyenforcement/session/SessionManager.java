@@ -108,11 +108,11 @@ public class SessionManager {
     public void destroySession(UUID sessionId) throws InvalidArgumentException, UnauthorizedException {
         Optional<Session> session = getUserSession(sessionId);
         if (!session.isPresent()) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Diese Session existiert nicht.");
         }
 
         if (!currentPolicy().canDeleteSession(session.get())) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Du bist nicht authorisiert, diese Session zu zerstören.");
         }
 
         session.get().destroy();
@@ -179,7 +179,7 @@ public class SessionManager {
     public byte[] getCredentialKey() {
         Http.Context ctx = Http.Context.current();
         if(!ctx.session().containsKey(CookieSessionSecretName)) {
-            throw new RuntimeException("A secret is required!");
+            throw new RuntimeException("Ein Geheimnis ist benötigt!");
         }
 
         byte[] sessionSecret = b64Helper.decode(ctx.session().get(CookieSessionSecretName));

@@ -80,10 +80,10 @@ public class LoginController extends Controller {
                     Http.Context.current().request(),
                     loginData.getTwofactorpin());
         } catch (CaptchaRequiredException e) {
-            boundForm = boundForm.withGlobalError("Complete the Captcha!");
+            boundForm = boundForm.withGlobalError("Löse das reCAPTCHA!");
             return badRequest(views.html.login.Login.render(boundForm, true));
         } catch (InvalidLoginException e) {
-            boundForm = boundForm.withGlobalError("Invalid Login Data!");
+            boundForm = boundForm.withGlobalError("Ungültige Anmeldedaten!");
             return badRequest(views.html.login.Login.render(boundForm, false));
         } catch (PasswordChangeRequiredException e) {
             ChangePasswordAfterResetDto dto = new ChangePasswordAfterResetDto();
@@ -125,10 +125,10 @@ public class LoginController extends Controller {
                     Http.Context.current().request(),
                     0);
         } catch (InvalidLoginException e) {
-            boundForm = boundForm.withGlobalError("Invalid Login Data!");
+            boundForm = boundForm.withGlobalError("Ungültige Anmeldedaten!");
             return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, false));
         } catch (CaptchaRequiredException e) {
-            boundForm = boundForm.withGlobalError("Complete the Captcha!");
+            boundForm = boundForm.withGlobalError("Löse das reCAPTCHA!");
             return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, true));
         } catch (GeneralSecurityException e) {
             return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, false));

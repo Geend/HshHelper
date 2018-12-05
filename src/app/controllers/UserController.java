@@ -115,12 +115,12 @@ public class UserController extends Controller {
             userCreatedDto.setPlaintextPassword(plaintextPassword);
             return ok(views.html.users.UserCreated.render(userCreatedDto));
         } catch (EmailAlreadyExistsException e) {
-            boundForm = boundForm.withError("email", "Email already in use");
+            boundForm = boundForm.withError("email", "Diese E-Mail Adresse ist bereits in Benutzung.");
             return badRequest(views.html.users.CreateUser.render(boundForm));
         } catch (UsernameAlreadyExistsException e) {
             throw new InvalidArgumentException(e.getMessage());
         } catch (UsernameCannotBeAdmin usernameCannotBeAdmin) {
-            boundForm = boundForm.withError("username", "Username must not be admin");
+            boundForm = boundForm.withError("username", "Der Nutzername darf nicht admin sein.");
             return badRequest(views.html.users.CreateUser.render(boundForm));
         }
     }
