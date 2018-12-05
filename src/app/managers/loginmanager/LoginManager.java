@@ -240,6 +240,7 @@ public class LoginManager {
             User user = token.getAssociatedUser();
             ebeanSever.refresh(user);
             user.setPasswordHash(hashHelper.hashPassword(newPassword));
+            user.setIsPasswordResetRequired(false);
             ebeanSever.save(user);
 
             credentialManager.resetCredential(user, newPassword);
