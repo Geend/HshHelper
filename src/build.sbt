@@ -81,3 +81,7 @@ scriptClasspath := Seq("*")
 // add jvm parameter for typesafe config
 bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/application.conf""""
 batScriptExtraDefines += """call :add_java "-Dconfig.file=%APP_HOME%\conf\application.conf""""
+
+// add log config to application startup
+bashScriptExtraDefines += """addJava "-Dlogger.file=${app_home}/../conf/logback.xml""""
+batScriptExtraDefines += """call :add_java "-Dlogger.file=%APP_HOME%\conf\logback.xml""""
