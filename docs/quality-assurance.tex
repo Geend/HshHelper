@@ -307,6 +307,11 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
   Endlosschleife von Redirects beim Login eines Nutzers mit valider Session aber unterschiedlicher IP & Review & 1.5 \\ \hline
   NullPointerException beim Herunterladen einer 0-Byte Datei & Review & 0.5 \\ \hline
   Vergleich zweier boxed Integers via \texttt{!=} statt \texttt{equals()} & Review & 0.25 \\ \hline
+  Logging funktionierte nicht innerhalb des \enquote{Production Mode} & Manueller Test & 0.5 \\ \hline
+  Falls Nutzer Passwort ändern sollte vor ersten Login, aber neues Passwort anforderte, musste dieser sein neues Passwort zweimal angeben: 1x durch angeforderte Zurücksetzung und 1x weil er sich bisher noch nicht eingeloggt hat & Review & 0.5 \\ \hline
+  Beim Zurücksetzen lassen eines Passworts wurde der Benutzername ungefiltert ins Log gespeichert, wodurch es möglich war, das Log zu verunstalten & Review & 0.5 \\ \hline
+  Regex für Dateinamen ließ keine großen Umlaute zu & manueller Test & 0.25 \\ \hline
+  NullPointerException statt UnauthorizedException, wenn Nutzer manuell URL zum Erstellen einer Nutzer-/Gruppenberechtigung für eine Datei ansurft, für die er selbst keine Berechtigung hat & manueller Test & 0.75 \\ \hline
   \end{tabularx}
 \end{table}
 
