@@ -38,7 +38,7 @@
 
 \chapter{Installation des HsH-Helpers}
 
-Zusätzlich zu dieser Installations- und Bedienungsanleitung haben sie eine ZIP-Datei erhalten.
+Zu dieser Installations- und Bedienungsanleitung haben sie eine ZIP-Datei erhalten.
 Diese ZIP-Datei können sie in einem beliebligen Verzeichnis extrahieren.
 Dabei entsteht folgende Ordnerstruktur: \\
 \dirtree{%
@@ -51,17 +51,31 @@ Dabei entsteht folgende Ordnerstruktur: \\
 .2 logback.xml.
 .1 lib.
 .2 hshhelper.hshhelper-1.0-SNAPSHOT.jar.
-.2 // Alle Abhängigkeiten.
+.2 // Alle Bibliotheken, von denen unsere Applikation abhängt.
 }
-
+\bigskip
 Im \texttt{bin}-Ordner befinden sich Startskripte für Windows sowie UNIX.
-Diese können auf der Kommandozeile ausgeführt werden, um die HsH-Helfer Applikation zu starten.
+Diese können auf der Kommandozeile ausgeführt werden, um die HsH-Helper Applikation zu starten.
+
+\chapter{Betrieb}
+
+Um die Applikation zu starten, müssen Sie sich auf der Kommandozeile ihres Betriebssystems in den Ordner bewegen, in dem sie zuvor den HsH-Helper extrahiert haben.
+Mit folgenden Befehlen können Sie dann von dort aus den HsH-Helper starten:
+
+\begin{lstlisting}[label=server-operation, caption={Kommandozeilenbefehle zum Ausführen der Applikation}, captionpos=b]
+// UNIX
+$ ./hshhelper
+// Windows
+> hshhelper.bat
+\end{lstlisting}
 
 Nach dem Start der Applikation werden Sie auf der Kommandozeile von einigen Logging-Ausgaben begrüßt.
-Sobald Sie die Zeile \texttt{[info] p.c.s.AkkaHttpServer - Listening for HTTP on /0:0:0:0:0:0:0:0:9000} sehen, ist der Server betriebsbereit.
-Danach können sie den HsH-Helfer von ihrem Browser erreichen, in dem sie \texttt{\url{http://localhost:9000}} ansurfen, sofern sie die IP-Adresse / Hostname sowie Port nicht verändert haben (siehe \autoref{manual:configuration})
+Der Server ist betriebsbereit, sobald Sie folgende Zeile in ihrem Kommandozeileninterface sehen: \\
+\texttt{[info] p.c.s.AkkaHttpServer - Listening for HTTP on /0:0:0:0:0:0:0:0:9000}
 
-Während des Hochfahrens der Applikation wird ein Ordner \texttt{logs/} in dem Applikationsverzeichnis erstellt.
+Danach können sie den HsH-Helper von ihrem Browser erreichen, in dem sie \texttt{\url{http://localhost:9000}} ansurfen, sofern sie die IP-Adresse / Hostname sowie Port nicht verändert haben (siehe \autoref{manual:configuration})
+
+Während des Hochfahrens der Applikation wird ein Ordner namens \texttt{logs/} in dem Applikationsverzeichnis erstellt.
 Innerhalb dieses Verzeichnisses befinden sich die Zugriffs- und Applikationslogs.
 
 \chapter{Konfiguration}
@@ -79,7 +93,7 @@ Für den Fall, dass Sie die Applikation mit einer komplett separaten Konfigurati
 
 \subsection{Server auf einer anderen IP-Adresse/einem anderen Port laufen lassen}
 
-Sollten sie die IP-Adresse oder den Port ändern wollen, auf dem der HsH-Helfer standardmäßig läuft, so müssen sie das beim Start der Applikation angeben, in dem sie folgende Parameter auf der Kommandozeile hinzufügen: \\
+Sollten sie die IP-Adresse oder den Port ändern wollen, auf dem der HsH-Helper standardmäßig läuft, so müssen sie das beim Start der Applikation angeben, in dem sie folgende Parameter auf der Kommandozeile hinzufügen: \\
 \texttt{-Dhttp.port=1234 -Dhttp.address=123.123.123.123}
 
 Bei einer Anpassung der Adresse müssen sie zusätzlich die Content Security Policy anpassen.
@@ -87,7 +101,7 @@ Wie das geht, können sie in \autoref{server-adjust-csp} nachlesen.
 
 \subsection{Server auf einer anderen Domäne als \texttt{localhost} anbieten}
 
-Sollten Sie den HsH-Helfer auf einer externen Domäne anbieten wollen, so müssen Sie in der Konfigurationsdatei folgende Einstellungen ändern, damit die Applikation auch funktional korrekt weiterläuft.
+Sollten Sie den HsH-Helper auf einer externen Domäne anbieten wollen, so müssen Sie in der Konfigurationsdatei folgende Einstellungen ändern, damit die Applikation auch funktional korrekt weiterläuft.
 
 Zunächst müssen Sie die Content Security Policy (CSP) anpassen.\label{server-adjust-csp}
 Beim Single Sign-On wird eine JavaScript-Funktion verwendet, um nur die Anmeldeinformationen des Netzdienst zu laden, zu welchem sich ein Nutzer gerade versucht zu verbinden.
@@ -97,7 +111,7 @@ Dazu müssen die Hostnamen / IP-Adressen in der Policy-Deklaration (\texttt{http
 
 Zusätzlich müssen Sie erlauben, dass Clients von ausserhalb ihren Server ansurfen können, siehe \autoref{server-subsubsection-different-host}.
 
-\begin{lstlisting}[label=server-foreign-domain, caption={},captionpos=b]
+\begin{lstlisting}[label=server-foreign-domain, caption={"Content Security Header"-Einstellung innerhalb der Konfigurationsdatei}, captionpos=b]
 play.filters {
   headers {
     contentSecurityPolicy = "default-src 'self'; script-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ http://localhost:9000/assets/js/ http://127.0.0.1:9000/assets/js/; frame-src https://www.google.com/recaptcha/; img-src 'self' data:"
@@ -110,7 +124,7 @@ play.filters {
 
 Damit Clienten, die sich nicht auf ihrem lokalen Host befinden, den HsH-Helper ansteuern können, müssen sie entweder deren Hostnamen / IP-Adressen in der Einstellung, siehe \autoref{server-foreign-allowed-hosts}, explizit eintragen oder die Einstellung \texttt{allowed} vollständig auskommentieren, damit jeder Host Zugriff hat.
 
-\begin{lstlisting}[label=server-foreign-allowed-hosts, caption={},captionpos=b]
+\begin{lstlisting}[label=server-foreign-allowed-hosts, caption={"Erlaubte Hosts"-Einstellung innerhalb der Konfigurationsdatei},captionpos=b]
 play.filters {
   hosts {
     allowed = ["localhost:9000", "localhost:19001", "127.0.0.1:9000"]

@@ -95,9 +95,14 @@ Dieses sieht wie folgt aus:
 \texttt{[Timestamp] - [LogLevel] - from JavaClass in JavaThread\\
 domainspecificLogMessage}
 
-Zurzeit loggen wir, um den Schaden eines eventuellen Log Poisoning gering zu halten, nur die IDs der einzelnen Entitäten.
+Um den Schaden eines Log Poisoning zu mitigieren, loggen wir nur die IDs der einzelnen Entitäten sowie Teile dieser Entitäten, die validiert wurden.
+Konkret heißt das, dass wir Benutzername, Gruppenname und Dateiname loggen.
+Diese werden nämlich durch die Eingabevalidierung mithilfe eines Regex geprüft, so dass nur erlaubte Zeichen durchkommen.
 
-Wir loggen generell:
+Um einen weiteren Schutz zu bieten, haben wir Play's Loggerschnittstelle erweitert, so dass wir weitere, potentiell gefährliche Zeichen aus einer zu loggenden Ausgabe herausfiltern können.
+Bisher filtern wir nur Zeilenumbrüche heraus, damit ein Angreifer nicht in der Lage ist, ein fiktives Logstatement zu injizieren, um beispielsweise einem anderen Nutzer eine illegale Aktion unterzujubeln.
+
+Generell loggen wir folgende Aktionen:
 \begin{itemize}
 	\item Erstellen von Nutzern, Gruppen sowie Dateien
 	\item Löschen von Nutzern, Gruppen sowie Dateien

@@ -1,0 +1,127 @@
+% arara: pdflatex: { shell: true, draft: true }
+% arara: makeglossaries
+% arara: biber
+% arara: pdflatex: { shell: true, synctex: true }
+% arara: pdflatex: { shell: true, synctex: true }
+
+\documentclass[12pt,DIV14,BCOR10mm,a4paper,parskip=half-,headsepline,headinclude,english,ngerman,bibliography=totocnumbered]{scrreprt}
+
+\usepackage{hshhelper_base}
+
+\makeatletter
+\patchcmd{\scr@startchapter}{\if@openright\cleardoublepage\else\clearpage\fi}{}{}{}
+\makeatother
+
+\pagestyle{plain}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}    % hier gehts los
+  \thispagestyle{empty} % Titelseite
+\includegraphics[width=0.2\textwidth]{Wortmarke_WI_schwarz}
+
+   {  ~ \sffamily
+  \vfill
+  {\Huge\bfseries Anforderungsbeschreibung der von uns implementierten Zusatzfunktionalitäten}
+  \bigskip
+
+  {\Large
+  Dennis Grabowski, Julius Zint, Philip Matesanz, Torben Voltmer \\[2ex]
+  Masterprojekt \enquote{Entwicklung und Analyse einer sicheren \\Web-Anwendung} \\
+  Wintersemester 18/19
+ \\[5ex]
+   \today }
+}
+ \vfill
+
+  ~ \hfill
+  \includegraphics[height=0.3\paperheight]{H_WI_Pantone1665}
+
+\vspace*{-3cm}
+
+\clearpage
+
+\tableofcontents  % Inhaltsverzeichnis
+
+\clearpage
+
+\chapter{Benutzerverwaltung}
+
+\renewcommand*{\chapterheadstartvskip}{\vspace*{22pt}}
+
+\section{Zwei-Faktor Authentisierung}
+
+\begin{enumerate}
+    \item Ein angemeldeter Nutzer kann die Zwei-Faktor Authentisierung aktivieren.
+    \item Ein angemeldeter Nutzer, der zuvor die Zwei-Faktor Authentisierung aktiviert hat, kann diese auch wieder deaktivieren.
+    \item Hat ein angemeldeter Nutzer die Zwei-Faktor Authentisierung aktiviert, so muss er diese bei jedem Login-Versuch verwenden.
+    \item Sollte ein Nutzer seinen zweiten Faktor verlieren, muss er einem Administrator Bescheid geben, so dass dieser die Zwei-Faktor Authentisierung deaktiviert, sofern dieser den Akteur für vertrauenswürdig hält.
+    \item Die Zwei-Faktor Authentisierung ist so implementiert, dass es keinem statistisch möglich sein sollte, das Shared Secret zu erraten.
+    \begin{itemize}
+        \item Wir nutzen hierfür eine Implementation basierend auf einem Time-Based-One-Time-Password.
+    \end{itemize}
+\end{enumerate}
+
+\section{Passwort ändern}
+
+\begin{enumerate}
+    \item Ein angemeldeter Nutzer soll in der Lage sein, sein Passwort ändern zu könnnen.
+    \item Für eine Passwortänderung muss ein angemeldeter Nutzer folgende Daten angeben:
+    \begin{enumerate}
+        \item Aktuelles Passwort.
+        \item Neues Passwort.
+        \item Erneute Eingabe des neuen Passworts zur Bestätigung dieses Passworts.
+    \end{enumerate}
+\end{enumerate}
+
+\chapter{Sessions verwalten}
+
+\begin{enumerate}
+    \item Ein angemeldeter Nutzer kann seine eigenen, aktiven Sessions betrachten.
+    \item Ein angemeldeter Nutzer kann seine eigenen, aktiven Sessions invalidieren.
+    \item Ein angemeldeter Nutzer kann zusätzlich alle bisherigen Logins betrachten.
+    \item Ein angemeldeter Nutzer kann seinen Session-Timeout einstellen:
+    \begin{enumerate}
+        \item Der Session-Timeout soll in Minuten angegeben werden.
+        \item Die absolute Mindestdauer einer Session beträgt 5 Minuten. Das ist auch der voreingestellte Wert.
+        \item Die absolute Maximaldauer einer Session beträgt einen Tag (1440 Minuten).
+    \end{enumerate}
+\end{enumerate}
+
+\chapter{Datei-Austausch}
+
+\begin{enumerate}
+    \item Ein angemeldeter Nutzer kann zusätzlich zu einer Datei, auf die er Zugriff hat, sehen, welcher Nutzer die Datei als letztes überschrieben hat.
+    \item Dateien sollen visuell hervorgehoben werden, um die Vertrauenswürdigkeit besser darstellen zu können:
+    \begin{enumerate}
+        \item Eine Datei soll grün hinterlegt werden, wenn Diese Datei zuletzt durch den Nutzer beschrieben wurde.
+        \item Eine Datei soll rot hinterlegt werden, wenn diese Datei zuletzt durch einen \textbf{anderen} Nutzer beschrieben wurde.
+    \end{enumerate}
+    \item Ein angemeldeter Nutzer kann nach Dateien suchen:
+    \begin{enumerate}
+        \item Diese Suchfunktion soll einem Nutzer in jeder Ansicht bereit stehen.
+    \end{enumerate}
+\end{enumerate}
+
+\printbibliography
+
+% Can be used to add a list of acronyms with their description
+%\glsaddall
+%\deftranslation{to=German}{Acronyms}{Abkürzungsverzeichnis}
+%\deftranslation{to=German}{Glossary}{Glossar}
+\printacronyms[title=Abkürzungsverzeichnis,toctitle=Abkürzungsverzeichnis]
+\printglossary[title=Glossar,toctitle=Glossar,type=main]
+
+%\addcontentsline{toc}{chapter}{\listfigurename}
+% Insert list of figures, if a figure has been added to document
+\iftotalfigures
+  \listoffigures
+\fi
+
+%s\addcontentsline{toc}{chapter}{\listtablename}
+% \listoftables       % Tabellenverzeichnis
+
+\begin{appendices}
+
+\end{appendices}
+
+\end{document}
