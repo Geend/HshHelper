@@ -50,6 +50,27 @@ public class DatabaseInitialization {
         u1.save();
         g1.save();
         g2.save();
+
+        NetService ns1 = new NetService();
+        ns1.setName("Bibliothek");
+        ns1.setUrl("https://opac.tib.eu:443/loan/DB=4/SET=2/TTL=1/USERINFO");
+        ns1.getParameters().add(new NetServiceParameter("BOR_U",NetServiceParameter.NetServiceParameterType.USERNAME));
+        ns1.getParameters().add(new NetServiceParameter("BOR_PW", NetServiceParameter.NetServiceParameterType.PASSWORD));
+        ns1.getParameters().add(new NetServiceParameter("ACT","UI_DATA", NetServiceParameter.NetServiceParameterType.HIDDEN));
+        ns1.getParameters().add(new NetServiceParameter("HOST_NAME", NetServiceParameter.NetServiceParameterType.HIDDEN));
+        ns1.getParameters().add(new NetServiceParameter("HOST_PORT", NetServiceParameter.NetServiceParameterType.HIDDEN));
+        ns1.getParameters().add(new NetServiceParameter("HOST_SCRIPT", NetServiceParameter.NetServiceParameterType.HIDDEN));
+        ns1.getParameters().add(new NetServiceParameter("LOGIN","KNOWNUSER", NetServiceParameter.NetServiceParameterType.HIDDEN));
+        ns1.getParameters().add(new NetServiceParameter("STATUS","HML_OK", NetServiceParameter.NetServiceParameterType.HIDDEN));
+        ns1.save();
+
+
+        NetService ns2 = new NetService();
+        ns2.setName("ICMS");
+        ns2.setUrl("https://icms.hs-hannover.de/qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm");
+        ns2.getParameters().add(new NetServiceParameter("asdf",NetServiceParameter.NetServiceParameterType.USERNAME));
+        ns2.getParameters().add(new NetServiceParameter("fdsa", NetServiceParameter.NetServiceParameterType.PASSWORD));
+        ns2.save();
     }
 
     private void devEnvInitialization() {
@@ -190,7 +211,6 @@ public class DatabaseInitialization {
         ns1.getParameters().add(new NetServiceParameter("HOST_SCRIPT", NetServiceParameter.NetServiceParameterType.HIDDEN));
         ns1.getParameters().add(new NetServiceParameter("LOGIN","KNOWNUSER", NetServiceParameter.NetServiceParameterType.HIDDEN));
         ns1.getParameters().add(new NetServiceParameter("STATUS","HML_OK", NetServiceParameter.NetServiceParameterType.HIDDEN));
-
         ns1.save();
 
 
