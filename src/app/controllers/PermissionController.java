@@ -164,13 +164,20 @@ public class PermissionController extends Controller {
 
     public Result showCreateGroupPermission(Long fileId) throws UnauthorizedException, InvalidArgumentException {
         FileMeta file = manager.getFileMeta(fileId);
+
+        if(!file.canReadPermissions()) {
+            throw new UnauthorizedException();
+        }
+
         List<Group> ownGroups = sessionManager.currentUser().getGroups();
         // Gruppen mit bestehenden Berechtigungen filtern!
-        ownGroups.removeIf(
-                x -> file.getPermissions().stream().anyMatch(
-                        y -> y.getRefId().equals(x.getGroupId()) && y.getType().equals(PermissionMeta.EType.GROUP)
-                )
-        );
+        if(file.getPermissions() != null) {
+            ownGroups.removeIf(
+                    x -> file.getPermissions().stream().anyMatch(
+                            y -> y.getRefId().equals(x.getGroupId()) && y.getType().equals(PermissionMeta.EType.GROUP)
+                    )
+            );
+        }
         List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
 
         return ok(views.html.filepermissions.CreateGroupPermission.render(createGroupPermissionForm, asScala(ownGroups), asScala(possiblePermissions), file));
@@ -178,13 +185,20 @@ public class PermissionController extends Controller {
 
     public Result showCreateUserPermission(Long fileId) throws UnauthorizedException, InvalidArgumentException {
         FileMeta file = manager.getFileMeta(fileId);
+
+        if(!file.canReadPermissions()) {
+            throw new UnauthorizedException();
+        }
+
         List<User> allOtherUsers = manager.getAllOtherUsers(sessionManager.currentUser().userId);
         // Benutzer mit bestehenden berechtigungen filtern!
-        allOtherUsers.removeIf(
-                x -> file.getPermissions().stream().anyMatch(
-                        y -> y.getRefId().equals(x.getUserId()) && y.getType().equals(PermissionMeta.EType.USER)
-                )
-        );
+        if(file.getPermissions() != null) {
+            allOtherUsers.removeIf(
+                    x -> file.getPermissions().stream().anyMatch(
+                            y -> y.getRefId().equals(x.getUserId()) && y.getType().equals(PermissionMeta.EType.USER)
+                    )
+            );
+        }
         List<PermissionLevel> possiblePermissions = Arrays.asList(PermissionLevel.values());
 
         return ok(views.html.filepermissions.CreateUserPermission.render(createUserPermissionForm, asScala(allOtherUsers), asScala(possiblePermissions), file));
