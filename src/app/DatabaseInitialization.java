@@ -102,7 +102,7 @@ public class DatabaseInitialization {
         logger.info("ApplicationStart - Prepare DB; Add new users and groups");
         User u1 = userFactory.CreateUser("admin", "hsh.helper+admin@gmail.com", "admin", false, 1000L);
         User u2 = userFactory.CreateUser("peter", "hsh.helper+peter@gmail.com",  "peter", false, 10L);
-        User u3 = userFactory.CreateUser("klaus", "hsh.helper+klaus@gmail.com",  "klaus", false, 10L);
+        User u3 = userFactory.CreateUser("klaus", "hsh.helper+klaus@gmail.com",  "klaus", false, 1000000L);
         User u4 = userFactory.CreateUser("hans", "hsh.helper+hans@gmail.com",  "hans", true, 10L);
 
         Group g1 = new Group("All", u1);
