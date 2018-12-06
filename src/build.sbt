@@ -37,6 +37,10 @@ libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
 libraryDependencies += "org.awaitility" % "awaitility" % "2.0.0" % Test
 libraryDependencies += "org.mockito" % "mockito-core" % "2.10.0" % "test"
 
+// two factor qrcode image utility
+libraryDependencies += "com.google.zxing" % "core" % "3.3.0"
+libraryDependencies += "com.google.zxing" % "javase" % "3.3.0"
+
 // Make verbose tests
 testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v"))
 

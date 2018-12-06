@@ -1,5 +1,6 @@
 package controllers;
 
+import com.google.zxing.WriterException;
 import dtos.group.UserIdDto;
 import dtos.user.*;
 import managers.InvalidArgumentException;
@@ -137,7 +138,7 @@ public class UserController extends Controller {
         return redirect(routes.UserController.showActiveUserSessions());
     }
 
-    public Result activateTwoFactorAuth() throws IOException, InvalidArgumentException {
+    public Result activateTwoFactorAuth() throws IOException, InvalidArgumentException, WriterException {
         Form<TwoFactorAuthDto> boundForm = this.twoFactorAuthForm.bindFromRequest();
 
         if (boundForm.hasErrors()) {
@@ -156,7 +157,14 @@ public class UserController extends Controller {
 
             this.userManager.activateTwoFactorAuth(activationData.getSecret(), activationData.getActivationToken());
         } catch (Invalid2FATokenException e) {
-            String imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", boundForm.get().getSecret());
+            String imageSourceData = null;
+            try {
+                imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", boundForm.get().getSecret());
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (WriterException e1) {
+                e1.printStackTrace();
+            }
             boundForm = boundForm.withError("activationToken", "Ungültiges Token!");
             return badRequest(views.html.users.Confirm2FactorAuth.render(imageSourceData, boundForm));
         }
@@ -180,7 +188,7 @@ public class UserController extends Controller {
         return redirect(routes.UserController.showUserAdminSettings(boundForm.get().getUserId()));
     }
 
-    public Result show2FactorAuthConfirmationForm() throws IOException {
+    public Result show2FactorAuthConfirmationForm() throws IOException, WriterException {
         String secret = this.userManager.generateTwoFactorSecret();
         String imageSourceData = QrCodeUtil.LoadQrCodeImageDataFromGoogle("HsH-Helper", secret);
 

@@ -1,28 +1,29 @@
 package twofactorauth;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import play.shaded.ahc.org.asynchttpclient.util.Base64;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 
 public class QrCodeUtil {
-    public static String LoadQrCodeImageDataFromGoogle(String identifier, String secret) throws IOException {
-        String url = TimeBasedOneTimePasswordUtil.qrImageUrl(identifier, secret);
-        URL imageRequest = new URL(url);
-        URLConnection connection = imageRequest.openConnection();
-        Integer contentLength = connection.getContentLength();
-        Integer readBytes = 0;
-        byte[] qrImageData = new byte[contentLength];
-        try (InputStream inputStream = connection.getInputStream()) {
-            while(readBytes.intValue() != contentLength.intValue()) {
-                Integer rb = inputStream.read(qrImageData, readBytes, contentLength - readBytes);
-                if(rb < 0) {
-                    break;
-                }
-                readBytes += rb;
-            }
+    public static String LoadQrCodeImageDataFromGoogle(String identifier, String secret) throws IOException, WriterException {
+
+        String qrCodeData = String.format("otpauth://totp/%s?secret=%s", identifier, secret);
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(qrCodeData, BarcodeFormat.QR_CODE, 200, 200);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] qrImageData = null;
+        try {
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", byteArrayOutputStream);
+            qrImageData = byteArrayOutputStream.toByteArray();
+        }
+        finally {
+            byteArrayOutputStream.close();
         }
 
         StringBuilder imageDataStringBuilder = new StringBuilder();
