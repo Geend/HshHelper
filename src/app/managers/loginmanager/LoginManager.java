@@ -8,7 +8,6 @@ import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.WeakPasswordException;
-import managers.usermanager.Invalid2FATokenException;
 import models.LoginAttempt;
 import models.PasswordResetToken;
 import models.User;
@@ -24,7 +23,6 @@ import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
 import policyenforcement.ext.loginFirewall.Strategy;
 import policyenforcement.session.SessionManager;
-import twofactorauth.TimeBasedOneTimePasswordUtil;
 import ua_parser.Client;
 import ua_parser.Parser;
 
@@ -37,7 +35,6 @@ import java.util.UUID;
 import static extension.StringHelper.empty;
 import static policyenforcement.ConstraintValues.PASSWORD_RESET_TOKEN_TIMEOUT_HOURS;
 import static policyenforcement.ConstraintValues.SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS;
-import static policyenforcement.ConstraintValues.TIME_WINDOW_2FA_MS;
 
 public class LoginManager {
 
@@ -154,8 +151,6 @@ public class LoginManager {
     }
 
     public void login(String username, String password, String captchaToken, Http.Request request, String twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
-        int intTwoFactorPin = 0;
-
         User authenticatedUser = this.authenticate(username, password, captchaToken, request, twoFactorPin);
 
         if(authenticatedUser.getIsPasswordResetRequired()) {
