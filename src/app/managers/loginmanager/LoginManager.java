@@ -34,6 +34,7 @@ import java.security.GeneralSecurityException;
 import java.util.Optional;
 import java.util.UUID;
 
+import static extension.StringHelper.empty;
 import static policyenforcement.ConstraintValues.PASSWORD_RESET_TOKEN_TIMEOUT_HOURS;
 import static policyenforcement.ConstraintValues.SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS;
 import static policyenforcement.ConstraintValues.TIME_WINDOW_2FA_MS;
@@ -83,7 +84,6 @@ public class LoginManager {
     }
 
     private User authenticate(String username, String password, String captchaToken, Http.Request request, String twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, IOException, GeneralSecurityException {
-
         int intTwoFactorPin = 0;
         if(twoFactorPin != null) {
             if (!twoFactorPin.equals("")) {
@@ -91,11 +91,10 @@ public class LoginManager {
                     String tokenWithoutWhiteSpace = twoFactorPin.replaceAll(" ", "");
                     intTwoFactorPin = Integer.parseInt(tokenWithoutWhiteSpace);
                 } catch (NumberFormatException e) {
-                    throw new InvalidLoginException();
+                    throw new InvalidLoginException(false);
                 }
             }
         }
-
 
         Authentification.Result auth = authentification.Perform(username, password, intTwoFactorPin);
         Long uid;
@@ -115,7 +114,7 @@ public class LoginManager {
 
         if(strategy.equals(Strategy.BLOCK)) {
             logger.error(request.remoteAddress() + " is blocked from logging in.");
-            throw new InvalidLoginException();
+            throw new InvalidLoginException(false);
         }
 
         if(strategy.equals(Strategy.VERIFY)) {
@@ -128,19 +127,16 @@ public class LoginManager {
         if(!auth.success()) {
             fw.fail(uid);
             logger.error(request.remoteAddress() + " failed to login on user " + uid);
-            throw new InvalidLoginException();
+            throw new InvalidLoginException(strategy.equals(Strategy.VERIFY));
         }
 
 
         Optional<String> userAgentString = request.getHeaders().get("User-Agent");
-        if(!userAgentString.isPresent()) {
-            throw new InvalidLoginException();
-        }
 
         LoginAttempt attempt = new LoginAttempt();
         attempt.setUser(auth.user());
         attempt.setAddress(request.remoteAddress());
-        attempt.setClientName(this.getUserAgentDisplayString(userAgentString.get()));
+        attempt.setClientName(this.getUserAgentDisplayString(userAgentString.orElse("")));
         attempt.setDateTime(DateTime.now());
         this.ebeanSever.save(attempt);
 
@@ -148,16 +144,17 @@ public class LoginManager {
     }
 
     private String getUserAgentDisplayString(String userAgentString) throws IOException {
+        if(empty(userAgentString)) {
+            return "unknown client";
+        }
+
         Parser uaParser = new Parser();
         Client c = uaParser.parse(userAgentString);
         return String.format("%s: %s (%s)", c.device.family, c.userAgent.family, c.userAgent.major);
     }
 
     public void login(String username, String password, String captchaToken, Http.Request request, String twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
-
         int intTwoFactorPin = 0;
-
-
 
         User authenticatedUser = this.authenticate(username, password, captchaToken, request, twoFactorPin);
 

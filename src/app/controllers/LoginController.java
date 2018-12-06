@@ -55,7 +55,8 @@ public class LoginController extends Controller {
     public Result login() throws IOException {
         Form<UserLoginDto> boundForm = this.loginForm.bindFromRequest("username", "password", "twofactorpin");
         if (boundForm.hasErrors()) {
-            return badRequest(views.html.login.Login.render(boundForm, false));
+            boolean hasRecaptcha = boundForm.rawData().containsKey("g-recaptcha-response");
+            return badRequest(views.html.login.Login.render(boundForm, hasRecaptcha));
         }
 
         Optional<CSRF.Token> token = CSRF.getToken(request());
@@ -71,7 +72,6 @@ public class LoginController extends Controller {
             loginData.setRecaptcha(recaptchaData.get());
         }
 
-
         try {
             loginManager.login(
                     loginData.getUsername(),
@@ -84,12 +84,13 @@ public class LoginController extends Controller {
             return badRequest(views.html.login.Login.render(boundForm, true));
         } catch (InvalidLoginException e) {
             boundForm = boundForm.withGlobalError("Ungültige Anmeldedaten!");
-            return badRequest(views.html.login.Login.render(boundForm, false));
+            return badRequest(views.html.login.Login.render(boundForm, e.isCaptchaRequired()));
         } catch (PasswordChangeRequiredException e) {
+            boolean hasRecaptcha = boundForm.rawData().containsKey("g-recaptcha-response");
             ChangePasswordAfterResetDto dto = new ChangePasswordAfterResetDto();
             dto.setUsername(loginData.getUsername());
             dto.setCurrentPassword(loginData.getPassword());
-            return ok(views.html.login.ChangePasswordAfterReset.render(this.changePasswordForm.fill(dto), false));
+            return ok(views.html.login.ChangePasswordAfterReset.render(this.changePasswordForm.fill(dto), hasRecaptcha));
         } catch (GeneralSecurityException e) {
             return badRequest(views.html.login.Login.render(boundForm, false));
         }
@@ -107,7 +108,8 @@ public class LoginController extends Controller {
     public Result changePasswordAfterReset() throws IOException {
         Form<ChangePasswordAfterResetDto> boundForm = this.changePasswordForm.bindFromRequest("username", "currentPassword", "password", "passwordRepeat");
         if (boundForm.hasErrors()) {
-            return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, false));
+            boolean hasRecaptcha = boundForm.rawData().containsKey("g-recaptcha-response");
+            return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, hasRecaptcha));
         }
 
         ChangePasswordAfterResetDto changePasswordData = boundForm.get();
