@@ -127,16 +127,6 @@ public class LoginManager {
             throw new InvalidLoginException(strategy.equals(Strategy.VERIFY));
         }
 
-
-        Optional<String> userAgentString = request.getHeaders().get("User-Agent");
-
-        LoginAttempt attempt = new LoginAttempt();
-        attempt.setUser(auth.user());
-        attempt.setAddress(request.remoteAddress());
-        attempt.setClientName(this.getUserAgentDisplayString(userAgentString.orElse("")));
-        attempt.setDateTime(DateTime.now());
-        this.ebeanSever.save(attempt);
-
         return auth.user();
     }
 
@@ -158,9 +148,17 @@ public class LoginManager {
             throw new PasswordChangeRequiredException();
         }
 
-        byte[] credentialKeyPlaintext = credentialManager.getCredentialPlaintext(authenticatedUser, password);
+        Optional<String> userAgentString = request.getHeaders().get("User-Agent");
+        LoginAttempt attempt = new LoginAttempt();
+        attempt.setUser(authenticatedUser);
+        attempt.setAddress(request.remoteAddress());
+        attempt.setClientName(this.getUserAgentDisplayString(userAgentString.orElse("")));
+        attempt.setDateTime(DateTime.now());
+        this.ebeanSever.save(attempt);
 
+        byte[] credentialKeyPlaintext = credentialManager.getCredentialPlaintext(authenticatedUser, password);
         sessionManager.startNewSession(authenticatedUser, credentialKeyPlaintext);
+
         logger.info(authenticatedUser + " has logged in.");
     }
 
