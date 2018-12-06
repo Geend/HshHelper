@@ -75,6 +75,9 @@ Alle Dateien, die von Benutzern hochgeladen werden, werden in der Datenbank als 
 Dadurch, dass wir Java-seitig ein Byte-Array (\texttt{byte[]}) als Datentyp für den Dateiinhalt verwenden, besteht eine Obergrenze von $2^{31}$ Bytes (2,147 Gigabyte) \footnote{Siehe 4.2.1 Integral Types and Values \url{https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html\#jls-4.2}} für die Dateigröße, da die Länge sowie der Index eines Byte-Arrays als Integer verwaltet wird.
 
 Um die Umgehung des Speicherplatzlimits durch Ausnutzung des Kommentarfeldes und Dateinamens zu verhindern, zählen sowohl der Datei-Inhalt, als auch Dateiname und Kommentar zum Speicherplatz, den eine Datei belegt.
+Dabei nehmen wir an, dass jedes Zeichen des Dateinamens und des Kommentars jeweils 1 Byte Speicherplatz verbraucht und machen keine Annahmen über die verwendete Zeichenkodierung.
+Somit werden auch obskure Unicodezeichen dem Nutzer mit jeweils 1 Byte in Rechnung gestellt.
+Wir halten dies für eine faire Annahme, vor allem unter Berücksichtigung eines typischen Nutzers, der die Unterschiede von Unicode zu anderen Zeichenkodierungen nicht kennt.
 
 Beim Herunterladen von Dateien wird der Content-Disposition Modus auf \texttt{attachment} und Content-Type auf \texttt{application/octet-stream} gesetzt. So wird erzwungen, dass der Browser immer den \enquote{Speichern}-Dialog anzeigt statt die Datei direkt (im Browser) darzustellen\footnote{Das wäre zum Beispiel bei Textdateien, Bildern und PDFs möglich.}.
 
