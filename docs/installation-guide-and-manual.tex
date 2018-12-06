@@ -38,6 +38,13 @@
 
 \chapter{Installation des HsH-Helpers}
 
+\section{Mindestanforderungen}
+
+Um den HsH-Helper ausführen zu können, müssen Sie Java 8 installiert haben.
+Unterstützung für vorherige sowie spätere Java-Versionen ist nicht gegeben.
+
+\section{Installation}
+
 Zu dieser Installations- und Bedienungsanleitung haben Sie eine ZIP-Datei erhalten.
 Diese ZIP-Datei können Sie in einem beliebigen Verzeichnis extrahieren.
 Dabei entsteht folgende Ordnerstruktur: \\
@@ -63,7 +70,24 @@ Diese können auf der Kommandozeile ausgeführt werden, um die HsH-Helper Applik
 
 \chapter{Betrieb}
 
-Um die Applikation zu starten, müssen Sie sich auf der Kommandozeile ihres Betriebssystems in den Ordner bewegen, in dem Sie zuvor den HsH-Helper extrahiert haben.
+Bevor Sie den HsH-Helper starten können, sollten Sie verifizieren, dass der Applikation ein sicheres Geheimnis vorliegt.
+Dieses ist in der \texttt{conf/secrets.conf} unter dem Schlüssel \texttt{play.http.secret.key} persistiert.
+Um ein möglichst sicheres Geheimnis zu generieren, könnten sie die Bibliothek OpenSSL verwenden.
+
+\begin{lstlisting}[label=server-private-key, caption={OpenSSL-Befehl zum Erstellen eines privaten Schlüssels}, captionpos=b]
+\\ RSA
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -pkeyopt rsa_keygen_pubexp:65537 > rsa-4096-private-key.pem
+\\ EdDSA - erst ab OpenSSL v1.1.1
+openssl genpkey -algorithm Ed25519 -out ed25519-private-key.pem
+\\ ECC
+openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-384 -pkeyopt ec_param_enc:named_curve > p384-private-key.pem
+\end{lstlisting}
+
+Das generierte Geheimnis müssen sie dann aus der jeweiligen Datei kopieren und in der \texttt{conf/secrets.conf}-Datei speichern unter dem Schlüssel \texttt{play.http.secret.key}.
+Wichtig ist, dass Sie auf gar keinen Fall das Secret "changeme" nennen, da sonst der HsH-Helper nicht starten wird.
+Danach ist der HsH-Helper startbereit.
+
+Um dem HsH-Helper zu starten, müssen Sie sich auf der Kommandozeile ihres Betriebssystems in den Ordner bewegen, in dem Sie zuvor den HsH-Helper extrahiert haben.
 Mit folgenden Befehlen können Sie dann von dort aus den HsH-Helper starten:
 
 \begin{lstlisting}[label=server-operation, caption={Kommandozeilenbefehle zum Ausführen der Applikation}, captionpos=b]
