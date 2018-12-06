@@ -123,7 +123,7 @@ public class LoginController extends Controller {
                     changePasswordData.getPassword(),
                     changePasswordData.getRecaptcha(),
                     Http.Context.current().request(),
-                    0);
+                    "");
         } catch (InvalidLoginException e) {
             boundForm = boundForm.withGlobalError("Ungültige Anmeldedaten!");
             return badRequest(views.html.login.ChangePasswordAfterReset.render(boundForm, false));

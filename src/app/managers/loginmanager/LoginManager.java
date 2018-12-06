@@ -82,8 +82,22 @@ public class LoginManager {
         this.ipWhitelist = ipWhitelist;
     }
 
-    private User authenticate(String username, String password, String captchaToken, Http.Request request, Integer twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, IOException, GeneralSecurityException {
-        Authentification.Result auth = authentification.Perform(username, password, twoFactorPin);
+    private User authenticate(String username, String password, String captchaToken, Http.Request request, String twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, IOException, GeneralSecurityException {
+
+        int intTwoFactorPin = 0;
+        if(twoFactorPin != null) {
+            if (!twoFactorPin.equals("")) {
+                try {
+                    String tokenWithoutWhiteSpace = twoFactorPin.replaceAll(" ", "");
+                    intTwoFactorPin = Integer.parseInt(tokenWithoutWhiteSpace);
+                } catch (NumberFormatException e) {
+                    throw new InvalidLoginException();
+                }
+            }
+        }
+
+
+        Authentification.Result auth = authentification.Perform(username, password, intTwoFactorPin);
         Long uid;
         if(auth.userExists()) {
             uid = auth.user().getUserId();
@@ -143,16 +157,9 @@ public class LoginManager {
 
         int intTwoFactorPin = 0;
 
-        if(!twoFactorPin.equals("")) {
-            try {
-                String tokenWithoutWhiteSpace = twoFactorPin.replaceAll(" ", "");
-                intTwoFactorPin = Integer.parseInt(tokenWithoutWhiteSpace);
-            } catch (NumberFormatException e) {
-                throw new InvalidLoginException();
-            }
-        }
 
-        User authenticatedUser = this.authenticate(username, password, captchaToken, request, intTwoFactorPin);
+
+        User authenticatedUser = this.authenticate(username, password, captchaToken, request, twoFactorPin);
 
         if(authenticatedUser.getIsPasswordResetRequired()) {
             logger.error(authenticatedUser + " needs to change his password.");
@@ -165,7 +172,7 @@ public class LoginManager {
         logger.info(authenticatedUser + " has logged in.");
     }
 
-    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken, Http.Request request, Integer twoFactorPin) throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
+    public void changePassword(String username, String currentPassword, String newPassword, String captchaToken, Http.Request request, String twoFactorPin) throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
         User authenticatedUser = this.authenticate(username, currentPassword, captchaToken, request, twoFactorPin);
 
         if(weakPasswords.isWeakPw(newPassword)) {

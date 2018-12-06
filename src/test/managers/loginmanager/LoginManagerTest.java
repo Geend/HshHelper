@@ -179,7 +179,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
         verify(authenticatedUser).setIsPasswordResetRequired(false);
         verify(authenticatedUser).setPasswordHash("hashed");
         verify(defaultEbeanServer).save(authenticatedUser);
@@ -202,7 +202,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
     @Test(expected = CaptchaRequiredException.class)
@@ -315,7 +315,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
 
@@ -338,7 +338,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
 
@@ -361,7 +361,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
 
@@ -384,7 +384,7 @@ LoginManagerTest {
                 this.recaptchaHelper, defaultCredentialManager,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
                 defaultWeakPasswords, defaultIpWhitelist);
-        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, 0);
+        sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
     @Test
