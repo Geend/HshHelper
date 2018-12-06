@@ -2,6 +2,7 @@ package controllers;
 
 import dtos.file.*;
 import extension.NoFileSubmittedOnUploadException;
+import io.ebean.DuplicateKeyException;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.filemanager.FileManager;
@@ -143,7 +144,11 @@ public class FileController extends Controller {
         } catch(QuotaExceededException e) {
             boundForm = boundForm.withGlobalError("Quota überschritten. Bitte geben sie eine kleinere Datei an.");
             return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+        } catch (DuplicateKeyException e) {
+            boundForm = boundForm.withError("filename", "Eine Datei mit diesem Namen existiert bereits auf ihrem Konto, waehlen Sie bitte einen anderen Namen.");
+            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
         } catch (Exception e) {
+            e.printStackTrace();
             return redirect(routes.ErrorController.showBadRequestMessage());
         }
     }

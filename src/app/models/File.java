@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "files")
+@Table(name = "files", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner_id", "name"})})
 public class File extends Model {
     @Id
     private Long fileId;

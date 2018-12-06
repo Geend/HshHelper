@@ -80,11 +80,6 @@ public class FileManager {
             List<GroupPermissionDto> initialGroupPermissions) throws FilenameAlreadyExistsException, QuotaExceededException, UnauthorizedException {
         User currentUser = this.sessionManager.currentUser();
         try (Transaction tx = ebeanServer.beginTransaction(TxIsolation.SERIALIZABLE)) {
-            Optional<File> existingFile = fileFinder.byFileName(currentUser.getUserId(), filename);
-            if (existingFile.isPresent()) {
-                throw new FilenameAlreadyExistsException();
-            }
-
             File file = new File();
             file.setOwner(currentUser);
             file.setComment(comment);

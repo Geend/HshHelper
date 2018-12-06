@@ -56,7 +56,8 @@ public class FileFinder extends Finder<Long, File> {
     public UserQuota getUsedQuota(Long userId) {
         SqlQuery qry = this.db().createSqlQuery(
             "SELECT IFNULL(SUM(LENGTH(name)), ZERO()) AS nameSum, IFNULL(SUM(LENGTH(comment)), ZERO()) AS commentSum, IFNULL(SUM(LENGTH(data)), ZERO()) AS dataSum FROM files "+
-            "WHERE owner_id = :owner_id"
+            "WHERE owner_id = :owner_id " +
+                    "FOR UPDATE"
         );
         qry.setParameter("owner_id", userId);
         SqlRow filesRow = qry.findOne();
