@@ -8,7 +8,6 @@ import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.WeakPasswordException;
-import managers.usermanager.Invalid2FATokenException;
 import models.LoginAttempt;
 import models.PasswordResetToken;
 import models.User;
@@ -24,7 +23,6 @@ import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
 import policyenforcement.ext.loginFirewall.Strategy;
 import policyenforcement.session.SessionManager;
-import twofactorauth.TimeBasedOneTimePasswordUtil;
 import ua_parser.Client;
 import ua_parser.Parser;
 
@@ -36,13 +34,12 @@ import java.util.UUID;
 
 import static policyenforcement.ConstraintValues.PASSWORD_RESET_TOKEN_TIMEOUT_HOURS;
 import static policyenforcement.ConstraintValues.SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS;
-import static policyenforcement.ConstraintValues.TIME_WINDOW_2FA_MS;
 
 public class LoginManager {
 
     private final UserFinder userFinder;
     private final EbeanServer ebeanSever;
-    private Authentification authentification;
+    private UserAuth userAuth;
     private Firewall loginFirewall;
     private SessionManager sessionManager;
     private HashHelper hashHelper;
@@ -58,7 +55,7 @@ public class LoginManager {
 
     @Inject
     public LoginManager(
-            Authentification authentification,
+            UserAuth userAuth,
             Firewall loginFirewall,
             SessionManager sessionManager,
             HashHelper hashHelper,
@@ -69,7 +66,7 @@ public class LoginManager {
     {
         this.loginAttemptFinder = loginAttemptFinder;
         this.ebeanSever = ebeanServer;
-        this.authentification = authentification;
+        this.userAuth = userAuth;
         this.loginFirewall = loginFirewall;
         this.sessionManager = sessionManager;
         this.hashHelper = hashHelper;
@@ -82,8 +79,8 @@ public class LoginManager {
         this.ipWhitelist = ipWhitelist;
     }
 
-    private User authenticate(String username, String password, String captchaToken, Http.Request request, Integer twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, IOException, GeneralSecurityException {
-        Authentification.Result auth = authentification.Perform(username, password, twoFactorPin);
+    private AuthenticateResult authenticate(String username, String password, String captchaToken, Http.Request request, Integer twoFactorPin) throws IOException, GeneralSecurityException {
+        UserAuth.Result auth = userAuth.Perform(username, password, twoFactorPin);
         Long uid;
         if(auth.userExists()) {
             uid = auth.user().getUserId();
@@ -101,36 +98,57 @@ public class LoginManager {
 
         if(strategy.equals(Strategy.BLOCK)) {
             logger.error(request.remoteAddress() + " is blocked from logging in.");
-            throw new InvalidLoginException();
+            return  new AuthenticateResult(
+                null,
+                false,
+                false,
+                false
+            );
         }
 
         if(strategy.equals(Strategy.VERIFY)) {
             if(!recaptchaHelper.IsValidResponse(captchaToken, request.remoteAddress())) {
                 logger.error(request.remoteAddress() + " has tried to login in without a valid reCAPTCHA.");
-                throw new CaptchaRequiredException();
+                return new AuthenticateResult(
+                        null,
+                        true,
+                        false,
+                        false
+                );
             }
         }
 
         if(!auth.success()) {
             fw.fail(uid);
             logger.error(request.remoteAddress() + " failed to login on user " + uid);
-            throw new InvalidLoginException();
+            return new AuthenticateResult(
+                    null,
+                    strategy.equals(Strategy.VERIFY),
+                    false,
+                    false
+            );
         }
 
 
-        Optional<String> userAgentString = request.getHeaders().get("User-Agent");
-        if(!userAgentString.isPresent()) {
-            throw new InvalidLoginException();
+        Optional<String> userAgent = request.getHeaders().get("User-Agent");
+        String userAgentStr = "";
+        if(!userAgent.isPresent()) {
+            userAgentStr = userAgent.get();
         }
 
         LoginAttempt attempt = new LoginAttempt();
         attempt.setUser(auth.user());
         attempt.setAddress(request.remoteAddress());
-        attempt.setClientName(this.getUserAgentDisplayString(userAgentString.get()));
+        attempt.setClientName(this.getUserAgentDisplayString(userAgentStr));
         attempt.setDateTime(DateTime.now());
         this.ebeanSever.save(attempt);
 
-        return auth.user();
+        return new AuthenticateResult(
+                auth.user(),
+                strategy.equals(Strategy.VERIFY),
+                true,
+                auth.user().getIsPasswordResetRequired()
+        );
     }
 
     private String getUserAgentDisplayString(String userAgentString) throws IOException {
@@ -139,7 +157,7 @@ public class LoginManager {
         return String.format("%s: %s (%s)", c.device.family, c.userAgent.family, c.userAgent.major);
     }
 
-    public void login(String username, String password, String captchaToken, Http.Request request, String twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
+    public AuthenticateResult login(String username, String password, String captchaToken, Http.Request request, String twoFactorPin) throws IOException, GeneralSecurityException {
 
         int intTwoFactorPin = 0;
 
@@ -148,21 +166,22 @@ public class LoginManager {
                 String tokenWithoutWhiteSpace = twoFactorPin.replaceAll(" ", "");
                 intTwoFactorPin = Integer.parseInt(tokenWithoutWhiteSpace);
             } catch (NumberFormatException e) {
-                throw new InvalidLoginException();
+                return AuthenticateResult.Invalid(false);
             }
         }
 
-        User authenticatedUser = this.authenticate(username, password, captchaToken, request, intTwoFactorPin);
+        AuthenticateResult authentification = this.authenticate(username, password, captchaToken, request, intTwoFactorPin);
 
-        if(authenticatedUser.getIsPasswordResetRequired()) {
-            logger.error(authenticatedUser + " needs to change his password.");
-            throw new PasswordChangeRequiredException();
+        if(authentification.isPasswordChangeRequired()) {
+            logger.info(authentification + " needs to change his password.");
         }
 
-        byte[] credentialKeyPlaintext = credentialManager.getCredentialPlaintext(authenticatedUser, password);
+        byte[] credentialKeyPlaintext = credentialManager.getCredentialPlaintext(authentification.getAuthenticatedUser(), password);
 
-        sessionManager.startNewSession(authenticatedUser, credentialKeyPlaintext);
-        logger.info(authenticatedUser + " has logged in.");
+        sessionManager.startNewSession(authentification.getAuthenticatedUser(), credentialKeyPlaintext);
+        logger.info(authentification + " has logged in.");
+
+        return authentification;
     }
 
     public void changePassword(String username, String currentPassword, String newPassword, String captchaToken, Http.Request request, Integer twoFactorPin) throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {

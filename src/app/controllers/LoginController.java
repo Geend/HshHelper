@@ -7,10 +7,7 @@ import dtos.login.UserLoginDto;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.WeakPasswordException;
-import managers.loginmanager.CaptchaRequiredException;
-import managers.loginmanager.InvalidLoginException;
-import managers.loginmanager.LoginManager;
-import managers.loginmanager.PasswordChangeRequiredException;
+import managers.loginmanager.*;
 import play.data.Form;
 import play.data.FormFactory;
 import play.filters.csrf.CSRF;
@@ -72,13 +69,16 @@ public class LoginController extends Controller {
         }
 
 
+        AuthenticateResult result = loginManager.login(
+                loginData.getUsername(),
+                loginData.getPassword(),
+                loginData.getRecaptcha(),
+                Http.Context.current().request(),
+                loginData.getTwofactorpin()
+        );
+
         try {
-            loginManager.login(
-                    loginData.getUsername(),
-                    loginData.getPassword(),
-                    loginData.getRecaptcha(),
-                    Http.Context.current().request(),
-                    loginData.getTwofactorpin());
+
         } catch (CaptchaRequiredException e) {
             boundForm = boundForm.withGlobalError("Löse das reCAPTCHA!");
             return badRequest(views.html.login.Login.render(boundForm, true));

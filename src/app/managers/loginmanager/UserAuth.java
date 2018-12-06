@@ -12,7 +12,7 @@ import java.util.Optional;
 import static extension.StringHelper.empty;
 import static policyenforcement.ConstraintValues.TIME_WINDOW_2FA_MS;
 
-public class Authentification {
+public class UserAuth {
     public static class Result {
         private boolean success;
         private boolean userExists;
@@ -39,7 +39,7 @@ public class Authentification {
     private HashHelper hashHelper;
 
     @Inject
-    public Authentification(UserFinder userFinder, HashHelper hashHelper) {
+    public UserAuth(UserFinder userFinder, HashHelper hashHelper) {
         this.userFinder = userFinder;
         this.hashHelper = hashHelper;
     }
