@@ -39,7 +39,7 @@ libraryDependencies += "org.mockito" % "mockito-core" % "2.10.0" % "test"
 
 // two factor qrcode image utility
 libraryDependencies += "com.google.zxing" % "core" % "3.3.0"
-libraryDependencies += "com.google.zxing" % "javase" % "3.3.0"
+libraryDependencies += "ar.com.hjg" % "pngj" % "2.1.0"
 
 // Make verbose tests
 testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a", "-v"))

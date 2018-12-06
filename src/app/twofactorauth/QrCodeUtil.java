@@ -1,8 +1,8 @@
 package twofactorauth;
 
+import ar.com.hjg.pngj.*;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import play.shaded.ahc.org.asynchttpclient.util.Base64;
@@ -17,9 +17,20 @@ public class QrCodeUtil {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(qrCodeData, BarcodeFormat.QR_CODE, 200, 200);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byte[] qrImageData = null;
+        byte[] qrImageData;
         try {
-            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", byteArrayOutputStream);
+            ImageInfo imageInfo = new ImageInfo(200, 200, 1, false, true, false);
+            PngWriter pngWriter = new PngWriter(byteArrayOutputStream, imageInfo);
+            for (int y = 0; y < 200; y++) {
+                ImageLineByte imageLine = new ImageLineByte(imageInfo);
+                for (int x = 0; x < 200; x++) {
+                    boolean pixel = bitMatrix.get(x, y);
+                    byte pixelValue = pixel ? (byte)1 : 0;
+                    imageLine.getScanline()[x] = pixelValue;
+                }
+                pngWriter.writeRow(imageLine, y);
+            }
+            pngWriter.end();
             qrImageData = byteArrayOutputStream.toByteArray();
         }
         finally {
