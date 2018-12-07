@@ -40,6 +40,6 @@ public class MainManager {
     }
 
     public int activeSessions() {
-        return sessionManager.sessionsByUser(sessionManager.currentUser()).size();
+        return sessionManager.activeSessionsByUser(sessionManager.currentUser()).size();
     }
 }

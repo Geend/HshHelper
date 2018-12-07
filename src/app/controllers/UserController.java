@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 
-import static extension.StringHelper.empty;
 import static play.libs.Scala.asScala;
 
 @Authentication.Required
@@ -128,7 +127,7 @@ public class UserController extends Controller {
 
     public Result showActiveUserSessions() {
         User currentUser = sessionManager.currentUser();
-        List<Session> activeSessions = sessionManager.sessionsByUser(currentUser);
+        List<Session> activeSessions = sessionManager.activeSessionsByUser(currentUser);
         return ok(views.html.users.UserSessions.render(asScala(activeSessions), asScala(currentUser.getLoginAttempts())));
     }
 

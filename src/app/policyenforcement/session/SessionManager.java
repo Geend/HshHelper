@@ -68,6 +68,10 @@ public class SessionManager {
         ctx.args.remove(CtxCurrentSession);
     }
 
+    private boolean isSessionTimedOut(InternalSession session) {
+        return !session.getIssuedAt().plusMinutes(session.getUser().getSessionTimeoutInMinutes()).isAfterNow();
+    }
+
     private InternalSession currentSession() {
         Http.Context ctx = Http.Context.current();
 
@@ -83,7 +87,7 @@ public class SessionManager {
             if(dbs != null && dbs.getUser() != null) {
                 // IP Addressen müssen matchen && InternalSession darf nicht zu alt sein!
                 if(dbs.getRemoteAddress().equals(ctx.request().remoteAddress()) &&
-                        dbs.getIssuedAt().plusMinutes(dbs.getUser().getSessionTimeoutInMinutes()).isAfterNow()) {
+                        !isSessionTimedOut(dbs)) {
                     session = dbs;
                 }
             }
@@ -148,12 +152,14 @@ public class SessionManager {
         ctx.args.remove(CtxCurrentSession);
     }
 
-    public List<Session> sessionsByUser(User user) {
+    public List<Session> activeSessionsByUser(User user) {
         List<InternalSession> sessions = InternalSession.finder.query().where().eq("user", user).findList();
         List<Session> result = new ArrayList<>();
 
         for(InternalSession s : sessions) {
-            result.add(new Session(s));
+            if(!isSessionTimedOut(s)) {
+                result.add(new Session(s));
+            }
         }
 
         return result;

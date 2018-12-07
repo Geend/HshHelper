@@ -180,7 +180,7 @@ public class SessionManagerTest {
     public void sessionListSingleSession() {
         sessionManager.startNewSession(robin, credentialKey);
 
-        List<Session> sessions = sessionManager.sessionsByUser(robin);
+        List<Session> sessions = sessionManager.activeSessionsByUser(robin);
         assertThat(sessions.size(), is(1));
 
         assertThat(
@@ -223,7 +223,7 @@ public class SessionManagerTest {
         }
 
         // Prüfen ob auch so viele Sessions existieren, wie wir angelegt haben
-        List<Session> sessions = sessionManager.sessionsByUser(robin);
+        List<Session> sessions = sessionManager.activeSessionsByUser(robin);
         assertThat(sessions.size(), is(requests.length));
 
         // Eine der sessions löschen!
