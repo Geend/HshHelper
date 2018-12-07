@@ -21,6 +21,10 @@ public class Policy {
     }
 
     public boolean canViewGroupDetails(Group toBeWatched) {
+        if (toBeWatched == null) {
+            return false;
+        }
+
         if (toBeWatched.getMembers().contains(associatedUser)) {
             return true;
         }
@@ -75,6 +79,10 @@ public class Policy {
 
 
     public boolean canDeleteGroup(Group group) {
+        if (group == null) {
+            return false;
+        }
+
         if (group.getIsAdminGroup() || group.getIsAllGroup()) {
             return false;
         }
@@ -91,6 +99,10 @@ public class Policy {
     }
 
     public boolean canRemoveGroupMember(Group group, User toBeDeleted) {
+        if (group == null || toBeDeleted == null) {
+            return false;
+        }
+
         //Can't remove from the "all" group, because every user needs te be a member of it
         if (group.getIsAllGroup()) {
             return false;
@@ -116,6 +128,10 @@ public class Policy {
     }
 
     public boolean canGenerallyAddGroupMember(Group group) {
+        if (group == null) {
+            return false;
+        }
+
         // Can't add to all group -> managed by the system
         if (group.getIsAllGroup()) {
             return false;
@@ -133,6 +149,10 @@ public class Policy {
     }
 
     public boolean canAddSpecificGroupMember(Group group, User toBeAdded) {
+        if (group == null || toBeAdded == null) {
+            return false;
+        }
+
         //Can't add to the "all" group -> managed by the system
         if (group.getIsAllGroup()) {
             return false;
@@ -159,6 +179,10 @@ public class Policy {
     }
 
     public boolean canUpdatePassword(User toBeUpdated) {
+        if (toBeUpdated == null) {
+            return false;
+        }
+
         if (associatedUser.equals(toBeUpdated)) {
             return true;
         }
@@ -167,6 +191,10 @@ public class Policy {
     }
 
     public boolean canDeleteSession(Session session) {
+        if (session == null) {
+            return false;
+        }
+
         if (session.getUser().equals(associatedUser)) {
             return true;
         }
@@ -175,157 +203,201 @@ public class Policy {
     }
 
     public boolean canReadFile(File file) {
-        if (file == null)
+        if (file == null) {
             return false;
+        }
 
-        if (file.getOwner().equals(associatedUser))
+        if (file.getOwner().equals(associatedUser)) {
             return true;
+        }
 
-        if (associatedUser.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanRead))
+        if (associatedUser.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanRead)) {
             return true;
+        }
 
-        if (associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanRead)))
+        if (associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanRead))) {
             return true;
+        }
 
         return false;
 
     }
 
     public boolean canWriteFile(File file) {
-        if (file == null)
+        if (file == null) {
             return false;
+        }
 
-        if (file.getOwner().equals(associatedUser))
+        if (file.getOwner().equals(associatedUser)) {
             return true;
+        }
 
-        if (associatedUser.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanWrite))
+        if (associatedUser.getUserPermissions().stream().filter(up -> up.getFile().equals(file)).anyMatch(UserPermission::getCanWrite)) {
             return true;
+        }
 
-        if (associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanWrite)))
+        if (associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanWrite))) {
             return true;
+        }
 
         return false;
     }
 
     public boolean canGetFileMeta(File file) {
-        if (canReadFile(file))
-            return true;
+        if (file == null) {
+            return false;
+        }
 
-        if (canWriteFile(file))
+        if (canReadFile(file)) {
             return true;
+        }
 
+        if (canWriteFile(file)) {
+            return true;
+        }
         return false;
     }
 
     public boolean canDeleteFile(File file) {
-        if (file == null)
+        if (file == null) {
             return false;
+        }
 
-        if (file.getOwner().equals(associatedUser))
+        if (file.getOwner().equals(associatedUser)) {
             return true;
+        }
 
         return false;
     }
 
     public boolean canDeleteGroupPermission(GroupPermission groupPermission) {
-        if (groupPermission == null)
+        if (groupPermission == null) {
             return false;
+        }
 
-        if (associatedUser.equals(groupPermission.getFile().getOwner()))
+        if (associatedUser.equals(groupPermission.getFile().getOwner())) {
             return true;
-
+        }
 
         return false;
     }
 
     public boolean canDeleteUserPermission(UserPermission userPermission) {
-        if (userPermission == null)
+        if (userPermission == null) {
             return false;
+        }
 
-        if (associatedUser.equals(userPermission.getFile().getOwner()))
+        if (associatedUser.equals(userPermission.getFile().getOwner())) {
             return true;
-
+        }
         return false;
     }
 
     public boolean canEditUserPermission(UserPermission userPermission) {
-        if (userPermission == null)
+        if (userPermission == null) {
             return false;
+        }
 
-        if (associatedUser.equals(userPermission.getFile().getOwner()))
+        if (associatedUser.equals(userPermission.getFile().getOwner())) {
             return true;
-
+        }
         return false;
     }
 
     public boolean canEditGroupPermission(GroupPermission userPermission) {
-        if (userPermission == null)
+        if (userPermission == null) {
             return false;
+        }
 
-        if (associatedUser.equals(userPermission.getFile().getOwner()))
+        if (associatedUser.equals(userPermission.getFile().getOwner())) {
             return true;
+        }
 
         return false;
     }
 
     public boolean canCreateUserPermission(File file) {
-        if (file == null)
+        if (file == null){
             return false;
+        }
 
-        if (file.getOwner().equals(associatedUser))
+        if (file.getOwner().equals(associatedUser)) {
             return true;
+        }
 
         return false;
     }
 
     public boolean canCreateGroupPermission(File file, Group group) {
-        if (file == null || group == null)
+        if (file == null || group == null) {
             return false;
+        }
 
-        if (group.getMembers().contains(associatedUser) && file.getOwner().equals(associatedUser))
+        if (group.getMembers().contains(associatedUser) && file.getOwner().equals(associatedUser)) {
             return true;
+        }
 
         return false;
     }
 
     public boolean canViewFilePermissions(File file) {
-        if (file.getOwner().equals(associatedUser))
+        if(file == null){
+            return false;
+        }
+
+        if (file.getOwner().equals(associatedUser)) {
             return true;
+        }
 
         return false;
     }
 
     public boolean canViewUserPermission(UserPermission permission) {
-        if (permission.getFile().getOwner().equals(associatedUser))
+        if(permission == null){
+            return false;
+        }
+
+        if (permission.getFile().getOwner().equals(associatedUser)) {
             return true;
+        }
 
         return false;
     }
 
     public boolean canViewGroupPermission(GroupPermission permission) {
-        if (permission.getFile().getOwner().equals(associatedUser))
+        if(permission == null){
+            return false;
+        }
+
+        if (permission.getFile().getOwner().equals(associatedUser)) {
             return true;
+        }
 
         return false;
     }
 
     public boolean canViewUserMetaInfo() {
-        if (associatedUser.isAdmin())
+        if (associatedUser.isAdmin()) {
             return true;
-
+        }
         return false;
     }
 
     public boolean canChangeUserTimeoutValue(User toBeChanged) {
-        if (associatedUser.equals(toBeChanged))
-            return true;
+        if(toBeChanged == null){
+            return false;
+        }
 
+        if (associatedUser.equals(toBeChanged)) {
+            return true;
+        }
         return false;
     }
 
     public boolean canReadWriteQuotaLimit() {
-        if (associatedUser.isAdmin())
+        if (associatedUser.isAdmin()) {
             return true;
+        }
 
         return false;
     }
@@ -335,7 +407,7 @@ public class Policy {
         return true;
     }
 
-    public boolean canSeeNetServiceOverviewPage(){
+    public boolean canSeeNetServiceOverviewPage() {
         if (associatedUser.isAdmin()) {
             return true;
         }
@@ -370,7 +442,11 @@ public class Policy {
 
 
     public boolean canReadCredential(NetServiceCredential netServiceCredential) {
-        if(netServiceCredential.getUser().equals(associatedUser)) {
+        if(netServiceCredential == null){
+            return false;
+        }
+
+        if (netServiceCredential.getUser().equals(associatedUser)) {
             return true;
         }
 
@@ -378,6 +454,10 @@ public class Policy {
     }
 
     public boolean canDeleteNetServicesCredential(NetServiceCredential netServiceCredential) {
+        if(netServiceCredential == null){
+            return false;
+        }
+
         if (netServiceCredential.getUser().equals(associatedUser)) {
             return true;
         }
@@ -386,14 +466,18 @@ public class Policy {
     }
 
 
-
     public boolean canDisable2FA(User toDeDisabled) {
-        if(toDeDisabled.equals(associatedUser))
-            return true;
+        if(toDeDisabled == null){
+            return false;
+        }
 
-        if(associatedUser.isAdmin())
+        if (toDeDisabled.equals(associatedUser)) {
             return true;
+        }
 
+        if (associatedUser.isAdmin()) {
+            return true;
+        }
         return false;
     }
 }

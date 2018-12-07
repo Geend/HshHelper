@@ -194,6 +194,13 @@ Für eine Play-Session wird nur ein Token generiert (aus Listing \ref{csrfGenera
 Um CSRF-Token überprüfen zu können, wird das erste CSRF-Token, dass in einer Play Session verwendet wird im Play-Session-Cookie gespeichert. Durch einen Vergleich des Tokens im ersten CSRF-Token mit dem zu prüfenden Token kann sichergestellt werden, dass das CSRF-Token zu der richtigen Session gehört. Außerdem wird geprüft ob die Signatur eines CSRF-Tokens korrekt ist.
 
 
+\subsection{Policy Implementierung}
+Die Implementierung der Policy wurde auf die korrekte Umsetzung der definierten Regeln geprüft. Dabei wurde unter anderem ein kritischer Fehler entdeckt. Beim Anlegen einer Gruppen-Berechtigung wurde nicht geprüft, ob derjenge der die Berechtigung erstellen möchte Besitzer der betroffenen Datei ist. Effektiv konnte damit jeder Benutzer alle Dateien lesen und schreiben, indem er eine Berechtigung für eine Gruppe, deren Mitglied er ist, erstellt.
+
+Weiterhin fehlten bei vielen Methoden der Policy die null-Prüfung der Parameter. Außerdem wurden geschweifte Klammern um if-else-Blöcke klar abzugrenzen teilweise nicht verwendet.
+
+Resultat des Reviews war die Behebung des kritischen Fehlers, die Implementierung des null-Prüfungen und entsprechender Unit-Test und das einfügen der geschweifte Klammern an den Fehlenden if-else-Blöcken
+
 \section{Statische Codeanalyse}
 
 Da innerhalb der Gruppe keine Präferenzen bezüglich eines Werkzeugs für die statische Codeanalyse bestand, haben wir verschiedene ausprobiert.
@@ -312,6 +319,8 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
   Beim Zurücksetzen lassen eines Passworts wurde der Benutzername ungefiltert ins Log gespeichert, wodurch es möglich war, das Log zu verunstalten & Review & 0.5 \\ \hline
   Regex für Dateinamen ließ keine großen Umlaute zu & manueller Test & 0.25 \\ \hline
   NullPointerException statt UnauthorizedException, wenn Nutzer manuell URL zum Erstellen einer Nutzer-/Gruppenberechtigung für eine Datei ansurft, für die er selbst keine Berechtigung hat & manueller Test & 0.75 \\ \hline
+  Benutzer kann aufgrund einer fehlenden Prüfung Gruppen-Berechtigungen für jede Datei erstellen & Review der Policy-Implementierung & 1 \\ \hline
+
   \end{tabularx}
 \end{table}
 

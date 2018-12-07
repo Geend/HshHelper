@@ -75,13 +75,13 @@ public class PolicyTests {
         rudi.setGroups(Stream.of(allGroup).collect(Collectors.toList()));
 
         byte[] data = {0x42};
-        klausFile = new File("klausFile", "Klaus Comment",data,klaus);
+        klausFile = new File("klausFile", "Klaus Comment", data, klaus);
         klausFilePeterUserPermission = new UserPermission(klausFile, peter, true, true);
         peter.getUserPermissions().add(klausFilePeterUserPermission);
 
 
         petersGroupFile = new File("petersGroupFile", "Peters Group File", data, peter);
-        petersGroupFilePetersGroupPermission = new GroupPermission(petersGroupFile,petersGroup, true,true);
+        petersGroupFilePetersGroupPermission = new GroupPermission(petersGroupFile, petersGroup, true, true);
         petersGroup.getGroupPermissions().add(petersGroupFilePetersGroupPermission);
 
         petersGroupFileAdminGroupPermission = new GroupPermission(petersGroupFile, adminGroup, false, false);
@@ -94,7 +94,6 @@ public class PolicyTests {
         petersSession = mock(Session.class);
         when(petersSession.getUser()).thenReturn(peter);
     }
-
 
 
     @Test
@@ -183,16 +182,17 @@ public class PolicyTests {
      */
 
     @Test
-    public void adminCanSeeAllUsers(){
+    public void adminCanSeeAllUsers() {
         boolean actual = Policy.ForUser(admin).canViewAllUsers();
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void normalUserCantSeeAllUsers(){
+    public void normalUserCantSeeAllUsers() {
         boolean actual = Policy.ForUser(klaus).canViewAllUsers();
         assertThat(actual).isFalse();
     }
+
     /*
         Remove user from Group
      */
@@ -520,30 +520,32 @@ public class PolicyTests {
         File Read PersmissionTest
      */
     @Test
-    public void ownerCanReadFile(){
+    public void ownerCanReadFile() {
         boolean actual = Policy.ForUser(klaus).canReadFile(klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void userWithUserPermissionCanReadFile(){
+    public void userWithUserPermissionCanReadFile() {
         boolean actual = Policy.ForUser(peter).canReadFile(klausFile);
         assertThat(actual).isTrue();
     }
+
     @Test
-    public void userWithGroupPermissionCanReadFile(){
+    public void userWithGroupPermissionCanReadFile() {
         boolean actual = Policy.ForUser(klaus).canReadFile(petersGroupFile);
         assertThat(actual).isTrue();
 
     }
+
     @Test
-    public void userWithGroupPermissionWithoutReadTrueCantReadFile(){
+    public void userWithGroupPermissionWithoutReadTrueCantReadFile() {
         boolean actual = Policy.ForUser(admin).canReadFile(petersGroupFile);
         assertThat(actual).isFalse();
     }
 
     @Test
-    public void normalUserCantReadFile(){
+    public void normalUserCantReadFile() {
         boolean actual = Policy.ForUser(horst).canReadFile(klausFile);
         assertThat(actual).isFalse();
     }
@@ -602,40 +604,43 @@ public class PolicyTests {
         boolean actual = Policy.ForUser(peter).canViewGroupPermission(petersGroupFilePetersGroupPermission);
         assertThat(actual).isTrue();
     }
+
     /*
         File Write PersmissionTest
     */
     @Test
-    public void ownerCanWriteFile(){
+    public void ownerCanWriteFile() {
         boolean actual = Policy.ForUser(klaus).canWriteFile(klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void userWithUserPermissionCanWriteFile(){
+    public void userWithUserPermissionCanWriteFile() {
         boolean actual = Policy.ForUser(peter).canWriteFile(klausFile);
         assertThat(actual).isTrue();
     }
+
     @Test
-    public void userWithGroupPermissionCanWriteFile(){
+    public void userWithGroupPermissionCanWriteFile() {
         boolean actual = Policy.ForUser(klaus).canWriteFile(petersGroupFile);
         assertThat(actual).isTrue();
 
     }
+
     @Test
-    public void userWithGroupPermissionWithoutWriteTrueCantWriteFile(){
+    public void userWithGroupPermissionWithoutWriteTrueCantWriteFile() {
         boolean actual = Policy.ForUser(rudi).canWriteFile(petersGroupFile);
         assertThat(actual).isFalse();
     }
 
     @Test
-    public void groupPermissionWithReadTrueWithoutWriteTrueCantWriteFile(){
+    public void groupPermissionWithReadTrueWithoutWriteTrueCantWriteFile() {
         boolean actual = Policy.ForUser(rudi).canWriteFile(klausFile);
         assertThat(actual).isFalse();
     }
 
     @Test
-    public void normalUserCantWriteFile(){
+    public void normalUserCantWriteFile() {
         boolean actual = Policy.ForUser(horst).canWriteFile(klausFile);
         assertThat(actual).isFalse();
     }
@@ -657,34 +662,34 @@ public class PolicyTests {
         View file meta
      */
     @Test
-    public void ownerCanGetFileMeta(){
+    public void ownerCanGetFileMeta() {
         boolean actual = Policy.ForUser(klaus).canGetFileMeta(klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void readPermissionUserCnaGetFileMeta(){
+    public void readPermissionUserCnaGetFileMeta() {
         rudi.getUserPermissions().add(new UserPermission(klausFile, rudi, true, false));
         boolean actual = Policy.ForUser(rudi).canGetFileMeta(klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void writePermissionUserCanGetFileMeta(){
+    public void writePermissionUserCanGetFileMeta() {
         rudi.getUserPermissions().add(new UserPermission(klausFile, rudi, false, true));
         boolean actual = Policy.ForUser(rudi).canGetFileMeta(klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void readwritePermissionUserCanGetFileMeta(){
+    public void readwritePermissionUserCanGetFileMeta() {
         rudi.getUserPermissions().add(new UserPermission(klausFile, rudi, true, true));
         boolean actual = Policy.ForUser(rudi).canGetFileMeta(klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void noPermissionUserCantGetFileMeta(){
+    public void noPermissionUserCantGetFileMeta() {
         boolean actual = Policy.ForUser(rudi).canGetFileMeta(klausFile);
         assertThat(actual).isFalse();
     }
@@ -751,44 +756,44 @@ public class PolicyTests {
 
 
     @Test
-    public void ownerCanCreateUserPermission(){
+    public void ownerCanCreateUserPermission() {
         boolean actual = Policy.ForUser(klaus).canCreateUserPermission(klausFile);
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void notOwnerCantCreateUserPermission(){
+    public void notOwnerCantCreateUserPermission() {
         boolean actual = Policy.ForUser(peter).canCreateUserPermission(klausFile);
         assertThat(actual).isFalse();
     }
 
     @Test
-    public void ownerCanCreateGroupPermission(){
+    public void ownerCanCreateGroupPermission() {
         boolean actual = Policy.ForUser(klaus).canCreateGroupPermission(klausFile, petersGroup);
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void notOwnerCantCreateGroupPermission(){
+    public void notOwnerCantCreateGroupPermission() {
         boolean actual = Policy.ForUser(peter).canCreateGroupPermission(klausFile, allGroup);
         assertThat(actual).isFalse();
     }
 
     @Test
-    public void ownerCantCreateGroupPermissionForForeignGroup(){
+    public void ownerCantCreateGroupPermissionForForeignGroup() {
         boolean actual = Policy.ForUser(klaus).canCreateGroupPermission(klausFile, adminGroup);
         assertThat(actual).isFalse();
     }
 
 
     @Test
-    public void adminCanViewUserMetaInfo(){
+    public void adminCanViewUserMetaInfo() {
         boolean actual = Policy.ForUser(admin).canViewUserMetaInfo();
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void normalUserCantViewUserMetaInfo(){
+    public void normalUserCantViewUserMetaInfo() {
         boolean actual = Policy.ForUser(klaus).canViewUserMetaInfo();
         assertThat(actual).isFalse();
     }
@@ -798,11 +803,12 @@ public class PolicyTests {
         UserSettings
      */
     @Test
-    public void selfCanChangeTimeoutValue(){
+    public void selfCanChangeTimeoutValue() {
         assertThat(Policy.ForUser(rudi).canChangeUserTimeoutValue(rudi)).isTrue();
     }
+
     @Test
-    public void foreignCantChangeTimeoutValue(){
+    public void foreignCantChangeTimeoutValue() {
         assertThat(Policy.ForUser(rudi).canChangeUserTimeoutValue(peter)).isFalse();
     }
 
@@ -811,13 +817,13 @@ public class PolicyTests {
         Quota
     */
     @Test
-    public void adminCanReadWriteQuotaLimit(){
+    public void adminCanReadWriteQuotaLimit() {
         boolean actual = Policy.ForUser(admin).canReadWriteQuotaLimit();
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void normalUserCantReadWriteQuotaLimit(){
+    public void normalUserCantReadWriteQuotaLimit() {
         boolean actual = Policy.ForUser(klaus).canReadWriteQuotaLimit();
         assertThat(actual).isFalse();
     }
@@ -827,48 +833,52 @@ public class PolicyTests {
      */
 
     @Test
-    public void adminCanSeeAllNetServices(){
+    public void adminCanSeeAllNetServices() {
         assertThat(Policy.ForUser(admin).canSeeAllNetServices()).isTrue();
     }
 
     @Test
-    public void normalUserCanSeeAllNetServices(){
+    public void normalUserCanSeeAllNetServices() {
         assertThat(Policy.ForUser(horst).canSeeAllNetServices()).isTrue();
     }
+
     @Test
-    public void adminCanSeeNetServiceOverviewPage(){
+    public void adminCanSeeNetServiceOverviewPage() {
         assertThat(Policy.ForUser(admin).canSeeNetServiceOverviewPage()).isTrue();
     }
 
     @Test
-    public void normalUserCantSeeNetServiceOverviewPage(){
+    public void normalUserCantSeeNetServiceOverviewPage() {
         assertThat(Policy.ForUser(horst).canSeeNetServiceOverviewPage()).isFalse();
     }
 
     @Test
-    public void adminCanCreateNetService(){
+    public void adminCanCreateNetService() {
         assertThat(Policy.ForUser(admin).canCreateNetService()).isTrue();
     }
+
     @Test
-    public void normalUserCantCreateNetService(){
+    public void normalUserCantCreateNetService() {
         assertThat(Policy.ForUser(klaus).canCreateNetService()).isFalse();
     }
 
     @Test
-    public void adminCanEditNetService(){
+    public void adminCanEditNetService() {
         assertThat(Policy.ForUser(admin).canEditNetService()).isTrue();
     }
+
     @Test
-    public void normalUserCantEditNetService(){
+    public void normalUserCantEditNetService() {
         assertThat(Policy.ForUser(klaus).canEditNetService()).isFalse();
     }
 
     @Test
-    public void adminCanDeleteNetService(){
+    public void adminCanDeleteNetService() {
         assertThat(Policy.ForUser(admin).canDeleteNetServices()).isTrue();
     }
+
     @Test
-    public void normalUserCantDeleteNetService(){
+    public void normalUserCantDeleteNetService() {
         assertThat(Policy.ForUser(klaus).canDeleteNetServices()).isFalse();
     }
 
@@ -877,28 +887,28 @@ public class PolicyTests {
      */
 
     @Test
-    public void selfCanReadCredential(){
+    public void selfCanReadCredential() {
         NetServiceCredential credential = mock(NetServiceCredential.class);
         when(credential.getUser()).thenReturn(rudi);
         assertThat(Policy.ForUser(rudi).canReadCredential(credential)).isTrue();
     }
 
     @Test
-    public void foreignUserCantReadCredential(){
+    public void foreignUserCantReadCredential() {
         NetServiceCredential credential = mock(NetServiceCredential.class);
         when(credential.getUser()).thenReturn(rudi);
         assertThat(Policy.ForUser(peter).canReadCredential(credential)).isFalse();
     }
 
     @Test
-    public void selfCanDeleteCredential(){
+    public void selfCanDeleteCredential() {
         NetServiceCredential credential = mock(NetServiceCredential.class);
         when(credential.getUser()).thenReturn(rudi);
         assertThat(Policy.ForUser(rudi).canDeleteNetServicesCredential(credential)).isTrue();
     }
 
     @Test
-    public void foreignUserCantDeleteCredential(){
+    public void foreignUserCantDeleteCredential() {
         NetServiceCredential credential = mock(NetServiceCredential.class);
         when(credential.getUser()).thenReturn(rudi);
         assertThat(Policy.ForUser(peter).canDeleteNetServicesCredential(credential)).isFalse();
@@ -911,18 +921,160 @@ public class PolicyTests {
      */
 
     @Test
-    public void selfCanDisable2FA(){
+    public void selfCanDisable2FA() {
         assertThat(Policy.ForUser(klaus).canDisable2FA(klaus)).isTrue();
     }
 
     @Test
-    public void adminCanDisable2FA(){
+    public void adminCanDisable2FA() {
         assertThat(Policy.ForUser(admin).canDisable2FA(klaus)).isTrue();
 
     }
+
     @Test
-    public void foreignUserCantDisable2FA(){
+    public void foreignUserCantDisable2FA() {
         assertThat(Policy.ForUser(rudi).canDisable2FA(klaus)).isFalse();
 
     }
+
+
+
+    /*
+        Null parameter Checks
+     */
+
+    @Test
+    public void canViewGroupDetailsNullTest() {
+        assertThat(Policy.ForUser(admin).canViewGroupDetails(null)).isFalse();
+    }
+
+    @Test
+    public void canDeleteUserNullTest() {
+        assertThat(Policy.ForUser(admin).canDeleteUser(null)).isFalse();
+    }
+
+    @Test
+    public void canDeleteGroupNullTest() {
+        assertThat(Policy.ForUser(admin).canDeleteGroup(null)).isFalse();
+    }
+
+    @Test
+    public void canRemoveGroupMemberNullTest() {
+        assertThat(Policy.ForUser(admin).canRemoveGroupMember(null, null)).isFalse();
+        assertThat(Policy.ForUser(admin).canRemoveGroupMember(mock(Group.class), null)).isFalse();
+        assertThat(Policy.ForUser(admin).canRemoveGroupMember(null, mock(User.class))).isFalse();
+
+    }
+
+    @Test
+    public void canGenerallyAddGroupMemberTest() {
+        assertThat(Policy.ForUser(admin).canGenerallyAddGroupMember(null)).isFalse();
+    }
+
+    @Test
+    public void canAddSpecificGroupMemberNullTest() {
+        assertThat(Policy.ForUser(admin).canAddSpecificGroupMember(null, null)).isFalse();
+        assertThat(Policy.ForUser(admin).canAddSpecificGroupMember(mock(Group.class), null)).isFalse();
+        assertThat(Policy.ForUser(admin).canAddSpecificGroupMember(null, mock(User.class))).isFalse();
+
+    }
+
+    @Test
+    public void canUpdatePasswordNullTest() {
+        assertThat(Policy.ForUser(admin).canUpdatePassword(null)).isFalse();
+    }
+
+    @Test
+    public void canDeleteSessionNullTest() {
+        assertThat(Policy.ForUser(admin).canDeleteSession(null)).isFalse();
+    }
+
+    @Test
+    public void canReadFileNullTest() {
+        assertThat(Policy.ForUser(admin).canReadFile(null)).isFalse();
+    }
+
+    @Test
+    public void canWriteFileNullTest() {
+        assertThat(Policy.ForUser(admin).canWriteFile(null)).isFalse();
+    }
+
+    @Test
+    public void canGetFileMetaNullTest() {
+        assertThat(Policy.ForUser(admin).canGetFileMeta(null)).isFalse();
+    }
+
+    @Test
+    public void canDeleteFileNullTest() {
+        assertThat(Policy.ForUser(admin).canDeleteFile(null)).isFalse();
+    }
+
+    @Test
+    public void canDeleteGroupPermissionNullTest() {
+        assertThat(Policy.ForUser(admin).canDeleteGroupPermission(null)).isFalse();
+    }
+
+    @Test
+    public void canDeleteUserPermissionNullTest() {
+        assertThat(Policy.ForUser(admin).canDeleteUserPermission(null)).isFalse();
+    }
+
+    @Test
+    public void canEditUserPermissionNullTest() {
+        assertThat(Policy.ForUser(admin).canEditUserPermission(null)).isFalse();
+    }
+
+    @Test
+    public void canEditGroupPermissionNullTest() {
+        assertThat(Policy.ForUser(admin).canEditGroupPermission(null)).isFalse();
+    }
+
+    @Test
+    public void canCreateUserPermissionNullTest() {
+        assertThat(Policy.ForUser(admin).canCreateUserPermission(null)).isFalse();
+    }
+
+    @Test
+    public void canCreateGroupPermissionNullTest() {
+        assertThat(Policy.ForUser(admin).canCreateGroupPermission(null, null)).isFalse();
+        assertThat(Policy.ForUser(admin).canCreateGroupPermission(mock(File.class), null)).isFalse();
+        assertThat(Policy.ForUser(admin).canCreateGroupPermission(null, mock(Group.class))).isFalse();
+
+    }
+
+    @Test
+    public void canViewFilePermissionsNullTest() {
+        assertThat(Policy.ForUser(admin).canViewFilePermissions(null)).isFalse();
+    }
+
+    @Test
+    public void canViewUserPermissionNullTest() {
+        assertThat(Policy.ForUser(admin).canViewUserPermission(null)).isFalse();
+    }
+
+    @Test
+    public void canViewGroupPermissionNullTest() {
+        assertThat(Policy.ForUser(admin).canViewGroupPermission(null)).isFalse();
+    }
+
+    @Test
+    public void canChangeUserTimeoutValueNullTest() {
+        assertThat(Policy.ForUser(admin).canChangeUserTimeoutValue(null)).isFalse();
+    }
+
+    @Test
+    public void canReadCredentialNullTest() {
+        assertThat(Policy.ForUser(admin).canReadCredential(null)).isFalse();
+    }
+
+    @Test
+    public void canDeleteNetServicesCredentialNullTest() {
+        assertThat(Policy.ForUser(admin).canDeleteNetServicesCredential(null)).isFalse();
+    }
+
+    @Test
+    public void canDisable2FANullTest() {
+        assertThat(Policy.ForUser(admin).canDisable2FA(null)).isFalse();
+    }
+
 }

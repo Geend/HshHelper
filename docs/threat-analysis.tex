@@ -900,7 +900,6 @@ In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahme
     PreparedStatements & \linktothreat{threat7}{T7}  & \greencheckmark \\ \hline
     \texttt{ALLOW\_LITERALS=NONE} aktivieren & \linktothreat{threat7}{T7}  & \greencheckmark \\ \hline
     Salt auf Passwörter anwenden & \linktothreat{threat8}{T8}  & \greencheckmark \\ \hline
-    Pepper auf Passwörter anwenden & \linktothreat{threat8}{T8}  & \redxmark \\ \hline
     Hinzufügen von CSRF-Token zu Formularen/Requests & \linktothreat{threat9}{T9} & \greencheckmark \\ \hline
     Cookies mit privaten Schlüssel signieren & \linktothreat{threat10}{T10} & \greencheckmark \\ \hline
     Session-ID im UUID-Format persistieren & \linktothreat{threat10}{T10} & \greencheckmark \\ \hline
@@ -910,7 +909,7 @@ In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahme
     Zwei-Faktor-Authentisierung & \linktothreat{threat13}{T13}, \linktothreat{threat17}{T17} & \greencheckmark \\ \hline
     bcrypt als Hashing-Algorithmus verwenden & \linktothreat{threat15}{T15} & \greencheckmark \\ \hline
     Operationen unter konstanter, gleichbleibender Laufzeit - auch bei unterschiedlichen Ausführungssträngen - ausführen & \linktothreat{threat16}{T16}, \linktothreat{threat19}{T19}  & \greencheckmark \\ \hline
-    Verbieten schwacher Passwörter & \linktothreat{threat17}{T17} & \redxmark \\ \hline
+    Verbieten schwacher Passwörter (Mindestlänge sowie bekannte PWs nicht erlaubt) & \linktothreat{threat17}{T17} & \greencheckmark \\ \hline
     Captcha zwischenschalten, um Massenrequests entgegenzuwirken & \linktothreat{threat17}{T17}, \linktothreat{threat18}{T18}, \linktothreat{threat20}{T20} & \greencheckmark \\ \hline
     IP-Adresse bei auffälligem Verhalten sperren & \linktothreat{threat17}{T17} & \greencheckmark \\ \hline
     \enquote{Content Security Policy}-Header nutzen & \linktothreat{threat6}{T6}, \linktothreat{threat31}{T31} & \greencheckmark \\ \hline
