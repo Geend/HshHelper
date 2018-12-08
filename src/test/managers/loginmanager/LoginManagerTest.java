@@ -102,10 +102,11 @@ LoginManagerTest {
     @Test
     public void successfulLogin() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
+        when(defaultUserFinder.byName("lydia")).thenReturn(Optional.of(authenticatedUser));
         when(authenticatedUser.getUserId()).thenReturn(5l);
         Authentification auth = mock(Authentification.class);
         SessionManager sessionManager = mock(SessionManager.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(true);
         LoginManager sut = new LoginManager(
                 auth,
                 this.defaultFirewall,
@@ -123,10 +124,11 @@ LoginManagerTest {
     @Test(expected = PasswordChangeRequiredException.class)
     public void successfulLoginResetRequired() throws InvalidLoginException, PasswordChangeRequiredException, CaptchaRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
+        when(defaultUserFinder.byName("lydia")).thenReturn(Optional.of(authenticatedUser));
         when(authenticatedUser.getUserId()).thenReturn(5l);
         when(authenticatedUser.getIsPasswordResetRequired()).thenReturn(true);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(true);
         LoginManager sut = new LoginManager(
                 auth,
                 this.defaultFirewall,
@@ -145,7 +147,7 @@ LoginManagerTest {
         User authenticatedUser = mock(User.class);
         when(authenticatedUser.getUserId()).thenReturn(5l);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(false);
         LoginManager sut = new LoginManager(
                 auth,
                 this.defaultFirewall,
@@ -163,10 +165,11 @@ LoginManagerTest {
     @Test
     public void successfulChangePassword() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
         User authenticatedUser = mock(User.class);
+        when(defaultUserFinder.byName("lydia")).thenReturn(Optional.of(authenticatedUser));
         when(authenticatedUser.getUserId()).thenReturn(5l);
         when(authenticatedUser.getIsPasswordResetRequired()).thenReturn(true);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(true);
         HashHelper hashHelper = mock(HashHelper.class);
         when(hashHelper.hashPassword(any(String.class))).thenReturn("hashed");
         LoginManager sut = new LoginManager(
@@ -191,7 +194,7 @@ LoginManagerTest {
         when(authenticatedUser.getUserId()).thenReturn(5l);
         when(authenticatedUser.getIsPasswordResetRequired()).thenReturn(true);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(false);
         LoginManager sut = new LoginManager(
                 auth,
                 this.defaultFirewall,
@@ -209,7 +212,7 @@ LoginManagerTest {
     public void validLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(true);
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
@@ -232,7 +235,7 @@ LoginManagerTest {
     public void invalidLoginCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(false);
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
@@ -253,9 +256,8 @@ LoginManagerTest {
 
     @Test(expected = InvalidLoginException.class)
     public void validLoginBanned() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
-        User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(false);
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
@@ -277,7 +279,7 @@ LoginManagerTest {
     public void invalidLoginBannedWithCorrectLogin() throws InvalidLoginException, CaptchaRequiredException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(true);
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
@@ -298,9 +300,8 @@ LoginManagerTest {
 
     @Test(expected = CaptchaRequiredException.class)
     public void validPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
-        User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(true);
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
@@ -321,9 +322,8 @@ LoginManagerTest {
 
     @Test(expected = CaptchaRequiredException.class)
     public void invalidPasswordChangeCaptchaRequired() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
-        User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(false);
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
@@ -344,9 +344,8 @@ LoginManagerTest {
 
     @Test(expected = InvalidLoginException.class)
     public void validPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
-        User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(true, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(true);
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
@@ -367,9 +366,8 @@ LoginManagerTest {
 
     @Test(expected = InvalidLoginException.class)
     public void invalidPasswordChangeBanned() throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
-        User authenticatedUser = mock(User.class);
         Authentification auth = mock(Authentification.class);
-        when(auth.Perform(any(String.class), any(String.class), any(Integer.class))).thenReturn(new Authentification.Result(false, true, authenticatedUser));
+        when(auth.perform(any(User.class), any(String.class), any(Integer.class))).thenReturn(false);
         Instance i = mock(Instance.class);
         Firewall fw = mock(Firewall.class);
         when(fw.get(any(String.class), any(IPWhitelist.class))).thenReturn(i);
