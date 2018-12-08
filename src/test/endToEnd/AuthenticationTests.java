@@ -218,7 +218,7 @@ public class AuthenticationTests {
                     { "GET", "/credentials/create", Http.Status.SEE_OTHER },    // controllers.NetServiceController.showCreateNetServiceCredentialForm
                     { "POST", "/credentials/create", Http.Status.SEE_OTHER },    // controllers.NetServiceController.createNetServiceCredential
                     { "POST", "/credentials/delete", Http.Status.SEE_OTHER },    // controllers.NetServiceController.deleteNetServiceCredential
-                    { "GET", "/credentials/1", Http.Status.SEE_OTHER },    // controllers.NetServiceController.decryptNetServiceCredential(credentialId : Long)
+                    { "POST", "/credentials/decrypt", Http.Status.SEE_OTHER },    // controllers.NetServiceController.decryptNetServiceCredential(credentialId : Long)
 
                     { "GET", "/forbidden", Http.Status.FORBIDDEN },    // controllers.ErrorController.showForbiddenMessage()
                     { "GET", "/badrequest", Http.Status.BAD_REQUEST },    // controllers.ErrorController.showBadRequestMessage()
