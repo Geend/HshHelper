@@ -464,20 +464,20 @@ LoginManagerTest {
     }
 
     @Test(expected = CaptchaRequiredException.class)
-    public void sendResetPasswordTokenCaptchaRequiredTest() throws CaptchaRequiredException, InvalidArgumentException {
+    public void sendResetPasswordTokenCaptchaRequiredTest() throws CaptchaRequiredException, InvalidArgumentException, UnauthorizedException {
         when(recaptchaHelper.IsValidResponse(any(), any())).thenReturn(false);
         defaultLoginManager.sendResetPasswordToken("123", "231", Helpers.fakeRequest().build());
     }
 
     @Test(expected = InvalidArgumentException.class)
-    public void sendResetPasswordTokenInvalidUserTest() throws CaptchaRequiredException, InvalidArgumentException {
+    public void sendResetPasswordTokenInvalidUserTest() throws CaptchaRequiredException, InvalidArgumentException, UnauthorizedException {
         when(recaptchaHelper.IsValidResponse(any(), any())).thenReturn(true);
         when(defaultUserFinder.byName("123")).thenReturn(Optional.empty());
         defaultLoginManager.sendResetPasswordToken("123", "231", Helpers.fakeRequest().build());
     }
 
     @Test
-    public void sendResetPasswordTokenTest() throws CaptchaRequiredException, InvalidArgumentException {
+    public void sendResetPasswordTokenTest() throws CaptchaRequiredException, InvalidArgumentException, UnauthorizedException {
         UUID tokenId = UUID.randomUUID();
         String username = "xkac";
         User user = mock(User.class);
