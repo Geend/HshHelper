@@ -83,7 +83,18 @@ public class DatabaseInitialization {
         logger.info("DatabaseInitialization - Prepare DB; Truncate all tables.");
         db.withConnection(connection -> {
             Statement stmt = connection.createStatement();
+            stmt.execute("SET ALLOW_LITERALS ALL");
             stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
+            stmt.execute("CREATE CONSTANT IF NOT EXISTS ONE VALUE '1';");
+            stmt.execute("ALTER TABLE users ALTER COLUMN user_id RESTART WITH ONE");
+            stmt.execute("ALTER TABLE groups ALTER COLUMN group_id RESTART WITH ONE");
+            stmt.execute("ALTER TABLE files ALTER COLUMN file_id RESTART WITH ONE");
+            stmt.execute("ALTER TABLE group_permissions ALTER COLUMN group_permission_id RESTART WITH ONE");
+            stmt.execute("ALTER TABLE user_permissions ALTER COLUMN user_permission_id RESTART WITH ONE");
+            stmt.execute("ALTER TABLE netservices ALTER COLUMN net_service_id RESTART WITH ONE");
+            stmt.execute("ALTER TABLE net_service_parameter ALTER COLUMN net_service_parameter_id RESTART WITH ONE");
+            stmt.execute("ALTER TABLE net_service_credential ALTER COLUMN net_service_credential_id RESTART WITH ONE");
+
             stmt.execute("TRUNCATE TABLE groupmembers");
             stmt.execute("TRUNCATE TABLE users");
             stmt.execute("TRUNCATE TABLE groups");
@@ -92,8 +103,8 @@ public class DatabaseInitialization {
             stmt.execute("TRUNCATE TABLE user_permissions");
             stmt.execute("TRUNCATE TABLE internal_session");
             stmt.execute("TRUNCATE TABLE netservices");
-            // stmt.execute("TRUNCATE TABLE netservice_parameter");
-            //stmt.execute("TRUNCATE TABLE netservice_credential");
+            stmt.execute("TRUNCATE TABLE net_service_parameter");
+            stmt.execute("TRUNCATE TABLE net_service_credential");
             stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
             stmt.execute("SET ALLOW_LITERALS NONE");
         });
