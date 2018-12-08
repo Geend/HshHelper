@@ -208,7 +208,7 @@ public class LoginManager {
 
     public void sendResetPasswordToken(String username, String recaptcha, Http.Request request) throws CaptchaRequiredException, InvalidArgumentException, UnauthorizedException {
         if(!recaptchaHelper.IsValidResponse(recaptcha, request.remoteAddress())) {
-            // TODO: encode username -> log injection
+            // No log poisoning possible as the username has to pass the regex anyway
             logger.error(request.remoteAddress() + " has tried to reset the password for user " + username + " without a valid reCAPTCHA.");
             throw new CaptchaRequiredException();
         }

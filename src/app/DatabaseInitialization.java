@@ -76,10 +76,6 @@ public class DatabaseInitialization {
     private void devEnvInitialization() {
         logger.info("DatabaseInitialization - Prepare DB");
 
-        // TODO: Add new tables for truncation
-        // This whole process is super fragile
-        // Each new table must be manually added if there has to be data added to the table
-        // before the application starts.
         logger.info("DatabaseInitialization - Prepare DB; Truncate all tables.");
         db.withConnection(connection -> {
             Statement stmt = connection.createStatement();
