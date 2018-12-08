@@ -152,6 +152,37 @@ Ein ähnlicher Test wurde für alle URLs in denen URL-Parameter verwendet werden
 
 Ergebnis dieses Penetrationstests ist, dass die Seiten zum Anlegen und Bearbeiten von Netzdiensten für nicht-Administratoren zugänglichen waren. Zwar konnte ein Benutzer keine Aktionen auf diesen Seiten ausführen, Zugriff sollte aber dennoch nicht möglich sein.
 
+\subsection{CSRF-Analyse}
+Im Rahmen eines Penetrationstest sollte überprüft werden, ob eine Controller-Methode, die JSON zurückliefert über ein script-Tag auf einer Drittseite eingebunden werden konnte. Während dieses Tests wurde eine schwere Sicherheitslücke entdeckt, die sich aus der Play Standard-Konfiguration in Verbindung mit unserem Session-Konzept ergab.
+
+Play nutzt für gesetzte Cookies die SameSite-Option \enquote{LAX} \footnote{\url{https://www.playframework.com/documentation/2.6.x/SettingsSession}}. Diese Option bewirkt, dass Requests, die von einer Drittseite stammen (wie z.B. ein script-Tag, dessen src-Attribut auf unsere Anwendung zeigt), das dazugehörige Cookie nicht an unsere Anwendung übertragen. Der Request selbst erreicht jedoch unsere Anwendung. Gleichzeitig generiert Play ein neues Session-Cookie, wenn eine Seite mit einem Formular aufgerufen wird, das über den integrierten CSRF-Schutz verfügt.
+
+Bei manchen Browser-Betriebssystemkombinationen tritt hier die Sicherheitslücke auf: Der so generierte Session-Cookie überschreibt das bereits vorhandene im Browser des Nutzers. Da im Play Session-Cookie unser Session-Key gespeichert wird, wird so die Session für den Nutzer effektiv unbrauchbar bzw. der Nutzer wird de facto ausgeloggt.
+
+\begin{center}
+    \begin{tabular}{ | l | l | l | }
+    \hline
+    	Browser & Betriebssystem & Cookie wurde überschrieben \\ \hline
+    	Chrome 70.0.3538.102 & Ubuntu 18.04 & Ja \\ \hline
+    	Firefox 63.0.3 & Ubuntu 18.04 & Ja \\ \hline
+    	Firefox 63.0.3 & Arch Linux & Nein \\ \hline
+    	Safari 12.0.2 & Mac OS 10.14.2 & Ja \\ \hline
+    	Firefox 63.0.3 & Windows 10 Pro 17134.407 & Nein \\ \hline
+    \end{tabular}
+    \captionof{table}{Überprüfte Browser/Betriebssysteme}
+\end{center}
+
+Es ist somit möglich, Nutzer mit einem verwundbaren Browser aus der Anwendung auszuloggen, wenn man sie dazu bringt, eine bestimmte URL aufzurufen. Dieses Risiko wurde von uns als kritisch eingestuft: Die Nutzerschaft unserer Anwendung ist aufgrund des Internet-Zugangs der Hochschule eindeutig zu identifizieren. Es wäre ein leichtes, über elektronische und automatisierte Marktplätze für Online-Werbung\footnote{\url{https://de.wikipedia.org/wiki/Real_Time_Bidding}} Werbeplätze zu buchen, die ausschließlich Anwendern ausgespielt werden, welche den Internet-Zugang der Hochschule verwenden. An derartigen Marktplätzen sind abertausende Internet-Seiten angeschlossen u.A. Branchengrößen wie YouTube oder Nachrichtenportale wie Spiegel oder Heise. Würde ein Nutzer des Hochschul-Internetzugangs eine solche Seite aufrufen, könnte ein Angreifer den Werbeplatz, der diesem konkreten Nutzer angezeigt wird, einzeln erwerben können. Derartige Werbeplätze erlauben dem Käufer in der Regel das Einbinden von eigenem Code. Ein Angreifer müsste hier lediglich den folgenden Code einbinden und könnte so einen potentiellen Nutzer zum Logout bringen:
+
+\begin{lstlisting}
+	<script src="http://hsh-helper.de/"></script>
+\end{lstlisting}
+
+Der Kostenaufwand wäre zu vernachlässigen, da faktisch kein Streuverlust eintritt: Man zahlt lediglich für Werbeanzeigen, die Nutzern des Hochschul-Internets angezeigt werden. Bereits mit geringen Investitionen von wenigen Euro pro Tag wäre es möglich, den Betrieb des HsH-Helpers intensiv zu stören.
+
+Folglich haben wir uns dazu entschlossen, von der standardmäßigen Benutzung der SameSite-Option abzusehen. Hierdurch wird zwar potentiell Clickjacking erleichtert, jedoch betrachten wir den von uns verwendeten \enquote{X-Frame-Options} Header als hinreichend sicheren Schutz gegen diesen Angriff. Er wird allen modernen Browsern unterstützt\footnote{\url{https://caniuse.com/\#feat=x-frame-options}}.	
+
+
 \section{Reviews}
 \subsection{Session-Konzept}
 Die erste Version unseres Session-Konzepts wurde einem Review unterzogen. Das Review wurde von einer Person innerhalb von 2 Stunden durchgeführt. Hierbei wurde insbesondere ein schlechtes Design bemängelt. Die Session-Funktionalität wurde nicht von einer beziehungsweise wenigen Klassen abgebildet, sondern auf verschiedenste Klassen verteilt: Die Login-Methode im Controller erstellte inline einen Datenbank-Eintrag sowie ein Cookie. Andere Controller-Methoden manipulierten inline die entsprechenden Einträge und entfernten nach Bedarf Cookies. Das Wissen darüber, was überhaupt eine Session darstellt war so nicht an einer zentralen Stelle im Code zu finden und entsprechend schwer zu prüfen.
@@ -335,8 +366,9 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
   Regex für Dateinamen ließ keine großen Umlaute zu & manueller Test & 0.25 \\ \hline
   NullPointerException statt UnauthorizedException, wenn Nutzer manuell URL zum Erstellen einer Nutzer-/Gruppenberechtigung für eine Datei ansurft, für die er selbst keine Berechtigung hat & manueller Test & 0.75 \\ \hline
   Benutzer kann aufgrund einer fehlenden Prüfung Gruppen-Berechtigungen für jede Datei erstellen & Review der Policy-Implementierung & 1 \\ \hline
-  Formulare für \enquote{Netzdienst erstellen} und \enquote{Netzdienst berarbeiten} waren für unauthentisierte Benutzer erreichbar & Tests & 0.5 \\ \hline
+  Formulare für \enquote{Netzdienst erstellen} und \enquote{Netzdienst berarbeiten} waren für unauthentisierte Benutzer erreichbar & Test & 0.5 \\ \hline
   Nutzer war es möglich, Dateien mit dem selben Namen auf dem Server zu erstellen, durch Absenden paralleler Requests & Penetration-Tests & 4 \\ \hline
+  Login triggern, wenn Nutzer dazu gebracht wird, URL von Seite mit Formular von fremder Seite aus abzurufen. & Penetrations-Test & 2 \\ \hline
   \end{tabularx}
 
 \printbibliography
