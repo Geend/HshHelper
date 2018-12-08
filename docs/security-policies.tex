@@ -136,8 +136,8 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
 
   \item \textbf{AK3:} Nutzerkonto erstellen [A]
   \item \textbf{AK4:} Nutzerkonto löschen [A]
-  \item \textbf{AK5:} Passwort zurücksetzen lassen [U-, EM, GR] (Zusätzlich EP2 \& EP3)
-  \item \textbf{AK6:} Passwort nach Zurücksetzung anpassen [U+]
+  \item \textbf{AK5:} Passwort-Reset anfordern [U-, EM, GR] (Zusätzlich EP2 \& EP3)
+  \item \textbf{AK6:} Passwort im Rahmen des Passwort-Reset neu vergeben [U+]
   \item \textbf{AK7:} Aktive Sessions anzeigen lassen [U+]
   \item \textbf{AK8:} Aktive Sessions zerstören [U+]
 
@@ -220,6 +220,8 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
 \label{security-policies:new_policies}
 \begin{itemize}
   \item Nutzer [U+] können nur mit dem System interagieren, wenn sie authentisiert sind (AK2-4, sowie AK6-21).
+  \item Ein Nutzer [U-] kann sich nur einloggen, wenn er ein eigenes Passwort vergeben hat.
+  \item Ein Nutzer [U-] kann sein Passwort nur dann zurücksetzen, wenn er ein Authentifizierungsmerkmal angibt, dass er über einen vertrauenswürdigen Zweit-Kanal erhalten hat. 
   \item Nutzer [GM, GO, A] können nur Gruppen sehen, dessen Mitglied sie sind (AK14).
   \item Ausschließlich Administratoren [A] können alle Gruppen sehen (AK14).
   \item Nutzer [GO] dürfen nur Mitglieder zu einer Gruppe hinzufügen, wenn sie der Besitzer dieser Gruppe sind (AK11).
@@ -232,24 +234,30 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
   \item Ein Administrator [A] hat nur schreibenden Zugriff auf ein Nutzerkonto durch das Löschen des Nutzerkontos (AK4) oder durch Anpassen des Speicherplatzlimits eines Nutzers (AK23). Ihm ist nicht möglich, andere Informationen aus dem Nutzerkonto zu lesen oder zu ändern.
   \item Der initiale Benutzer \enquote{admin} kann nicht gelöscht werden.
   \item Ein Nutzer [U+] darf nur dann gelöscht werden, wenn er weder Besitzer der Gruppe Alle oder Administratoren ist.
-  \item Ein Nutzer [U-] muss nur ein reCAPTCHA lösen, wenn er sich mehrmals hintereinander fehlerhaft eingeloggt hat (AK1).
+    \item Ein Nutzer [U-] muss ein reCAPTCHA lösen, wenn auf dem korrospondierenden Account 5 fehlgeschlagene Logins in einem Zeitraum von 5 Stunden erfolgt sind (AK1).
+  \item Ein Nutzer [U-] muss ein reCAPTCHA lösen, wenn von seiner IP 15 fehlgeschlagene Logins in einem Zeitraum von 5 Stunden erfolgt sind (AK1).
+	\item Ein Nutzer [U-] darf sich nicht mehr einloggen, wenn von seiner IP 30 fehlgeschlagene Logins in einem Zeitraum von 5 Stunden erfolgt sind (AK1).
   \item Die E-Mail eines Nutzerkontos ist einzigartig, so dass die Erstellung zweier Nutzerkonten mit der selben E-Mail-Adresse nicht möglich ist (AK3).
   \item Ein Nutzer [U-] muss zusätzlich ein reCAPTCHA lösen, um sein Passwort zurücksetzen lassen zu können (AK5).
   \item Ein Nutzer [U+] darf nur eine Datei hochladen (AK15), solange dessen Dateiname (AS5), -inhalt (AS6) und der Kommentar (AS7) zusammen nicht sein Speicherplatzlimit überschreiten.
   \item Ein Nutzer [DO] darf nur eine Datei löschen (AK16), wenn er dessen Besitzer ist.
   \item Ein Nutzer [DR] darf beim lesenden Zugriff auf eine Datei (AK17) keine Informationen verändern.
   \item Ein Nutzer [DW, DO] darf beim Verändern des Dateiinhalts oder des Kommentars (AK18) niemals den Dateinamen anpassen.
-  \item Ein Nutzer [U+] darf sich nur Dateien anzeigen lassen (AK19), zu welchen mindestens zum Lesen oder Schreiben berechtigt ist.
-  \item Ein Nutzer [DO] darf die Nutzer- und Gruppenberechtigungen einer Datei jederzeit anpassen (AK20, 21); bedeutet löschen, hinzufügen, verändern.
+  \item Ein Nutzer [U+] darf sich nur Dateien anzeigen lassen (AK19), zu welchen er mindestens zum Lesen oder Schreiben berechtigt ist.
+  \item Ein Nutzer [DO] darf die Nutzer- und Gruppenberechtigungen einer Datei jederzeit anpassen (AK20, 21); dies bedeutet löschen, hinzufügen, verändern.
   \item Ein Nutzer [U+] darf sich nur zu seinem \textbf{eigenem} Speicherplatzlimit informieren (AK22) und hat keinen Zugriff auf die Speicherplatzlimit anderer Nutzerkonten.
   \item Ein Nutzer [U+] darf nur seinen  \textbf{eigenen} Session-Timeout (AK24) einstellen.
   \item Ein Nutzer [U+] darf nur sein \textbf{eigenes} Passwort (AK25) ändern.
-  \item Nur der Dateibesitzer [DO] darf schreibend auf den Dateinamen (AS5) zugreifen, alle anderen [DR, DW] nur lesend.
-  \item Ein Nutzer [U+] hat nur schreibenden Zugriff (AK29, AK30) auf seine \textbf{eigenen} Zugangsdaten (AS10) für einen Netzdienst.
-  \item Beim Löschen eines Netzdienstes [AK30] werden zusätzlich alle vorhandenen Zugangsdaten (AS10) von Nutzern [U+], die diesen Netzdienst genutzt haben, gelöscht.
-  \item Wenn ein Nutzer [U+] das Passwort zu seinem Nutzerkonto ändert (AK5, AK6, AK?), werden all seine Zugangsdaten (AS10) zu Netzdienste löscht.
+  \item Nur der Dateibesitzer [DO] darf lediglich beim Upload der Datei schreibend auf den entsprechenden Dateinamen (AS5) zugreifen, alle anderen [DR, DW] nur lesend.
+  \item Ein Nutzer [U+] hat nur Zugriff (AK29, AK30) auf seine \textbf{eigenen} Zugangsdaten (AS10) für einen Netzdienst.
   \item Wenn ein Nutzer [U+] die Zwei-Faktor-Authentisierung aktiviert hat (AK32), muss er den zweiten Faktor bei jedem Login (AK1) mit angeben.
   \item Wenn ein Nutzer [U+] nach Dateien sucht (AK33), so kann er nur Dateien finden, für welche er mindestens zum Lesen oder Schreiben berechtigt ist.
+  \item Ein Nutzer [U+] darf die Zwei-Faktor-Authentisierung nur für seinen eigenen Account aktivieren und deaktivieren.
+  \item Ein Administrator [A] darf die Zwei-Faktor-Authentisierung für jeden Benutzer deaktivieren und kann sehen, ob ein Nutzer die Zwei-Faktor-Authentisierung aktiviert hat.
+  \item Kein Nutzer, auch kein Administrator oder jemand mit Zugriff auf die Datenbank/Anwendung kann gespeicherten Netzdienst-Zugangsdaten (AS10) im Klartext auslesen.
+  \item Ein Nutzer [U+] kann nur die ihm zugehörigen Netzdienst-Zugangsdaten löschen und im Klartext auslesen.
+  \item Ein Nutzer [U+] kann nur die bei seinem Account erfolgten Logins betrachten.
+  
 \end{itemize}
 
 \printbibliography
