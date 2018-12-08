@@ -15,10 +15,9 @@ import models.finders.GroupFinder;
 import models.finders.UserFinder;
 import models.finders.UserFinderQueryOptions;
 import play.Logger;
-import play.libs.mailer.MailerClient;
 import policyenforcement.ConstraintValues;
 import policyenforcement.session.SessionManager;
-import twofactorauth.TimeBasedOneTimePasswordUtil;
+import twofactorauth.TwoFactorAuthService;
 
 import javax.inject.Inject;
 import java.security.GeneralSecurityException;
@@ -33,14 +32,13 @@ public class UserManager {
     private final UserFinder userFinder;
     private final GroupFinder groupFinder;
     private final PasswordGenerator passwordGenerator;
-    private final MailerClient mailerClient;
     private final HashHelper hashHelper;
     private final EbeanServer ebeanServer;
     private final SessionManager sessionManager;
-    private final RecaptchaHelper recaptchaHelper;
     private final UserFactory userFactory;
     private final CredentialManager credentialManager;
     private final WeakPasswords weakPasswords;
+    private final TwoFactorAuthService twoFactorService;
 
     private static final Logger.ALogger logger = new DangerousCharFilteringLogger(UserManager.class);
 
@@ -49,21 +47,21 @@ public class UserManager {
             UserFinder userFinder,
             GroupFinder groupFinder,
             PasswordGenerator passwordGenerator,
-            MailerClient mailerClient,
             HashHelper hashHelper,
             EbeanServer server,
             SessionManager sessionManager,
-            RecaptchaHelper recaptchaHelper,
-            UserFactory userFactory, CredentialManager credentialManager, WeakPasswords weakPasswords)
+            UserFactory userFactory,
+            CredentialManager credentialManager,
+            WeakPasswords weakPasswords,
+            TwoFactorAuthService twoFactorService)
     {
+        this.twoFactorService = twoFactorService;
         this.groupFinder = groupFinder;
         this.ebeanServer = server;
-        this.mailerClient = mailerClient;
         this.passwordGenerator = passwordGenerator;
         this.userFinder = userFinder;
         this.hashHelper = hashHelper;
         this.sessionManager = sessionManager;
-        this.recaptchaHelper = recaptchaHelper;
         this.userFactory = userFactory;
         this.credentialManager = credentialManager;
         this.weakPasswords = weakPasswords;
@@ -74,7 +72,7 @@ public class UserManager {
             String tokenWithoutWhiteSpace = activationToken.replaceAll(" ", "");
             int intToken = Integer.parseInt(tokenWithoutWhiteSpace);
 
-            if(!TimeBasedOneTimePasswordUtil.validateCurrentNumber(secret, intToken, TIME_WINDOW_2FA_MS))
+            if(!this.twoFactorService.validateCurrentNumber(secret, intToken, TIME_WINDOW_2FA_MS))
                 throw new Invalid2FATokenException();
         } catch (GeneralSecurityException | NumberFormatException e) {
             throw new Invalid2FATokenException();
@@ -107,7 +105,7 @@ public class UserManager {
     }
 
     public String generateTwoFactorSecret() {
-        String temporarySecret = TimeBasedOneTimePasswordUtil.generateBase32Secret();
+        String temporarySecret = twoFactorService.generateBase32Secret();
         return temporarySecret;
     }
 
@@ -264,8 +262,6 @@ public class UserManager {
     }
 
     public Long getUserQuotaLimit(Long userId) throws UnauthorizedException, InvalidArgumentException {
-        User currentUser = sessionManager.currentUser();
-
         if(!sessionManager.currentPolicy().canReadWriteQuotaLimit()){
             throw new UnauthorizedException();
         }
@@ -280,8 +276,6 @@ public class UserManager {
     }
 
     public void changeUserQuotaLimit(Long userId, Long newQuotaLimit) throws UnauthorizedException, InvalidArgumentException {
-        User currentUser = sessionManager.currentUser();
-
         if(!sessionManager.currentPolicy().canReadWriteQuotaLimit()){
             throw new UnauthorizedException();
         }
