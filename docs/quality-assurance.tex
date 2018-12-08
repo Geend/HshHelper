@@ -125,9 +125,13 @@ Es wurde herausgefunden, dass unser Session-Konzept diesen Wert nicht berücksic
 
 In der Folge wurde das Session-Konzept so geändert, dass vor Anlegen einer neuen Session alle bisherigen Werte aus der korrospondierenden Play-Session entfernt werden: Bei einem Login ist so garantiert, dass ein neuer CSRF-Vergleichswert erstellt wird.
 
-%Welche Penetrationstests wurden durchgeführt?
-%Gibt es ggf. automatisierbare Skripts?
-%Wenn ja, für welche Angriffe?
+\subsubsection{Race Condition bei Einzigartigkeit der Dateinamen}
+Damit sichergestellt ist das ein Benutzer einen Dateinamen nur einmalig verwenden kann, wurde zuerst ein manueller Test durchgeführt. Dazu wurde versucht eine Datei, mit einem bereits vergebenen Dateinamen, hochzuladen. Wie erwartet kam die Fehlermeldung, das bereits eine Datei mit diesem Namen existiert.
+
+Um diese Funktionalität auch bei parallelen Anfragen sicherstellen zu können, wurde ein Bash Skript verfasst, was genau solch einen Fall simuliert. Vollständig kann das Skript im Anhang eingesehen werden \ref{upPenTest}. Es meldet sich 4-mal parallel am System an und versucht eine Datei mit gleichem Dateinamen hochzuladen. Dieses Skript wird dann durch ein \texttt{runner} Skript 50-mal in folge mit unterschiedlichen Dateinamen aufgerufen. In Summe wird somit 50-mal ausprobiert, ob es klappt eine Datei mit demselben Dateinamen durch 4 parallele Anfragen, mehrmals zu erstellen.
+
+Mit diesem Skript wurde es offensichtlich, das unsere Maßnahmen nicht ausreichend waren, um zu garantieren, dass der Dateiname für jeden Nutzer nur einmal vorkommen kann. Es konnte sogar passieren, dass alle 4 parallelen Anfragen erfolgreich waren.
+
 
 \subsubsection{HTTP Response Splitting mittels Dateinamen}
 Um zu prüfen ob HTTP Response Splitting durch das Einfügen von Zeilenumbrüchen in Dateinamen möglich sind, wurde ein Penetrationstest durchgeführt. Dazu wurde vorübergehend die Eingabevalidierung für Dateinamen deaktiviert, um die Zeilenumbrüche platzieren zu können.
@@ -374,6 +378,11 @@ db.withConnection(connection -> {
 \chapter{Unittest Coverage Report}
 \label{unitcover}
 \includepdf{./resources/coveragereport.pdf}
+
+\chapter{Upload File Penetrationtest Skript}
+\label{upPenTest}
+\includepdf{./resources/uploadFileScript.pdf}
+\includepdf{./resources/penTestUpload.pdf}
 
 \end{appendices}
 
