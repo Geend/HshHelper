@@ -40,7 +40,7 @@
 Das folgende \gls{dfd} wurde mithilfe des Programms \enquote{OWASP Threat Dragon} \autocite{OWASP.ThreatDragon} erstellt.
 Dieses Programm erlaubt leider keine Einfärbung in grün zur Kennzeichnung vertrauenswürdiger Prozesse oder Datenflüsse.
 Alle schwarz gekennzeichneten Elemente sind daher als vertrauenswürdig zu betrachten.
-Dieses DFD soll als Übersicht über alle vorhandenen Datenflüsse dienen, ohne dabei jeden Manager oder Controller separat aufzulisten, da für diese der Datenfluss der selbe wäre.
+Dieses DFD soll als Übersicht über alle vorhandenen Datenflüsse dienen, ohne dabei jeden Manager oder Controller seperat aufzulisten, da für diese der Datenfluss der selbe wäre.
 
 \begin{figure}[htbp]
   \hspace*{-2.5cm}
@@ -417,7 +417,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck:
   	\begin{itemize}
   		\item Ausspähen von Anmeldedaten der Benutzer
-  		\item Ausspähen von Dateien, die ein Benutzer beim HsH-Helper hochladen möchte
+  		\item Ausspähen von Dateien, die ein Benutzer beim Hsh-Helper hochladen möchte
   	\end{itemize}
   \item Möglichkeiten:
   	\begin{itemize}
@@ -489,7 +489,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
 		\item Eingabevalidierung (Kleinbuchstaben und Zahlen, valide E-Mail-Adressen)
 		\item X-XSS-Protection (vgl. \ref{x:xss:protection})
 		\item Content Security Policy (CSP) des Browsers aktivieren
-		\item Alte Browser beziehungsweise Browser, die CSP nicht können, aussperren
+		\item Alte Browser bzw Browser, die CSP nicht können, aussperren
 		\item Ausgabekodierung
 	\end{itemize}
   \end{itemize}
@@ -511,8 +511,8 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \hypertarget{threat8}{}
   \item \textbf{T8: Offline Password Brute Forcing}
   \begin{itemize}
-  \item Zweck: Durch SQL Injection erbeutete Hashes in Klartext verwandeln
-  \item Möglichkeiten: Rainbow Tables
+  \item Zweck: Durch SQL Injection erbeutete Hashes in Plaintext verwandeln
+  \item Möglichkeiten: Rainbowtables
   \item Risiko: Gering
   \item Mögliche Gegenmaßnahmen:
   \begin{itemize}
@@ -553,7 +553,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item \textbf{T11: Abstreitbarkeit illegaler Handlungen}
   \begin{itemize}
   \item Zweck: Anderen Nutzer in rechtliche Schwierigkeiten bringen
-  \item Möglichkeiten: Eintragen illegaler Namen bei Benutzernamen oder Gruppenname
+  \item Möglichkeiten: Eintragen illegaler Namen bei Benutzernamen oder Gruppenmane
   \item Risiko: Gering
   \item Mögliche Gegenmaßnahmen: Logging von IP + Zeit, Action, User
   \end{itemize}
@@ -1086,24 +1086,13 @@ In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahme
     IP-Adresse bei auffälligem Verhalten sperren & \linktothreat{threat17}{T17} & \greencheckmark \\ \hline
     \enquote{Content Security Policy}-Header nutzen & \linktothreat{threat6}{T6}, \linktothreat{threat31}{T31} & \greencheckmark \\ \hline
     \enquote{X-XSS-Protection}-Header nutzen & \linktothreat{threat6}{T6}&  \greencheckmark \\ \hline
-    Speicherplatzlimit auf Dateinamen und Kommentarfeld ausweiten & \linktothreat{threat21}{T21}  & \greencheckmark \\ \hline
+    Speicherplatzlimit auf Dateinamen und Kommentarfeld ausweiten. & \linktothreat{threat21}{T21}  & \greencheckmark \\ \hline
     Hervorhebung der Nutzer-eigenen Datei & \linktothreat{threat22}{T22} & \greencheckmark \\ \hline
     Beim Download einer Datei HTTP-Header \texttt{Content-Type} auf \texttt{application/octet-stream} setzen & \linktothreat{threat23}{T23} & \greencheckmark \\ \hline
     Maximal-/Minimalwert für Session-Timeout definieren & \linktothreat{threat32}{T32}, \linktothreat{threat33}{T33}, \linktothreat{threat34}{T34} & \greencheckmark \\ \hline
-    Return-URL via Regex überprüfen & \linktothreat{threat25}{T25} & \greencheckmark \\ \hline
+    Return-URL via Regex überprüfen & \linktothreat{threat25}{threat25} & \greencheckmark \\ \hline
     Funktionalität, die Return-URL benötigt, nur per POST akzeptieren & \linktothreat{threat25}{T25} & \greencheckmark \\ \hline
     Eigenen Logger implementieren, der potentiell gefährliche Zeichen filtert & \linktothreat{threat26}{T26} & \greencheckmark \\ \hline
-    Passwort-Reset erst erlauben, wenn Nutzer initiales Passwort geändert hat & \linktothreat{threat38}{T38} & \greencheckmark \\ \hline
-    Token mit ausreichender Länge zufällig generieren & \linktothreat{threat36}{T36} & \greencheckmark \\ \hline
-    Token an IP-Addresse koppeln & \linktothreat{threat36}{T36} & \greencheckmark \\ \hline
-    Zweiten Faktor auch beim Passwort-Zurücksetzen valdieren  & \linktothreat{threat37}{T37} & \greencheckmark \\ \hline
-    Ausreichend langes Secret erstellen & \linktothreat{threat39}{T39} & \greencheckmark \\ \hline
-    Zum Erstellen des Secrets SecureRandom verwenden & \linktothreat{threat39}{T39} & \greencheckmark \\ \hline
-    Time-based One-time Password algorithm & \linktothreat{threat40}{T40} & \greencheckmark \\ \hline
-    Aktivierung der Zwei-Faktor-Authentisierung nur in Verbindung mit einem vom Secret abgeleiteten Pin ermöglichen & \linktothreat{threat41}{T41} & \greencheckmark \\ \hline
-    Längenlimit auf die Zugangsdaten anwenden & \linktothreat{threat43}{T43} & \greencheckmark \\ \hline
-    Zugangsdaten mit einem Secret verschlüsseln, das ausschließlich der Nutzer besitzt  & \linktothreat{threat44}{T44} & \greencheckmark \\ \hline
-    Zugangsdaten für externe Netzdienste nicht \enquote{unnötig} entschlüsseln & \linktothreat{threat45}{T45} & \greencheckmark \\ \hline
   \end{tabularx}
   
 \subsection{HTTP Header}
@@ -1148,11 +1137,15 @@ Mit diesem Header wird dem Browser verboten, \enquote{MIME sniffing}\footnote{Be
 
 \subsection{Content-Security-Policy}
 \begin{sloppypar}
-\texttt{Content-Security-Policy: default-src 'self'; script-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ http://localhost:9000/assets/js/ http://127.0.0.1:9000/assets/js/; frame-src https://www.google.com/recaptcha/; img-src 'self' data:}
+\texttt{Content-Security-Policy: default-src 'self'; script-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; frame-src https://www.google.com/recaptcha/}
 \end{sloppypar}
 Innerhalb diesem Header ist es möglich Richtlinien zu definieren, die den Zugriff auf verschiedene Resourcen kontrollieren.
 Dadurch kann verhindert werden, dass JavaScript nicht von jeder URL geladen und ausgeführt werden darf, von welchen Quellen Bilder geladen werden dürfen, oder welches CSS eingebunden werden darf.
 Dieser Header ist dem \enquote{X-XSS-Protection}-Header vorzuziehen.
+
+\externaldocument[QA1-]{quality-assurance}
+\subsection{Cookie: SameSite-Option}
+Standardmäßig wurden Cookies mit der SameSite-Option \enquote{LAX} gesetzt. Diese Option in Verbindung mit unserem Session-Konzept führte zu einem Angriffsvektor über den es möglich war, Nutzer zu einem Logout zu bewegen. Wir verzichten auf die Verwendung dieser Option (siehe \ref{QA1-csrf:analyse}).  
 
 %\subsection{X-Permitted-Cross-Domain-Policies}
 %\begin{sloppypar}

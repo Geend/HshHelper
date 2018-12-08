@@ -119,6 +119,7 @@ Ein konkretes Angriffsszenario in dieser Anwendung könnte folgendermaßen ausse
 Das Angriffsrisiko erhöht sich, wenn die Session in einem eigenen Cookie hinterlegt wird. Ein konkretes Szenario hierfür wäre, wenn man für das Sessionkonzept eine Drittanbieter Library verwendet, die ihre Cookies selbst verwaltet. Ist dann das Session Cookie weiterhin vorhanden (läuft nicht ab) und das Play-Session-Cookie wurde nach einem Browser Neustart entfernt, ist beim ersten Request kein CSRF Schutz aktiv. Hierbei handelt es sich um reine Theorie, da diese Anwendung hier alle Informationen im Play-Session-Cookie hinterlegt.
 
 \subsubsection{CSRF-Angriff}
+\label{CSRF:ANGRIFF}
 Im Rahmen eines Penetrationstests wurde herausgefunden, dass die von Play generierten CSRF-Tokens keine Nonces darstellen beziehungsweise beliebig oft verwendet werden können. Sie werden mit einem in der Play-Session persistierten Wert abgeglichen und auf Authentizität geprüft. Dieser Vergleichswert wird dann gesetzt, wenn der Nutzer erstmalig eine Seite aufruft, die über ein Formular verfügt.
 
 Es wurde herausgefunden, dass unser Session-Konzept diesen Wert nicht berücksichtigt: Meldet sich ein Nutzer an, wird der CSRF-Vergleichswert beim Login gesetzt, beim Logout jedoch nicht wieder entfernt. Bei einer Situation, bei der sich zwei Nutzer den gleichen physischen Computer beziehungsweise Browser teilen und sich nacheinander anmelden, würden beide Nutzer den gleichen CSRF-Vergleichswert verwenden. In der Folge könnte der erste Nutzer den Zweiten angreifen, da er valide CSRF-Tokens des Zweiten - basierend auf dem gleichen Vergleichswert - kennt.
@@ -153,6 +154,7 @@ Ein ähnlicher Test wurde für alle URLs in denen URL-Parameter verwendet werden
 Ergebnis dieses Penetrationstests ist, dass die Seiten zum Anlegen und Bearbeiten von Netzdiensten für nicht-Administratoren zugänglichen waren. Zwar konnte ein Benutzer keine Aktionen auf diesen Seiten ausführen, Zugriff sollte aber dennoch nicht möglich sein.
 
 \subsection{CSRF-Analyse}
+\label{csrf:analyse} 
 Im Rahmen eines Penetrationstest sollte überprüft werden, ob eine Controller-Methode, die JSON zurückliefert über ein script-Tag auf einer Drittseite eingebunden werden konnte. Während dieses Tests wurde eine schwere Sicherheitslücke entdeckt, die sich aus der Play Standard-Konfiguration in Verbindung mit unserem Session-Konzept ergab.
 
 Play nutzt für gesetzte Cookies die SameSite-Option \enquote{LAX} \footnote{\url{https://www.playframework.com/documentation/2.6.x/SettingsSession}}. Diese Option bewirkt, dass Requests, die von einer Drittseite stammen (wie z.B. ein script-Tag, dessen src-Attribut auf unsere Anwendung zeigt), das dazugehörige Cookie nicht an unsere Anwendung übertragen. Der Request selbst erreicht jedoch unsere Anwendung. Gleichzeitig generiert Play ein neues Session-Cookie, wenn eine Seite mit einem Formular aufgerufen wird, das über den integrierten CSRF-Schutz verfügt.
