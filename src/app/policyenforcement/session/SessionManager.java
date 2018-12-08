@@ -55,6 +55,8 @@ public class SessionManager {
         CryptoResult encryptedCredentialKey = cipher.encrypt(key, credentialKeyPlaintext);
 
         InternalSession dbs = new InternalSession();
+        // Kryptografisch sicher, siehe: https://docs.oracle.com/javase/7/docs/api/java/util/UUID.html#randomUUID()
+        dbs.setSessionKey(UUID.randomUUID());
         dbs.setRemoteAddress(ctx.request().remoteAddress());
         dbs.setIssuedAt(DateTime.now());
         dbs.setUser(user);

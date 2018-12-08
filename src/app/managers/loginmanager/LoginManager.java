@@ -227,6 +227,8 @@ public class LoginManager {
             user,
             request.remoteAddress()
         );
+        // Kryptografisch sicher, siehe: https://docs.oracle.com/javase/7/docs/api/java/util/UUID.html#randomUUID()
+        token.setId(UUID.randomUUID());
         ebeanSever.save(token);
 
         Email email = new Email()
