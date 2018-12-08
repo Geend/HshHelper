@@ -71,8 +71,8 @@
                 "height": 80
               },
               "position": {
-                "x": 923,
-                "y": 24
+                "x": 590,
+                "y": 21
               },
               "angle": 0,
               "id": "77af25e2-b77a-4e8e-917e-5e711e7bd5d2",
@@ -117,8 +117,8 @@
                 "height": 80
               },
               "position": {
-                "x": 933,
-                "y": 487
+                "x": 863,
+                "y": 484
               },
               "angle": 0,
               "id": "e4605773-2655-463c-a457-85d5bb8adf60",
@@ -310,33 +310,33 @@
               "type": "tm.Boundary",
               "smooth": true,
               "source": {
-                "x": 353,
-                "y": 25
+                "x": 380,
+                "y": 19
               },
               "target": {
-                "x": 1103,
+                "x": 772,
                 "y": 14
               },
               "vertices": [
                 {
-                  "x": 354,
-                  "y": 111
+                  "x": 379,
+                  "y": 80
                 },
                 {
-                  "x": 405,
-                  "y": 127
+                  "x": 391,
+                  "y": 112
                 },
                 {
-                  "x": 710,
-                  "y": 126
+                  "x": 508,
+                  "y": 117
                 },
                 {
-                  "x": 1032,
-                  "y": 123
+                  "x": 721,
+                  "y": 115
                 },
                 {
-                  "x": 1104,
-                  "y": 102
+                  "x": 769,
+                  "y": 94
                 }
               ],
               "id": "f3629570-5147-4326-8609-5abcbe41283f",
@@ -695,8 +695,8 @@
               },
               "vertices": [
                 {
-                  "x": 935,
-                  "y": 216
+                  "x": 694,
+                  "y": 182
                 }
               ],
               "id": "130bcdd9-dfc9-410a-9f22-3215b670a4df",
@@ -740,12 +740,8 @@
               },
               "vertices": [
                 {
-                  "x": 982,
-                  "y": 437
-                },
-                {
-                  "x": 1034,
-                  "y": 463
+                  "x": 905,
+                  "y": 417
                 }
               ],
               "id": "b8ab88df-0f62-43c0-9f88-8437e32359e8",
@@ -786,8 +782,8 @@
               },
               "vertices": [
                 {
-                  "x": 889,
-                  "y": 347
+                  "x": 835,
+                  "y": 282
                 }
               ],
               "id": "db03a684-7559-4fda-9611-e84feb688ce7",
@@ -828,8 +824,8 @@
               },
               "vertices": [
                 {
-                  "x": 837,
-                  "y": 448
+                  "x": 772,
+                  "y": 407
                 }
               ],
               "id": "9f04511a-d719-4a2c-9ae2-2e6c00925428",
@@ -912,12 +908,8 @@
               },
               "vertices": [
                 {
-                  "x": 700,
-                  "y": 454
-                },
-                {
-                  "x": 655,
-                  "y": 472
+                  "x": 631,
+                  "y": 459
                 }
               ],
               "id": "83a6d1c1-63dd-4226-9bed-11b009bdd4fa",
@@ -958,8 +950,8 @@
               },
               "vertices": [
                 {
-                  "x": 915,
-                  "y": 283
+                  "x": 793,
+                  "y": 155
                 }
               ],
               "id": "e949e306-3ede-4699-9968-05f510f20cfb",
@@ -1120,8 +1112,8 @@
                 "height": 100
               },
               "position": {
-                "x": 595,
-                "y": 471
+                "x": 403,
+                "y": 473
               },
               "angle": 0,
               "id": "dd0977c6-2341-4bcb-b0bf-5a9e600e5f84",
@@ -1146,8 +1138,8 @@
                 "height": 100
               },
               "position": {
-                "x": 1001,
-                "y": 206
+                "x": 833,
+                "y": 109
               },
               "angle": 0,
               "id": "56a11985-3f2b-450b-8737-24947b6f9a57",
@@ -1172,8 +1164,8 @@
                 "height": 80
               },
               "position": {
-                "x": 741,
-                "y": 23
+                "x": 407,
+                "y": 20
               },
               "angle": 0,
               "id": "5ffe1ea8-6390-4a71-b358-dc3efd232809",
@@ -1255,8 +1247,8 @@
               },
               "vertices": [
                 {
-                  "x": 753,
-                  "y": 181
+                  "x": 461,
+                  "y": 172
                 }
               ],
               "id": "3163c767-3160-43f4-86cc-3b30c1f19c34",
@@ -1328,8 +1320,12 @@
               },
               "vertices": [
                 {
-                  "x": 824,
-                  "y": 185
+                  "x": 610,
+                  "y": 200
+                },
+                {
+                  "x": 529,
+                  "y": 147
                 }
               ],
               "id": "2cf8defc-a524-40ad-bc14-eb6803e1a236",
@@ -1442,10 +1438,6 @@
               },
               "vertices": [
                 {
-                  "x": 879,
-                  "y": 364
-                },
-                {
                   "x": 1021,
                   "y": 412
                 },
@@ -1521,8 +1513,8 @@
               },
               "vertices": [
                 {
-                  "x": 789,
-                  "y": 506
+                  "x": 716,
+                  "y": 450
                 }
               ],
               "id": "dda4deef-f19a-4c07-9197-57a633faab24",
@@ -1653,211 +1645,6 @@
                 },
                 ".connection": {
                   "class": "connection hasOpenThreats isInScope"
-                }
-              }
-            },
-            {
-              "type": "tm.Actor",
-              "size": {
-                "width": 160,
-                "height": 80
-              },
-              "position": {
-                "x": 558,
-                "y": 23
-              },
-              "angle": 0,
-              "id": "b712f3cb-53be-490d-9451-2d7851305d28",
-              "z": 46,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "ruleId": "b2a6d40d-d3f8-4750-8e4d-c02cc84b13dc",
-                  "title": "Generic spoofing threat",
-                  "type": "Spoofing",
-                  "status": "Open",
-                  "severity": "Medium",
-                  "description": "A generic spoofing threat",
-                  "$$hashKey": "object:152"
-                },
-                {
-                  "ruleId": "87bc37e2-798e-4d68-bb96-feb1da26da48",
-                  "title": "Generic repudiation threat",
-                  "type": "Repudiation",
-                  "status": "Open",
-                  "severity": "Medium",
-                  "description": "A generic repudiation threat",
-                  "$$hashKey": "object:153"
-                }
-              ],
-              "attrs": {
-                ".element-shape": {
-                  "class": "element-shape hasOpenThreats isInScope"
-                },
-                "text": {
-                  "text": "Zwei-Faktor Auth Server"
-                },
-                ".element-text": {
-                  "class": "element-text hasOpenThreats isInScope"
-                }
-              }
-            },
-            {
-              "type": "tm.Flow",
-              "smooth": true,
-              "source": {
-                "id": "f0794b97-f070-473d-8f9a-90911c14027c"
-              },
-              "target": {
-                "id": "b712f3cb-53be-490d-9451-2d7851305d28"
-              },
-              "vertices": [
-                {
-                  "x": 681,
-                  "y": 178
-                }
-              ],
-              "id": "85c466f3-958c-4bd6-ac7f-a54773d80b44",
-              "labels": [
-                {
-                  "position": {
-                    "distance": 0.34262249163871195,
-                    "offset": -8.86969215190038
-                  },
-                  "attrs": {
-                    "text": {
-                      "text": "Zwei-Faktor-Code",
-                      "font-weight": "400",
-                      "font-size": "small"
-                    }
-                  }
-                }
-              ],
-              "z": 47,
-              "hasOpenThreats": false,
-              "attrs": {
-                ".marker-target": {
-                  "class": "marker-target hasNoOpenThreats isInScope"
-                },
-                ".connection": {
-                  "class": "connection hasNoOpenThreats isInScope"
-                }
-              }
-            },
-            {
-              "type": "tm.Flow",
-              "smooth": true,
-              "source": {
-                "id": "b712f3cb-53be-490d-9451-2d7851305d28"
-              },
-              "target": {
-                "id": "f0794b97-f070-473d-8f9a-90911c14027c"
-              },
-              "vertices": [
-                {
-                  "x": 611,
-                  "y": 192
-                }
-              ],
-              "id": "970db7b1-47c6-46c3-bf6d-85764ff4706c",
-              "labels": [
-                {
-                  "position": {
-                    "distance": 0.36497800268995845,
-                    "offset": 7.227559877559543
-                  },
-                  "attrs": {
-                    "text": {
-                      "text": "Zwei-Faktor-Code",
-                      "font-weight": "400",
-                      "font-size": "small"
-                    }
-                  }
-                }
-              ],
-              "z": 48,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "ruleId": "4adaa48a-0345-4533-a189-64c98c4420dd",
-                  "title": "Generic tampering threat",
-                  "type": "Tampering",
-                  "status": "Open",
-                  "severity": "Medium",
-                  "description": "A generic tampering threat",
-                  "$$hashKey": "object:179"
-                },
-                {
-                  "ruleId": "13000296-b17d-4b72-9cc4-f5cc33f80e4c",
-                  "title": "Generic information disclosure threat",
-                  "type": "Information disclosure",
-                  "status": "Open",
-                  "severity": "Medium",
-                  "description": "A generic information disclosure threat",
-                  "$$hashKey": "object:180"
-                },
-                {
-                  "ruleId": "edb05d76-a695-455f-947b-7d67b78bc31d",
-                  "title": "Generic DoS threat",
-                  "type": "Denial of service",
-                  "status": "Open",
-                  "severity": "Medium",
-                  "description": "A generic DoS threat",
-                  "$$hashKey": "object:181"
-                }
-              ],
-              "attrs": {
-                ".marker-target": {
-                  "class": "marker-target hasOpenThreats isInScope"
-                },
-                ".connection": {
-                  "class": "connection hasOpenThreats isInScope"
-                }
-              }
-            },
-            {
-              "type": "tm.Actor",
-              "size": {
-                "width": 160,
-                "height": 80
-              },
-              "position": {
-                "x": 374,
-                "y": 23
-              },
-              "angle": 0,
-              "id": "8817f9d8-7b4e-4c48-a7b1-b17cd7189d04",
-              "z": 49,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "ruleId": "b2a6d40d-d3f8-4750-8e4d-c02cc84b13dc",
-                  "title": "Generic spoofing threat",
-                  "type": "Spoofing",
-                  "status": "Open",
-                  "severity": "Medium",
-                  "description": "A generic spoofing threat",
-                  "$$hashKey": "object:195"
-                },
-                {
-                  "ruleId": "87bc37e2-798e-4d68-bb96-feb1da26da48",
-                  "title": "Generic repudiation threat",
-                  "type": "Repudiation",
-                  "status": "Open",
-                  "severity": "Medium",
-                  "description": "A generic repudiation threat",
-                  "$$hashKey": "object:196"
-                }
-              ],
-              "attrs": {
-                ".element-shape": {
-                  "class": "element-shape hasOpenThreats isInScope"
-                },
-                "text": {
-                  "text": "Externer Netzdienst"
-                },
-                ".element-text": {
-                  "class": "element-text hasOpenThreats isInScope"
                 }
               }
             }
