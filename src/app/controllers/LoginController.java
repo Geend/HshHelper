@@ -148,7 +148,7 @@ public class LoginController extends Controller {
     }
 
     @Authentication.NotAllowed
-    public Result requestResetPassword() {
+    public Result requestResetPassword(){
         Form<RequestResetPasswordDto> boundForm = requestResetPasswordForm.bindFromRequest("username");
         if (boundForm.hasErrors()) {
             return badRequest(views.html.login.RequestResetPassword.render(boundForm));
@@ -160,7 +160,7 @@ public class LoginController extends Controller {
 
         try {
             this.loginManager.sendResetPasswordToken(resetPasswordData.getUsername(), resetPasswordData.getRecaptcha(), Http.Context.current().request());
-        } catch (InvalidArgumentException e) {
+        } catch (UnauthorizedException | InvalidArgumentException e) {
             //Ignore the exception in order to not reveal potential usernames.
         } catch (CaptchaRequiredException e) {
             boundForm = boundForm.withGlobalError("Complete the captcha!");

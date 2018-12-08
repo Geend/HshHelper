@@ -206,7 +206,7 @@ public class LoginManager {
         logger.info("Deleted "+deleteTokens+" Password-Reset-Tokens");
     }
 
-    public void sendResetPasswordToken(String username, String recaptcha, Http.Request request) throws CaptchaRequiredException, InvalidArgumentException {
+    public void sendResetPasswordToken(String username, String recaptcha, Http.Request request) throws CaptchaRequiredException, InvalidArgumentException, UnauthorizedException {
         if(!recaptchaHelper.IsValidResponse(recaptcha, request.remoteAddress())) {
             // TODO: encode username -> log injection
             logger.error(request.remoteAddress() + " has tried to reset the password for user " + username + " without a valid reCAPTCHA.");
@@ -218,6 +218,10 @@ public class LoginManager {
             throw new InvalidArgumentException("Dieser User existiert nicht.");
         }
         User user = userOptional.get();
+
+        if(user.getIsPasswordResetRequired()){
+            throw new UnauthorizedException();
+        }
 
         PasswordResetToken token = new PasswordResetToken(
             user,
