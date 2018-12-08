@@ -215,8 +215,10 @@ public class Policy {
             return true;
         }
 
-        if (associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanRead))) {
-            return true;
+        for(Group g : associatedUser.getGroups()) {
+            if (g.getGroupPermissions().stream().filter(gp -> gp.getFile().equals(file)).anyMatch(GroupPermission::getCanRead)) {
+                return true;
+            }
         }
 
         return false;
@@ -236,8 +238,10 @@ public class Policy {
             return true;
         }
 
-        if (associatedUser.getGroups().stream().anyMatch(group -> group.getGroupPermissions().stream().filter(groupPermission -> groupPermission.getFile().equals(file)).anyMatch(GroupPermission::getCanWrite))) {
-            return true;
+        for(Group g : associatedUser.getGroups()) {
+            if (g.getGroupPermissions().stream().filter(gp -> gp.getFile().equals(file)).anyMatch(GroupPermission::getCanWrite)) {
+                return true;
+            }
         }
 
         return false;

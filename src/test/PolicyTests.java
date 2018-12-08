@@ -1,6 +1,5 @@
 import models.*;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import policyenforcement.Policy;
 import policyenforcement.session.Session;
@@ -20,13 +19,17 @@ public class PolicyTests {
     private User klaus;
     private User horst;
     private User rudi;
+    private User hannes;
     private Group allGroup;
     private Group adminGroup;
     private Group petersGroup;
     private Group klausGroup;
+    private Group hannesCanReadGroup;
+    private Group hannesCanWriteGroup;
     private Session petersSession;
 
     private File klausFile;
+    private File hannesCanFile;
     private UserPermission klausFilePeterUserPermission;
     private GroupPermission klausFileKlausGroupPermission;
 
@@ -51,6 +54,7 @@ public class PolicyTests {
         peter = new User("peter", "peter@gmx.com", "peter", true, 10l);
         klaus = new User("klaus", "klaus@gmx.com", "klaus", true, 10l);
         horst = new User("horst", "horst@gmx.com", "horst", true, 10l);
+        hannes = new User("hannes", "hannes@gmx.com", "hannes", true, 10l);
         rudi = new User("rudi", "rudi@gmx.com", "rudi", true, 10l);
 
         allGroup = new Group("Alle", admin);
@@ -67,14 +71,22 @@ public class PolicyTests {
         klausGroup = new Group("Klaus Group", klaus);
         klausGroup.setMembers(Stream.of(klaus, rudi).collect(Collectors.toList()));
 
+        hannesCanReadGroup = new Group("Hannes can Read", admin);
+        hannesCanReadGroup.setMembers(Stream.of(hannes).collect(Collectors.toList()));
+        hannesCanWriteGroup = new Group("Hannes can Write", admin);
+        hannesCanWriteGroup.setMembers(Stream.of(hannes).collect(Collectors.toList()));
+
         admin.setGroups(Stream.of(adminGroup, allGroup).collect(Collectors.toList()));
         adminTwo.setGroups(Stream.of(adminGroup, petersGroup, allGroup).collect(Collectors.toList()));
         peter.setGroups(Stream.of(petersGroup, allGroup).collect(Collectors.toList()));
         klaus.setGroups(Stream.of(petersGroup, allGroup).collect(Collectors.toList()));
         horst.setGroups(Stream.of(allGroup).collect(Collectors.toList()));
+        hannes.setGroups(Stream.of(allGroup, hannesCanReadGroup, hannesCanWriteGroup).collect(Collectors.toList()));
         rudi.setGroups(Stream.of(allGroup).collect(Collectors.toList()));
 
         byte[] data = {0x42};
+        hannesCanFile = new File("hannesCanFile", "Hannes", data, admin);
+        hannesCanFile.setFileId(1L);
         klausFile = new File("klausFile", "Klaus Comment", data, klaus);
         klausFilePeterUserPermission = new UserPermission(klausFile, peter, true, true);
         peter.getUserPermissions().add(klausFilePeterUserPermission);
@@ -90,6 +102,18 @@ public class PolicyTests {
 
         klausFileKlausGroupPermission = new GroupPermission(petersGroupFile, adminGroup, true, false);
         klausGroup.getGroupPermissions().add(klausFileKlausGroupPermission);
+
+        hannesCanReadGroup.getGroupPermissions().add(
+                new GroupPermission(
+                        hannesCanFile, hannesCanReadGroup, true, false
+                )
+        );
+
+        hannesCanWriteGroup.getGroupPermissions().add(
+                new GroupPermission(
+                        hannesCanFile, hannesCanWriteGroup, false, true
+                )
+        );
 
         petersSession = mock(Session.class);
         when(petersSession.getUser()).thenReturn(peter);
@@ -605,6 +629,12 @@ public class PolicyTests {
         assertThat(actual).isTrue();
     }
 
+    @Test
+    public void multipleGroupPermissionsReadFile() {
+        boolean actual = Policy.ForUser(hannes).canReadFile(hannesCanFile);
+        assertThat(actual).isTrue();
+    }
+
     /*
         File Write PersmissionTest
     */
@@ -655,6 +685,12 @@ public class PolicyTests {
     public void normalUserCannotDeleteFile() {
         boolean actual = Policy.ForUser(horst).canDeleteFile(klausFile);
         assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void multipleGroupPermissionsWriteFile() {
+        boolean actual = Policy.ForUser(hannes).canWriteFile(hannesCanFile);
+        assertThat(actual).isTrue();
     }
 
 
