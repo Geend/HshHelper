@@ -1041,7 +1041,6 @@ Im Gespräch mit Herrn Prof. Dr. Peine wurde uns mitgeteilt, dass diese Bedrohun
 
 In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahmen entnommen werden, die wir planen umzusetzen.
 
-\begin{table*}[hbt!]
   \captionof{table}{Auflistung aller vorzunehmenden Gegenmaßnahmen mit Referenz auf Angriff, der verhindert/erschwert wird. Status beschreibt bereits durchgeführte Implementation.}
   \label{threat-analysis:mitigation-table}
   \begin{tabularx}{\linewidth}{
@@ -1078,8 +1077,7 @@ In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahme
     Funktionalität, die Return-URL benötigt, nur per POST akzeptieren & \linktothreat{threat25}{T25} & \greencheckmark \\ \hline
     Eigenen Logger implementieren, der potentiell gefährliche Zeichen filtert & \linktothreat{threat26}{T26} & \greencheckmark \\ \hline
   \end{tabularx}
-\end{table*}
-
+  
 \subsection{HTTP Header}
 
 In der folgenden Liste werden verschiedene sicherheitsrelevante \enquote{HTTP Headers} beschrieben, die uns helfen, einige der Gegenmaßnahmen zu realisieren.

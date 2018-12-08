@@ -7,7 +7,7 @@ import policyenforcement.session.SessionManager;
 
 import javax.inject.Inject;
 
-public class CredentialManager {
+public class CredentialUtility {
     private final SessionManager sessionManager;
     private final KeyGenerator keyGenerator;
     private final Cipher cipher;
@@ -15,7 +15,7 @@ public class CredentialManager {
     private final EbeanServer ebeanServer;
 
     @Inject
-    public CredentialManager(SessionManager sessionManager, KeyGenerator keyGenerator, Cipher cipher, RandomDataGenerator randomDataGenerator, EbeanServer ebeanServer) {
+    public CredentialUtility(SessionManager sessionManager, KeyGenerator keyGenerator, Cipher cipher, RandomDataGenerator randomDataGenerator, EbeanServer ebeanServer) {
         this.sessionManager = sessionManager;
         this.keyGenerator = keyGenerator;
         this.cipher = cipher;

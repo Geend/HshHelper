@@ -46,7 +46,7 @@ public class LoginManager {
     private HashHelper hashHelper;
     private LoginAttemptFinder loginAttemptFinder;
     private final RecaptchaHelper recaptchaHelper;
-    private final CredentialManager credentialManager;
+    private final CredentialUtility credentialUtility;
     private final MailerClient mailerClient;
     private final PasswordResetTokenFinder passwordResetTokenFinder;
     private final WeakPasswords weakPasswords;
@@ -62,7 +62,7 @@ public class LoginManager {
             HashHelper hashHelper,
             EbeanServer ebeanServer,
             LoginAttemptFinder loginAttemptFinder,
-            RecaptchaHelper recaptchaHelper, CredentialManager credentialManager,
+            RecaptchaHelper recaptchaHelper, CredentialUtility credentialUtility,
             UserFinder userFinder, MailerClient mailerClient, PasswordResetTokenFinder passwordResetTokenFinder, WeakPasswords weakPasswords, IPWhitelist ipWhitelist)
     {
         this.loginAttemptFinder = loginAttemptFinder;
@@ -72,7 +72,7 @@ public class LoginManager {
         this.sessionManager = sessionManager;
         this.hashHelper = hashHelper;
         this.recaptchaHelper = recaptchaHelper;
-        this.credentialManager = credentialManager;
+        this.credentialUtility = credentialUtility;
         this.userFinder = userFinder;
         this.mailerClient = mailerClient;
         this.passwordResetTokenFinder = passwordResetTokenFinder;
@@ -164,7 +164,7 @@ public class LoginManager {
         attempt.setDateTime(DateTime.now());
         this.ebeanSever.save(attempt);
 
-        byte[] credentialKeyPlaintext = credentialManager.getCredentialPlaintext(authenticatedUser, password);
+        byte[] credentialKeyPlaintext = credentialUtility.getCredentialPlaintext(authenticatedUser, password);
         sessionManager.startNewSession(authenticatedUser, credentialKeyPlaintext);
 
         logger.info(authenticatedUser + " has logged in.");
@@ -178,7 +178,7 @@ public class LoginManager {
         }
 
         try(Transaction tx = ebeanSever.beginTransaction(TxIsolation.SERIALIZABLE)) {
-            credentialManager.updateCredentialPassword(authenticatedUser, currentPassword, newPassword);
+            credentialUtility.updateCredentialPassword(authenticatedUser, currentPassword, newPassword);
             authenticatedUser.setIsPasswordResetRequired(false);
             authenticatedUser.setPasswordHash(hashHelper.hashPassword(newPassword));
             ebeanSever.save(authenticatedUser);
@@ -263,7 +263,7 @@ public class LoginManager {
             user.setIsPasswordResetRequired(false);
             ebeanSever.save(user);
 
-            credentialManager.resetCredential(user, newPassword);
+            credentialUtility.resetCredential(user, newPassword);
 
             ebeanSever.delete(token);
 

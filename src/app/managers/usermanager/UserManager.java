@@ -36,7 +36,7 @@ public class UserManager {
     private final EbeanServer ebeanServer;
     private final SessionManager sessionManager;
     private final UserFactory userFactory;
-    private final CredentialManager credentialManager;
+    private final CredentialUtility credentialUtility;
     private final WeakPasswords weakPasswords;
     private final TwoFactorAuthService twoFactorService;
 
@@ -51,7 +51,7 @@ public class UserManager {
             EbeanServer server,
             SessionManager sessionManager,
             UserFactory userFactory,
-            CredentialManager credentialManager,
+            CredentialUtility credentialUtility,
             WeakPasswords weakPasswords,
             TwoFactorAuthService twoFactorService)
     {
@@ -63,7 +63,7 @@ public class UserManager {
         this.hashHelper = hashHelper;
         this.sessionManager = sessionManager;
         this.userFactory = userFactory;
-        this.credentialManager = credentialManager;
+        this.credentialUtility = credentialUtility;
         this.weakPasswords = weakPasswords;
     }
 
@@ -255,7 +255,7 @@ public class UserManager {
 
             ebeanServer.save(user);
 
-            credentialManager.updateCredentialPassword(currentPassword, newPassword);
+            credentialUtility.updateCredentialPassword(currentPassword, newPassword);
 
             tx.commit();
         }

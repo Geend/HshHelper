@@ -17,11 +17,13 @@ import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
 import twofactorauth.TwoFactorAuthService;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -36,12 +38,16 @@ public class UserManagerTest {
     private Policy defaultPolicy;
     private SessionManager defaultSessionManager;
     private UserFactory defaultUserFactory;
-    private CredentialManager defaultCredentialManager;
+    private CredentialUtility defaultCredentialUtility;
     private WeakPasswords defaultWeakPasswords;
     private TwoFactorAuthService defaultTwoFactorAuthService;
+    private PasswordGenerator defaultPasswordGenerator;
+    private HashHelper defaultHashHelper;
 
     @Before
     public void init() {
+        defaultHashHelper = mock(HashHelper.class);
+        defaultPasswordGenerator = mock(PasswordGenerator.class);
         defaultGroupFinder = mock(GroupFinder.class);
         defaultUserFinder = mock(UserFinder.class);
         defaultPolicy = mock(Policy.class);
@@ -57,7 +63,7 @@ public class UserManagerTest {
         when(nonAdminUser.isAdmin()).thenReturn(false);
         when(defaultSessionManager.currentUser()).thenReturn(adminUser);
         defaultUserFactory = mock(UserFactory.class);
-        defaultCredentialManager = mock(CredentialManager.class);
+        defaultCredentialUtility = mock(CredentialUtility.class);
         defaultWeakPasswords = mock(WeakPasswords.class);
         defaultTwoFactorAuthService = mock(TwoFactorAuthService.class);
     }
@@ -79,10 +85,52 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
         sut.getAllUsers();
+    }
+
+    @Test
+    public void activateTwoFactorAuthTest() throws Invalid2FATokenException, GeneralSecurityException {
+        User user = mock(User.class);
+        EbeanServer server = mock(EbeanServer.class);
+        SessionManager sessionManager = mock(SessionManager.class);
+        when(sessionManager.currentUser()).thenReturn(user);
+        TwoFactorAuthService authService = mock(TwoFactorAuthService.class);
+        boolean exceptionOccured = false;
+        UserManager sut = new UserManager(
+                defaultUserFinder,
+                defaultGroupFinder,
+                defaultPasswordGenerator,
+                defaultHashHelper,
+                server,
+                sessionManager,
+                defaultUserFactory,
+                defaultCredentialUtility,
+                defaultWeakPasswords,
+                authService);
+
+        // invalid secret
+        try {
+            sut.activateTwoFactorAuth("invalid", "234567");
+        } catch(Invalid2FATokenException e) {
+            exceptionOccured = true;
+        }
+        assertTrue(exceptionOccured);
+        exceptionOccured = false;
+
+        // invalid token
+        try {
+            sut.activateTwoFactorAuth("ORT4CT7FHMPJB6X2", "invalidtoken");
+        } catch(Invalid2FATokenException e) {
+            exceptionOccured = true;
+        }
+        assertTrue(exceptionOccured);
+        when(authService.validateCurrentNumber(anyString(), anyInt(), anyInt())).thenReturn(true);
+        sut.activateTwoFactorAuth("ORT4CT7FHMPJB6X2", "765312");
+        verify(user).setTwoFactorAuthSecret("ORT4CT7FHMPJB6X2");
+        verify(server).save(user);
     }
 
     @Test
@@ -102,7 +150,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
         List<User> result = sut.getAllUsers();
@@ -124,7 +172,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
         sut.createUser( "klaus", "test@test.de", 5l);
@@ -145,7 +193,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
         sut.createUser("klaus", "test@test.de", 5l);
@@ -166,7 +214,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
         sut.createUser( "klaus", "test@test.de", 5l);
@@ -190,7 +238,7 @@ public class UserManagerTest {
                 server,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
 
@@ -221,7 +269,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
 
@@ -260,7 +308,7 @@ public class UserManagerTest {
                 defaultServer,
                 sessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
 
@@ -293,7 +341,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
 

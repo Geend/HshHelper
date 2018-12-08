@@ -52,7 +52,7 @@ public class CreateUserUsernameNotAdminTests {
         when(userFinder.byName(any())).thenReturn(Optional.empty());
         PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
         UserFactory userFactory = mock(UserFactory.class);
-        CredentialManager credentialManager = mock(CredentialManager.class);
+        CredentialUtility credentialUtility = mock(CredentialUtility.class);
         WeakPasswords weakPasswords = mock(WeakPasswords.class);
         TwoFactorAuthService twoFactorAuthService = mock(TwoFactorAuthService.class);
 
@@ -64,7 +64,7 @@ public class CreateUserUsernameNotAdminTests {
                 defaultServer,
                 sessionManager,
                 userFactory,
-                credentialManager,
+                credentialUtility,
                 weakPasswords,
                 twoFactorAuthService);
         sut.createUser(this.username, "test@test.de", 5l);
