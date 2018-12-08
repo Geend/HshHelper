@@ -590,6 +590,20 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \end{itemize}
 \end{itemize}
 
+  \hypertarget{threat35}{}
+  \item \textbf{T35: Hash-Algorithmus als DOS Angriffsvektor missbrauchen}
+  \begin{itemize}
+  \item Zweck: DOS der Applikation
+  \item Möglichkeiten: Wenige Requests über eine ressourcenintensive Hash-Funktion amplifizieren, um eine hohe CPU-Auslastung des Servers zu erreichen.
+  \item Risiko: Hoch
+  \item Mögliche Gegenmaßnahmen:
+  \begin{itemize}
+  \item Schnellen Hash-Algorithmus verwenden (z.B. SHA512)
+  \item Captcha vor Hash-Berechnung schalten.
+  \item Zugriffe protokollieren und bei Attacke den Angreifer blockieren.
+  \end{itemize}
+\end{itemize}
+
   \hypertarget{threat16}{}
   \item \textbf{T16: Timing-Angriff auf Loginverhalten}
   \begin{itemize}
@@ -652,13 +666,53 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Risiko: Hoch
   \item Mögliche Gegenmaßnahmen: Nutzer muss Captcha lösen, bevor Prozess angestoßen werden darf
   \end{itemize}
+  
+  \hypertarget{threat38}{}
+  \item \textbf{T38: Aushebeln der Anforderung zur Offline-Übergabe des Passworts}
+  \begin{itemize}
+  \item Zweck: Zugriff auf den Benutzeraccount erhalten, bevor er offiziell ausgehändigt wurde.
+  \item Möglichkeiten: Administrator legt Benutzeraccount vorab an. Nutzer kennt die zugehörige E-Mail, da er sie der Hochschule mitgeteilt hat. Nutzer kann Passwort-Reset durchführen und das Passwort ändern. Er erhält so Zugriff den Account bevor ihm das Passwort vom Administrator mitgeteilt wurde.
+  \item Risiko: Low
+  \item Mögliche Gegenmaßnahmen:
+  \begin{itemize}
+	  \item Passwort-Reset erst erlauben, wenn Nutzer initiales Passwort geändert hat
+  \end{itemize}
+\end{itemize}
 \end{itemize}
 
 \subsubsection{Mögliche Angriffe auf den \enquote{Passwort nach Zurücksetzung ändern}-Prozess}
 
-% This is subject to change if we implement the link-based mitigation
-Da dieser Prozess dem Loginprozess gleicht, treten hier die selben Lücken auf.
-Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
+\begin{itemize}
+
+  \hypertarget{threat36}{}
+  \item \textbf{T36: Passwort-Reset-Token erraten}
+  \begin{itemize}
+  \item Zweck: Passwort eines Nutzers ändern, ohne Zugriff auf sein E-Mail Konto und derzeitiges Passwort zu haben.
+  \item Möglichkeiten: Brute-Forcing des entsprechenden Tokens.
+  \item Risiko: Hoch
+  \item Mögliche Gegenmaßnahmen:
+  \begin{itemize}
+  \item Token mit ausreichender Länge zufällig generieren
+  \item Token an IP-Addresse koppeln
+  \item Gültigkeit des Token zeitlich begrenzen
+  \end{itemize}
+\end{itemize}
+
+  \hypertarget{threat37}{}
+  \item \textbf{T37: Umgehung des zweiten Faktors}
+  \begin{itemize}
+  \item Zweck: Löschen der Netzdienst-Zugangsdaten.
+  \item Möglichkeiten: Angreifer erlangt Zugriff auf den Passwort-Zurücksetzen-Link bzw. das E-Mail Konto des Opfers und kann das Passwort ändern. Im gleichen Prozess werden die Zugangsdaten des Opfers gelöscht. Der Angreifer hat mangels zweiten Faktor kein Zugriff auf den Account des Opfers, konnte jedoch  die Zugangsdaten löschen.
+  \item Risiko: Gering
+  \item Mögliche Gegenmaßnahmen:
+  \begin{itemize}
+  	\item Zweiten Faktor auch beim Passwort-Zurücksetzen valdieren
+  	\item Zugangsdaten nicht automatisch beim Zurücksetzen löschen
+  \end{itemize}
+\end{itemize}
+
+\end{itemize}
+
 
 \subsection{Mögliche Angriffe auf den \enquote{Datei hochladen}-Prozess}
 
@@ -805,6 +859,7 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
 
 \subsubsection{Mögliche Angriffe auf Zusatzfunktionalität: Anzeige, wer Dateiinhalt geschrieben hat}
 
+
 \begin{itemize}
 
   \hypertarget{threat31}{}
@@ -863,6 +918,104 @@ Um das Dokument kurz zu halten, listen wir diese nicht nochmal auf.
   \end{itemize}
 \end{itemize}
 
+\subsubsection{Mögliche Angriffe auf Zusatzfunktionalität: Zwei-Faktor-Authentisierung}
+\begin{itemize}
+
+  \hypertarget{threat39}{}
+  \item \textbf{T39: Secret für Zwei-Faktor-Authentisierung ist erratbar}
+  \begin{itemize}
+    \item Zweck: Umgehen des intendierten Schutzmechanismus (Zwei-Faktor-Authentisierung)
+    \item Möglichkeiten: Secret basiert nicht auf kryptografisch sicheren Zufallszahlen. Angreifer kann es erraten und selbst in Authentifizierungs-App eingeben. 
+    \item Risiko: Mittel
+    \item Mögliche Gegenmaßnahmen:
+      \begin{itemize}
+      \item SecureRandom zur Erstellung der Secrets verwenden
+      \item Ausreichend langes Secret erstellen
+      \end{itemize}
+  \end{itemize}
+  
+  \hypertarget{threat40}{}
+  \item \textbf{T40: Pin für Zwei-Faktor-Authentisierung ist vorhersehbar}
+  \begin{itemize}
+    \item Zweck: Umgehen des intendierten Schutzmechanismus (Zwei-Faktor-Authentisierung)
+    \item Möglichkeiten: Kryptografisch unsicheres Verfahren für die Zwei-Faktor-Authentisierung verwenden.
+    \item Risiko: Mittel
+    \item Mögliche Gegenmaßnahmen:
+      \begin{itemize}
+      	\item Time-based One-time Password algorithm (RFC 6238) verwenden.
+      \end{itemize}
+  \end{itemize}
+    
+  \hypertarget{threat41}{}
+  \item \textbf{T41: Benutzer wird dazu gebracht, unintendiert die Zwei-Faktor-Authentisierung zu aktivieren}
+  \begin{itemize}
+    \item Zweck: Benutzer aus der Anwendung aussperren.
+    \item Möglichkeiten: Benutzer wird mittels Clickjacking o.Ä. dazu gebracht, die Zwei-Faktor-Authentisierung in Verbindung mit einem zufälligen Secret zu aktivieren. Der Nutzer kennt dieses Secret nicht bzw. hat keine Gelegenheit, dieses zu speichern, da er die Aktivierung unbewusst durchführt.
+    \item Risiko: Mittel
+    \item Mögliche Gegenmaßnahmen:
+      \begin{itemize}
+      	\item Aktivierung der Zwei-Faktor-Authentisierung nur in Verbindung mit einem vom Secret abgeleiteten Pin ermöglichen.
+      \end{itemize}
+  \end{itemize}
+  
+\end{itemize}
+
+\subsubsection{Mögliche Angriffe auf Single Sign-On}
+\begin{itemize}
+
+  \hypertarget{threat42}{}
+  \item \textbf{T42: Entwenden des Klartextpassworts durch Administrator}
+  \begin{itemize}
+    \item Zweck: Umgehen der Verschlüsselung zum Abgreifen des Klartextpassworts.
+    \item Möglichkeiten: Administrator legt den Netzdienst korrekt an. Nutzer hinterlegen ihre Zugangsdaten und verwenden Single Sign-On. Administrator ändert für den Netzdienst hinterlegte URL. Er kontrolliert den Host der neuen Ziel-URL und kann so die Zugangsdaten im Klartext abgreifen.
+    \item Risiko: Mittel-Hoch
+    \item Mögliche Gegenmaßnahmen:
+      \begin{itemize}
+      \item Keine Editierung von hinterlegten URLs zulassen
+      \item Nutzer über visuelle Darstellung auf URL-Änderung hinweisen und explizit bestätigen lassen
+      \end{itemize}
+  \end{itemize}
+  
+  \hypertarget{threat43}{}
+  \item \textbf{T43: Dateiinhalte über Zugangsdaten speichern}
+  \begin{itemize}
+    \item Zweck: Umgehung des Quota-Limits.
+    \item Möglichkeiten: Angreifer speichert Dateien nicht über die vorgesehene Funktionalität, sondern codiert die Dateiinhalte in den Zugangsdaten.
+    \item Risiko: Mittel
+    \item Mögliche Gegenmaßnahmen:
+      \begin{itemize}
+      	\item Längenlimit auf die Zugangsdaten anwenden.
+      \end{itemize}
+  \end{itemize}
+  
+  \hypertarget{threat44}{}
+  \item \textbf{T44: Auslesen von Klartext-Zugangsdaten im Falle einer Datenbank-Kompromittierung}
+  \begin{itemize}
+    \item Zweck: Erlangen von Klartext-Zugangsdaten zum Anmeldung auf Netzdiensten.
+    \item Möglichkeiten: Angreifer erlangt Zugang auf Datenbank.
+    \item Risiko: Mittel
+    \item Mögliche Gegenmaßnahmen:
+      \begin{itemize}
+      	\item Zugangsdaten mit einem Secret verschlüsseln, das ausschließlich der Nutzer besitzt.
+      \end{itemize}
+  \end{itemize}
+    
+  \hypertarget{threat45}{}
+  \item \textbf{T45: Entwenden des Klartextpassworts aus Speicher}
+  \begin{itemize}
+    \item Zweck: Umgehen der Verschlüsselung zum Abgreifen des Klartextpassworts.
+    \item Möglichkeiten: Ein Bug wie Heartbleed, der Zugriff auf den Speicher eines Servers ermöglicht ausnutzen, um im Speicher vorhandene Passwörter auszulesen.
+    \item Risiko: Gering
+    \item Mögliche Gegenmaßnahmen:
+      \begin{itemize}
+      \item Passwörter nicht \enquote{unnötig} entschlüsseln. Nur dann entschlüsseln, wenn wirklich ein Single Sign-On erfolgen soll und dann ausschließlich die für diesen Sign-On erforderlichen Zugangsdaten entschlüsseln (so wenig Passwörter wie möglich in den Speicher laden).
+      \end{itemize}
+  \end{itemize}
+
+\end{itemize}
+
+
+
 \subsubsection{Mögliche Angriffe auf Zusatzfunktionalität: Nutzer kann eigenes Passwort ändern}
 
 Diese Zusatzfunktionalität ist der Funktionalität des Logins zwar gleich, aber dadurch, dass diese Seite nur durch einen authentisierten Nutzer erreichbar ist, gelten hierfür nicht die selben Bedrohungen.
@@ -880,6 +1033,9 @@ Die Kosten für diese Dienstleistung machen sie unwirtschaftlich in Anbetracht u
 \subsection{HTTP bezogene Bedrohungen}
 Die Bedrohungen \linktothreat{threat1}{T1}, \linktothreat{threat2}{T2}, \linktothreat{threat3}{T3}, \linktothreat{threat4}{T4}, \linktothreat{threat5}{T5} werden ignoriert.
 Ausweislich der Aufgabenstellung sollen wir eine sichere Verbindung annehmen.
+
+\subsection{Entwenden des Klartextpassworts durch Administrator}
+Im Gespräch mit Herrn Prof. Dr. Peine wurde uns mitgeteilt, dass diese Bedrohung ignorierbar ist.
 
 \section{Vorzunehmende Gegenmaßnahmen}
 
