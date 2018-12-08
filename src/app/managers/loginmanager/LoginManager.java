@@ -93,10 +93,10 @@ public class LoginManager {
             }
         }
 
-        Authentification.Result auth = authentification.Perform(username, password, intTwoFactorPin);
         Long uid;
-        if(auth.userExists()) {
-            uid = auth.user().getUserId();
+        Optional<User> user = userFinder.byName(username);
+        if(user.isPresent()) {
+            uid = user.get().getUserId();
         } else {
             // Negativen Zahlenraum für "virtuelle" UIDs (Hashmapping) nutzen
             Long fakeUid = hashHelper.insecureStringHash(username);
@@ -121,13 +121,21 @@ public class LoginManager {
             }
         }
 
-        if(!auth.success()) {
+        // Nutzer existiert nicht -> sowieso ein Fail!
+        if(!user.isPresent()) {
+            authentification.fakeAuthActionsForTiming(password, intTwoFactorPin);
             fw.fail(uid);
             logger.error(request.remoteAddress() + " failed to login on user " + uid);
             throw new InvalidLoginException(strategy.equals(Strategy.VERIFY));
         }
 
-        return auth.user();
+        if(!authentification.perform(user.get(), password, intTwoFactorPin)) {
+            fw.fail(uid);
+            logger.error(request.remoteAddress() + " failed to login on user " + uid);
+            throw new InvalidLoginException(strategy.equals(Strategy.VERIFY));
+        }
+
+        return user.get();
     }
 
     private String getUserAgentDisplayString(String userAgentString) throws IOException {
