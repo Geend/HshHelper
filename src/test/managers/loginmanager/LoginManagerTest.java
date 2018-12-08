@@ -466,6 +466,121 @@ LoginManagerTest {
         verify(defaultEbeanServer).delete(token);
     }
 
+    @Test
+    public void resetPasswordTest2FA() throws GeneralSecurityException, InvalidLoginException, UnauthorizedException, WeakPasswordException {
+        UUID id = UUID.randomUUID();
+        String remoteAddr = "12.2.2.1";
+        String newPassword = "123";
+        String newPasswordHash = "123_HASH";
+
+        when(defaultHashHelper.hashPassword(newPassword)).thenReturn(newPasswordHash);
+        when(defaultEbeanServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
+        User user = mock(User.class);
+        PasswordResetToken token = mock(PasswordResetToken.class);
+        when(token.getCreationDate()).thenReturn(DateTime.now());
+        when(token.getRemoteAddress()).thenReturn(remoteAddr);
+        when(token.getAssociatedUser()).thenReturn(user);
+        when(defaultPasswordResetTokenFinder.byId(id)).thenReturn(token);
+
+
+        when(user.has2FA()).thenReturn(true);
+        when(user.getTwoFactorAuthSecret()).thenReturn("2faSecret");
+        when(twoFactorAuthService.validateCurrentNumber("2faSecret", 123456, 60000)).thenReturn(true);
+        when(twoFactorAuthService.stringPinToInt("123456")).thenReturn(123456);
+
+        defaultLoginManager.resetPassword(id, newPassword, Helpers.fakeRequest().remoteAddress(remoteAddr).build(), "123456");
+
+        verify(user).setPasswordHash(newPasswordHash);
+        verify(defaultCredentialUtility).resetCredential(user, newPassword);
+        verify(defaultEbeanServer).save(user);
+        verify(defaultEbeanServer).delete(token);
+    }
+
+
+    @Test(expected = UnauthorizedException.class)
+    public void resetPasswordTest2FAMissingPin() throws GeneralSecurityException, InvalidLoginException, UnauthorizedException, WeakPasswordException {
+        UUID id = UUID.randomUUID();
+        String remoteAddr = "12.2.2.1";
+        String newPassword = "123";
+        String newPasswordHash = "123_HASH";
+
+        when(defaultHashHelper.hashPassword(newPassword)).thenReturn(newPasswordHash);
+        when(defaultEbeanServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
+        User user = mock(User.class);
+        PasswordResetToken token = mock(PasswordResetToken.class);
+        when(token.getCreationDate()).thenReturn(DateTime.now());
+        when(token.getRemoteAddress()).thenReturn(remoteAddr);
+        when(token.getAssociatedUser()).thenReturn(user);
+        when(defaultPasswordResetTokenFinder.byId(id)).thenReturn(token);
+
+        when(user.has2FA()).thenReturn(true);
+        when(user.getTwoFactorAuthSecret()).thenReturn("2faSecret");
+        when(twoFactorAuthService.validateCurrentNumber("2faSecret", 123456, 60000)).thenReturn(true);
+
+        defaultLoginManager.resetPassword(id, newPassword, Helpers.fakeRequest().remoteAddress(remoteAddr).build(), "");
+
+        verify(user, times(0)).setPasswordHash(newPasswordHash);
+        verify(defaultCredentialUtility, times(0)).resetCredential(user, newPassword);
+        verify(defaultEbeanServer, times(0)).save(user);
+        verify(defaultEbeanServer, times(0)).delete(token);
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void resetPasswordTest2FAWrongPin() throws GeneralSecurityException, InvalidLoginException, UnauthorizedException, WeakPasswordException {
+        UUID id = UUID.randomUUID();
+        String remoteAddr = "12.2.2.1";
+        String newPassword = "123";
+        String newPasswordHash = "123_HASH";
+
+        when(defaultHashHelper.hashPassword(newPassword)).thenReturn(newPasswordHash);
+        when(defaultEbeanServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
+        User user = mock(User.class);
+        PasswordResetToken token = mock(PasswordResetToken.class);
+        when(token.getCreationDate()).thenReturn(DateTime.now());
+        when(token.getRemoteAddress()).thenReturn(remoteAddr);
+        when(token.getAssociatedUser()).thenReturn(user);
+        when(defaultPasswordResetTokenFinder.byId(id)).thenReturn(token);
+
+        when(user.has2FA()).thenReturn(true);
+        when(user.getTwoFactorAuthSecret()).thenReturn("2faSecret");
+        when(twoFactorAuthService.validateCurrentNumber("2faSecret", 111222, 60000)).thenReturn(false);
+        when(twoFactorAuthService.stringPinToInt("111222")).thenReturn(111222);
+
+        defaultLoginManager.resetPassword(id, newPassword, Helpers.fakeRequest().remoteAddress(remoteAddr).build(), "111222");
+
+        verify(user, times(0)).setPasswordHash(newPasswordHash);
+        verify(defaultCredentialUtility, times(0)).resetCredential(user, newPassword);
+        verify(defaultEbeanServer, times(0)).save(user);
+        verify(defaultEbeanServer, times(0)).delete(token);
+    }
+
+    @Test
+    public void resetPasswordTest2FAOffButPinSupplied() throws GeneralSecurityException, InvalidLoginException, UnauthorizedException, WeakPasswordException {
+        UUID id = UUID.randomUUID();
+        String remoteAddr = "12.2.2.1";
+        String newPassword = "123";
+        String newPasswordHash = "123_HASH";
+
+        when(defaultHashHelper.hashPassword(newPassword)).thenReturn(newPasswordHash);
+        when(defaultEbeanServer.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
+        User user = mock(User.class);
+        PasswordResetToken token = mock(PasswordResetToken.class);
+        when(token.getCreationDate()).thenReturn(DateTime.now());
+        when(token.getRemoteAddress()).thenReturn(remoteAddr);
+        when(token.getAssociatedUser()).thenReturn(user);
+        when(defaultPasswordResetTokenFinder.byId(id)).thenReturn(token);
+
+        when(user.has2FA()).thenReturn(false);
+
+        defaultLoginManager.resetPassword(id, newPassword, Helpers.fakeRequest().remoteAddress(remoteAddr).build(), "111222");
+
+        verify(user).setPasswordHash(newPasswordHash);
+        verify(defaultCredentialUtility).resetCredential(user, newPassword);
+        verify(defaultEbeanServer).save(user);
+        verify(defaultEbeanServer).delete(token);
+    }
+
+
     @Test(expected = CaptchaRequiredException.class)
     public void sendResetPasswordTokenCaptchaRequiredTest() throws CaptchaRequiredException, InvalidArgumentException, UnauthorizedException {
         when(recaptchaHelper.IsValidResponse(any(), any())).thenReturn(false);
