@@ -128,6 +128,8 @@ Die verwendete Bibliothek ist jBCrypt von mindrot.org (org.mindrot.jbcrypt) in d
 
 Auch zur Generierung der initialen (und temporären) Benutzer-Passwörter beim Anlegen eines neuen Benutzerkontos wird SecureRandom als Basis verwendet. Dafür zuständig ist die Klasse \texttt{PasswordGenerator}. Die generierten Passwörter können die Zeichen \texttt{a-z}, \texttt{A-Z}, \texttt{0-9} und die Sonderzeichen \texttt{!\%?\#-\_*+} enthalten.
 
+Wir prüfen bei einer Nutzer-Initiierten Passwortänderung, ob das entsprechende Klartextpasswort \enquote{schwach} ist. Wir definieren ein schwaches Passwort als eines, das in einer Blacklist der Anwendung gelistet ist. Die von uns ausgelieferte Blacklist basiert auf einer im Internet erhältlichen Liste der am häufigsten verwendeten Passwörter \footnote{\url{https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/10-million-password-list-top-1000000.txt}} und umfasst eine Million Einträge. Bei der Initialisierung der Anwendung laden wir diese Liste in ein HashSet und nutzen dieses zur effizienten Abfrage. Die hierzu genutzte contains() Methode läuft in konstanter Zeit bzw. O(1) \footnote{\url{https://docs.oracle.com/javase/8/docs/api/java/util/HashSet.html}}. Durch eine missbräuchliche Nutzung dieser Funktionalität würde sich so kein DOS-Vektor ergeben.
+
 \section{CSRF-Tokens}
 Die CSRF-Tokens, die das Play Framework generiert, bestehen aus 3 Teilen:
 \begin{enumerate}
@@ -200,7 +202,7 @@ Aus diesem Grund verfügt unsere Anwendung über eine Komponente\footnote{policy
 
 Beim Captcha-Mode handelt es sich um eine Maßnahme, bei der ein Login lediglich möglich ist, wenn zugleich ein Google reCAPTCHA gelöst wird. Eine vollständige Sperrung eines Accounts findet durch unsere Firewall so nicht statt. Es wurde die Annahme getroffen, dass das automatisierte Lösen der reCAPTCHAs zu aufwändig \& teuer für einen Angreifer ist. Zugleich ist das \enquote{unnötige} Lösen eines Captchas für das Opfer ein vertretbares Hindernis.
 
-Lediglich IP-Addressen werden als schärfste Maßnahme vollständig von Logins ausgeschlossen. Sofern ein Angreifer nicht die gleiche IP-Adresse wie sein Opfer verwendet, kann er sich höchstens selbst vom Dienst ausschließen. Sollte eine Situation vorliegen, bei der sich eine Vielzahl an Nutzern eine IP-Adresse teilt, besteht die Möglichkeit, diese von der vollständigen Sperre auszunehmen.
+Lediglich IP-Addressen werden als schärfste Maßnahme vollständig von Logins ausgeschlossen. Sofern ein Angreifer nicht die gleiche IP-Adresse wie sein Opfer verwendet, kann er sich höchstens selbst vom Dienst ausschließen. Sollte eine Situation vorliegen, bei der sich eine Vielzahl an Nutzern eine IP-Adresse teilt, besteht die Möglichkeit, diese von der vollständigen Sperre auszunehmen \footnote{siehe conf/ip\_whitelist.txt}.
 
 Die interne Datenstruktur der Login Firewall ist darauf optimiert, möglichst wenig Speicher zu verwenden und nutzt Buckets, um aggregierte Informationen über Login-Versuche zu speichern. Die Buckets bilden ein fixes Zeitinterval ab. Führt ein Angreifer eine Million fehlerhafte Logins in zehn Minuten durch, werden lediglich zwei Datenbank-Einträge erstellt: Einen mit Bezug auf den betroffenen Nutzer-Account und einen mit Bezug auf die IP des Angreifers. Beide Einträge verfügen über eine Zählvariable, die jeweils die Anzahl der fehlerhaften Logins beinhaltet.
 
@@ -245,7 +247,9 @@ Für einige Parameter gibt es festgelegte Constraints, die in allen entsprechend
 
 	\item password
 	\begin{itemize}
+		\item Minimale Länge: 6
 		\item Maximale Länge: 72 (Beschränkung von bcrypt)
+		\item Darf nicht in Blacklist enthalten sein (conf/password\_blacklist.txt)
 	\end{itemize}
 
 	\item groupname
