@@ -192,11 +192,13 @@ Bei anderen Datenbanken kann nicht garantiert werden, dass die Applikation über
 Ebenso ist die Sicherheit der Applikation unter Verwendung anderer Datenbank nicht gewährleistet.
 
 \subsection{Verbindungsmodus}
+
 Mit Werkseinstellungen wird die Datenbank im Hauptspeicher persistiert (In-Memory Database).
 Dies erhöht die Sicherheit, da die Datenbank an den Speicher des Prozesses gebunden ist, und somit kein anderer Prozess darauf zugreifen kann.
 Nachteil ist allerdings, dass dadurch bei einem Applikationsneustart oder Rechnerabsturz der gesamte Datenbankinhalt verloren geht.
 
-Sollten Sie den Wunsch haben, die Datenbank über die Grenzen einer Applikationslaufzeit zu persistieren, so müssen Sie die Konfigurationsdatei anpassen, siehe \ref{db-connection-mode}.
+Offiziell unterstützen wir nur die In-Memory Database.
+Sollten Sie dennnoch den Wunsch haben, die Datenbank über die Grenzen einer Applikationslaufzeit zu persistieren, so müssen Sie die Konfigurationsdatei anpassen, siehe \ref{db-connection-mode}.
 
 \begin{lstlisting}[label=db-connection-mode, caption={Einstellung innerhalb der Konfigurationsdatei zum Anpassen des Verbindungsmodus der verwendeten Datenbank},captionpos=b]
 db {
