@@ -1148,7 +1148,7 @@ Mit diesem Header wird dem Browser verboten, \enquote{MIME sniffing}\footnote{Be
 
 \subsection{Content-Security-Policy}
 \begin{sloppypar}
-\texttt{Content-Security-Policy: default-src 'self'; script-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; frame-src https://www.google.com/recaptcha/}
+\texttt{Content-Security-Policy: default-src 'self'; script-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ http://localhost:9000/assets/js/ http://127.0.0.1:9000/assets/js/; frame-src https://www.google.com/recaptcha/; img-src 'self' data:}
 \end{sloppypar}
 Innerhalb diesem Header ist es möglich Richtlinien zu definieren, die den Zugriff auf verschiedene Resourcen kontrollieren.
 Dadurch kann verhindert werden, dass JavaScript nicht von jeder URL geladen und ausgeführt werden darf, von welchen Quellen Bilder geladen werden dürfen, oder welches CSS eingebunden werden darf.
