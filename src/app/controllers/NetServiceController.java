@@ -38,6 +38,7 @@ public class NetServiceController {
     private final Form<CreateNetServiceCredentialsDto> createNetServiceCredentialsDtoForm;
     private final Form<DeleteNetServiceCredentialsDto> deleteNetServiceCredentialsDtoForm;
     private final Form<DeleteNetServiceDto> confirmNetServiceDeleteForm;
+    private final Form<DecryptNetServiceCredentialsDto> decryptNetServiceCredentialsForm;
 
     @Inject
     public NetServiceController(SessionManager sessionManager, NetServiceManager netServiceManager, FormFactory formFactory) {
@@ -51,6 +52,7 @@ public class NetServiceController {
         this.createNetServiceCredentialsDtoForm = formFactory.form(CreateNetServiceCredentialsDto.class);
         this.deleteNetServiceCredentialsDtoForm = formFactory.form(DeleteNetServiceCredentialsDto.class);
         this.confirmNetServiceDeleteForm = formFactory.form(DeleteNetServiceDto.class);
+        this.decryptNetServiceCredentialsForm = formFactory.form(DecryptNetServiceCredentialsDto.class);
     }
 
 
@@ -178,8 +180,16 @@ public class NetServiceController {
         return redirect(routes.NetServiceController.showUserNetServiceCredentials());
     }
 
-    public Result decryptNetServiceCredential(Long credentialId) throws UnauthorizedException, InvalidArgumentException {
-        PlaintextCredential credential = netServiceManager.decryptCredential(credentialId);
+    public Result decryptNetServiceCredential() throws UnauthorizedException, InvalidArgumentException {
+        Form<DecryptNetServiceCredentialsDto> boundForm = decryptNetServiceCredentialsForm.bindFromRequest();
+
+        if (boundForm.hasErrors()) {
+            throw new InvalidArgumentException();
+        }
+
+        DecryptNetServiceCredentialsDto dto = boundForm.get();
+
+        PlaintextCredential credential = netServiceManager.decryptCredential(dto.getCredentialId());
         return ok(Json.toJson(credential));
     }
 
