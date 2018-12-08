@@ -9,9 +9,9 @@ import models.finders.UserFinder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import play.libs.mailer.MailerClient;
 import policyenforcement.Policy;
 import policyenforcement.session.SessionManager;
+import twofactorauth.TwoFactorAuthService;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,14 +41,12 @@ public class CreateUserUsernameNotAdminTests {
 
     @Test(expected = UsernameCannotBeAdmin.class)
     public void createUserUsernameCannotBeAdmin() throws EmailAlreadyExistsException, UnauthorizedException, UsernameAlreadyExistsException, UsernameCannotBeAdmin {
-        MailerClient mailer = mock(MailerClient.class);
         UserFinder userFinder = mock(UserFinder.class);
         HashHelper hashHelper = mock(HashHelper.class);
         GroupFinder groupFinder = mock(GroupFinder.class);
         EbeanServer defaultServer = mock(EbeanServer.class);
         Policy spec = mock(Policy.class);
         SessionManager sessionManager = mock(SessionManager.class);
-        RecaptchaHelper recaptchaHelper = mock(RecaptchaHelper.class);
         when(spec.canCreateUser()).thenReturn(true);
         when(sessionManager.currentPolicy()).thenReturn(spec);
         when(userFinder.byName(any())).thenReturn(Optional.empty());
@@ -56,8 +54,19 @@ public class CreateUserUsernameNotAdminTests {
         UserFactory userFactory = mock(UserFactory.class);
         CredentialManager credentialManager = mock(CredentialManager.class);
         WeakPasswords weakPasswords = mock(WeakPasswords.class);
+        TwoFactorAuthService twoFactorAuthService = mock(TwoFactorAuthService.class);
 
-        UserManager sut = new UserManager(userFinder, groupFinder, passwordGenerator, mailer, hashHelper, defaultServer, sessionManager, recaptchaHelper, userFactory, credentialManager, weakPasswords);
+        UserManager sut = new UserManager(
+                userFinder,
+                groupFinder,
+                passwordGenerator,
+                hashHelper,
+                defaultServer,
+                sessionManager,
+                userFactory,
+                credentialManager,
+                weakPasswords,
+                twoFactorAuthService);
         sut.createUser(this.username, "test@test.de", 5l);
     }
 }
