@@ -125,9 +125,13 @@ Es wurde herausgefunden, dass unser Session-Konzept diesen Wert nicht berücksic
 
 In der Folge wurde das Session-Konzept so geändert, dass vor Anlegen einer neuen Session alle bisherigen Werte aus der korrospondierenden Play-Session entfernt werden: Bei einem Login ist so garantiert, dass ein neuer CSRF-Vergleichswert erstellt wird.
 
-%Welche Penetrationstests wurden durchgeführt?
-%Gibt es ggf. automatisierbare Skripts?
-%Wenn ja, für welche Angriffe?
+\subsubsection{Race Condition bei Einzigartigkeit der Dateinamen}
+Damit sichergestellt ist das ein Benutzer einen Dateinamen nur einmalig verwenden kann, wurde zuerst ein manueller Test durchgeführt. Dazu wurde versucht eine Datei, mit einem bereits vergebenen Dateinamen, hochzuladen. Wie erwartet kam die Fehlermeldung, das bereits eine Datei mit diesem Namen existiert.
+
+Um diese Funktionalität auch bei parallelen Anfragen sicherstellen zu können, wurde ein Bash Skript verfasst, was genau solch einen Fall simuliert. Vollständig kann das Skript im Anhang eingesehen werden \ref{upPenTest}. Es meldet sich 4-mal parallel am System an und versucht eine Datei mit gleichem Dateinamen hochzuladen. Dieses Skript wird dann durch ein \texttt{runner} Skript 50-mal in folge mit unterschiedlichen Dateinamen aufgerufen. In Summe wird somit 50-mal ausprobiert, ob es klappt eine Datei mit demselben Dateinamen durch 4 parallele Anfragen, mehrmals zu erstellen.
+
+Mit diesem Skript wurde es offensichtlich, das unsere Maßnahmen nicht ausreichend waren, um zu garantieren, dass der Dateiname für jeden Nutzer nur einmal vorkommen kann. Es konnte sogar passieren, dass alle 4 parallelen Anfragen erfolgreich waren.
+
 
 \subsubsection{HTTP Response Splitting mittels Dateinamen}
 Um zu prüfen ob HTTP Response Splitting durch das Einfügen von Zeilenumbrüchen in Dateinamen möglich sind, wurde ein Penetrationstest durchgeführt. Dazu wurde vorübergehend die Eingabevalidierung für Dateinamen deaktiviert, um die Zeilenumbrüche platzieren zu können.
@@ -135,6 +139,14 @@ Um zu prüfen ob HTTP Response Splitting durch das Einfügen von Zeilenumbrüche
 In der Oberfläche wird der Zeilenumbruch wie erwartet dargestellt. Beim Versuch die Datei herunterzaladen gibt es eine Exception: \texttt{[ServerResultException: Error converting Play Result for server backend]}. Der Benutzer bekommt eine Fehlerseite mit dem HTTP Statuscode 500 angezeigt und die Datei wird nicht heruntergeladen. Weiter Seiteneffekte konnten dabei nicht beobachtet werden. Dieses Verhalten wird durch das Play Framework realisiert, dass die Verwendung von Zeilenumbrüchen in HTTP Headern unterbindet.
 
 Das Fehlerverhalten ist hier angemessen. Druch die Eingabevalidierung ist es bei normaler Benutzung nicht möglich die Zeilenumbrüche in einem Dateinamen zu verwenden.
+
+
+\subsubsection{Aufrufen von Seiten ohne nötige Berechtigung}
+Einige Seiten in HshHelper sind für normale Benutzer nicht zugänglich. Diese sollen nur von Administratoren verwendet werden. Dazu zählen zum Beispiel die Seiten zum Anlegen und Bearbeiten von Benutzern und Netzdiensten. Mit diesem Penetrationstests sollte geprüft werden, ob ein normaler Benutzer ohne Adminstrator-Rechte Zugriff auf diese Seiten erlangen kann. Da die Anzahl der zu prüfenden Seiten nicht sehr groß war wurde diese Prüfung manuell durchgeführt. Dazu wurde jede URL der betroffenen Seiten\footnote{Alle betroffenen \texttt{GET} Routen aus der \texttt{routes} Datei.} in einem Browser aufgerufen, während ein Benutzer ohne Administrator-Rechte angemeldet war. Das erwartete Verhalten war eine Weiterleitung auf eine Seite mit einer entsprechenden Fehlermeldung.
+
+Ein ähnlicher Test wurde für alle URLs in denen URL-Parameter verwendet werden durchgeführt. Hierbei wurden für die Parameter in den URLs Werte gewählt für die der Test-Benutzer keine Berechtigung hat\footnote{Alle Parameter in URLs sind IDs.}. Zum Beispiel eine Gruppen-Id einer Gruppe in der er nicht Mitglied ist oder eine Datei-Id auf die er keine Berechtigung hat. 
+
+Ergebnis dieses Penetrationstests ist, dass die Seiten zum Anlegen und Bearbeiten von Netzdiensten für nicht-Administratoren zugänglichen waren. Zwar konnte ein Benutzer keine Aktionen auf diesen Seiten ausführen, Zugriff sollte aber dennoch nicht möglich sein.
 
 \section{Reviews}
 \subsection{Session-Konzept}
@@ -374,6 +386,11 @@ db.withConnection(connection -> {
 \chapter{Unittest Coverage Report}
 \label{unitcover}
 \includepdf{./resources/coveragereport.pdf}
+
+\chapter{Upload File Penetrationtest Skript}
+\label{upPenTest}
+\includepdf{./resources/uploadFileScript.pdf}
+\includepdf{./resources/penTestUpload.pdf}
 
 \end{appendices}
 
