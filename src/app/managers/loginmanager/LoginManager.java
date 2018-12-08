@@ -105,7 +105,7 @@ public class LoginManager {
 
         if (strategy.equals(Strategy.BLOCK)) {
             logger.error(request.remoteAddress() + " is blocked from logging in.");
-            throw new InvalidLoginException(false);
+            throw new InvalidLoginException(true);
         }
 
         if (strategy.equals(Strategy.VERIFY)) {
