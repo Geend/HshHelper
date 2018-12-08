@@ -23,6 +23,7 @@ import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
 import policyenforcement.ext.loginFirewall.Strategy;
 import policyenforcement.session.SessionManager;
+import twofactorauth.TwoFactorAuthService;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -53,6 +54,7 @@ LoginManagerTest {
     private LoginManager defaultLoginManager;
     private WeakPasswords defaultWeakPasswords;
     private IPWhitelist defaultIpWhitelist;
+    private TwoFactorAuthService twoFactorAuthService;
 
 
     @Before
@@ -71,6 +73,7 @@ LoginManagerTest {
         this.defaultEbeanServer = mock(EbeanServer.class);
         this.defaultFirewallInstance = mock(Instance.class);
         this.recaptchaHelper = mock(RecaptchaHelper.class);
+        this.twoFactorAuthService = mock(TwoFactorAuthService.class);
         when(this.defaultFirewallInstance.getStrategy(any(Long.class))).thenReturn(Strategy.BYPASS);
         when(defaultFirewall.get(any(String.class), any(IPWhitelist.class))).thenReturn(this.defaultFirewallInstance);
 
@@ -96,7 +99,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
     }
 
     @Test
@@ -116,7 +119,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
         verify(sessionManager).startNewSession(authenticatedUser, defaultCredentialKey);
     }
@@ -138,7 +141,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -157,7 +160,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -181,7 +184,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
         verify(authenticatedUser).setIsPasswordResetRequired(false);
         verify(authenticatedUser).setPasswordHash("hashed");
@@ -204,7 +207,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
@@ -226,7 +229,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -249,7 +252,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -271,7 +274,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -293,7 +296,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -315,7 +318,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
@@ -337,7 +340,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
@@ -359,7 +362,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
@@ -381,7 +384,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
@@ -434,13 +437,13 @@ LoginManagerTest {
     }
 
     @Test(expected = UnauthorizedException.class)
-    public void resetPasswordVerificationTest() throws UnauthorizedException, WeakPasswordException {
+    public void resetPasswordVerificationTest() throws UnauthorizedException, WeakPasswordException, GeneralSecurityException, InvalidLoginException {
         when(defaultPasswordResetTokenFinder.byId(any())).thenReturn(null);
-        defaultLoginManager.resetPassword(UUID.randomUUID(), "123", Helpers.fakeRequest().build());
+        defaultLoginManager.resetPassword(UUID.randomUUID(), "123", Helpers.fakeRequest().build(), "");
     }
 
     @Test
-    public void resetPasswordTest() throws UnauthorizedException, WeakPasswordException {
+    public void resetPasswordTest() throws UnauthorizedException, WeakPasswordException, GeneralSecurityException, InvalidLoginException {
         UUID id = UUID.randomUUID();
         String remoteAddr = "12.2.2.1";
         String newPassword = "123";
@@ -455,7 +458,7 @@ LoginManagerTest {
         when(token.getAssociatedUser()).thenReturn(user);
         when(defaultPasswordResetTokenFinder.byId(id)).thenReturn(token);
 
-        defaultLoginManager.resetPassword(id, newPassword, Helpers.fakeRequest().remoteAddress(remoteAddr).build());
+        defaultLoginManager.resetPassword(id, newPassword, Helpers.fakeRequest().remoteAddress(remoteAddr).build(), "");
 
         verify(user).setPasswordHash(newPasswordHash);
         verify(defaultCredentialUtility).resetCredential(user, newPassword);

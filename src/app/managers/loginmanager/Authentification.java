@@ -13,12 +13,10 @@ import static extension.StringHelper.empty;
 import static policyenforcement.ConstraintValues.TIME_WINDOW_2FA_MS;
 
 public class Authentification {
-    private UserFinder userFinder;
     private HashHelper hashHelper;
 
     @Inject
-    public Authentification(UserFinder userFinder, HashHelper hashHelper) {
-        this.userFinder = userFinder;
+    public Authentification(HashHelper hashHelper) {
         this.hashHelper = hashHelper;
     }
 

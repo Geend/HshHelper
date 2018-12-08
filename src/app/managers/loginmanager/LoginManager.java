@@ -23,6 +23,7 @@ import policyenforcement.ext.loginFirewall.Firewall;
 import policyenforcement.ext.loginFirewall.Instance;
 import policyenforcement.ext.loginFirewall.Strategy;
 import policyenforcement.session.SessionManager;
+import twofactorauth.TwoFactorAuthService;
 import ua_parser.Client;
 import ua_parser.Parser;
 
@@ -35,6 +36,7 @@ import java.util.UUID;
 import static extension.StringHelper.empty;
 import static policyenforcement.ConstraintValues.PASSWORD_RESET_TOKEN_TIMEOUT_HOURS;
 import static policyenforcement.ConstraintValues.SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS;
+import static policyenforcement.ConstraintValues.TIME_WINDOW_2FA_MS;
 
 public class LoginManager {
 
@@ -51,6 +53,7 @@ public class LoginManager {
     private final PasswordResetTokenFinder passwordResetTokenFinder;
     private final WeakPasswords weakPasswords;
     private final IPWhitelist ipWhitelist;
+    private final TwoFactorAuthService twoFactorAuthService;
 
     private static final Logger.ALogger logger = new DangerousCharFilteringLogger(LoginManager.class);
 
@@ -63,8 +66,7 @@ public class LoginManager {
             EbeanServer ebeanServer,
             LoginAttemptFinder loginAttemptFinder,
             RecaptchaHelper recaptchaHelper, CredentialUtility credentialUtility,
-            UserFinder userFinder, MailerClient mailerClient, PasswordResetTokenFinder passwordResetTokenFinder, WeakPasswords weakPasswords, IPWhitelist ipWhitelist)
-    {
+            UserFinder userFinder, MailerClient mailerClient, PasswordResetTokenFinder passwordResetTokenFinder, WeakPasswords weakPasswords, IPWhitelist ipWhitelist, TwoFactorAuthService twoFactorAuthService) {
         this.loginAttemptFinder = loginAttemptFinder;
         this.ebeanSever = ebeanServer;
         this.authentification = authentification;
@@ -78,29 +80,21 @@ public class LoginManager {
         this.passwordResetTokenFinder = passwordResetTokenFinder;
         this.weakPasswords = weakPasswords;
         this.ipWhitelist = ipWhitelist;
+        this.twoFactorAuthService = twoFactorAuthService;
     }
 
     private User authenticate(String username, String password, String captchaToken, Http.Request request, String twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, IOException, GeneralSecurityException {
-        int intTwoFactorPin = 0;
-        if(twoFactorPin != null) {
-            if (!twoFactorPin.equals("")) {
-                try {
-                    String tokenWithoutWhiteSpace = twoFactorPin.replaceAll(" ", "");
-                    intTwoFactorPin = Integer.parseInt(tokenWithoutWhiteSpace);
-                } catch (NumberFormatException e) {
-                    throw new InvalidLoginException(false);
-                }
-            }
-        }
+        int intTwoFactorPin = twoFactorAuthService.stringPinToInt(twoFactorPin);
+
 
         Long uid;
         Optional<User> user = userFinder.byName(username);
-        if(user.isPresent()) {
+        if (user.isPresent()) {
             uid = user.get().getUserId();
         } else {
             // Negativen Zahlenraum für "virtuelle" UIDs (Hashmapping) nutzen
             Long fakeUid = hashHelper.insecureStringHash(username);
-            if(fakeUid > 0) {
+            if (fakeUid > 0) {
                 fakeUid = fakeUid * -1;
             }
             uid = fakeUid;
@@ -109,27 +103,27 @@ public class LoginManager {
         Instance fw = loginFirewall.get(request.remoteAddress(), ipWhitelist);
         Strategy strategy = fw.getStrategy(uid);
 
-        if(strategy.equals(Strategy.BLOCK)) {
+        if (strategy.equals(Strategy.BLOCK)) {
             logger.error(request.remoteAddress() + " is blocked from logging in.");
             throw new InvalidLoginException(false);
         }
 
-        if(strategy.equals(Strategy.VERIFY)) {
-            if(!recaptchaHelper.IsValidResponse(captchaToken, request.remoteAddress())) {
+        if (strategy.equals(Strategy.VERIFY)) {
+            if (!recaptchaHelper.IsValidResponse(captchaToken, request.remoteAddress())) {
                 logger.error(request.remoteAddress() + " has tried to login in without a valid reCAPTCHA.");
                 throw new CaptchaRequiredException();
             }
         }
 
         // Nutzer existiert nicht -> sowieso ein Fail!
-        if(!user.isPresent()) {
+        if (!user.isPresent()) {
             authentification.fakeAuthActionsForTiming(password, intTwoFactorPin);
             fw.fail(uid);
             logger.error(request.remoteAddress() + " failed to login on user " + uid);
             throw new InvalidLoginException(strategy.equals(Strategy.VERIFY));
         }
 
-        if(!authentification.perform(user.get(), password, intTwoFactorPin)) {
+        if (!authentification.perform(user.get(), password, intTwoFactorPin)) {
             fw.fail(uid);
             logger.error(request.remoteAddress() + " failed to login on user " + uid);
             throw new InvalidLoginException(strategy.equals(Strategy.VERIFY));
@@ -139,7 +133,7 @@ public class LoginManager {
     }
 
     private String getUserAgentDisplayString(String userAgentString) throws IOException {
-        if(empty(userAgentString)) {
+        if (empty(userAgentString)) {
             return "unknown client";
         }
 
@@ -151,7 +145,7 @@ public class LoginManager {
     public void login(String username, String password, String captchaToken, Http.Request request, String twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, PasswordChangeRequiredException, IOException, GeneralSecurityException {
         User authenticatedUser = this.authenticate(username, password, captchaToken, request, twoFactorPin);
 
-        if(authenticatedUser.getIsPasswordResetRequired()) {
+        if (authenticatedUser.getIsPasswordResetRequired()) {
             logger.error(authenticatedUser + " needs to change his password.");
             throw new PasswordChangeRequiredException();
         }
@@ -173,11 +167,11 @@ public class LoginManager {
     public void changePassword(String username, String currentPassword, String newPassword, String captchaToken, Http.Request request, String twoFactorPin) throws InvalidLoginException, CaptchaRequiredException, IOException, GeneralSecurityException, WeakPasswordException {
         User authenticatedUser = this.authenticate(username, currentPassword, captchaToken, request, twoFactorPin);
 
-        if(weakPasswords.isWeakPw(newPassword)) {
+        if (weakPasswords.isWeakPw(newPassword)) {
             throw new WeakPasswordException();
         }
 
-        try(Transaction tx = ebeanSever.beginTransaction(TxIsolation.SERIALIZABLE)) {
+        try (Transaction tx = ebeanSever.beginTransaction(TxIsolation.SERIALIZABLE)) {
             credentialUtility.updateCredentialPassword(authenticatedUser, currentPassword, newPassword);
             authenticatedUser.setIsPasswordResetRequired(false);
             authenticatedUser.setPasswordHash(hashHelper.hashPassword(newPassword));
@@ -194,16 +188,16 @@ public class LoginManager {
 
     public void deleteOldLoginRecords() {
         int deletedSessions = loginAttemptFinder.query().where()
-                .lt("dateTime",DateTime.now().minusDays(SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS)).delete();
+                .lt("dateTime", DateTime.now().minusDays(SUCCESSFUL_LOGIN_STORAGE_DURATION_DAYS)).delete();
 
-        logger.info("Deleted "+deletedSessions+" Login-Logs");
+        logger.info("Deleted " + deletedSessions + " Login-Logs");
     }
 
     public void deleteOldPasswordResetTokens() {
         int deleteTokens = passwordResetTokenFinder.query().where()
                 .lt("creationDate", DateTime.now().minusHours(PASSWORD_RESET_TOKEN_TIMEOUT_HOURS)).delete();
 
-        logger.info("Deleted "+deleteTokens+" Password-Reset-Tokens");
+        logger.info("Deleted " + deleteTokens + " Password-Reset-Tokens");
     }
 
     public void sendResetPasswordToken(String username, String recaptcha, Http.Request request) throws CaptchaRequiredException, InvalidArgumentException, UnauthorizedException {
@@ -219,13 +213,13 @@ public class LoginManager {
         }
         User user = userOptional.get();
 
-        if(user.getIsPasswordResetRequired()){
+        if (user.getIsPasswordResetRequired()) {
             throw new UnauthorizedException();
         }
 
         PasswordResetToken token = new PasswordResetToken(
-            user,
-            request.remoteAddress()
+                user,
+                request.remoteAddress()
         );
         // Kryptografisch sicher, siehe: https://docs.oracle.com/javase/7/docs/api/java/util/UUID.html#randomUUID()
         token.setId(UUID.randomUUID());
@@ -235,7 +229,7 @@ public class LoginManager {
                 .setSubject("HshHelper Password-Reset")
                 .setFrom("HshHelper <hshhelper@t-voltmer.net>")
                 .addTo(user.getEmail())
-                .setBodyText("Click on the following Link to reset your Password: "+ controllers.routes.LoginController.showResetPasswordWithTokenForm(token.getId()).absoluteURL(request));
+                .setBodyText("Click on the following Link to reset your Password: " + controllers.routes.LoginController.showResetPasswordWithTokenForm(token.getId()).absoluteURL(request));
         mailerClient.send(email);
 
         logger.info("Created a reset token and send mail for user " + user);
@@ -243,28 +237,37 @@ public class LoginManager {
 
     public PasswordResetToken validateResetToken(UUID tokenId, Http.Request request) throws UnauthorizedException {
         PasswordResetToken token = passwordResetTokenFinder.byId(tokenId);
-        if(token == null)
+        if (token == null)
             throw new UnauthorizedException();
 
-        if(!token.getRemoteAddress().equals(request.remoteAddress()))
+        if (!token.getRemoteAddress().equals(request.remoteAddress()))
             throw new UnauthorizedException();
 
-        if(!token.getCreationDate().plusHours(PASSWORD_RESET_TOKEN_TIMEOUT_HOURS).isAfterNow())
+        if (!token.getCreationDate().plusHours(PASSWORD_RESET_TOKEN_TIMEOUT_HOURS).isAfterNow())
             throw new UnauthorizedException();
 
         return token;
     }
 
-    public void resetPassword(UUID tokenId, String newPassword, Http.Request request) throws UnauthorizedException, WeakPasswordException {
-        if(weakPasswords.isWeakPw(newPassword)) {
+    public void resetPassword(UUID tokenId, String newPassword, Http.Request request, String twoFactorPin) throws UnauthorizedException, WeakPasswordException, InvalidLoginException, GeneralSecurityException {
+        if (weakPasswords.isWeakPw(newPassword)) {
             throw new WeakPasswordException();
         }
 
-        try(Transaction tx = ebeanSever.beginTransaction(TxIsolation.SERIALIZABLE)) {
+
+        try (Transaction tx = ebeanSever.beginTransaction(TxIsolation.SERIALIZABLE)) {
             PasswordResetToken token = validateResetToken(tokenId, request);
 
             User user = token.getAssociatedUser();
             ebeanSever.refresh(user);
+
+            if (user.has2FA()) {
+                int intTwoFactorPin = twoFactorAuthService.stringPinToInt(twoFactorPin);
+                if (!twoFactorAuthService.validateCurrentNumber(user.getTwoFactorAuthSecret(), intTwoFactorPin, TIME_WINDOW_2FA_MS)) {
+                    throw new UnauthorizedException();
+                }
+            }
+
             user.setPasswordHash(hashHelper.hashPassword(newPassword));
             user.setIsPasswordResetRequired(false);
             ebeanSever.save(user);

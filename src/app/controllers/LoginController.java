@@ -60,7 +60,7 @@ public class LoginController extends Controller {
         }
 
         Optional<CSRF.Token> token = CSRF.getToken(request());
-        if(!token.isPresent()) {
+        if (!token.isPresent()) {
             // bewusst nicht auf bad request sondern wieder auf login da bad request
             // einen angemeldenten benutzer erwartet
             return redirect(routes.LoginController.login());
@@ -68,7 +68,7 @@ public class LoginController extends Controller {
 
         UserLoginDto loginData = boundForm.get();
         Optional<String> recaptchaData = boundForm.field("g-recaptcha-response").getValue();
-        if(recaptchaData.isPresent()) {
+        if (recaptchaData.isPresent()) {
             loginData.setRecaptcha(recaptchaData.get());
         }
 
@@ -114,7 +114,7 @@ public class LoginController extends Controller {
 
         ChangePasswordAfterResetDto changePasswordData = boundForm.get();
         Optional<String> recaptchaData = boundForm.field("g-recaptcha-response").getValue();
-        if(recaptchaData.isPresent()) {
+        if (recaptchaData.isPresent()) {
             changePasswordData.setRecaptcha(recaptchaData.get());
         }
 
@@ -148,7 +148,7 @@ public class LoginController extends Controller {
     }
 
     @Authentication.NotAllowed
-    public Result requestResetPassword(){
+    public Result requestResetPassword() {
         Form<RequestResetPasswordDto> boundForm = requestResetPasswordForm.bindFromRequest("username");
         if (boundForm.hasErrors()) {
             return badRequest(views.html.login.RequestResetPassword.render(boundForm));
@@ -177,18 +177,23 @@ public class LoginController extends Controller {
     }
 
     @Authentication.NotAllowed
-    public Result resetPasswordWithToken(UUID tokenId) throws UnauthorizedException {
+    public Result resetPasswordWithToken(UUID tokenId) throws GeneralSecurityException {
         Form<ResetPasswordDto> boundForm = resetPasswordForm.bindFromRequest();
-        if(boundForm.hasErrors()) {
+        if (boundForm.hasErrors()) {
             return badRequest(views.html.login.ResetPassword.render(resetPasswordForm, tokenId));
         }
 
         ResetPasswordDto data = boundForm.get();
 
+
         try {
-            this.loginManager.resetPassword(tokenId, data.getNewPassword(), Http.Context.current().request());
+            this.loginManager.resetPassword(tokenId, data.getNewPassword(), Http.Context.current().request(), data.getTwoFactorPin());
         } catch (WeakPasswordException e) {
             boundForm = boundForm.withError("newPassword", "Das Passwort ist zu schwach!");
+            return badRequest(views.html.login.ResetPassword.render(boundForm, tokenId));
+
+        } catch (UnauthorizedException | InvalidLoginException e) {
+            boundForm = boundForm.withError("twoFactorPin", "Falscher 2FA Pin");
             return badRequest(views.html.login.ResetPassword.render(boundForm, tokenId));
         }
 
