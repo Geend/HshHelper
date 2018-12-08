@@ -10,7 +10,6 @@ import models.User;
 import models.factories.UserFactory;
 import models.finders.GroupFinder;
 import models.finders.UserFinder;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -39,7 +38,7 @@ public class UserManagerTest {
     private Policy defaultPolicy;
     private SessionManager defaultSessionManager;
     private UserFactory defaultUserFactory;
-    private CredentialManager defaultCredentialManager;
+    private CredentialUtility defaultCredentialUtility;
     private WeakPasswords defaultWeakPasswords;
     private TwoFactorAuthService defaultTwoFactorAuthService;
     private PasswordGenerator defaultPasswordGenerator;
@@ -64,7 +63,7 @@ public class UserManagerTest {
         when(nonAdminUser.isAdmin()).thenReturn(false);
         when(defaultSessionManager.currentUser()).thenReturn(adminUser);
         defaultUserFactory = mock(UserFactory.class);
-        defaultCredentialManager = mock(CredentialManager.class);
+        defaultCredentialUtility = mock(CredentialUtility.class);
         defaultWeakPasswords = mock(WeakPasswords.class);
         defaultTwoFactorAuthService = mock(TwoFactorAuthService.class);
     }
@@ -86,7 +85,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
         sut.getAllUsers();
@@ -108,7 +107,7 @@ public class UserManagerTest {
                 server,
                 sessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 authService);
 
@@ -151,7 +150,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
         List<User> result = sut.getAllUsers();
@@ -173,7 +172,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
         sut.createUser( "klaus", "test@test.de", 5l);
@@ -194,7 +193,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
         sut.createUser("klaus", "test@test.de", 5l);
@@ -215,7 +214,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
         sut.createUser( "klaus", "test@test.de", 5l);
@@ -239,7 +238,7 @@ public class UserManagerTest {
                 server,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
 
@@ -270,7 +269,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
 
@@ -309,7 +308,7 @@ public class UserManagerTest {
                 defaultServer,
                 sessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
 
@@ -342,7 +341,7 @@ public class UserManagerTest {
                 defaultServer,
                 defaultSessionManager,
                 defaultUserFactory,
-                defaultCredentialManager,
+                defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
 
