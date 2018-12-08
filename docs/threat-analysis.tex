@@ -129,6 +129,11 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
         \item GET - \texttt{changeUserQuotaLimit(userId,
         newQuotaLimit)}
       \end{enumerate}
+      \item \texttt{/users/deactivateTwoFactorAuth}
+      \begin{enumerate}
+        \item POST - \texttt{deactivateSpecificUserTwoFactorAuth(userId)}
+      \end{enumerate}
+
       \item \texttt{/sessions}
       \begin{enumerate}
         \item GET - \texttt{showActiveUserSessions(userId)}
@@ -160,7 +165,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/settings/deactivateTwoFactorAuth}
       \begin{enumerate}
-        \item POST - \texttt{deactivateTwoFactorAuth()}
+        \item POST - \texttt{deactivateTwoFactorAuth(userId)}
       \end{enumerate}
     \end{enumerate}
 
@@ -345,13 +350,25 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
         \begin{enumerate}
           \item POST - \texttt{deleteNetService(netServiceId)}
         \end{enumerate}
+      \item \texttt{/netservices/confirmDelete}
+        \begin{enumerate}
+          \item POST - \texttt{showDeleteNetServiceConfirmation()}
+        \end{enumerate}
+        \item \texttt{/netservices/edit/}
+        \begin{enumerate}
+          \item POST - \texttt{editNetService(netServiceId, netServiceName, netServiceURL)}
+        \end{enumerate}
       \item \texttt{/netservices/edit/:netServiceId}
         \begin{enumerate}
           \item GET - \texttt{showEditNetService(netServiceId)}
         \end{enumerate}
       \item \texttt{/netservices/addparameter}
         \begin{enumerate}
-          \item POST - \texttt{addNetServiceParameter(netServiceId, netServiceName, defaultValue)}
+          \item POST - \texttt{addNetServiceParameter(netServiceId, netServiceName, netServiceParameterType, defaultValue)}
+        \end{enumerate}
+      \item \texttt{/netservices/removeparameter}
+        \begin{enumerate}
+          \item POST - \texttt{removeNetServiceParameter(netServiceId, netServiceParameterId)}
         \end{enumerate}
 
 
