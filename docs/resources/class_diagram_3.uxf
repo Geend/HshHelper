@@ -1,0 +1,75 @@
+<diagram program="umletino" version="14.3.0"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>410</x><y>50</y><w>280</w><h>250</h></coordinates><panel_attributes>NetServiceController
+--
+style=autoresize
++ showAllNetServices() : Result
++ showAddNetServiceForm() : Result
++ createNetService() : Result
++ showEditNetService() : Result
++ editNetService() : Result
++ addNetServiceParameter() : Result
++ removeNetServiceParameter() : Result
++ showUserNetServiceCredentials() : Result
++ showCreateNetServiceCredentialForm() : Result
++ createNetServiceCredential() : Result
++ deleteNetServiceCredential() : Result
++ decryptNetServiceCredential() : Result
++ showDeleteNetServiceConfirmation() : Result
++ deleteNetService() : Result</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>80</x><y>250</y><w>280</w><h>180</h></coordinates><panel_attributes>SessionManager
+--
+siehe Klassendiagram v1.0</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>410</x><y>410</y><w>460</w><h>250</h></coordinates><panel_attributes>NetServiceManager
+--
+style=autoresize
++ getAllNetServices() : List&lt;NetService&gt; 
++ getNetService(netServiceId: Long) : NetService
++ createNetService(name: String, url:  String) : NetService
++ editNetService(netServiceId: Long , newName: String , newUrl: String)
++ addNetServiceParameter(netServiceId: Long, 
+                                              type: NetServiceParameterType, 
+                                              name: String , 
+                                              defaultValue: String)
++ removeNetServiceParameter(netServiceId: Long, netServiceParameterId: Long)
++ deleteNetService(netServiceId: Long)
++ getUserNetServiceCredentials() : List&lt;NetServiceCredential&gt;
++ createNetUserCredential(netServiceId: Long, username: String, password: String)
++ deleteNetServiceCredential(netServiceCredentialId: Long)
++ decryptCredential(netServiceCredentialId: Long) : PlaintextCredential </panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>720</x><y>790</y><w>210</w><h>160</h></coordinates><panel_attributes>NetServiceCredential
+--
+style=autoresize
++ netServiceCredentialId: Long
++ netServiceId: Long
++ userId: Long
+
++ initializationVectorUsername: byte[]
++ usernameCipherText: byte[] 
++ initializationVectorPassword: byte[] 
++ passwordCipherText: byte[] </panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>130</x><y>790</y><w>130</w><h>90</h></coordinates><panel_attributes>NetService
+--
+style=autoresize
++ netServiceId: Long
++ name: String
++ url: String</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>380</x><y>0</y><w>530</w><h>330</h></coordinates><panel_attributes>Controller
+--
+bg=#FEE4B1
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>380</x><y>360</y><w>530</w><h>360</h></coordinates><panel_attributes>DomainLogic - Managers
+--
+bg=#A6ECB2
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>70</x><y>740</y><w>940</w><h>230</h></coordinates><panel_attributes>Database
+--
+bg=#FEB3B4
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>70</x><y>0</y><w>300</w><h>720</h></coordinates><panel_attributes>Cross Cutting Concerns
+--
+bg=#B6B2FF
+layer=-1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>520</x><y>790</y><w>160</w><h>100</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
+NetServiceParameterType 
+--
+style=autoresize
+HIDDEN
+USERNAME
+PASSWORD</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>290</x><y>790</y><w>200</w><h>120</h></coordinates><panel_attributes>NetServiceParameter
+--
+style=autoresize
++ netServiceParameterId: Long
++ netServiceId: Long
++ name: String
++ defaultValue: String
++ type: NetServiceParameterType</panel_attributes><additional_attributes></additional_attributes></element></diagram>

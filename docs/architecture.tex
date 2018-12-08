@@ -49,8 +49,8 @@ Daher wurden diese beiden Klassen unter \enquote{Cross-Cutting-Concerns} zusamme
 Zugriffe auf diese Klassen können sowohl von Controllern als auch von Managern in der Domänenlogik erfolgen. \par
 Im Folgenden geben Sequenzdiagramme weitere Einsicht in das Zusammenspiel dieser Klassen.
 
-Die Klassen, die in der zweiten Iteration dazu gekommen sind, können der Abbildung \ref{architecture:class_diagram2} entnommen werden.
-Der Aufbau des zweiten Klassendiagramm gleicht dem Aufbau des ersten.
+Die Klassen, die in der zweiten und dritten Iteration dazu gekommen sind, können der Abbildung \ref{architecture:class_diagram2} und \ref{architecture:class_diagram3} entnommen werden.
+Der Aufbau dieser Klassendiagramme gleicht dem Aufbau des ersten.
 
 \section{Sequenzdiagram: Benutzer erstellen}
 
@@ -237,17 +237,19 @@ Ebenso haben wir uns entschlossen, Browser, die Content Security Policy nicht un
 \section{Verschlüsselung von Netzwerkdienst-Zugangsdaten}
 Um zu verhindern, dass irgendjemand Zugriff auf die gespeicherten Netzwerkdienst-Zugangsdaten erhält, werden diese verschlüsselt gespeichert. Die Verschlüsselung erfolgt faktisch mit dem Klartext-Nutzerpasswort als Secret.
 
-Für jeden Nutzer wird bei Erstellung ein kryptografisch sicherer Schlüssel erzeugt \linebreak ($Credential Key^{Plaintext}$). Dieser Schlüssel wird mit dem Klartext-Passwort des Nutzers verschlüsselt. Unsere Anwendung speichert den resultierenden $Credential Key^{Ciphertext}$.
+Für jeden Nutzer wird bei Erstellung ein kryptografisch sicherer Schlüssel erzeugt \linebreak ($Credential Key^{Plaintext}$). Dieser Schlüssel wird mit einem aus dem Klartext-Passwort des Nutzers generiertem Schlüssel verschlüsselt. Unsere Anwendung speichert den resultierenden $Credential Key^{Ciphertext}$.
 
-Meldet sich ein Nutzer an, wird $Credential Key^{Ciphertext}$ mittels des beim Login eingegebenen Klartext-Passworts entschlüsselt. Gleichzeitig wird von unserer Anwendung ein kryptografisch sicheres Secret erzeugt. Wir verschlüsseln $Credential Key^{Plaintext}$ erneut mit dem erstellten Secret und speichern den resultiernden Ciphertext in der Datenbank in der Verbindung mit der Session. Das Secret wird auf PC des Nutzers im Cookie gespeichert und von unserer Anwendung verworfen.
+Meldet sich ein Nutzer an, wird $Credential Key^{Ciphertext}$ mittels des beim Login eingegebenen Klartext-Passworts entschlüsselt. Gleichzeitig wird von unserer Anwendung ein kryptografisch sicheres Secret erzeugt. Wir verschlüsseln $Credential Key^{Plaintext}$ erneut mit dem erstellten Secret und speichern den resultiernden Ciphertext in der Datenbank in Verbindung mit der Session. Das Secret wird auf PC des Nutzers im Cookie gespeichert und von unserer Anwendung verworfen.
 
 Hat sich ein Nutzer angemeldet, kann mittels des Session-Secret und dem der Session zugehörigen Datenbankeintrag der $Credential Key^{Plaintext}$ entschlüsselt werden. Ein erneuter Zugriff auf das Klartext-Passwort des Nutzers ist nicht erforderlich. Erhält ein Angreifer Zugriff auf das im Cookie gespeicherte Session-Secret, ist dieses nur in Verbindung mit der Session verwendbar. Timed die Session aus, ist das Session-Secret wertlos. Dem Nutzer wird niemals der eigentliche Credential Key offenbart.
 
-Diese Implementierung hat den Vorteil, dass die Änderung des Passworts keine Neu-Verschlüsselung der dazugehörigen Netzdienst-Zugangsdaten erfordert. Es muss lediglich der Credential Key mit dem alten Passwort ent- und mit dem neuen Passwort verschlüsselt werden muss. Vorhandene Sessions funktionieren weiterhin. Ein Passwort-Reset ist allerdings nicht ohne Datenverlust möglich: Bei diesem liegt das Klartextpasswort nicht vor, eine Entschlüsselung des Credential Keys ist somit nicht möglich, er muss neu generiert werden und mit dem neuen Passwort verschlüsselt werden. Vorhandene Netzdienst-Zugangsdaten können folglich nicht mehr entschlüsselt werden und werden somit im selbigen Prozess entfernt.
+Diese Implementierung hat den Vorteil, dass die Änderung des Passworts keine Neu-Verschlüsselung der dazugehörigen Netzdienst-Zugangsdaten erfordert. Es muss lediglich der Credential Key mit dem alten Passwort ent- und mit dem neuen Passwort verschlüsselt werden. Vorhandene Sessions funktionieren weiterhin. Ein Passwort-Reset ist allerdings nicht ohne Datenverlust möglich: Bei diesem liegt das Klartextpasswort nicht vor, eine Entschlüsselung des Credential Keys ist somit nicht möglich, er muss neu generiert werden und mit dem neuen Passwort verschlüsselt werden. Vorhandene Netzdienst-Zugangsdaten können folglich nicht mehr entschlüsselt werden und werden somit im selbigen Prozess entfernt.
 
 Der von Nutzer durchzuführende Single Sign-On erfolgt asynchron: Lädt der Benutzer die Seite mit seinen Zugangsdaten und den Login-Buttons, werden keine Zugangsdaten entschlüsselt. Dies erfolgt ausschließlich, wenn ein Nutzer auf einen Login-Button klickt. In diesem Fall wird die Ausführung des Klick-Events unterbrochen, die entsprechenden Zugangsdaten werden von der Anwendung abgefragt und in die Form des Login-Buttons eingefügt. Erst dann wird die Ausführung des Klick-Events fortgesetzt.
 
-TODO: Kryptozeugs... wir verwenden passwortbdk und aes weil dies und das.
+Als Chiffre wird AES-256 im CBC Modus mit PKCS5 Padding verwendet. Dazu gibt es eine native Java Implementierung.
+
+Um aus dem Passwort des Benutzers einen kryptografisch sicheren Schlüssel zum verschlüsseln des CredentialKey zu generieren wird PBKDF2 benutzt. Die Rundenzahl beträgt 65536. Der Salt ist 8 byte Lang und wird mittels SecureRandom generiert. Auch dazu gibt es eine native Implementeriung in Java. 
 
 \section{Eingabevalidierung}
 Für einige Parameter gibt es festgelegte Constraints, die in allen entsprechenden Dtos verwendet werden. Das sind:
@@ -452,8 +454,15 @@ HMAC-SHA256(
 \chapter{\enquote{High-Level}-Klassendiagramm unseres Systems (Zweite Iteration)}
 \begin{figure}[!htb]
 \hspace*{-2.5cm}
-	\includegraphics[width=0.93\paperwidth]{resources/class_diagram_2.png}
+	\includegraphics[width=0.86\paperwidth]{resources/class_diagram_2.png}
 	\label{architecture:class_diagram2}
+\end{figure}
+
+\chapter{\enquote{High-Level}-Klassendiagramm unseres Systems (Dritte Iteration)}
+\begin{figure}[!htb]
+\hspace*{-2.5cm}
+	\includegraphics[width=0.90\paperwidth]{resources/class_diagram_3.png}
+	\label{architecture:class_diagram3}
 \end{figure}
 
 \chapter{Sequenzdiagramm für \enquote{Benutzer erstellen}-Prozess}
