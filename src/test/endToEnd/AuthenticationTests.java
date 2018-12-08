@@ -141,7 +141,7 @@ public class AuthenticationTests {
                     { "GET", "/login", Http.Status.OK },    // controllers.LoginController.showLoginForm
                     { "POST", "/login", Http.Status.BAD_REQUEST },    // controllers.LoginController.login
                     { "POST", "/logout", Http.Status.SEE_OTHER },    // controllers.LoginController.logout
-                    { "GET", "/changePasswordAfterReset", Http.Status.BAD_REQUEST },    // controllers.LoginController.showChangePasswordAfterResetForm
+                    { "GET", "/changePasswordAfterReset", Http.Status.OK },    // controllers.LoginController.showChangePasswordAfterResetForm
                     { "POST", "/changePasswordAfterReset", Http.Status.BAD_REQUEST },    // controllers.LoginController.changePasswordAfterReset
                     { "GET", "/resetPassword", Http.Status.OK },    // controllers.LoginController.showResetPasswordForm
                     { "POST", "/resetPassword", Http.Status.BAD_REQUEST },    // controllers.LoginController.requestResetPassword
