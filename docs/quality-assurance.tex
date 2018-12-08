@@ -153,7 +153,7 @@ Ein ähnlicher Test wurde für alle URLs in denen URL-Parameter verwendet werden
 
 Ergebnis dieses Penetrationstests ist, dass die Seiten zum Anlegen und Bearbeiten von Netzdiensten für nicht-Administratoren zugänglichen waren. Zwar konnte ein Benutzer keine Aktionen auf diesen Seiten ausführen, Zugriff sollte aber dennoch nicht möglich sein.
 
-\subsection{CSRF-Analyse}
+\subsubsection{Cross-Site Requests}
 \label{csrf:analyse} 
 Im Rahmen eines Penetrationstest sollte überprüft werden, ob eine Controller-Methode, die JSON zurückliefert über ein script-Tag auf einer Drittseite eingebunden werden konnte. Während dieses Tests wurde eine schwere Sicherheitslücke entdeckt, die sich aus der Play Standard-Konfiguration in Verbindung mit unserem Session-Konzept ergab.
 
@@ -174,7 +174,7 @@ Bei manchen Browser-Betriebssystemkombinationen tritt hier die Sicherheitslücke
     \captionof{table}{Überprüfte Browser/Betriebssysteme}
 \end{center}
 
-Es ist somit möglich, Nutzer mit einem verwundbaren Browser aus der Anwendung auszuloggen, wenn man sie dazu bringt, eine bestimmte URL aufzurufen. Dieses Risiko wurde von uns als kritisch eingestuft: Die Nutzerschaft unserer Anwendung ist aufgrund des Internet-Zugangs der Hochschule eindeutig zu identifizieren. Es wäre ein leichtes, über elektronische und automatisierte Marktplätze für Online-Werbung\footnote{\url{https://de.wikipedia.org/wiki/Real_Time_Bidding}} Werbeplätze zu buchen, die ausschließlich Anwendern ausgespielt werden, welche den Internet-Zugang der Hochschule verwenden. An derartigen Marktplätzen sind abertausende Internet-Seiten angeschlossen u.A. Branchengrößen wie YouTube oder Nachrichtenportale wie Spiegel oder Heise. Würde ein Nutzer des Hochschul-Internetzugangs eine solche Seite aufrufen, könnte ein Angreifer den Werbeplatz, der diesem konkreten Nutzer angezeigt wird, einzeln erwerben können. Derartige Werbeplätze erlauben dem Käufer in der Regel das Einbinden von eigenem Code. Ein Angreifer müsste hier lediglich den folgenden Code einbinden und könnte so einen potentiellen Nutzer zum Logout bringen:
+Es ist somit möglich, Nutzer mit einem verwundbaren Browser aus der Anwendung auszuloggen, wenn man sie dazu bringt, eine bestimmte URL aufzurufen. Dieses Risiko wurde von uns als kritisch eingestuft: Die Nutzerschaft unserer Anwendung ist aufgrund des Internet-Zugangs der Hochschule eindeutig zu identifizieren. Es wäre ein leichtes, über elektronische und automatisierte Marktplätze für Online-Werbung\footnote{\url{https://de.wikipedia.org/wiki/Real_Time_Bidding}} Werbeplätze zu buchen, die ausschließlich Anwendern ausgespielt werden, welche den Internet-Zugang der Hochschule verwenden. An derartigen Marktplätzen sind abertausende Internet-Seiten angeschlossen u.A. Branchengrößen wie YouTube oder Nachrichtenportale wie Spiegel oder Heise. Würde ein Nutzer des Hochschul-Internetzugangs eine solche Seite aufrufen, könnte ein Angreifer den Werbeplatz, der diesem konkreten Nutzer angezeigt wird, einzeln erwerben. Derartige Werbeplätze erlauben dem Käufer in der Regel das Einbinden von eigenem Code. Ein Angreifer müsste hier lediglich den folgenden Code einbinden und könnte so einen potentiellen Nutzer zum Logout bringen:
 
 \begin{lstlisting}
 	<script src="http://hsh-helper.de/"></script>
@@ -182,7 +182,9 @@ Es ist somit möglich, Nutzer mit einem verwundbaren Browser aus der Anwendung a
 
 Der Kostenaufwand wäre zu vernachlässigen, da faktisch kein Streuverlust eintritt: Man zahlt lediglich für Werbeanzeigen, die Nutzern des Hochschul-Internets angezeigt werden. Bereits mit geringen Investitionen von wenigen Euro pro Tag wäre es möglich, den Betrieb des HsH-Helpers intensiv zu stören.
 
-Folglich haben wir uns dazu entschlossen, von der standardmäßigen Benutzung der SameSite-Option abzusehen. Hierdurch wird zwar potentiell Clickjacking erleichtert, jedoch betrachten wir den von uns verwendeten \enquote{X-Frame-Options} Header als hinreichend sicheren Schutz gegen diesen Angriff. Er wird allen modernen Browsern unterstützt\footnote{\url{https://caniuse.com/\#feat=x-frame-options}}.	
+Folglich haben wir uns dazu entschlossen, von der standardmäßigen Benutzung der SameSite-Option abzusehen. Hierdurch wird zwar potentiell Clickjacking und CSRF erleichtert, jedoch betrachten wir den von uns verwendeten \enquote{X-Frame-Options} Header als hinreichend sicheren Schutz gegen Clickjacking. Er wird allen modernen Browsern unterstützt\footnote{\url{https://caniuse.com/\#feat=x-frame-options}}. Gegen CSRF sind wir durch die konsequente Verwendung des Play CSRF-Schutzes gewappnet.
+
+Keinesfalls entscheidungserheblich aber dennoch erwähnenswert ist, dass auch Google, Facebook und Amazon keinen Gebrauch von der SameSite-Option machen. Dies unterstützt zumindest die von uns getroffene Annahme, dass es gute Gründe dafür geben kann, auf diesen Mechanismus zu verzichten.
 
 
 \section{Reviews}
