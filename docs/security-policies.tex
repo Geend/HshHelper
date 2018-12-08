@@ -124,7 +124,7 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
   \item Netzdienste
   \begin{itemize}
     \item \textbf{AS9:} Netzdienstanmelde-URL [A]
-    \item \textbf{AS10:} Zugangsdaten eines Nutzers für einen externen Netzdienst [-]
+    \item \textbf{AS10:} Zugangsdaten eines Nutzers für einen externen Netzdienst [U+]
   \end{itemize}
 \end{itemize}
 
@@ -169,6 +169,7 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
 
   \item \textbf{AK32:} Nutzer kann Zwei-Faktor-Authentisierung für Nutzerkonto aktivieren [U+]
   \item \textbf{AK33:} Nutzer kann Zwei-Faktor-Authentisierung für Nutzerkonto deaktivieren [U+]
+  \item \textbf{AK33:} Nutzer kann nach Dateien suchen [U+]
 \end{itemize}
 
 \chapter{Richtlinien}
@@ -205,6 +206,14 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
       AK24       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
       AK25       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
       AK26       & \redxmark & \redxmark & \redxmark & \greencheckmark & \greencheckmark & \greencheckmark & \redxmark & \redxmark \\ \hline
+      AK27       & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK28       & \greencheckmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark & \redxmark \\ \hline
+      AK29       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK30       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK31       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK32       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK33       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
+      AK34       & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \greencheckmark  & \greencheckmark & \greencheckmark & \redxmark \\ \hline
   \end{tabularx}
 \end{table}
 
@@ -232,10 +241,15 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
   \item Ein Nutzer [DW, DO] darf beim Verändern des Dateiinhalts oder des Kommentars (AK18) niemals den Dateinamen anpassen.
   \item Ein Nutzer [U+] darf sich nur Dateien anzeigen lassen (AK19), zu welchen mindestens zum Lesen oder Schreiben berechtigt ist.
   \item Ein Nutzer [DO] darf die Nutzer- und Gruppenberechtigungen einer Datei jederzeit anpassen (AK20, 21); bedeutet löschen, hinzufügen, verändern.
-  \item Ein Nutzer [U+] darf sich nur zu seinem eigenem Speicherplatzlimit informieren (AK22) und hat keinen Zugriff auf die Speicherplatzlimit anderer Nutzerkonten.
-  \item Ein Nutzer [U+] darf seinen eigenen Session-Timeout (AK24) einstellen.
-  \item Ein Nutzer [U+] darf sein eigenes Passwort (AK25) einstellen.
+  \item Ein Nutzer [U+] darf sich nur zu seinem \textbf{eigenem} Speicherplatzlimit informieren (AK22) und hat keinen Zugriff auf die Speicherplatzlimit anderer Nutzerkonten.
+  \item Ein Nutzer [U+] darf nur seinen  \textbf{eigenen} Session-Timeout (AK24) einstellen.
+  \item Ein Nutzer [U+] darf nur sein \textbf{eigenes} Passwort (AK25) ändern.
   \item Nur der Dateibesitzer [DO] darf schreibend auf den Dateinamen (AS5) zugreifen, alle anderen [DR, DW] nur lesend.
+  \item Ein Nutzer [U+] hat nur schreibenden Zugriff (AK29, AK30) auf seine \textbf{eigenen} Zugangsdaten (AS10) für einen Netzdienst.
+  \item Beim Löschen eines Netzdienstes [AK30] werden zusätzlich alle vorhandenen Zugangsdaten (AS10) von Nutzern [U+], die diesen Netzdienst genutzt haben, gelöscht.
+  \item Wenn ein Nutzer [U+] das Passwort zu seinem Nutzerkonto ändert (AK5, AK6, AK?), werden all seine Zugangsdaten (AS10) zu Netzdienste löscht.
+  \item Wenn ein Nutzer [U+] die Zwei-Faktor-Authentisierung aktiviert hat (AK32), muss er den zweiten Faktor bei jedem Login (AK1) mit angeben.
+  \item Wenn ein Nutzer [U+] nach Dateien sucht (AK33), so kann er nur Dateien finden, für welche er mindestens zum Lesen oder Schreiben berechtigt ist.
 \end{itemize}
 
 \printbibliography
