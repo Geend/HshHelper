@@ -51,7 +51,7 @@
 \begin{itemize}
   \item Netzwerkverbindungen sind abhörsicher und von außen nicht beeinflussbar.
   \item Betriebssystem, Hardware, Datenbank sowie verwendete Bibliotheken enthalten keine sicherheitsrelevanten Fehler.
-  \item Hashing-Algorithmus \enquote{bcrypt} macht es einem Angreifer wirtschaftlich unmöglich, evtl. erbeutete Password-Hashes durch Brute-Force oder Rainbow Tables in Plaintext zu verwandeln.
+  \item Hashing-Algorithmus \enquote{bcrypt} macht es einem Angreifer wirtschaftlich unmöglich, evtl. erbeutete Password-Hashes durch Brute-Force oder Rainbow Tables in Klartext zu verwandeln.
   \item Lösen eines Captcha ist für einen Angreifer wirtschaftlich undurchführbar.
   \item Die von Google-Servern eingebundenen reCAPTCHA JavaScript-Dateien werden niemals zur Code-Injection verwendet / Google's reCAPTCHA Server sind grund\-sätzlich vertrauenswürdig.
   \item Bibliotheksfunktion \texttt{java.security.SecureRandom} \autocite{JavaDocs.SecureRandom} erstellt Zufallszahlen, die kryptografisch sicher sind.
@@ -157,7 +157,7 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
   \item \textbf{AK19:} Dateien anzeigen lassen [U+]
   \item \textbf{AK20:} Nutzerberechtigungen einer Datei verwalten [DO]
   \item \textbf{AK21:} Gruppenberechtigungen einer Datei verwalten [DO]
-  \item \textbf{AK22:} Informationen zu dem Speicherplatzlimit eines Nutzers anzeigen lassen [U+]
+  \item \textbf{AK22:} Nutzer kann Speicherplatzverbrauch sowie -limit anzeigen lassen [U+]
   \item \textbf{AK23:} Speicherplatzlimit eines Nutzers anpassen [A]
   \item \textbf{AK24:} Session-Timeout einstellen [U+]
   \item \textbf{AK25:} Passwort ändern [U+]
@@ -237,7 +237,7 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
   \item Ein Administrator [A] hat nur schreibenden Zugriff auf ein Nutzerkonto durch das Löschen des Nutzerkontos (AK4) oder durch Anpassen des Speicherplatzlimits eines Nutzers (AK23). Ihm ist nicht möglich, andere Informationen aus dem Nutzerkonto zu lesen oder zu ändern.
   \item Der initiale Benutzer \enquote{admin} kann nicht gelöscht werden.
   \item Ein Nutzer [U+] darf nur dann gelöscht werden, wenn er weder Besitzer der Gruppe Alle oder Administratoren ist.
-    \item Ein Nutzer [U-] muss ein Captcha lösen, wenn auf dem korrospondierenden Account 5 fehlgeschlagene Logins in einem Zeitraum von 5 Stunden erfolgt sind (AK1).
+    \item Ein Nutzer [U-] muss ein Captcha lösen, wenn auf dem korrespondierenden Account 5 fehlgeschlagene Logins in einem Zeitraum von 5 Stunden erfolgt sind (AK1).
   \item Ein Nutzer [U-] muss ein Captcha lösen, wenn von seiner IP 15 fehlgeschlagene Logins in einem Zeitraum von 5 Stunden erfolgt sind (AK1).
 	\item Ein Nutzer [U-] darf sich nicht mehr einloggen, wenn von seiner IP 30 fehlgeschlagene Logins in einem Zeitraum von 5 Stunden erfolgt sind (AK1).
   \item Die E-Mail eines Nutzerkontos ist einzigartig, so dass die Erstellung zweier Nutzerkonten mit der selben E-Mail-Adresse nicht möglich ist (AK3).
