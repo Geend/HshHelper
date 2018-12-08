@@ -6,6 +6,7 @@ import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import managers.WeakPasswordException;
 import models.File;
 import models.Group;
 import models.User;
@@ -111,6 +112,186 @@ public class UserManagerTest {
         assertEquals(result.getHas2FA(), true);
         assertEquals(result.getUsername(), "h");
         assertEquals(result.getOwnedGroups(), (Integer)3);
+    }
+
+    @Test
+    public void changeUserQutoaLimitTest() throws UnauthorizedException, InvalidArgumentException {
+        User u = mock(User.class);
+        Policy p = mock(Policy.class);
+        SessionManager sessionManager = mock(SessionManager.class);
+        when(sessionManager.currentPolicy()).thenReturn(p);
+        UserFinder userFinder = mock(UserFinder.class);
+        EbeanServer s = mock(EbeanServer.class);
+        when(userFinder.byIdOptional(1L)).thenReturn(Optional.of(u));
+
+        UserManager sut = new UserManager(
+                userFinder,
+                defaultGroupFinder,
+                defaultPasswordGenerator,
+                defaultHashHelper,
+                s,
+                sessionManager,
+                defaultUserFactory,
+                defaultCredentialUtility,
+                defaultWeakPasswords,
+                defaultTwoFactorAuthService);
+
+        when(p.canReadWriteQuotaLimit()).thenReturn(false);
+        boolean throwsUnauthorized = false;
+        try {
+            sut.changeUserQuotaLimit(1L, 5L);
+        } catch (UnauthorizedException e) {
+            throwsUnauthorized = true;
+        }
+        assertTrue(throwsUnauthorized);
+
+        when(p.canReadWriteQuotaLimit()).thenReturn(true);
+        sut.changeUserQuotaLimit(1L, 5L);
+        verify(u).setQuotaLimit(5L);
+        verify(s).save(u);
+    }
+
+    @Test
+    public void getUserQutoaLimitTest() throws UnauthorizedException, InvalidArgumentException {
+        User u = mock(User.class);
+        Policy p = mock(Policy.class);
+        SessionManager sessionManager = mock(SessionManager.class);
+        when(sessionManager.currentPolicy()).thenReturn(p);
+        UserFinder userFinder = mock(UserFinder.class);
+        when(userFinder.byIdOptional(1L)).thenReturn(Optional.of(u));
+
+        UserManager sut = new UserManager(
+                userFinder,
+                defaultGroupFinder,
+                defaultPasswordGenerator,
+                defaultHashHelper,
+                defaultServer,
+                sessionManager,
+                defaultUserFactory,
+                defaultCredentialUtility,
+                defaultWeakPasswords,
+                defaultTwoFactorAuthService);
+
+        when(p.canReadWriteQuotaLimit()).thenReturn(false);
+        boolean throwsUnauthorized = false;
+        try {
+            sut.getUserQuotaLimit(1L);
+        } catch (UnauthorizedException e) {
+            throwsUnauthorized = true;
+        }
+        assertTrue(throwsUnauthorized);
+
+        when(p.canReadWriteQuotaLimit()).thenReturn(true);
+        when(u.getQuotaLimit()).thenReturn(3L);
+        Long quotaLimit = sut.getUserQuotaLimit(1L);
+        assertEquals(quotaLimit, (Long)3L);
+    }
+
+    @Test
+    public void changeUserPasswordTest() throws UnauthorizedException, InvalidArgumentException, WeakPasswordException {
+        Policy p = mock(Policy.class);
+        User user = mock(User.class);
+        SessionManager sessionManager = mock(SessionManager.class);
+        when(sessionManager.currentUser()).thenReturn(user);
+        when(sessionManager.currentPolicy()).thenReturn(p);
+        when(p.canChangeUserTimeoutValue(user)).thenReturn(false);
+        EbeanServer s = mock(EbeanServer.class);
+        WeakPasswords w = mock(WeakPasswords.class);
+        HashHelper h = mock(HashHelper.class);
+        when(s.beginTransaction(any(TxIsolation.class))).thenReturn(mock(Transaction.class));
+        UserManager sut = new UserManager(
+                defaultUserFinder,
+                defaultGroupFinder,
+                defaultPasswordGenerator,
+                h,
+                s,
+                sessionManager,
+                defaultUserFactory,
+                defaultCredentialUtility,
+                w,
+                defaultTwoFactorAuthService);
+        when(w.isWeakPw(anyString())).thenReturn(true);
+        boolean throwsWeakPassword = false;
+        try {
+            sut.changeUserPassword("c", "n");
+        } catch (WeakPasswordException e) {
+            throwsWeakPassword = true;
+        }
+        assertTrue(throwsWeakPassword);
+
+        when(w.isWeakPw(anyString())).thenReturn(false);
+
+        when(h.checkHash(anyString(), anyString())).thenReturn(false);
+        boolean throwsUnauthorized = false;
+        try {
+            sut.changeUserPassword("c", "n");
+        } catch (UnauthorizedException e) {
+            throwsUnauthorized = true;
+        }
+        assertTrue(throwsUnauthorized);
+        when(user.getPasswordHash()).thenReturn("a");
+        when(h.hashPassword(anyString())).thenReturn("hashed");
+        when(h.checkHash(anyString(), anyString())).thenReturn(true);
+
+        sut.changeUserPassword("c", "n");
+
+        verify(user).setPasswordHash("hashed");
+        verify(s).save(user);
+    }
+
+    @Test
+    public void changeUserSessionTimeoutTest() throws UnauthorizedException, InvalidArgumentException {
+        Policy p = mock(Policy.class);
+        User user = mock(User.class);
+        SessionManager sessionManager = mock(SessionManager.class);
+        when(sessionManager.currentUser()).thenReturn(user);
+        when(sessionManager.currentPolicy()).thenReturn(p);
+        when(p.canChangeUserTimeoutValue(user)).thenReturn(false);
+        EbeanServer s = mock(EbeanServer.class);
+        UserManager sut = new UserManager(
+                defaultUserFinder,
+                defaultGroupFinder,
+                defaultPasswordGenerator,
+                defaultHashHelper,
+                s,
+                sessionManager,
+                defaultUserFactory,
+                defaultCredentialUtility,
+                defaultWeakPasswords,
+                defaultTwoFactorAuthService);
+        boolean throwsUnauthorized = false;
+        try {
+            sut.changeUserSessionTimeout(5);
+        } catch (UnauthorizedException e) {
+            throwsUnauthorized = true;
+        }
+        assertTrue(throwsUnauthorized);
+
+        when(p.canChangeUserTimeoutValue(user)).thenReturn(true);
+        sut.changeUserSessionTimeout(5);
+        verify(user).setSessionTimeoutInMinutes(5);
+        verify(s).save(user);
+    }
+
+    @Test
+    public void getUsernameTest() throws InvalidArgumentException {
+        User user = mock(User.class);
+        when(user.getUsername()).thenReturn("h");
+        UserFinder userFinder = mock(UserFinder.class);
+        when(userFinder.byIdOptional(1L)).thenReturn(Optional.of(user));
+        UserManager sut = new UserManager(
+                userFinder,
+                defaultGroupFinder,
+                defaultPasswordGenerator,
+                defaultHashHelper,
+                defaultServer,
+                defaultSessionManager,
+                defaultUserFactory,
+                defaultCredentialUtility,
+                defaultWeakPasswords,
+                defaultTwoFactorAuthService);
+        String username = sut.getUsername(1L);
+        assertEquals(username, "h");
     }
 
     @Test(expected = UnauthorizedException.class)
