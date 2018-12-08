@@ -7,7 +7,6 @@ import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.filemanager.dto.FileMeta;
 import managers.filemanager.dto.PermissionMeta;
-import managers.permissionmanager.InvalidDataException;
 import managers.permissionmanager.PermissionManager;
 import models.Group;
 import models.PermissionLevel;
@@ -59,7 +58,7 @@ public class PermissionController extends Controller {
 
 
     /* UserPermissions START */
-    public Result showEditUserPermissionForm() throws UnauthorizedException, InvalidArgumentException, InvalidDataException {
+    public Result showEditUserPermissionForm() throws UnauthorizedException, InvalidArgumentException {
         Form<ShowEditUserPermissionFormDto> form = showEditUserPermissionFormDtoForm.bindFromRequest();
         ShowEditUserPermissionFormDto data = form.get();
 
@@ -108,7 +107,7 @@ public class PermissionController extends Controller {
 
 
     /* GroupPermission START */
-    public Result showEditGroupPermissionForm() throws UnauthorizedException, InvalidArgumentException, InvalidDataException {
+    public Result showEditGroupPermissionForm() throws UnauthorizedException, InvalidArgumentException {
         Form<ShowEditGroupPermissionFormDto> form = showEditGroupPermissionFormDtoForm.bindFromRequest();
         ShowEditGroupPermissionFormDto data = form.get();
 
