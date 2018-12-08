@@ -6,6 +6,8 @@ import io.ebean.Transaction;
 import io.ebean.annotation.TxIsolation;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
+import models.File;
+import models.Group;
 import models.User;
 import models.factories.UserFactory;
 import models.finders.GroupFinder;
@@ -68,27 +70,123 @@ public class UserManagerTest {
         defaultTwoFactorAuthService = mock(TwoFactorAuthService.class);
     }
 
+    @Test
+    public void getUserMetaInfoTest() throws UnauthorizedException, InvalidArgumentException {
+        User user = mock(User.class);
+        Policy spec = mock(Policy.class);
+        when(spec.canViewAllUsers()).thenReturn(false);
+        SessionManager sessionManager = mock(SessionManager.class);
+        when(sessionManager.currentPolicy()).thenReturn(spec);
+        UserFinder userFinder = mock(UserFinder.class);
+        when(userFinder.byIdOptional(1L)).thenReturn(Optional.of(user));
+        UserManager sut = new UserManager(
+                userFinder,
+                defaultGroupFinder,
+                defaultPasswordGenerator,
+                defaultHashHelper,
+                defaultServer,
+                sessionManager,
+                defaultUserFactory,
+                defaultCredentialUtility,
+                defaultWeakPasswords,
+                defaultTwoFactorAuthService);
+
+
+        when(spec.canViewUserMetaInfo()).thenReturn(false);
+        Boolean throwsUnauthorized = false;
+        try {
+            sut.getUserMetaInfo(1L);
+        } catch(UnauthorizedException ex) {
+            throwsUnauthorized = true;
+        }
+        assertTrue(throwsUnauthorized);
+
+        List<Group> ownerOf = mock(List.class);
+        when(ownerOf.size()).thenReturn(3);
+        when(spec.canViewUserMetaInfo()).thenReturn(true);
+        when(user.getUsername()).thenReturn("h");
+        when(user.getOwnerOf()).thenReturn(ownerOf);
+        when(user.has2FA()).thenReturn(true);
+        UserMetaInfo result = sut.getUserMetaInfo(1L);
+        assertEquals(result.getHas2FA(), true);
+        assertEquals(result.getUsername(), "h");
+        assertEquals(result.getOwnedGroups(), (Integer)3);
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void getAllAdminUsersObeysSpecification() throws UnauthorizedException {
+        Policy spec = mock(Policy.class);
+        when(spec.canViewAllUsers()).thenReturn(false);
+        SessionManager sessionManager = mock(SessionManager.class);
+        when(sessionManager.currentPolicy()).thenReturn(spec);
+        UserManager sut = new UserManager(
+                defaultUserFinder,
+                defaultGroupFinder,
+                defaultPasswordGenerator,
+                defaultHashHelper,
+                defaultServer,
+                sessionManager,
+                defaultUserFactory,
+                defaultCredentialUtility,
+                defaultWeakPasswords,
+                defaultTwoFactorAuthService);
+        sut.getAdminUsers();
+    }
 
     @Test(expected = UnauthorizedException.class)
     public void getAllObeysSpecification() throws UnauthorizedException {
         Policy spec = mock(Policy.class);
         when(spec.canViewAllUsers()).thenReturn(false);
-        when(defaultSessionManager.currentPolicy()).thenReturn(spec);
-
-        HashHelper hashHelper = mock(HashHelper.class);
-        PasswordGenerator passwordGenerator = mock(PasswordGenerator.class);
+        SessionManager sessionManager = mock(SessionManager.class);
+        when(sessionManager.currentPolicy()).thenReturn(spec);
         UserManager sut = new UserManager(
                 defaultUserFinder,
                 defaultGroupFinder,
-                passwordGenerator,
-                hashHelper,
+                defaultPasswordGenerator,
+                defaultHashHelper,
                 defaultServer,
-                defaultSessionManager,
+                sessionManager,
                 defaultUserFactory,
                 defaultCredentialUtility,
                 defaultWeakPasswords,
                 defaultTwoFactorAuthService);
         sut.getAllUsers();
+    }
+
+    @Test
+    public void deactivateTwoFactorAuthTest() throws UnauthorizedException, InvalidArgumentException {
+        User user = mock(User.class);
+        EbeanServer server = mock(EbeanServer.class);
+        SessionManager sessionManager = mock(SessionManager.class);
+        when(sessionManager.currentUser()).thenReturn(user);
+        Policy policy = mock(Policy.class);
+        when(sessionManager.currentPolicy()).thenReturn(policy);
+        when(policy.canDisable2FA(any(User.class))).thenReturn(false);
+        UserFinder userFinder = mock(UserFinder.class);
+        when(userFinder.byIdOptional(anyLong())).thenReturn(Optional.of(user));
+        UserManager sut = new UserManager(
+                userFinder,
+                defaultGroupFinder,
+                defaultPasswordGenerator,
+                defaultHashHelper,
+                server,
+                sessionManager,
+                defaultUserFactory,
+                defaultCredentialUtility,
+                defaultWeakPasswords,
+                defaultTwoFactorAuthService);
+
+        Boolean throwsUnauthorized = false;
+        try {
+            sut.deactivateTwoFactorAuth();
+        } catch(UnauthorizedException ex) {
+            throwsUnauthorized = true;
+        }
+        assertTrue(throwsUnauthorized);
+        when(policy.canDisable2FA(any(User.class))).thenReturn(true);
+        sut.deactivateTwoFactorAuth();
+        verify(user).setTwoFactorAuthSecret("");
+        verify(server).save(user);
     }
 
     @Test
