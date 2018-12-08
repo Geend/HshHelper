@@ -1,6 +1,9 @@
 package dtos.file;
 
+import play.data.validation.Constraints;
+
 public class EditFileContentDto {
+    @Constraints.Required
     public Long fileId;
 
     public EditFileContentDto() {

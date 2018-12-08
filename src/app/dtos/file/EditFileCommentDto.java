@@ -1,6 +1,9 @@
 package dtos.file;
 
+import play.data.validation.Constraints;
+
 public class EditFileCommentDto {
+    @Constraints.Required
     private Long fileId;
     private String comment;
 

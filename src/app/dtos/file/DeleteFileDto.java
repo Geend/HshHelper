@@ -1,6 +1,9 @@
 package dtos.file;
 
+import play.data.validation.Constraints;
+
 public class DeleteFileDto {
+    @Constraints.Required
     private Long fileId;
 
     public Long getFileId() {

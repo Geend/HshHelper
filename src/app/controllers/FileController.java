@@ -194,8 +194,15 @@ public class FileController extends Controller {
     public Result editFileComment() throws UnauthorizedException, InvalidArgumentException {
         Form<EditFileCommentDto> boundForm = editFileCommentDtoForm.bindFromRequest();
         if (boundForm.hasErrors()) {
-            EditFileCommentDto data = boundForm.get();
-            FileMeta fileMeta = fileManager.getFileMeta(data.getFileId());
+            Long fileId;
+
+            try {
+                fileId = Long.valueOf(boundForm.rawData().get("fileId"));
+            } catch (NumberFormatException ex) {
+                throw new InvalidArgumentException();
+            }
+
+            FileMeta fileMeta = fileManager.getFileMeta(fileId);
             return badRequest(views.html.file.File.render(fileMeta, editFileContentDtoForm, boundForm));
         }
 
@@ -215,8 +222,15 @@ public class FileController extends Controller {
     public Result editFileContent() throws UnauthorizedException, InvalidArgumentException, IOException {
         Form<EditFileContentDto> boundForm = editFileContentDtoForm.bindFromRequest();
         if (boundForm.hasErrors()) {
-            EditFileContentDto formData = boundForm.get();
-            FileMeta fileMeta = fileManager.getFileMeta(formData.getFileId());
+            Long fileId;
+
+            try {
+                fileId = Long.valueOf(boundForm.rawData().get("fileId"));
+            } catch (NumberFormatException ex) {
+                throw new InvalidArgumentException();
+            }
+
+            FileMeta fileMeta = fileManager.getFileMeta(fileId);
             return badRequest(views.html.file.File.render(fileMeta, boundForm, editFileCommentDtoForm));
         }
 
