@@ -310,7 +310,6 @@ Bei diesen Strings könnte man sich der \texttt{i18n}-Implementation von Play be
 In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gefunden wurden.
 
 % htbp = HereTopBottomPage (priority of where to place the table in case previous placement fails)
-\begin{table}[ht]
   \captionof{table}{Auflistung der Fehler und Methode, die diese gefunden hat}
   \label{quality-assurance:error-table}
   \begin{tabularx}{\linewidth}{
@@ -336,9 +335,9 @@ In der folgenden Tabelle stellen wir dar, welche Fehler durch welche Methode gef
   Regex für Dateinamen ließ keine großen Umlaute zu & manueller Test & 0.25 \\ \hline
   NullPointerException statt UnauthorizedException, wenn Nutzer manuell URL zum Erstellen einer Nutzer-/Gruppenberechtigung für eine Datei ansurft, für die er selbst keine Berechtigung hat & manueller Test & 0.75 \\ \hline
   Benutzer kann aufgrund einer fehlenden Prüfung Gruppen-Berechtigungen für jede Datei erstellen & Review der Policy-Implementierung & 1 \\ \hline
-
+  Formulare für \enquote{Netzdienst erstellen} und \enquote{Netzdienst berarbeiten} waren für unauthentisierte Benutzer erreichbar & Tests & 0.5 \\ \hline
+  Nutzer war es möglich, Dateien mit dem selben Namen auf dem Server zu erstellen, durch Absenden paralleler Requests & Penetration-Tests & 4 \\ \hline
   \end{tabularx}
-\end{table}
 
 \printbibliography
 
