@@ -202,7 +202,7 @@ Sollten Sie dennnoch den Wunsch haben, die Datenbank über die Grenzen einer App
 
 \begin{lstlisting}[label=db-connection-mode, caption={Einstellung innerhalb der Konfigurationsdatei zum Anpassen des Verbindungsmodus der verwendeten Datenbank},captionpos=b]
 db {
-  default.url = "jdbc:h2:mem:hshhelper;mode=mysql"
+  default.url = "jdbc:h2:mem:hshhelper;mode=mysql;MVCC=false;LOCK_MODE=1"
 }
 \end{lstlisting}
 
