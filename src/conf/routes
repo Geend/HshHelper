@@ -109,9 +109,6 @@ POST        /credentials/delete                               controllers.NetSer
 POST        /credentials/decrypt                              controllers.NetServiceController.decryptNetServiceCredential()
 # NetServiceController - END
 
-GET         /forbidden                                        controllers.ErrorController.showForbiddenMessage()
-GET         /badrequest                                       controllers.ErrorController.showBadRequestMessage()
-
 
 
 

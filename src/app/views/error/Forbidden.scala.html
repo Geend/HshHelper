@@ -1,10 +1,13 @@
 @(message:String)
 @Base1C("Forbidden") {
+    <div class="message error">
+        <b>Für diese Aktion liegen nicht die nötigen Rechte vor!</b>
+        @if(message != null) {
+            <br>@message
+        }
+    </div>
+    <hr>
     <p>
-        Darfste nicht!
+        <a href="@routes.HomeController.index()">Zurück zur Startseite</a>
     </p>
-    <p>
-        @message
-    </p>
-
 }

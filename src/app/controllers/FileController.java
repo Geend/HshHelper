@@ -5,6 +5,7 @@ import extension.NoFileSubmittedOnUploadException;
 import managers.InvalidArgumentException;
 import managers.UnauthorizedException;
 import managers.filemanager.FileManager;
+import managers.filemanager.FilenameAlreadyExistsException;
 import managers.filemanager.QuotaExceededException;
 import managers.filemanager.dto.FileMeta;
 import models.PermissionLevel;
@@ -21,6 +22,7 @@ import policyenforcement.session.SessionManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +99,7 @@ public class FileController extends Controller {
         return ok(views.html.file.UploadFile.render(this.uploadFileForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
     }
 
-    public Result uploadFile() {
+    public Result uploadFile() throws UnauthorizedException, IOException {
         Form<UploadFileDto> boundForm = uploadFileForm.bindFromRequest();
         List<UserPermissionDto> userPermissionDtos = this.fileManager.getUserPermissionDtosForCreate();
         List<GroupPermissionDto> groupPermissionDtos = this.fileManager.getGroupPermissionDtosForCreate();
@@ -143,8 +145,9 @@ public class FileController extends Controller {
         } catch(QuotaExceededException e) {
             boundForm = boundForm.withGlobalError("Quota überschritten. Bitte geben sie eine kleinere Datei an.");
             return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
-        } catch (Exception e) {
-            return redirect(routes.ErrorController.showBadRequestMessage());
+        } catch (FilenameAlreadyExistsException e) {
+            boundForm = boundForm.withError("filename", "Name bereits belegt!");
+            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
         }
     }
 
