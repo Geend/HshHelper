@@ -1,9 +1,9 @@
 package managers.netservicemanager;
 
-import extension.Crypto.Cipher;
-import extension.Crypto.CryptoKey;
-import extension.Crypto.CryptoResult;
-import extension.Crypto.KeyGenerator;
+import extension.crypto.Cipher;
+import extension.crypto.CryptoKey;
+import extension.crypto.CryptoResult;
+import extension.crypto.KeyGenerator;
 import extension.logging.DangerousCharFilteringLogger;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;

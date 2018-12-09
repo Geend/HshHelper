@@ -1,7 +1,7 @@
 package policyenforcement.session;
 
 import extension.B64Helper;
-import extension.Crypto.*;
+import extension.crypto.*;
 import extension.RandomDataGenerator;
 import extension.logging.DangerousCharFilteringLogger;
 import io.ebean.Ebean;

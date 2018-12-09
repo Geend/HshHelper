@@ -1,7 +1,7 @@
 package models.factories;
 
 import extension.B64Helper;
-import extension.Crypto.*;
+import extension.crypto.*;
 import extension.HashHelper;
 import extension.RandomDataGenerator;
 import models.User;

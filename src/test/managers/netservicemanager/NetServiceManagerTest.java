@@ -1,10 +1,9 @@
 package managers.netservicemanager;
 
-import extension.Crypto.Cipher;
-import extension.Crypto.CryptoConstants;
-import extension.Crypto.CryptoKey;
-import extension.Crypto.KeyGenerator;
-import extension.HashHelper;
+import extension.crypto.Cipher;
+import extension.crypto.CryptoConstants;
+import extension.crypto.CryptoKey;
+import extension.crypto.KeyGenerator;
 import extension.RandomDataGenerator;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
@@ -21,7 +20,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.internal.matchers.Any;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import policyenforcement.Policy;

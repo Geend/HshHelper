@@ -1,4 +1,4 @@
-package extension.Crypto;
+package extension.crypto;
 
 import javax.crypto.SecretKey;
 

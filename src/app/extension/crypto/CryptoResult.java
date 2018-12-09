@@ -1,4 +1,4 @@
-package extension.Crypto;
+package extension.crypto;
 
 public class CryptoResult {
     private byte[] initializationVector;

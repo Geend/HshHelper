@@ -1,6 +1,6 @@
 package extension;
 
-import extension.Crypto.*;
+import extension.crypto.*;
 import io.ebean.EbeanServer;
 import models.User;
 import policyenforcement.session.SessionManager;

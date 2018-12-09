@@ -1,4 +1,4 @@
-package extension.Crypto;
+package extension.crypto;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -10,7 +10,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidParameterSpecException;
 
-import static extension.Crypto.CryptoConstants.CIPHER_NAME_MODE_PADDING;
+import static extension.crypto.CryptoConstants.CIPHER_NAME_MODE_PADDING;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
 

@@ -1,8 +1,8 @@
 package policyenforcement.session;
 
 import extension.B64Helper;
-import extension.Crypto.Cipher;
-import extension.Crypto.KeyGenerator;
+import extension.crypto.Cipher;
+import extension.crypto.KeyGenerator;
 import extension.HashHelper;
 import extension.RandomDataGenerator;
 import io.ebean.Model;
