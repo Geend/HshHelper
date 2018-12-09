@@ -168,12 +168,12 @@ public class UserController extends Controller {
             return badRequest(views.html.users.Confirm2FactorAuth.render(imageSourceData, boundForm));
         }
 
-        return redirect(routes.HomeController.index());
+        return redirect(routes.UserController.showUserSettings());
     }
 
     public Result deactivateTwoFactorAuth() throws UnauthorizedException, InvalidArgumentException {
         this.userManager.deactivateTwoFactorAuth();
-        return redirect(routes.HomeController.index());
+        return redirect(routes.UserController.showUserSettings());
     }
 
     public Result deactivateSpecificUserTwoFactorAuth() throws UnauthorizedException, InvalidArgumentException {
