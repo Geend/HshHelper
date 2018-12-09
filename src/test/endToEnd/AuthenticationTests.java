@@ -121,24 +121,24 @@ public class AuthenticationTests {
 
                     // This is see other, as we are logging in as the admin before starting the tests.
                     { "GET", "/login", Http.Status.SEE_OTHER, "/login" },    // controllers.LoginController.showLoginForm
-                    { "POST", "/login", Http.Status.OK, "/login" },    // controllers.LoginController.login
+                    { "POST", "/login", Http.Status.SEE_OTHER, "/" },    // controllers.LoginController.login
                     { "POST", "/logout", Http.Status.SEE_OTHER, "/" },    // controllers.LoginController.logout
                     { "GET", "/changePasswordAfterReset", Http.Status.SEE_OTHER, "/changePasswordAfterReset" },    // controllers.LoginController.showChangePasswordAfterResetForm
-                    { "POST", "/changePasswordAfterReset", Http.Status.BAD_REQUEST, "/changePasswordAfterReset" },    // controllers.LoginController.changePasswordAfterReset
+                    { "POST", "/changePasswordAfterReset", Http.Status.SEE_OTHER, "/" },    // controllers.LoginController.changePasswordAfterReset
                     { "GET", "/resetPassword", Http.Status.SEE_OTHER, "/resetPassword" },    // controllers.LoginController.showResetPasswordForm
-                    { "POST", "/resetPassword", Http.Status.BAD_REQUEST, "/resetPassword" },    // controllers.LoginController.requestResetPassword
+                    { "POST", "/resetPassword", Http.Status.SEE_OTHER, "/" },    // controllers.LoginController.requestResetPassword
                     { "GET", "/resetPassword/:tokenId", Http.Status.BAD_REQUEST, "/resetPassword/:tokenId" },    // controllers.LoginController.showResetPasswordWithTokenForm(tokenId : java.util.UUID)
-                    { "POST", "/resetPassword/:tokenId", Http.Status.BAD_REQUEST, "/resetPassword/:tokenId" },    // controllers.LoginController.resetPasswordWithToken(tokenId : java.util.UUID)
+                    { "POST", "/resetPassword/:tokenId", Http.Status.BAD_REQUEST, "/" },    // controllers.LoginController.resetPasswordWithToken(tokenId : java.util.UUID)
 
-                    { "POST", "/users/create", Http.Status.BAD_REQUEST, "/users/create" },    // controllers.UserController.createUser
+                    { "POST", "/users/create", Http.Status.BAD_REQUEST, "/" },    // controllers.UserController.createUser
                     { "GET", "/users/create", Http.Status.FORBIDDEN, "/users/create" },    // controllers.UserController.showCreateUserForm
                     { "GET", "/users/all", Http.Status.FORBIDDEN, "/users/all" },    // controllers.UserController.showUsers
                     { "GET", "/users/admins", Http.Status.FORBIDDEN, "/users/all" },    // controllers.UserController.showAdminUsers
-                    { "POST", "/users/confirmDelete", Http.Status.BAD_REQUEST, "/users/all" },    // controllers.UserController.showConfirmDeleteForm
-                    { "POST", "/users/delete", Http.Status.BAD_REQUEST, "/users/all" },    // controllers.UserController.deleteUser
+                    { "POST", "/users/confirmDelete", Http.Status.BAD_REQUEST, "/" },    // controllers.UserController.showConfirmDeleteForm
+                    { "POST", "/users/delete", Http.Status.BAD_REQUEST, "/" },    // controllers.UserController.deleteUser
                     { "GET", "/users/1/settings", Http.Status.FORBIDDEN, "/users/1/settings" },    // controllers.UserController.showUserAdminSettings(userId:Long)
-                    { "POST", "/users/editQuota", Http.Status.BAD_REQUEST , "/users/1/settings"},    // controllers.UserController.changeUserQuotaLimit
-                    { "POST", "/users/deactivateTwoFactorAuth", Http.Status.BAD_REQUEST, "/users/1/settings" },    // controllers.UserController.deactivateSpecificUserTwoFactorAuth
+                    { "POST", "/users/editQuota", Http.Status.BAD_REQUEST , "/"},    // controllers.UserController.changeUserQuotaLimit
+                    { "POST", "/users/deactivateTwoFactorAuth", Http.Status.BAD_REQUEST, "/" },    // controllers.UserController.deactivateSpecificUserTwoFactorAuth
                     { "GET", "/sessions", Http.Status.OK , "/sessions"},    // controllers.UserController.showActiveUserSessions()
                     { "POST", "/sessions/delete", Http.Status.BAD_REQUEST, "/sessions" },    // controllers.UserController.deleteUserSession()
                     { "GET", "/settings", Http.Status.OK, "/settings" },    // controllers.UserController.showUserSettings()
@@ -151,8 +151,8 @@ public class AuthenticationTests {
                     { "GET", "/groups/membership", Http.Status.OK, "/groups/membership" },    // controllers.GroupController.showOwnMemberships
                     { "GET", "/groups/own", Http.Status.OK, "/groups/own" },    // controllers.GroupController.showOwnGroups
                     { "GET", "/groups/all", Http.Status.FORBIDDEN, "/groups/all" },    // controllers.GroupController.showAllGroups
-                    { "POST", "/groups/confirmDelete", Http.Status.BAD_REQUEST , "/groups/all" },    // controllers.GroupController.confirmDelete
-                    { "POST", "/groups/delete", Http.Status.BAD_REQUEST, "/groups/all" },    // controllers.GroupController.deleteGroup
+                    { "POST", "/groups/confirmDelete", Http.Status.BAD_REQUEST , "/" },    // controllers.GroupController.confirmDelete
+                    { "POST", "/groups/delete", Http.Status.BAD_REQUEST, "/" },    // controllers.GroupController.deleteGroup
                     { "GET", "/groups/create", Http.Status.OK, "/groups/create" },    // controllers.GroupController.showCreateGroupForm
                     { "POST", "/groups/create", Http.Status.BAD_REQUEST, "/groups/create" },    // controllers.GroupController.createGroup
                     { "GET", "/groups/1", Http.Status.SEE_OTHER, "/groups/1" },    // controllers.GroupController.showGroup(groupId : Long)
@@ -172,8 +172,8 @@ public class AuthenticationTests {
                     { "GET", "/files/quota", Http.Status.OK, "/files/quota" },    // controllers.FileController.showQuotaUsage
                     { "GET", "/files/2", Http.Status.OK, "/files/2" },    // controllers.FileController.showFile(fileId: Long)
                     { "GET", "/files/1/download", Http.Status.OK, "/files/2/download" },    // controllers.FileController.downloadFile(fileId: Long)
-                    { "POST", "/files/editComment", Http.Status.BAD_REQUEST,  "/files/2/" },    // controllers.FileController.editFileComment
-                    { "POST", "/files/editContent", Http.Status.BAD_REQUEST,  "/files/2/" },    // controllers.FileController.editFileContent
+                    { "POST", "/files/editComment", Http.Status.BAD_REQUEST,  "/" },    // controllers.FileController.editFileComment
+                    { "POST", "/files/editContent", Http.Status.BAD_REQUEST,  "/" },    // controllers.FileController.editFileContent
                     { "POST", "/files/search", Http.Status.BAD_REQUEST, "/" },    // controllers.FileController.searchFiles
 
                     { "POST", "/permissions/editUserPermission", Http.Status.BAD_REQUEST, "/files/2" },    // controllers.PermissionController.showEditUserPermissionForm()
@@ -189,13 +189,13 @@ public class AuthenticationTests {
 
                     { "GET", "/netservices/all", Http.Status.FORBIDDEN, "/netservices/all" },    // controllers.NetServiceController.showAllNetServices
                     { "GET", "/netservices/create", Http.Status.FORBIDDEN , "/netservices/create"},    // controllers.NetServiceController.showAddNetServiceForm
-                    { "POST", "/netservices/create", Http.Status.BAD_REQUEST, "/netservices/create" },    // controllers.NetServiceController.createNetService
-                    { "POST", "/netservices/confirmDelete", Http.Status.BAD_REQUEST, "/netservices/all" },    // controllers.NetServiceController.showDeleteNetServiceConfirmation
-                    { "POST", "/netservices/delete", Http.Status.BAD_REQUEST , "/netservices/all"},    // controllers.NetServiceController.deleteNetService
+                    { "POST", "/netservices/create", Http.Status.BAD_REQUEST, "/" },    // controllers.NetServiceController.createNetService
+                    { "POST", "/netservices/confirmDelete", Http.Status.BAD_REQUEST, "/" },    // controllers.NetServiceController.showDeleteNetServiceConfirmation
+                    { "POST", "/netservices/delete", Http.Status.BAD_REQUEST , "/"},    // controllers.NetServiceController.deleteNetService
                     { "GET", "/netservices/edit/1", Http.Status.FORBIDDEN, "/netservices/edit/1"},    // controllers.NetServiceController.showEditNetService(netServiceId:Long)
-                    { "POST", "/netservices/edit", Http.Status.BAD_REQUEST, "/netservices/edit/1" },    // controllers.NetServiceController.editNetService
-                    { "POST", "/netservices/addparameter", Http.Status.BAD_REQUEST, "/netservices/edit/1" },    // controllers.NetServiceController.addNetServiceParameter
-                    { "POST", "/netservices/removeparameter", Http.Status.BAD_REQUEST, "/netservices/edit/1" },    // controllers.NetServiceController.removeNetServiceParameter
+                    { "POST", "/netservices/edit", Http.Status.BAD_REQUEST, "/" },    // controllers.NetServiceController.editNetService
+                    { "POST", "/netservices/addparameter", Http.Status.BAD_REQUEST, "/" },    // controllers.NetServiceController.addNetServiceParameter
+                    { "POST", "/netservices/removeparameter", Http.Status.BAD_REQUEST, "/" },    // controllers.NetServiceController.removeNetServiceParameter
                     { "GET", "/credentials", Http.Status.OK, "/credentials" },    // controllers.NetServiceController.showUserNetServiceCredentials
                     { "GET", "/credentials/create", Http.Status.OK, "/credentials/create" },    // controllers.NetServiceController.showCreateNetServiceCredentialForm
                     { "POST", "/credentials/create", Http.Status.BAD_REQUEST, "/credentials/create" },    // controllers.NetServiceController.createNetServiceCredential
@@ -254,11 +254,11 @@ public class AuthenticationTests {
                     { "POST", "/login", Http.Status.SEE_OTHER, "/" },    // controllers.LoginController.login
                     { "POST", "/logout", Http.Status.SEE_OTHER, "/" },    // controllers.LoginController.logout
                     { "GET", "/changePasswordAfterReset", Http.Status.SEE_OTHER, "/changePasswordAfterReset" },    // controllers.LoginController.showChangePasswordAfterResetForm
-                    { "POST", "/changePasswordAfterReset", Http.Status.BAD_REQUEST, "/changePasswordAfterReset" },    // controllers.LoginController.changePasswordAfterReset
+                    { "POST", "/changePasswordAfterReset", Http.Status.SEE_OTHER, "/" },    // controllers.LoginController.changePasswordAfterReset
                     { "GET", "/resetPassword", Http.Status.SEE_OTHER, "/resetPassword" },    // controllers.LoginController.showResetPasswordForm
-                    { "POST", "/resetPassword", Http.Status.BAD_REQUEST, "/resetPassword" },    // controllers.LoginController.requestResetPassword
+                    { "POST", "/resetPassword", Http.Status.SEE_OTHER, "/" },    // controllers.LoginController.requestResetPassword
                     { "GET", "/resetPassword/:tokenId", Http.Status.BAD_REQUEST, "/resetPassword/:tokenId" },    // controllers.LoginController.showResetPasswordWithTokenForm(tokenId : java.util.UUID)
-                    { "POST", "/resetPassword/:tokenId", Http.Status.BAD_REQUEST, "/resetPassword/:tokenId" },    // controllers.LoginController.resetPasswordWithToken(tokenId : java.util.UUID)
+                    { "POST", "/resetPassword/:tokenId", Http.Status.BAD_REQUEST, "/" },    // controllers.LoginController.resetPasswordWithToken(tokenId : java.util.UUID)
 
                     { "POST", "/users/create", Http.Status.BAD_REQUEST, "/users/create" },    // controllers.UserController.createUser
                     { "GET", "/users/create", Http.Status.OK, "/users/create" },    // controllers.UserController.showCreateUserForm
@@ -302,8 +302,8 @@ public class AuthenticationTests {
                     { "GET", "/files/quota", Http.Status.OK, "/files/quota" },    // controllers.FileController.showQuotaUsage
                     { "GET", "/files/1", Http.Status.OK, "/files/1" },    // controllers.FileController.showFile(fileId: Long)
                     { "GET", "/files/1/download", Http.Status.OK, "/files/1/download" },    // controllers.FileController.downloadFile(fileId: Long)
-                    { "POST", "/files/editComment", Http.Status.BAD_REQUEST,  "/files/1/" },    // controllers.FileController.editFileComment
-                    { "POST", "/files/editContent", Http.Status.BAD_REQUEST,  "/files/1/" },    // controllers.FileController.editFileContent
+                    { "POST", "/files/editComment", Http.Status.BAD_REQUEST,  "/" },    // controllers.FileController.editFileComment
+                    { "POST", "/files/editContent", Http.Status.BAD_REQUEST,  "/" },    // controllers.FileController.editFileContent
                     { "POST", "/files/search", Http.Status.BAD_REQUEST, "/" },    // controllers.FileController.searchFiles
 
                     { "POST", "/permissions/editUserPermission", Http.Status.BAD_REQUEST, "/files/1" },    // controllers.PermissionController.showEditUserPermissionForm()
