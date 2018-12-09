@@ -27,14 +27,15 @@ RESPONSE=$(curl 'http://localhost:9000/users/create' \
 
 CSRF=$(echo $RESPONSE | grep -Eo -m 1 '[0-9a-f]{40}-[0-9a-f]{13}-[0-9a-f]{24}' | sort -u)
 
-echo "csrfToken=$CSRF&username=$2&email=$3&quotaLimit=$4"
-curl 'http://localhost:9000/users/create' \
+RESPONSE=$(curl 'http://localhost:9000/users/create' \
     -H 'Content-Type: application/x-www-form-urlencoded' \
     -b createUserCookie$1.txt \
     -c createUserCookie$1.txt \
     -s \
     --compressed \
-    -v \
-    --data "csrfToken=$CSRF&username=$2&email=$3&quotaLimit=$4"
+    --data "csrfToken=$CSRF&username=$2&email=$3&quotaLimit=$4")
+
+PASSWORD=$(echo $RESPONSE | grep -oE 'Temporäres Passwort: .{12}' | grep -o '[^ ]*$')
+echo $PASSWORD
 
 rm createUserCookie$1.txt
