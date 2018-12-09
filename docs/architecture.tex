@@ -144,8 +144,8 @@ Beim Starten einer Play-Session wird ein CSRF-Token in das Session Cookie geschr
 
 \section{Play Cookies}
 \label{play:cookies}
-Das Play Framework nutzt zur Persistierung eines Cookies in dem Client-Browser das \enquote{\gls{jwt}}-Format.
-Ein \gls{jwt} besteht aus 3 Teilen: einem Header, einer Payload sowie einer Signatur, siehe \ref{jwtformat}.
+Das Play Framework nutzt zur Persistierung eines Cookies in dem Client-Browser das \enquote{JSON Web Token}}-Format.
+Ein JWT besteht aus 3 Teilen: einem Header, einer Payload sowie einer Signatur, siehe \ref{jwtformat}.
 Jeder dieser Teile ist ein namenloses JSON-Objekt. \\
 Innerhalb des Headers ist gelistet, welcher Algorithmus genutzt wurde, um das JWT zu signieren.
 Die Payload ist ein einfaches JSON-Objekt, in welchem Daten gespeichert werden können, die zu signieren sind.
@@ -217,7 +217,7 @@ Integraler Bestandteil unserer Anwendung ist eine Session-Funktionalität. Theor
 Die Annotation bewirkt, dass der korrospondierende Request \underline{vor} Erreichen der dazugehörigen Controller-Methode abgefangen wird und einer Prüfung unterzogen wird, ob der Absender authentifiziert ist. Ist dies nicht der Fall, wird die weitere Ausführung abgebrochen und der Nutzer auf die Login-Seite weitergeleitet. Ansonsten wird der Request an den entsprechenden Controller weitergereicht.
 
 Zur Umsetzung dieser Funktionalität setzen wir auf dem Session-Konzept von Play auf.
-Initialisiert ein Nutzer eine neue Session, so persistieren wir seine IP-Adresse, seine User-ID, das Initialisierungsdatum und eine kryptografisch sicheren \enquote{\gls{uuid}} als Identifikator dieser neuen Session in unserer Datenbank. \linebreak
+Initialisiert ein Nutzer eine neue Session, so persistieren wir seine IP-Adresse, seine User-ID, das Initialisierungsdatum und eine kryptografisch sicheren \enquote{Universally unique identifier (UUID)} als Identifikator dieser neuen Session in unserer Datenbank. \linebreak
 Um diese Session sicher beim Client speichern zu können, verwenden wir das bereits genannte Cookie \textit{PLAY\_SESSION}.
 Innerhalb des Payloads dieses JWT befindet sich ein JSON-Objekt namens \enquote{data} hinterlegt, zu welchem man weitere Applikationsdaten als Schlüssel-Wert-Paare hinzufügen kann.
 Das machen wir uns zu eigen und persistieren das Schlüssel-Wert-Paar (\enquote{HsHSession}: \enquote{UUID}), durch welches wir den Nutzer authentisieren können.
@@ -249,7 +249,7 @@ Der von Nutzer durchzuführende Single Sign-On erfolgt asynchron: Lädt der Benu
 
 Als Chiffre wird AES-256 im CBC Modus mit PKCS5 Padding verwendet. Dazu gibt es eine native Java Implementierung.
 
-Um aus dem Passwort des Benutzers einen kryptografisch sicheren Schlüssel zum verschlüsseln des CredentialKey zu generieren wird PBKDF2 benutzt. Die Rundenzahl beträgt 65536. Der Salt ist 8 byte Lang und wird mittels SecureRandom generiert. Auch dazu gibt es eine native Implementeriung in Java. 
+Um aus dem Passwort des Benutzers einen kryptografisch sicheren Schlüssel zum verschlüsseln des CredentialKey zu generieren wird PBKDF2 benutzt. Die Rundenzahl beträgt 65536. Der Salt ist 8 byte Lang und wird mittels SecureRandom generiert. Auch dazu gibt es eine native Implementeriung in Java.
 
 \section{Eingabevalidierung}
 Für einige Parameter gibt es festgelegte Constraints, die in allen entsprechenden Dtos verwendet werden. Das sind:
@@ -403,7 +403,7 @@ Die Passwort-Zurücksetzen Funktionalität wurde initial implementiert, indem da
 In Hinblick auf die von uns gewählte Verschlüsselungsmethode für Netzdienst-Zugangsdaten haben wir diesen Ansatz verworfen: Das Secret hierfür ist faktisch das Klartext-Passwort des Benutzers. Eine Funktionalität, die jedem offen steht und das Passwort des Benutzerkontos ändert, führt in diesem Kontext zu Problemen: Ein Nutzer kann sich zwar noch einloggen, jedoch nicht mehr seine Zugangsdaten entschlüsseln.
 
 Aus diesem Grund haben wir uns dazu entschlossen, die andere Variante der Anforderungsbeschreibung zu implementieren.
- 
+
 
 \printbibliography
 

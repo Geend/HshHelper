@@ -56,7 +56,7 @@
   \item Die von Google-Servern eingebundenen reCAPTCHA JavaScript-Dateien werden niemals zur Code-Injection verwendet / Google's reCAPTCHA Server sind grund\-sätzlich vertrauenswürdig.
   \item Bibliotheksfunktion \texttt{java.security.SecureRandom} \autocite{JavaDocs.SecureRandom} erstellt Zufallszahlen, die kryptografisch sicher sind.
   \item Einstellung \texttt{ALLOW\_LITERALS=NONE} der Datenbank \enquote{h2} verhindert SQL Injections.
-  \item \enquote{\gls{jwt}}-Format ist kryptografisch sicher zur Speicherung von Session- sowie Cookie-Daten.
+  \item \enquote{JSON Web Token}-Format ist kryptografisch sicher zur Speicherung von Session- sowie Cookie-Daten.
   \item Die von JWT verwendete Signatur (HMAC-SHA256) verhindert, dass eine Manipulation von JWT-Cookies erfolgen kann.
   \item Applikation kann nur über die definierten Eintrittspunkte verwendet werden.
   \item Benutzer des HsH-Helpers verraten nicht ihr Passwort an andere.
@@ -224,7 +224,7 @@ Sofern nicht explizit anders geschildert, geschieht ein Zugriff auf ein Asset od
 \begin{itemize}
   \item Nutzer [U+] können nur mit dem System interagieren, wenn sie authentisiert sind (AK2-4, sowie AK6-21).
   \item Ein Nutzer [U-] kann sich nur einloggen, wenn er ein eigenes Passwort vergeben hat.
-  \item Ein Nutzer [U-] kann sein Passwort nur dann zurücksetzen, wenn er ein Authentifizierungsmerkmal angibt, dass er über einen vertrauenswürdigen Zweit-Kanal erhalten hat. 
+  \item Ein Nutzer [U-] kann sein Passwort nur dann zurücksetzen, wenn er ein Authentifizierungsmerkmal angibt, dass er über einen vertrauenswürdigen Zweit-Kanal erhalten hat.
   \item Nutzer [GM, GO, A] können nur Gruppen sehen, dessen Mitglied sie sind (AK14).
   \item Ausschließlich Administratoren [A] können alle Gruppen sehen (AK14).
   \item Nutzer [GO] dürfen nur Mitglieder zu einer Gruppe hinzufügen, wenn sie der Besitzer dieser Gruppe sind (AK11).
