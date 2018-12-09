@@ -13,8 +13,7 @@ import java.util.UUID;
 
 @Entity
 public class InternalSession extends Model {
-    // TODO: Herausfinden ob garantiert werden kann, dass UUID.randomUUID() verwendet wird
-    // -> nutzt SecureRandom!
+   
     @Id
     private UUID sessionKey;
     private String remoteAddress;
