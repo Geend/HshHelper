@@ -1,5 +1,6 @@
 package dtos.user;
 
+import org.apache.commons.lang3.StringUtils;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 
@@ -52,7 +53,7 @@ public class ChangeOwnPasswordDto implements Constraints.Validatable<ValidationE
     @Override
     public ValidationError validate() {
 
-        if(!newPassword.equals(newPasswordRepeat)){
+        if(!StringUtils.equals(newPassword, newPasswordRepeat)){
             return new ValidationError("passwordRepeat", "Passwords do not match");
         }
         return null;

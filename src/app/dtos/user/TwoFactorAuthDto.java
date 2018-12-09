@@ -5,9 +5,11 @@ import policyenforcement.ConstraintValues;
 
 public class TwoFactorAuthDto {
 
+    @Constraints.Required
     @Constraints.Pattern(ConstraintValues.SECOND_FACTOR_SECRET)
     private String secret;
 
+    @Constraints.Required
     @Constraints.Pattern(ConstraintValues.SECOND_FACTOR_NUMBER)
     private String activationToken;
 
