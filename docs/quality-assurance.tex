@@ -55,8 +55,8 @@ Zur Verifikation der funktionalen Korrektheit unseres System nutzen wir Unit-, s
 Hierbei haben wir darauf geachtet, dass es uns durch \enquote{Dependency Injection} möglich ist, die Abhängigkeiten einer Klasse durch \enquote{Mocks} zu ersetzen.
 Dadurch wird garantiert, dass lediglich das Verhalten einer Klasse getestet wird, und dass dieses Verhalten nur auf dem durchs Interface vorgeschriebene Verhalten seiner Abhängigkeiten basiert.
 
-\externaldocument[Arch1-]{architecture}
-Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{Arch1-architecture:class_diagram} \& \ref{Arch1-architecture:class_diagram2}) aufgezeigten \enquote{Pakete} werden folgende Voraussetzungen sowie Nachbedingungen getestet:
+\externaldocument{architecture}
+Für die in dem Klassendiagramm (siehe Architekturbeschreibung \ref{architecture:class_diagram} \& \ref{architecture:class_diagram2}) aufgezeigten \enquote{Pakete} werden folgende Voraussetzungen sowie Nachbedingungen getestet:
 
 \begin{itemize}
   \item Controller
@@ -149,12 +149,12 @@ Das Fehlerverhalten ist hier angemessen. Druch die Eingabevalidierung ist es bei
 \subsubsection{Aufrufen von Seiten ohne nötige Berechtigung}
 Einige Seiten in HshHelper sind für normale Benutzer nicht zugänglich. Diese sollen nur von Administratoren verwendet werden. Dazu zählen zum Beispiel die Seiten zum Anlegen und Bearbeiten von Benutzern und Netzdiensten. Mit diesem Penetrationstests sollte geprüft werden, ob ein normaler Benutzer ohne Adminstrator-Rechte Zugriff auf diese Seiten erlangen kann. Da die Anzahl der zu prüfenden Seiten nicht sehr groß war wurde diese Prüfung manuell durchgeführt. Dazu wurde jede URL der betroffenen Seiten\footnote{Alle betroffenen \texttt{GET} Routen aus der \texttt{routes} Datei.} in einem Browser aufgerufen, während ein Benutzer ohne Administrator-Rechte angemeldet war. Das erwartete Verhalten war eine Weiterleitung auf eine Seite mit einer entsprechenden Fehlermeldung.
 
-Ein ähnlicher Test wurde für alle URLs in denen URL-Parameter verwendet werden durchgeführt. Hierbei wurden für die Parameter in den URLs Werte gewählt für die der Test-Benutzer keine Berechtigung hat\footnote{Alle Parameter in URLs sind IDs.}. Zum Beispiel eine Gruppen-Id einer Gruppe in der er nicht Mitglied ist oder eine Datei-Id auf die er keine Berechtigung hat. 
+Ein ähnlicher Test wurde für alle URLs in denen URL-Parameter verwendet werden durchgeführt. Hierbei wurden für die Parameter in den URLs Werte gewählt für die der Test-Benutzer keine Berechtigung hat\footnote{Alle Parameter in URLs sind IDs.}. Zum Beispiel eine Gruppen-Id einer Gruppe in der er nicht Mitglied ist oder eine Datei-Id auf die er keine Berechtigung hat.
 
 Ergebnis dieses Penetrationstests ist, dass die Seiten zum Anlegen und Bearbeiten von Netzdiensten für nicht-Administratoren zugänglichen waren. Zwar konnte ein Benutzer keine Aktionen auf diesen Seiten ausführen, Zugriff sollte aber dennoch nicht möglich sein.
 
 \subsubsection{Cross-Site Requests}
-\label{csrf:analyse} 
+\label{csrf:analyse}
 Im Rahmen eines Penetrationstest sollte überprüft werden, ob eine Controller-Methode, die JSON zurückliefert über ein script-Tag auf einer Drittseite eingebunden werden konnte. Während dieses Tests wurde eine schwere Sicherheitslücke entdeckt, die sich aus der Play Standard-Konfiguration in Verbindung mit unserem Session-Konzept ergab.
 
 Play nutzt für gesetzte Cookies die SameSite-Option \enquote{LAX} \footnote{\url{https://www.playframework.com/documentation/2.6.x/SettingsSession}}. Diese Option bewirkt, dass Requests, die von einer Drittseite stammen (wie z.B. ein script-Tag, dessen src-Attribut auf unsere Anwendung zeigt), das dazugehörige Cookie nicht an unsere Anwendung übertragen. Der Request selbst erreicht jedoch unsere Anwendung. Gleichzeitig generiert Play ein neues Session-Cookie, wenn eine Seite mit einem Formular aufgerufen wird, das über den integrierten CSRF-Schutz verfügt.

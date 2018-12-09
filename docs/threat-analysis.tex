@@ -1146,9 +1146,9 @@ Innerhalb diesem Header ist es möglich Richtlinien zu definieren, die den Zugri
 Dadurch kann verhindert werden, dass JavaScript nicht von jeder URL geladen und ausgeführt werden darf, von welchen Quellen Bilder geladen werden dürfen, oder welches CSS eingebunden werden darf.
 Dieser Header ist dem \enquote{X-XSS-Protection}-Header vorzuziehen.
 
-\externaldocument[QA1-]{quality-assurance}
+\externaldocument{quality-assurance}
 \subsection{Cookie: SameSite-Option}
-Standardmäßig wurden Cookies mit der SameSite-Option \enquote{LAX} gesetzt. Diese Option in Verbindung mit unserem Session-Konzept führte zu einem Angriffsvektor über den es möglich war, Nutzer zu einem Logout zu bewegen. Wir verzichten auf die Verwendung dieser Option (siehe \ref{QA1-csrf:analyse}).
+Standardmäßig wurden Cookies mit der SameSite-Option \enquote{LAX} gesetzt. Diese Option in Verbindung mit unserem Session-Konzept führte zu einem Angriffsvektor über den es möglich war, Nutzer zu einem Logout zu bewegen. Wir verzichten auf die Verwendung dieser Option (siehe \ref{csrf:analyse}).
 
 %\subsection{X-Permitted-Cross-Domain-Policies}
 %\begin{sloppypar}
