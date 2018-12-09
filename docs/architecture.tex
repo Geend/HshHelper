@@ -72,7 +72,7 @@ Das Login-Sequenzdiagramm \ref{architecture:loginseq_diagram} zeigt den Fall, da
 \section{Dateiaustausch}
 Alle Dateien, die von Benutzern hochgeladen werden, werden in der Datenbank als \texttt{BLOB} gespeichert. So können konsistente Zustände mittels Transaktionen sichergestellt werden. Außerdem ist HsHelper dadurch unabhängiger vom Dateisystem, das auf dem Host-System verwendet wird.
 
-Dadurch, dass wir Java-seitig ein Byte-Array (\texttt{byte[]}) als Datentyp für den Dateiinhalt verwenden, besteht eine Obergrenze von $2^{31}$ Bytes (2,147 Gigabyte) \footnote{Siehe 4.2.1 Integral Types and Values \url{https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html\#jls-4.2}} für die Dateigröße, da die Länge sowie der Index eines Byte-Arrays als Integer verwaltet wird.
+Dadurch, dass wir Java-seitig ein Byte-Array (\texttt{byte[]}) als Datentyp für den Dateiinhalt verwenden, besteht eine Obergrenze von $2^{31}-1$ Bytes (2,147 Gigabyte) \footnote{Siehe 4.2.1 Integral Types and Values \url{https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html\#jls-4.2}} für die Dateigröße, da die Länge sowie der Index eines Byte-Arrays als Integer verwaltet wird.
 
 Um die Umgehung des Speicherplatzlimits durch Ausnutzung des Kommentarfeldes und Dateinamens zu verhindern, zählen sowohl der Datei-Inhalt, als auch Dateiname und Kommentar zum Speicherplatz, den eine Datei belegt.
 Dabei nehmen wir an, dass jedes Zeichen des Dateinamens und des Kommentars jeweils 1 Byte Speicherplatz verbraucht und machen keine Annahmen über die verwendete Zeichenkodierung.
@@ -160,7 +160,7 @@ Bei Werkseinstellungen verwendet Play ein Cookie namens \textit{PLAY\_SESSION}, 
 In dem JSON-Objekt \texttt{data} persistiert Play das CSRF-Token, erlaubt einer Applikation allerdings dort auch Daten abzulegen.
 Wie später zu sehen ist, baut unser Session-Konzept darauf auf.
 
-Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, was allerdings in der aktuellen Iteration keinerlei Anwendung findet. Der Error-Handling-Code verwendet zwar den Flash-Scope um Fehlermeldungen über eine Klassengrenze hinweg verfügbar zu machen, diese Daten werden aber innerhalb einer Anfrage direkt wieder gelesen und landen somit niemals beim Client.
+Neben dem Session Cookie gibt es noch das Flash Cookie \textit{PLAY\_FLASH}, was allerdings in der aktuellen Iteration keinerlei Anwendung findet.
 
 Die Dokumentation von Play vermerkt, dass das Flash Cookie nicht signiert wird:
 \blockquote{
