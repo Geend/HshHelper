@@ -104,7 +104,9 @@ public class AuthenticationTests {
 
         @After
         public void tearDown() throws Exception {
-            logout();
+            try {
+                logout();
+            } catch (Exception e) {}
         }
 
         @Parameterized.Parameters(
@@ -234,7 +236,9 @@ public class AuthenticationTests {
 
         @After
         public void tearDown() throws Exception {
-            logout();
+            try {
+                logout();
+            } catch (Exception e) {}
         }
 
         @Parameterized.Parameters(
