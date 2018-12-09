@@ -546,6 +546,7 @@ body.base1CBody {
 .base1C .box {
     max-width: 375px;
     margin-top: 50px;
+    min-width: 250px;
 }
 
 .base1C h1 {

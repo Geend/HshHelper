@@ -8,7 +8,6 @@ import play.api.OptionalSourceMapper;
 import play.api.UsefulException;
 import play.api.routing.Router;
 import play.http.DefaultHttpErrorHandler;
-import play.mvc.Http.Context;
 import play.mvc.Http.RequestHeader;
 import play.mvc.Result;
 import play.mvc.Results;
@@ -21,9 +20,6 @@ import java.util.concurrent.CompletionStage;
 
 @Singleton
 public class ErrorHandler extends DefaultHttpErrorHandler {
-
-
-    public static String ERROR_KEY = "errormessage";
 
 
     @Inject
@@ -50,23 +46,25 @@ public class ErrorHandler extends DefaultHttpErrorHandler {
 
     private CompletionStage<Result> customExceptionHandler(UsefulException exception) {
         if(exception.cause instanceof UnauthorizedException){
-            String message = "unkown";
-            if(exception.cause.getMessage() != null)
-                message = exception.cause.getMessage();
+            String message = exception.cause.getMessage();
+
             return CompletableFuture.completedFuture(
                     Results.forbidden(views.html.error.Forbidden.render(message))
             );
         }
+
         else if(exception.cause instanceof InvalidArgumentException){
-            String message = "unkown";
-            if(exception.cause.getMessage() != null)
-                message = exception.cause.getMessage();
+            String message = exception.cause.getMessage();
 
             return CompletableFuture.completedFuture(
                     Results.badRequest(views.html.error.BadRequest.render(message))
             );
         }
-        return null;
+
+        // unkown exception -> internal error
+        return CompletableFuture.completedFuture(
+                Results.internalServerError(views.html.error.InternalError.render())
+        );
     }
 
 
