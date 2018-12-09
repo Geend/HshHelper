@@ -5,7 +5,6 @@ import java.security.SecureRandom;
 public class PasswordGenerator {
 
 
-    //TODO: Include validChars for generated Passwords in policy
     private static final String validChars = "!%?#-_*+0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     private static SecureRandom secureRandom = new SecureRandom();
