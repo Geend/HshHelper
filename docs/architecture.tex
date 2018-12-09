@@ -397,6 +397,14 @@ Auf der Warnseite, die beim Löschen eines Nutzers angezeigt wird (vgl. \ref{war
 \section{Manager API ohne Übergabe des aktuellen Benutzers}
 In der ersten Iteration erforderte die Schnittstelle der Manager eine Übergabe der Id des aktuell angemeldeten Benutzers. Dies ist nicht nur umständlich, da es bei den meisten Aufrufen geschehen muss (abgesehen von Spezialfällen wie Login), sondern auch relevant für die Sicherheit der Anwendung. Wird beim Aufruf fälschlicherweise nicht die Id des aktuellen Benutzers übergeben, kann es so zu einer Autorisierungsverletzung kommen. Nach der Überarbeitung beziehen alle Manager den aktuellen Benutzer aus dem Session Manager und somit wird diese Art von Fehlern automatisch vermieden.
 
+\section{Passwort-Zurücksetzen durch unmittelbares setzen eines neuen temporären Passworts}
+Die Passwort-Zurücksetzen Funktionalität wurde initial implementiert, indem das Passwort des Nutzers durch ein Zufallspasswort ersetzt wurde. Dieses Passwort wurde dem Nutzer per E-Mail mitgeteilt.
+
+In Hinblick auf die von uns gewählte Verschlüsselungsmethode für Netzdienst-Zugangsdaten haben wir diesen Ansatz verworfen: Das Secret hierfür ist faktisch das Klartext-Passwort des Benutzers. Eine Funktionalität, die jedem offen steht und das Passwort des Benutzerkontos ändert, führt in diesem Kontext zu Problemen: Ein Nutzer kann sich zwar noch einloggen, jedoch nicht mehr seine Zugangsdaten entschlüsseln.
+
+Aus diesem Grund haben wir uns dazu entschlossen, die andere Variante der Anforderungsbeschreibung zu implementieren.
+ 
+
 \printbibliography
 
 % Can be used to add a list of acronyms with their description
