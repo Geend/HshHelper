@@ -136,7 +136,12 @@ public class FileController extends Controller {
 
         if(boundForm.hasErrors()) {
             String strGroupId = boundForm.rawData().get("preSelectedGroupId");
-            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos), Long.valueOf(strGroupId)));
+            Long preSelectedGroupId = null;
+            try {
+                preSelectedGroupId = Long.valueOf(strGroupId);
+            } catch (NumberFormatException e) {}
+
+            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos), preSelectedGroupId));
         }
 
         UploadFileDto uploadFileDto = boundForm.get();
