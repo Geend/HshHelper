@@ -93,7 +93,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \item \texttt{/resetPassword/:tokenId}
       \begin{enumerate}
         \item GET - \texttt{showResetPasswordWithTokenForm(tokenId)}
-        \item POST - \texttt{resetPasswordWithToken(tokenId, newPassword, twoFactorPin)}
+        \item POST - \texttt{resetPasswordWithToken(tokenId, newPassword,\\twoFactorPin)}
       \end{enumerate}
     \end{enumerate}
 
@@ -161,7 +161,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/settings/activateTwoFactorAuth}
       \begin{enumerate}
-        \item POST - \texttt{activateTwoFactorAuth(twoFactorSecret, activationToken)}
+        \item POST - \texttt{activateTwoFactorAuth(twoFactorSecret,\\activationToken)}
       \end{enumerate}
       \item \texttt{/settings/deactivateTwoFactorAuth}
       \begin{enumerate}
@@ -243,7 +243,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \item \texttt{/files/upload}
       \begin{enumerate}
         \item GET - \texttt{showUploadFileForm()}
-        \item POST - \texttt{uploadFile(fileName, fileContent, comment, groupPermissions, userPermissions)}
+        \item POST - \texttt{uploadFile(fileName, fileContent, comment,\\groupPermissions, userPermissions)}
       \end{enumerate}
 
       \item \texttt{/files/uploadToGroup/:groupId}
@@ -285,15 +285,15 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/permissions/editUserPermission/submit}
       \begin{enumerate}
-        \item POST - \texttt{editUserPermission(userPermissionId, permissionLevel, returnUrl)}
+        \item POST - \texttt{editUserPermission(userPermissionId,\\permissionLevel, returnUrl)}
       \end{enumerate}
       \item \texttt{/permissions/editGroupPermission/}
       \begin{enumerate}
-        \item POST - \texttt{showEditGroupPermissionForm(userPermissionId, returnUrl)}
+        \item POST - \texttt{showEditGroupPermissionForm(userPermissionId,\\returnUrl)}
       \end{enumerate}
       \item \texttt{/permissions/editGroupPermission/submit}
       \begin{enumerate}
-        \item POST - \texttt{editGroupPermission(groupPermissionId, permissionLevel, returnUrl)}
+        \item POST - \texttt{editGroupPermission(groupPermissionId,\\permissionLevel, returnUrl)}
       \end{enumerate}
 
       \item \texttt{/permissions/createUserPermission/:fileId}
@@ -302,7 +302,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/permissions/createUserPermission}
       \begin{enumerate}
-        \item POST - \texttt{createUserPermission(fileId, userId, permissionLevel)}
+        \item POST - \texttt{createUserPermission(fileId, userId,\\permissionLevel)}
       \end{enumerate}
       \item \texttt{/permissions/createGroupPermission/:fileId}
       \begin{enumerate}
@@ -310,7 +310,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/permissions/createGroupPermission/}
       \begin{enumerate}
-        \item POST - \texttt{createGroupPermission(fileId, groupId, permissionLevel)}
+        \item POST - \texttt{createGroupPermission(fileId, groupId,\\permissionLevel)}
       \end{enumerate}
 
       \item \texttt{/permissions/deleteGroupPermission}
@@ -356,7 +356,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
         \end{enumerate}
         \item \texttt{/netservices/edit/}
         \begin{enumerate}
-          \item POST - \texttt{editNetService(netServiceId, netServiceName, netServiceURL)}
+          \item POST - \texttt{editNetService(netServiceId, netServiceName,\\netServiceURL)}
         \end{enumerate}
       \item \texttt{/netservices/edit/:netServiceId}
         \begin{enumerate}
@@ -368,7 +368,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
         \end{enumerate}
       \item \texttt{/netservices/removeparameter}
         \begin{enumerate}
-          \item POST - \texttt{removeNetServiceParameter(netServiceId, netServiceParameterId)}
+          \item POST - \texttt{removeNetServiceParameter(netServiceId,\\netServiceParameterId)}
         \end{enumerate}
 
 
@@ -383,7 +383,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \item \texttt{/credentials/create}
       \begin{enumerate}
         \item GET - \texttt{showCreateNetServiceCredentialForm()}
-        \item POST - \texttt{createNetServiceCredential(netServiceId, netServiceCredentialUsername, netServiceCredentialPassword)}
+        \item POST - \texttt{createNetServiceCredential(netServiceId,\\netServiceCredentialUsername, netServiceCredentialPassword)}
       \end{enumerate}
       \item \texttt{/credentials/delete}
       \begin{enumerate}
@@ -941,7 +941,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \hypertarget{threat39}{}
   \item \textbf{T39: Secret für Zwei-Faktor-Authentisierung ist erratbar}
   \begin{itemize}
-    \item Zweck: Umgehen des intendierten Schutzmechanismus (Zwei-Faktor-Authentisierung)
+    \item Zweck: Umgehen des intendierten Schutzmechanismus (Zwei-Faktor-Au\-then\-ti\-sier\-ung)
     \item Möglichkeiten: Secret basiert nicht auf kryptografisch sicheren Zufallszahlen. Angreifer kann es erraten und selbst in Authentifizierungs-App eingeben.
     \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
@@ -954,8 +954,8 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \hypertarget{threat40}{}
   \item \textbf{T40: Pin für Zwei-Faktor-Authentisierung ist vorhersehbar}
   \begin{itemize}
-    \item Zweck: Umgehen des intendierten Schutzmechanismus (Zwei-Faktor-Authentisierung)
-    \item Möglichkeiten: Kryptografisch unsicheres Verfahren für die Zwei-Faktor-Authentisierung verwenden.
+    \item Zweck: Umgehen des intendierten Schutzmechanismus (Zwei-Faktor-Au\-then\-ti\-sier\-ung)
+    \item Möglichkeiten: Kryptografisch unsicheres Verfahren für die Zwei-Faktor-Au\-then\-ti\-sier\-ung verwenden.
     \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
@@ -964,7 +964,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \end{itemize}
 
   \hypertarget{threat41}{}
-  \item \textbf{T41: Benutzer wird dazu gebracht, unintendiert die Zwei-Faktor-Authentisierung zu aktivieren}
+  \item \textbf{T41: Benutzer wird dazu gebracht, unintendiert die Zwei-Faktor-Au\-then\-ti\-sier\-ung zu aktivieren}
   \begin{itemize}
     \item Zweck: Benutzer aus der Anwendung aussperren.
     \item Möglichkeiten: Benutzer wird mittels Clickjacking o.Ä. dazu gebracht, die Zwei-Faktor-Authentisierung in Verbindung mit einem zufälligen Secret zu aktivieren. Der Nutzer kennt dieses Secret nicht bzw. hat keine Gelegenheit, dieses zu speichern, da er die Aktivierung unbewusst durchführt.
