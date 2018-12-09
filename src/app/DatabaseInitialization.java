@@ -31,12 +31,12 @@ public class DatabaseInitialization {
         this.userFactory = userFactory;
         this.environment = environment;
 
-        //if(environment.isProd()) {
-        //    prodInitialization();
-        //}
-        //if(environment.isDev()) {
+        if(environment.isProd()) {
+            prodInitialization();
+        }
+        if(environment.isDev() || environment.isTest()) {
             devEnvInitialization();
-        //}
+        }
     }
 
     private void prodInitialization() {
