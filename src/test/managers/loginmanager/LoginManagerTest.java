@@ -1,5 +1,6 @@
 package managers.loginmanager;
 
+import com.typesafe.config.Config;
 import extension.*;
 import io.ebean.EbeanServer;
 import io.ebean.Transaction;
@@ -55,10 +56,12 @@ LoginManagerTest {
     private WeakPasswords defaultWeakPasswords;
     private IPWhitelist defaultIpWhitelist;
     private TwoFactorAuthService twoFactorAuthService;
+    private Config defaultConfiguration;
 
 
     @Before
     public void init() {
+        this.defaultConfiguration = mock(Config.class);
         this.defaultHeaders = mock(Http.Headers.class);
         this.defaultRequest = mock(Http.Request.class);
         when(defaultRequest.remoteAddress()).thenReturn("127.0.0.1");
@@ -99,7 +102,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
     }
 
     @Test
@@ -119,7 +122,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
         verify(sessionManager).startNewSession(authenticatedUser, defaultCredentialKey);
     }
@@ -141,7 +144,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -160,7 +163,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -184,7 +187,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
         verify(authenticatedUser).setIsPasswordResetRequired(false);
         verify(authenticatedUser).setPasswordHash("hashed");
@@ -207,7 +210,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
@@ -229,7 +232,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -252,7 +255,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -274,7 +277,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -296,7 +299,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.login("lydia", "lydia", "", this.defaultRequest, "0");
     }
 
@@ -318,7 +321,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
@@ -340,7 +343,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
@@ -362,7 +365,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 
@@ -384,7 +387,7 @@ LoginManagerTest {
                 this.defaultLoginAttemptFinder,
                 this.recaptchaHelper, defaultCredentialUtility,
                 defaultUserFinder, defaultMailerClient, defaultPasswordResetTokenFinder,
-                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService);
+                defaultWeakPasswords, defaultIpWhitelist, twoFactorAuthService, defaultConfiguration);
         sut.changePassword("lydia", "lydia", "neuespw", "", this.defaultRequest, "");
     }
 

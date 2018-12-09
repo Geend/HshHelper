@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Optional;
 import java.util.UUID;
+import com.typesafe.config.Config;
 
 import static extension.StringHelper.empty;
 import static policyenforcement.ConstraintValues.PASSWORD_RESET_TOKEN_TIMEOUT_HOURS;
@@ -54,6 +55,7 @@ public class LoginManager {
     private final WeakPasswords weakPasswords;
     private final IPWhitelist ipWhitelist;
     private final TwoFactorAuthService twoFactorAuthService;
+    private final Config configuration;
 
     private static final Logger.ALogger logger = new DangerousCharFilteringLogger(LoginManager.class);
 
@@ -66,7 +68,13 @@ public class LoginManager {
             EbeanServer ebeanServer,
             LoginAttemptFinder loginAttemptFinder,
             RecaptchaHelper recaptchaHelper, CredentialUtility credentialUtility,
-            UserFinder userFinder, MailerClient mailerClient, PasswordResetTokenFinder passwordResetTokenFinder, WeakPasswords weakPasswords, IPWhitelist ipWhitelist, TwoFactorAuthService twoFactorAuthService) {
+            UserFinder userFinder,
+            MailerClient mailerClient,
+            PasswordResetTokenFinder passwordResetTokenFinder,
+            WeakPasswords weakPasswords,
+            IPWhitelist ipWhitelist,
+            TwoFactorAuthService twoFactorAuthService,
+            Config configuration) {
         this.loginAttemptFinder = loginAttemptFinder;
         this.ebeanSever = ebeanServer;
         this.authentification = authentification;
@@ -81,6 +89,7 @@ public class LoginManager {
         this.weakPasswords = weakPasswords;
         this.ipWhitelist = ipWhitelist;
         this.twoFactorAuthService = twoFactorAuthService;
+        this.configuration = configuration;
     }
 
     private User authenticate(String username, String password, String captchaToken, Http.Request request, String twoFactorPin) throws CaptchaRequiredException, InvalidLoginException, IOException, GeneralSecurityException {
@@ -225,9 +234,10 @@ public class LoginManager {
         token.setId(UUID.randomUUID());
         ebeanSever.save(token);
 
+        String emailFrom = configuration.getString("hshhelper.sendmailsfrom");
         Email email = new Email()
                 .setSubject("HshHelper Password-Reset")
-                .setFrom("HshHelper <hshhelper@t-voltmer.net>")
+                .setFrom(emailFrom)
                 .addTo(user.getEmail())
                 .setBodyText("Click on the following Link to reset your Password: " + controllers.routes.LoginController.showResetPasswordWithTokenForm(token.getId()).absoluteURL(request));
         mailerClient.send(email);
