@@ -136,19 +136,14 @@ Sollten Sie wünschen, bestimmte IP-Adressen auf eine Whitelist zu setzen, damit
 Dabei sollte jede IP-Adresse auf eine eigene Zeile geschrieben werden.
 Diese Funktionalität eignet sich besonders, um eine Universität freizuschalten, damit die Studenten, die gegebenfalls mit der selben IP-Adresse ihre Seite ansurfen nicht vom HsH-Helper ausgeschlossen werden können.
 
-\subsection{Server auf einer anderen IP-Adresse/einem anderen Port laufen lassen}
+\subsection{Server auf anderer IP-Adresse, anderen Port oder anderer Domäne laufen lassen}
 
-Sollten Sie die IP-Adresse oder den Port ändern wollen, auf dem der HsH-Helper standardmäßig läuft, so müssen Sie das beim Start der Applikation angeben, in dem Sie folgende Parameter auf der Kommandozeile hinzufügen: \\
+Sollten Sie den HsH-Helper auf einer externen Domäne, einer bestimmten IP Adresse oder einem bestimmten Port anbieten wollen, so müssen Sie in der Konfigurationsdatei folgende Einstellungen ändern, damit die Applikation auch funktional korrekt weiterläuft.
+
+IP-Adresse und Port können Sie beim Start der Applikation anpassen, in dem Sie folgende Parameter auf der Kommandozeile hinzufügen: \\
 \texttt{-Dhttp.port=1234 -Dhttp.address=123.123.123.123}
 
-Bei einer Anpassung der Adresse müssen Sie zusätzlich die Content Security Policy anpassen.
-Wie das geht, können Sie in \autoref{server-adjust-csp} nachlesen.
-
-\subsection{Server auf einer anderen Domäne als \texttt{localhost} anbieten}
-
-Sollten Sie den HsH-Helper auf einer externen Domäne anbieten wollen, so müssen Sie in der Konfigurationsdatei folgende Einstellungen ändern, damit die Applikation auch funktional korrekt weiterläuft.
-
-Zunächst müssen Sie die Content Security Policy (CSP) anpassen.\label{server-adjust-csp}
+Folgend müssen Sie die Content Security Policy (CSP) anpassen.\label{server-adjust-csp}
 Beim Single Sign-On wird eine JavaScript-Funktion verwendet, um nur die Anmeldeinformationen des Netzdienst zu laden, zu welchem sich ein Nutzer gerade versucht zu verbinden.
 Dadurch garantieren wir, dass nicht alle hinterlegeten Anmeldeinformationen aler Netzdienste eines Nutzers geladen werden müssen.
 In unserer CSP erlauben wir kein JavaScript ausser von einem bestimmten Pfad des Servers, siehe \autoref{server-foreign-domain}.
@@ -163,6 +158,10 @@ play.filters {
   }
 }
 \end{lstlisting}
+
+Zum Abschluss müssen Sie sich neue reCAPTCHA-Schlüssel erstellen\footnote{Siehe \url{https://www.google.com/recaptcha/admin\#list}}.
+Die ihnen mitgelieferten Schlüssel sind nur für die Domänen \enquote{hsh-helper.de}, \enquote{localhost} und \enquote{127.0.0.1} freigeschaltet.
+Nach Erhalt der Schlüssel müssen Sie diese in der \texttt{secrets.conf} einfügen.
 
 \subsection{Server von einem anderen Host als \texttt{localhost} ansteuern}
 \label{server-subsubsection-different-host}
@@ -231,7 +230,7 @@ Wegen der Implementation der verschlüsselten Netzdienstanmeldeinformationen ist
 
 \subsection{Zwei-Faktor Authentisierung aktivieren}
 
-Falls ein Nutzer zusätzliche Sicherheit wünscht, so kann er eine Zwei-Faktor-Authentisierung aktivieren.
+Falls ein Nutzer zusätzliche Sicherheit wünscht, so kann er eine Zwei-Faktor-Authentisier\-ung aktivieren.
 Beim Klick auf den Knopf zum Aktivieren, wird ein Nutzer auf eine andere Ansicht (siehe Anhang \ref{manual:two-auth-factor}) weitergeleitet, auf welcher ihm ein QR-Code angezeigt wird.
 Dieser QR-Code enthält ein Geheimnis, welches von einer Handy-Applikation wie \href{https://authy.com/}{Authy}
  oder \href{https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2\&hl=en}{Google Authenticator} gescannt werden kann.
