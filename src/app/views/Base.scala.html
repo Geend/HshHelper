@@ -32,7 +32,7 @@
                 <div class="searchControl">
                 @helper.form(action = routes.FileController.searchFiles()) {
                     <div class="query">
-                    @if(searchForm != null) {
+                    @if(searchForm != null && searchForm.field("query").getValue.isPresent) {
                         <input type="text" id="query" name="query" value="@searchForm.field("query").getValue.get()" />
 
                     } else {
