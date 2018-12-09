@@ -417,7 +417,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Zweck:
   	\begin{itemize}
   		\item Ausspähen von Anmeldedaten der Benutzer
-  		\item Ausspähen von Dateien, die ein Benutzer beim HsHController seperat aufzulisten-Helper hochladen möchte
+  		\item Ausspähen von Dateien, die ein Benutzer beim HsH-Helper hochladen möchte
   	\end{itemize}
   \item Möglichkeiten:
   	\begin{itemize}
@@ -683,7 +683,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item Risiko: Hoch
   \item Mögliche Gegenmaßnahmen: Nutzer muss Captcha lösen, bevor Prozess angestoßen werden darf
   \end{itemize}
-  
+
   \hypertarget{threat38}{}
   \item \textbf{T38: Aushebeln der Anforderung zur Offline-Übergabe des Passworts}
   \begin{itemize}
@@ -942,7 +942,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
   \item \textbf{T39: Secret für Zwei-Faktor-Authentisierung ist erratbar}
   \begin{itemize}
     \item Zweck: Umgehen des intendierten Schutzmechanismus (Zwei-Faktor-Authentisierung)
-    \item Möglichkeiten: Secret basiert nicht auf kryptografisch sicheren Zufallszahlen. Angreifer kann es erraten und selbst in Authentifizierungs-App eingeben. 
+    \item Möglichkeiten: Secret basiert nicht auf kryptografisch sicheren Zufallszahlen. Angreifer kann es erraten und selbst in Authentifizierungs-App eingeben.
     \item Risiko: Mittel
     \item Mögliche Gegenmaßnahmen:
       \begin{itemize}
@@ -950,7 +950,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
       \item Ausreichend langes Secret erstellen
       \end{itemize}
   \end{itemize}
-  
+
   \hypertarget{threat40}{}
   \item \textbf{T40: Pin für Zwei-Faktor-Authentisierung ist vorhersehbar}
   \begin{itemize}
@@ -962,7 +962,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
       	\item Time-based One-time Password algorithm (RFC 6238) verwenden.
       \end{itemize}
   \end{itemize}
-    
+
   \hypertarget{threat41}{}
   \item \textbf{T41: Benutzer wird dazu gebracht, unintendiert die Zwei-Faktor-Authentisierung zu aktivieren}
   \begin{itemize}
@@ -974,7 +974,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
       	\item Aktivierung der Zwei-Faktor-Authentisierung nur in Verbindung mit einem vom Secret abgeleiteten Pin ermöglichen.
       \end{itemize}
   \end{itemize}
-  
+
 \end{itemize}
 
 \subsubsection{Mögliche Angriffe auf Single Sign-On}
@@ -992,7 +992,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
       \item Nutzer über visuelle Darstellung auf URL-Änderung hinweisen und explizit bestätigen lassen
       \end{itemize}
   \end{itemize}
-  
+
   \hypertarget{threat43}{}
   \item \textbf{T43: Dateiinhalte über Zugangsdaten speichern}
   \begin{itemize}
@@ -1004,7 +1004,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
       	\item Längenlimit auf die Zugangsdaten anwenden.
       \end{itemize}
   \end{itemize}
-  
+
   \hypertarget{threat44}{}
   \item \textbf{T44: Auslesen von Klartext-Zugangsdaten im Falle einer Datenbank-Kompromittierung}
   \begin{itemize}
@@ -1016,7 +1016,7 @@ Unser Schemata zur Bewertung des Risikos einer Bedrohung haben wir teils an die 
       	\item Zugangsdaten mit einem Secret verschlüsseln, das ausschließlich der Nutzer besitzt.
       \end{itemize}
   \end{itemize}
-    
+
   \hypertarget{threat45}{}
   \item \textbf{T45: Entwenden des Klartextpassworts aus Speicher}
   \begin{itemize}
@@ -1105,7 +1105,7 @@ In der Tabelle \ref{threat-analysis:mitigation-table} können die Gegenmaßnahme
     Zugangsdaten mit einem Secret verschlüsseln, das ausschließlich der Nutzer besitzt  & \linktothreat{threat44}{T44} & \greencheckmark \\ \hline
     Zugangsdaten für externe Netzdienste nicht \enquote{unnötig} entschlüsseln & \linktothreat{threat45}{T45} & \greencheckmark \\ \hline
   \end{tabularx}
-  
+
 \subsection{HTTP Header}
 
 In der folgenden Liste werden verschiedene sicherheitsrelevante \enquote{HTTP Headers} beschrieben, die uns helfen, einige der Gegenmaßnahmen zu realisieren.
@@ -1156,7 +1156,7 @@ Dieser Header ist dem \enquote{X-XSS-Protection}-Header vorzuziehen.
 
 \externaldocument[QA1-]{quality-assurance}
 \subsection{Cookie: SameSite-Option}
-Standardmäßig wurden Cookies mit der SameSite-Option \enquote{LAX} gesetzt. Diese Option in Verbindung mit unserem Session-Konzept führte zu einem Angriffsvektor über den es möglich war, Nutzer zu einem Logout zu bewegen. Wir verzichten auf die Verwendung dieser Option (siehe \ref{QA1-csrf:analyse}).  
+Standardmäßig wurden Cookies mit der SameSite-Option \enquote{LAX} gesetzt. Diese Option in Verbindung mit unserem Session-Konzept führte zu einem Angriffsvektor über den es möglich war, Nutzer zu einem Logout zu bewegen. Wir verzichten auf die Verwendung dieser Option (siehe \ref{QA1-csrf:analyse}).
 
 %\subsection{X-Permitted-Cross-Domain-Policies}
 %\begin{sloppypar}
