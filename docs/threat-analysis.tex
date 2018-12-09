@@ -93,7 +93,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \item \texttt{/resetPassword/:tokenId}
       \begin{enumerate}
         \item GET - \texttt{showResetPasswordWithTokenForm(tokenId)}
-        \item POST - \texttt{resetPasswordWithToken(tokenId, newPassword)}
+        \item POST - \texttt{resetPasswordWithToken(tokenId, newPassword, twoFactorPin)}
       \end{enumerate}
     \end{enumerate}
 
@@ -114,7 +114,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/users/confirmDelete}
       \begin{enumerate}
-        \item GET - \texttt{showConfirmDeleteForm(userId)}
+        \item POST - \texttt{showConfirmDeleteForm(userId)}
       \end{enumerate}
       \item \texttt{/users/delete}
       \begin{enumerate}
@@ -126,7 +126,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/users/editQuota}
       \begin{enumerate}
-        \item GET - \texttt{changeUserQuotaLimit(userId,
+        \item POST - \texttt{changeUserQuotaLimit(userId,
         newQuotaLimit)}
       \end{enumerate}
       \item \texttt{/users/deactivateTwoFactorAuth}
@@ -144,7 +144,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/settings}
       \begin{enumerate}
-        \item POST - \texttt{showUserSettings()}
+        \item GET - \texttt{showUserSettings()}
       \end{enumerate}
       \item \texttt{/settings/changePassword}
       \begin{enumerate}
@@ -157,7 +157,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
 
       \item \texttt{/settings/confirmActivateTwoFactorAuth}
       \begin{enumerate}
-        \item GET - \texttt{show2FactorAuthConfirmationForm(generatedTwoFactorSecret, QRCodeImage)}
+        \item GET - \texttt{show2FactorAuthConfirmationForm()}
       \end{enumerate}
       \item \texttt{/settings/activateTwoFactorAuth}
       \begin{enumerate}
@@ -387,7 +387,7 @@ Sie dient hauptsächlich der Vollständigkeit und als Referenzliste, damit kein 
       \end{enumerate}
       \item \texttt{/credentials/delete}
       \begin{enumerate}
-        \item GET - \texttt{deleteNetServiceCredential(netServiceCredentialId)}
+        \item POST - \texttt{deleteNetServiceCredential(netServiceCredentialId)}
       \end{enumerate}
     \end{enumerate}
 
