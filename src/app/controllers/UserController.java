@@ -153,7 +153,6 @@ public class UserController extends Controller {
         TwoFactorAuthDto activationData = boundForm.get();
 
         try {
-
             this.userManager.activateTwoFactorAuth(activationData.getSecret(), activationData.getActivationToken());
         } catch (Invalid2FATokenException e) {
             String imageSourceData = null;

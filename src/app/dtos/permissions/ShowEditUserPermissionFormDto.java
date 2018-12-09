@@ -5,7 +5,9 @@ import play.data.validation.Constraints;
 import static policyenforcement.ConstraintValues.RETURN_URL_REGEX;
 
 public class ShowEditUserPermissionFormDto {
+    @Constraints.Required
     private Long userPermissionId;
+
     @Constraints.Pattern(RETURN_URL_REGEX)
     private String returnUrl;
 

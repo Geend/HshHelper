@@ -60,6 +60,10 @@ public class PermissionController extends Controller {
     /* UserPermissions START */
     public Result showEditUserPermissionForm() throws UnauthorizedException, InvalidArgumentException {
         Form<ShowEditUserPermissionFormDto> form = showEditUserPermissionFormDtoForm.bindFromRequest();
+        if(form.hasErrors()) {
+            throw new InvalidArgumentException();
+        }
+
         ShowEditUserPermissionFormDto data = form.get();
 
         EditUserPermissionDto dto = manager.getUserPermissionForEdit(data.getUserPermissionId());
@@ -109,6 +113,10 @@ public class PermissionController extends Controller {
     /* GroupPermission START */
     public Result showEditGroupPermissionForm() throws UnauthorizedException, InvalidArgumentException {
         Form<ShowEditGroupPermissionFormDto> form = showEditGroupPermissionFormDtoForm.bindFromRequest();
+        if(form.hasErrors()) {
+            throw new InvalidArgumentException();
+        }
+
         ShowEditGroupPermissionFormDto data = form.get();
 
         EditGroupPermissionDto dto = manager.getGroupPermissionForEdit(data.getGroupPermissionId());
