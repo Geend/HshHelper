@@ -1,5 +1,5 @@
 @import dtos.file.{GroupPermissionDto, UploadFileDto, UserPermissionDto}
-@(form: Form[UploadFileDto], userPermissionDtos: Seq[UserPermissionDto], groupPermissionDtos: Seq[GroupPermissionDto])
+@(form: Form[UploadFileDto], userPermissionDtos: Seq[UserPermissionDto], groupPermissionDtos: Seq[GroupPermissionDto], preSelectedGroupId: Long)
 
     @Base("Datei Hochladen") {
         @if(form.hasGlobalErrors) {
@@ -31,7 +31,11 @@
                             </thead>
                             <tbody>
                             @for(group <- groupPermissionDtos) {
-                                <tr @if(group.getPermissionLevel!=PermissionLevel.NONE){class="potentiallyDangerous"}>
+                                <tr
+                                    @if(group.getGroupId.equals(preSelectedGroupId)) {
+                                        class="potentiallyDangerous"
+                                    }
+                                >
                                     <td>@group.getGroupName()</td>
                                     <td>
                                         <select name="group_@group.getGroupId()">
@@ -61,15 +65,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @for(group <- userPermissionDtos) {
+                            @for(userPermission <- userPermissionDtos) {
                                 <tr>
-                                    <td>@group.getUsername()</td>
+                                    <td>@userPermission.getUsername()</td>
                                     <td>
-                                        <select name="user_@group.getUserId()">
-                                            <option value="None" selected="selected">Keine</option>
-                                            <option value="Read">Lesen</option>
-                                            <option value="Write">Schreiben</option>
-                                            <option value="ReadAndWrite">Lesen und Schreiben</option>
+                                        <select name="user_@userPermission.getUserId()">
+                                            <option value="None" @if(userPermission.getPermissionLevel == PermissionLevel.NONE) {selected="selected"}>Keine</option>
+                                            <option value="Read" @if(userPermission.getPermissionLevel == PermissionLevel.READ) {selected="selected"}>Lesen</option>
+                                            <option value="Write" @if(userPermission.getPermissionLevel == PermissionLevel.WRITE) {selected="selected"}>Schreiben</option>
+                                            <option value="ReadAndWrite" @if(userPermission.getPermissionLevel == PermissionLevel.READWRITE) {selected="selected"}>Lesen und Schreiben</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -82,5 +86,7 @@
             <div class="inputControls">
                 <input type="submit" value="Datei hochladen" />
             </div>
+
+            @helper.HiddenInput(form("preSelectedGroupId"))
         }
     }

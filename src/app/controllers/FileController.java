@@ -27,6 +27,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static play.libs.Scala.asScala;
 
@@ -84,7 +86,7 @@ public class FileController extends Controller {
     public Result showUploadFileForm() {
         List<UserPermissionDto> userPermissionDtos = this.fileManager.getUserPermissionDtosForCreate();
         List<GroupPermissionDto> groupPermissionDtos = this.fileManager.getGroupPermissionDtosForCreate();
-        return ok(views.html.file.UploadFile.render(this.uploadFileForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+        return ok(views.html.file.UploadFile.render(this.uploadFileForm, asScala(userPermissionDtos), asScala(groupPermissionDtos), null));
     }
 
     public Result showUploadFileToGroupForm(Long groupId) {
@@ -96,37 +98,50 @@ public class FileController extends Controller {
                 .findFirst()
                 .ifPresent(x -> x.setPermissionLevel(PermissionLevel.READ));
 
-        return ok(views.html.file.UploadFile.render(this.uploadFileForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+        UploadFileDto dto = new UploadFileDto();
+        dto.setPreSelectedGroupId(groupId);
+
+        return ok(views.html.file.UploadFile.render(this.uploadFileForm.fill(dto), asScala(userPermissionDtos), asScala(groupPermissionDtos), groupId));
     }
 
     public Result uploadFile() throws UnauthorizedException, IOException {
         Form<UploadFileDto> boundForm = uploadFileForm.bindFromRequest();
         List<UserPermissionDto> userPermissionDtos = this.fileManager.getUserPermissionDtosForCreate();
         List<GroupPermissionDto> groupPermissionDtos = this.fileManager.getGroupPermissionDtosForCreate();
-        if(boundForm.hasErrors()) {
-            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
-        }
 
-        try {
-            ArrayList<GroupPermissionDto> groupPermissions = new ArrayList<>();
-            ArrayList<UserPermissionDto> userPermissions = new ArrayList<>();
-            Map<String, String> fields = boundForm.rawData();
-            for (Map.Entry<String, String> entry: fields.entrySet()) {
-                PermissionLevel pl = permissionLevelFromFormString(entry.getValue());
-                if(pl != PermissionLevel.NONE) {
-                    if(entry.getKey().startsWith("user_")) {
-                        String userIdString = entry.getKey().substring(5);
-                        Long groupId = Long.parseLong(userIdString);
-                        userPermissions.add(new UserPermissionDto(groupId, "", pl));
+        // Permissions-Eingabedaten verarbeiten
+        Map<String, String> fields = boundForm.rawData();
+        for (Map.Entry<String, String> entry: fields.entrySet()) {
+            PermissionLevel pl = permissionLevelFromFormString(entry.getValue());
+            if(pl != PermissionLevel.NONE) {
+                if(entry.getKey().startsWith("user_")) {
+                    String userIdString = entry.getKey().substring(5);
+                    Long userId = Long.parseLong(userIdString);
+                    Optional<UserPermissionDto> relevantDto = userPermissionDtos.stream().filter(x -> x.getUserId().equals(userId)).findFirst();
+                    if(relevantDto.isPresent()) {
+                        relevantDto.get().setPermissionLevel(pl);
                     }
-                    else if(entry.getKey().startsWith("group_")) {
-                        String groupIdString = entry.getKey().substring(6);
-                        Long groupId = Long.parseLong(groupIdString);
-                        groupPermissions.add(new GroupPermissionDto(groupId, "", pl));
+                }
+
+                else if(entry.getKey().startsWith("group_")) {
+                    String groupIdString = entry.getKey().substring(6);
+                    Long groupId = Long.parseLong(groupIdString);
+                    Optional<GroupPermissionDto> relevantDto = groupPermissionDtos.stream().filter(x -> x.getGroupId().equals(groupId)).findFirst();
+                    if(relevantDto.isPresent()) {
+                        relevantDto.get().setPermissionLevel(pl);
                     }
                 }
             }
+        }
 
+        if(boundForm.hasErrors()) {
+            String strGroupId = boundForm.rawData().get("preSelectedGroupId");
+            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos), Long.valueOf(strGroupId)));
+        }
+
+        UploadFileDto uploadFileDto = boundForm.get();
+
+        try {
             Http.MultipartFormData<java.io.File> body = request().body().asMultipartFormData();
             Http.MultipartFormData.FilePart<java.io.File> file = body.getFile("file");
 
@@ -135,19 +150,22 @@ public class FileController extends Controller {
             }
 
             byte[] data = Files.readAllBytes(file.getFile().toPath());
-            UploadFileDto uploadFileDto = boundForm.get();
+
+            List<UserPermissionDto> userPermissions = userPermissionDtos.stream().filter(x -> !x.getPermissionLevel().equals(PermissionLevel.NONE)).collect(Collectors.toList());
+            List<GroupPermissionDto> groupPermissions = groupPermissionDtos.stream().filter(x -> !x.getPermissionLevel().equals(PermissionLevel.NONE)).collect(Collectors.toList());
+
             this.fileManager.createFile(uploadFileDto.getFilename(), uploadFileDto.getComment(), data, userPermissions, groupPermissions);
 
             return redirect(routes.FileController.showOwnFiles());
         } catch (NoFileSubmittedOnUploadException e) {
             boundForm = boundForm.withError("file", "Bitte wählen Sie eine Datei zum Upload aus.");
-            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos), uploadFileDto.getPreSelectedGroupId()));
         } catch(QuotaExceededException e) {
             boundForm = boundForm.withGlobalError("Quota überschritten. Bitte geben sie eine kleinere Datei an.");
-            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos), uploadFileDto.getPreSelectedGroupId()));
         } catch (FilenameAlreadyExistsException e) {
             boundForm = boundForm.withError("filename", "Name bereits belegt!");
-            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos)));
+            return badRequest(views.html.file.UploadFile.render(boundForm, asScala(userPermissionDtos), asScala(groupPermissionDtos), uploadFileDto.getPreSelectedGroupId()));
         }
     }
 

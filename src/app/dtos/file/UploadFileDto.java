@@ -13,6 +13,8 @@ public class UploadFileDto {
 
     private String comment;
 
+    private Long preSelectedGroupId;
+
     public String getFilename() {
         return filename;
     }
@@ -27,5 +29,13 @@ public class UploadFileDto {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Long getPreSelectedGroupId() {
+        return preSelectedGroupId;
+    }
+
+    public void setPreSelectedGroupId(Long preSelectedGroupId) {
+        this.preSelectedGroupId = preSelectedGroupId;
     }
 }
