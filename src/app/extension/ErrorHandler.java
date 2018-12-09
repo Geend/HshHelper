@@ -50,18 +50,20 @@ public class ErrorHandler extends DefaultHttpErrorHandler {
 
     private CompletionStage<Result> customExceptionHandler(UsefulException exception) {
         if(exception.cause instanceof UnauthorizedException){
+            String message = "unkown";
             if(exception.cause.getMessage() != null)
-                Context.current().flash().put(ERROR_KEY, exception.cause.getMessage());
+                message = exception.cause.getMessage();
             return CompletableFuture.completedFuture(
-                    Results.redirect(controllers.routes.ErrorController.showForbiddenMessage())
+                    Results.forbidden(views.html.error.Forbidden.render(message))
             );
         }
         else if(exception.cause instanceof InvalidArgumentException){
+            String message = "unkown";
             if(exception.cause.getMessage() != null)
-                Context.current().flash().put(ERROR_KEY, exception.cause.getMessage());
+                message = exception.cause.getMessage();
 
             return CompletableFuture.completedFuture(
-                    Results.redirect(controllers.routes.ErrorController.showBadRequestMessage())
+                    Results.badRequest(views.html.error.BadRequest.render(message))
             );
         }
         return null;
