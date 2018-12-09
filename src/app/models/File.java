@@ -150,4 +150,9 @@ public class File extends Model {
         File file = (File) o;
         return Objects.equals(fileId, file.fileId);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fileId);
+    }
 }
