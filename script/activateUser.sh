@@ -31,8 +31,8 @@ RESPONSE=$(curl 'http://localhost:9000/changePasswordAfterReset' \
     -s \
     --data "csrfToken=$CSRF" \
     --data "username=$2" \
-    --data "currentPassword=$3" \
-    --data-urlencode "password=$4" \
+    --data-urlencode "currentPassword=$3" \
+    --data "password=$4" \
     --data "passwordRepeat=$4")
 
 rm activateUserCookie$1.txt
