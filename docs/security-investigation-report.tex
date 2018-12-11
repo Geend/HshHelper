@@ -15,7 +15,7 @@
 
    {  ~ \sffamily
   \vfill
-  {\Huge\bfseries Sicherheitsuntersuchungsbericht der Applikation \enquote{HsH-Helper} der Gruppe B}
+  {\Huge\bfseries Sicherheitsuntersuchungsbericht: Applikation \enquote{HsH-Helper} der Gruppe B}
   \bigskip
 
   {\Large
@@ -33,6 +33,35 @@
 \vspace*{-3cm}
 
 \tableofcontents  % Inhaltsverzeichnis
+
+\chapter{Funktionale Fehler}
+
+\begin{itemize}
+  \item Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Userobjekt nicht persistiert werden (fehlender \texttt{save()}-Call)
+  \item Erste Datei kann beliebig groß sein, ignoriert Speicherplatzlimit
+  \item 1 Byte-Datei zaehlt so viel wie 1-Megabyte File
+  \item Beim Überschreiben einer Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim originale Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden.
+  \item Admin-Gruppe ist löschbar, wodurch die Applikation effektiv unbenutzbar ist
+  \item All-Gruppe ist löschbar.
+  \item Admin scheint nicht in der Lage zu sein, einen Nutzer zu löschen.
+  \item Eventuell möglich via Parallelisierung / Bulk-Requests eine Datei mit dem selben Namen hochzuladen
+  \item Nutzer Admin hat PW admin1 - entspricht nicht der Anforderung 4.4.
+  \item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
+\end{itemize}
+
+\chapter{Sicherheitslücke}
+
+\begin{itemize}
+  \item Verschlüsseln sie die Passwörter mit dem selben Key, mit dem auch das JWT Cookie verschlüsselt wird? Bissl \enquote{gefährlich}.
+  \item
+\end{itemize}
+
+\chapter{Ungewöhnliche Handhabung}
+
+\begin{itemize}
+  \item Werfen und Fangen von Exceptions wie NullPointerException sowie IndexOutOfBoundsException
+  \item Single-Sign-On meldet erst Applikation beim Netzdienst mit den Nutzeranmeldedaten an und gibt diese dann an den Nutzer weiter
+\end{itemize}
 
 \printbibliography
 
