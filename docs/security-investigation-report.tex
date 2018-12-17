@@ -57,6 +57,7 @@
   \item DOS auf Benutzerkonten: Benutzer können dauerhaft von der Seite ausgesperrt werden durch mehrfache Eingabe eines falschen Passworts. Ein möglicher Angriff wäre den Administratoraccount davon abzuhalten, einen Benutzer zu löschen.
   \item Beim Hashing des Passworts für die Datenbank wir nur eine Runde des SHA256 Hashs ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
   \item Um das salt fürs Hashing zu generieren wird zwar SecureRandom verwendet aber der Wert aus SecureRandom wird nur als Index ins PASSWORD\_CHARS Array verwendet. Somit ist der Keyspace des salts eingeschränkt und einfacher zu erraten.
+  \item Gegner speichern Passwort-Reset-Tokens in Hashmap. Als Key hierfür dient der Token selbst. Token werden allerdings nur dann gelöscht, wenn sie verwendet werden. Man kann theoretisch beliebig viele Tokens ohne Begrenzung erzeugen (Schutz matched beim ersten gefundenen Token) und so den Speicher des Servers von außen füllen und einen Absturz provozieren.
 \end{itemize}
 
 \chapter{Ungewöhnliche Handhabung}
