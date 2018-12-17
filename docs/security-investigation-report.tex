@@ -49,11 +49,12 @@
   \item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
 \end{itemize}
 
-\chapter{Sicherheitslücke}
+\chapter{Sicherheitslücken}
 
 \begin{itemize}
   \item Verschlüsseln sie die Passwörter mit dem selben Key, mit dem auch das JWT Cookie verschlüsselt wird? Bissl \enquote{gefährlich}.
   \item Der beim Upload einer Datei angegebene Dateiname wird um die Dateiendung (z.B. ".pdf") der hochgeladenen Datei ergänzt. Die Längenbegrenzung wird allerdings nur in Bezug auf den explizit angegebenen Namen enforced. D.h. man kann den Dateinamen beliebig lang machen, indem man hierzu die Endung der hochgeladenenen Datei entsprechend modifiziert.
+    \item DOS auf Benutzerkonten: Benutzer können dauerhaft von der Seite ausgesperrt werden durch mehrfache Eingabe eines falschen Passworts. Ein möglicher Angriff wäre den Administratoraccount davon abzuhalten, einen Benutzer zu löschen.
 \end{itemize}
 
 \chapter{Ungewöhnliche Handhabung}
