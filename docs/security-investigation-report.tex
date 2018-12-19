@@ -58,6 +58,7 @@
   \item Beim Hashing des Passworts für die Datenbank wir nur eine Runde des SHA256 Hashs ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
   \item Um das salt fürs Hashing zu generieren wird zwar SecureRandom verwendet aber der Wert aus SecureRandom wird nur als Index ins PASSWORD\_CHARS Array verwendet. Somit ist der Keyspace des salts eingeschränkt und einfacher zu erraten.
   \item Gegner speichern Passwort-Reset-Tokens in Hashmap. Als Key hierfür dient der Token selbst. Token werden allerdings nur dann gelöscht, wenn sie verwendet werden. Man kann theoretisch beliebig viele Tokens ohne Begrenzung erzeugen (Schutz matched beim ersten gefundenen Token) und so den Speicher des Servers von außen füllen und einen Absturz provozieren.
+  \item Sollte ein Benutzer einmal ein Cookie mit einem Benutzernamen haben ist dieses gültig unabhängig davon ob der Benutzer in der Zwischenzeit aus der Datenbank gelöscht und neu erstellt wird. Da die Seite für eine Hochschule gedacht ist dieser Fall nicht so unwahrscheinlich.
 \end{itemize}
 
 \chapter{Ungewöhnliche Handhabung}
