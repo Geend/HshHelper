@@ -36,14 +36,33 @@
 
 \chapter{Funktionale Fehler}
 
+
+\section{Quota}
+
 \begin{itemize}
-  \item Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Userobjekt nicht persistiert werden (fehlender \texttt{save()}-Call)
-  \item Erste Datei kann beliebig groß sein, ignoriert Speicherplatzlimit
+ \item Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Userobjekt nicht persistiert werden (fehlender \texttt{save()}-Call)
+  \item Speicherplatz-Limit Default Wert ist in byte angegeben (1073741824). Das würden ca einem GB entsprechen. Gerechnet wird allerdings überall in Megabyte. Damit ist das Standard-Limit effektiv 1 PB. Da man das Limit nicht ändern kann ist es somit so gut wie nutzlos.
   \item 1 Byte-Datei zaehlt so viel wie 1-Megabyte File
-  \item Beim Überschreiben einer Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim originale Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden.
-  \item Admin-Gruppe ist löschbar, wodurch die Applikation effektiv unbenutzbar ist
+  \item Beim Überschreiben einer Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim originale Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden. Dadurch kann ein Benutzer sein Speicherplatz-Limit erhöhen: Er muss nur Dateien von anderen Benutzer auf die er schreibberechtigung hat mit kleineren Dateien überschreiben.
+  \end{itemize}
+
+
+
+\section{Gruppen}
+\begin{itemize}
+\item Admin-Gruppe ist löschbar, wodurch die Applikation effektiv unbenutzbar ist
   \item All-Gruppe ist löschbar.
+
+\end{itemize}
+\section{Sonstiges}
+
+\begin{itemize} 
+  
   \item Admin scheint nicht in der Lage zu sein, einen Nutzer zu löschen.
+  
+  
+  
+  \item Benutzer, die Dateien hochgeladen haben können nicht gelöscht werden. Es wird versucht die Dateien des zu löschenden Benutzer mit dem Benutzername des löschenden Benutzer zu löschen. Der hat dazu aber nicht die Berechtigung, da er nicht Owner der Datei ist. (siehe AdminService.java Zeile 143. Hier wird \texttt{actor} übergeben. Korrekt wäre \texttt{credentials})
   \item Eventuell möglich via Parallelisierung / Bulk-Requests eine Datei mit dem selben Namen hochzuladen
   \item Nutzer Admin hat PW admin1 - entspricht nicht der Anforderung 4.4.
   \item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
@@ -53,13 +72,13 @@
 
 \begin{itemize}
   \item Verschlüsseln sie die Passwörter mit dem selben Key, mit dem auch das JWT Cookie verschlüsselt wird? Bissl \enquote{gefährlich}.
-  \item Der beim Upload einer Datei angegebene Dateiname wird um die Dateiendung (z.B. ".pdf") der hochgeladenen Datei ergänzt. Die Längenbegrenzung wird allerdings nur in Bezug auf den explizit angegebenen Namen enforced. D.h. man kann den Dateinamen beliebig lang machen, indem man hierzu die Endung der hochgeladenenen Datei entsprechend modifiziert.
   \item DOS auf Benutzerkonten: Benutzer können dauerhaft von der Seite ausgesperrt werden durch mehrfache Eingabe eines falschen Passworts. Ein möglicher Angriff wäre den Administratoraccount davon abzuhalten, einen Benutzer zu löschen.
   \item Beim Hashing des Passworts für die Datenbank wir nur eine Runde des SHA256 Hashs ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
   \item Um das salt fürs Hashing zu generieren wird zwar SecureRandom verwendet aber der Wert aus SecureRandom wird nur als Index ins PASSWORD\_CHARS Array verwendet. Somit ist der Keyspace des salts eingeschränkt und einfacher zu erraten.
   \item Gegner speichern Passwort-Reset-Tokens in Hashmap. Als Key hierfür dient der Token selbst. Token werden allerdings nur dann gelöscht, wenn sie verwendet werden. Man kann theoretisch beliebig viele Tokens ohne Begrenzung erzeugen (Schutz matched beim ersten gefundenen Token) und so den Speicher des Servers von außen füllen und einen Absturz provozieren.
   \item Sollte ein Benutzer einmal ein Cookie mit einem Benutzernamen haben ist dieses gültig unabhängig davon ob der Benutzer in der Zwischenzeit aus der Datenbank gelöscht und neu erstellt wird. Da die Seite für eine Hochschule gedacht ist dieser Fall nicht so unwahrscheinlich.
   \item Policy metrics wie die Timeoutzeit nach mehrfachen ungültigen Logins sollten nicht an den User weitergegeben werden. Dadurch wird es für ein Angreifer einfacher, Brute-Force Angriffe durchzuführen. \autocite[Loc. 5087]{book:wahh}
+  \item Der beim Upload einer Datei angegebene Dateiname wird um die Dateiendung (z.B. ".pdf") der hochgeladenen Datei ergänzt. Die Längenbegrenzung wird allerdings nur in Bezug auf den explizit angegebenen Namen enforced. D.h. man kann den Dateinamen beliebig lang machen, indem man hierzu die Endung der hochgeladenenen Datei entsprechend modifiziert. Außerdem können beliebige Zeichen in der Dateiendung verwendet werden.
 \end{itemize}
 
 \chapter{Ungewöhnliche Handhabung}
