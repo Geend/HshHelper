@@ -52,7 +52,7 @@
 \begin{itemize}
 \item Admin-Gruppe ist löschbar, wodurch die Applikation effektiv unbenutzbar ist. Es gibt zwar eigentlich eine Prüfung, ob versucht wird die Admin-Gruppe zu löschen, diese kann aber einfach umgangen werden. Trägt man im Gruppe-Löschen Formular eine Variation des Gruppennamens ein, die nicht exakt \enquote{admin} entspricht (wie zum Beipiel \enquote{aDmin}, wird die Gruppe gelöscht. Siehe die Funktion \texttt{isDeletableGroup} in \texttt{GroupManagerService}. Da bei Aufruf jeder Seite die Gruppe geladen wird, funktioniert nach dem Löschen der Gruppe keine Seite mehr. Es gibt eine NullPointerException in der \texttt{isAdmin} Methode in \texttt{Authorization}.
 \item All-Gruppe ist, analog zur Admin-Gruppe, löschbar. Die Anwendung ist danach aber nicht ganz so kaputt.
-
+\item Gruppen, für die Dateiberechtigungen angelegt wurden können nicht vollständig gelöscht werden. Im Code werden manuell Owner der Gruppe und Mitglieder der Gruppe gelöscht. Zu diesem Zeitpunkt ist die Gruppe \enquote{halb} gelöscht. Der anschließende \texttt{delete} Aufruf schlägt aber fehl, da Integriätsbedingungen in der Datenbank durch das löschen verletzt werden würden. Es wird eine Exception geworfen, aber die Gruppe hat schon keinen Owner mehr. Sie wird dem Admin noch angezeigt, aber sie ist nichtmehr aufrufbar.
 \end{itemize}
 
 \section{Single Sign On}
