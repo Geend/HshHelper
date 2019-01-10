@@ -104,6 +104,7 @@ Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. A
   \item Werfen und Fangen von Exceptions wie NullPointerException sowie IndexOutOfBoundsException
   \item Single-Sign-On meldet erst Applikation beim Netzdienst mit den Nutzeranmeldedaten an und gibt diese dann an den Nutzer weiter
   \item Der Key mit welchem die Datenbankinhalte verschlüsselt werden liegt in der Konfigurationsdatei verschlüsselt vor. Um diesen zu entschüsseln wird ein Hardcoded Passwort verwendet. Im Code darüber befindet sich ein Kommentar noch ein TODO, das dass Passwort im Live Mode bei Anwendungsstart mit angegeben werden sollte. Abgesehen davon das die Verwendung von Hardcoded Credentials schlecht ist, wird dieser Key ebenfalls für die Play Session Cookies im Klartext verwendet. Somit macht diese Lösung hier keinerlei Sinn.
+  \item Die Anwendung findet Dateien auf die der aktuelle Benutzer Zugriff hat, indem *alle* Dateien aus der Datenbank geladen werden, die nicht dem Benutzer gehören. Die Dateien werden folgend lokal gefiltert. Dies ist maximal ineffizient.
 \end{itemize}
 
 \printbibliography
