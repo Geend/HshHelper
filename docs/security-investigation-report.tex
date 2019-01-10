@@ -34,32 +34,22 @@
 
 \tableofcontents  % Inhaltsverzeichnis
 
-\chapter{VM}
+\chapter{Ausgelieferte virtuelle Maschine ist nicht benutzbar}
 
-\begin{figure}[!htb]
-\hspace*{-2.5cm}
-	\includegraphics[width=0.8\paperwidth]{resources/createuser_fail_1.png}
-	\label{createuser_fail_1}
-\end{figure}
+Innerhalb der VM können die Aktionen \enquote{Nutzer anlegen} sowie \enquote{Datei hochladen} nicht verwendet werden, da beide bei normaler, erwarteter Nutzung zu einem Fehler führen, wie in Anhang \ref{createuser_fail_1} sowie \ref{upload_fail_1} zu sehen ist.
+Da wir bereits wussten, dass der seperat ausgelieferte Quellcode funktioniert, waren wir dementsprechend schockiert. 
+Diese Fehler bestehen auch, wenn man den Quellcode aus der VM extrahiert und auf seinem Hostrechner via SBT oder IntelliJ startet.
+Komischerweise hat ein \texttt{diff} bewiesen, dass kein Unterschied zwischen den beiden vorliegenden Quellen besteht.
 
-\begin{figure}[!htb]
-\hspace*{-2.5cm}
-	\includegraphics[width=0.8\paperwidth]{resources/createuser_fail_2.png}
-	\label{createuser_fail_2}
-\end{figure}
+Aus Interesse haben wir daher versucht, die Ursache des Fehlers herauszufinden, konnten den Ursprung allerdings nicht finden.
+Ein Symptom ist zumindest, dass bestimmte Felder nicht korrekt aus dem HTML-Formular gelesen werden konnten.
+Beim Anlegen eines neuen Nutzers ist während des Debuggings zumindest das Feld "username" in dem \texttt{AddUserForm}-Objekt leer, obwohl es im \texttt{Form<AddUserForm>}-Objekt noch vorhanden ist.
+Wir schätzen, dass das Problem auf nicht vorhandene Getter/Setter der selbst geschriebenen Form-Klassen zurückzuführen ist, da diese nicht ausgeführt werden konnten, als wir diese durch die Funktion \enquote{Execute Code} während des Debuggings ausführen wollten.
+Ein weiteres Indiz für diese Annahme ist, dass genau die Getter/Setter des jeweils fehlendem Feld nicht vorhanden sind.
+Desweiteren sind die SBT Versionen gleich, Quellcode-Unterschiede bestehen wie bereits beschrieben nicht und der Fehler tritt innerhalb und ausserhalb der VM auf, sofern man den Quellcode aus der VM nimmt.
 
-
-\begin{figure}[!htb]
-\hspace*{-2.5cm}
-	\includegraphics[width=0.8\paperwidth]{resources/upload_fail_1.png}
-	\label{upload_fail_1}
-\end{figure}
-
-\begin{figure}[!htb]
-\hspace*{-2.5cm}
-	\includegraphics[width=0.8\paperwidth]{resources/upload_fail_2.png}
-	\label{upload_fail_2}
-\end{figure}
+Es ist möglich, dass weitere Aktionen innerhalb der VM nicht funktionieren. Wir hatten nach diesen 2 Aktionen aufgehört, da sie essentiell wichtige Funktionen für den HsH-Helper sind.
+Die hier gefundenen Fehler beziehen sich daher auf den seperat mitgelieferten Quellcode, da dieser nicht unter dieser Problematik leidet.
 
 \chapter{Funktionale Fehler}
 
@@ -167,10 +157,44 @@ Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. A
 
 \begin{appendices}
 
+\KOMAoption{headsepline}{false}
+
 \chapter{Quota Race Condition Exploit Script}
 \label{quotarace}
 \includepdf{./resources/enemyQuotaRaceCondition_1.pdf}
 \includepdf{./resources/enemyQuotaRaceCondition_2.pdf}
+
+\chapter{Fehler beim Anlegen eines neuen Nutzers in der bereitgestellten VM}
+
+\begin{figure}[!htb]
+  \centering
+    \frame{\includegraphics[width=0.8\paperwidth]{resources/createuser_fail_1.png}}
+    \label{createuser_fail_1}
+    \caption{Anlegen eines Nutzers in der bereitgestellten VM: Verwendete Daten}
+\end{figure}
+
+\begin{figure}[!htb]
+  \centering
+    \frame{\includegraphics[width=0.8\paperwidth]{resources/createuser_fail_2.png}}
+    \label{createuser_fail_2}
+    \caption{Anlegen eines Nutzers in der bereitgestellten VM: Daraus resultierender Fehler}
+\end{figure}
+
+\chapter{Fehler beim Hochladen einer neuen Datei in der bereitgestellten VM}
+
+\begin{figure}[!htb]
+  \centering
+    \frame{\includegraphics[width=0.8\paperwidth]{resources/upload_fail_1.png}}
+    \label{upload_fail_2}
+    \caption{Hochladen einer neuen Datei in der bereitgestellten VM: Verwendete Daten}
+  \end{figure}
+
+\begin{figure}[!htb]
+  \centering
+    \frame{\includegraphics[width=0.8\paperwidth]{resources/upload_fail_2.png}}
+    \label{upload_fail_1}
+    \caption{Hochladen einer neuen Datei in der bereitgestellten VM: Daraus resultierender Fehler}
+  \end{figure}
 
 \end{appendices}
 
