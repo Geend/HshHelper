@@ -54,6 +54,13 @@
 \item All-Gruppe ist, analog zur Admin-Gruppe, löschbar. Die Anwendung ist danach aber nicht ganz so kaputt.
 
 \end{itemize}
+
+\section{Single Sign On}
+\begin{itemize}
+ \item Single Sign On ist Hardcoded für die zwei in den Anforderungen gestellten Testfälle. Trotzdem kann man in der Oberfläche den Namen für den Benutzer- und Passwort Parameter festlegen ohne tatsächliche Auswirkungen.
+  \item Sollten in der URL ein Fehler vorliegen wird eine Exception geworfen. Da es sich bei der uns hier vorliegenden Anwendung um eine Debug Version wird die Exception mit teilen des Quellcodes angezeigt. Nutzer, eingeschlossen Administratoren, sollten niemals Java Exceptions einsehen können.
+ \end{itemize}
+
 \section{Sonstiges}
 
 \begin{itemize} 
