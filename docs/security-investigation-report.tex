@@ -34,6 +34,33 @@
 
 \tableofcontents  % Inhaltsverzeichnis
 
+\chapter{VM}
+
+\begin{figure}[!htb]
+\hspace*{-2.5cm}
+	\includegraphics[width=0.8\paperwidth]{resources/createuser_fail_1.png}
+	\label{createuser_fail_1}
+\end{figure}
+
+\begin{figure}[!htb]
+\hspace*{-2.5cm}
+	\includegraphics[width=0.8\paperwidth]{resources/createuser_fail_2.png}
+	\label{createuser_fail_2}
+\end{figure}
+
+
+\begin{figure}[!htb]
+\hspace*{-2.5cm}
+	\includegraphics[width=0.8\paperwidth]{resources/upload_fail_1.png}
+	\label{upload_fail_1}
+\end{figure}
+
+\begin{figure}[!htb]
+\hspace*{-2.5cm}
+	\includegraphics[width=0.8\paperwidth]{resources/upload_fail_2.png}
+	\label{upload_fail_2}
+\end{figure}
+
 \chapter{Funktionale Fehler}
 
 
@@ -75,6 +102,7 @@
   \item Eventuell möglich via Parallelisierung / Bulk-Requests eine Datei mit dem selben Namen hochzuladen
   \item Nutzer Admin hat PW admin1 - entspricht nicht der Anforderung 4.4.
   \item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
+  \item Wenn man einen Benutzter löschen will, der in der Admin Gruppe ist (was nicht gehen soll), wird er aus der Alle Gruppe entfernt.
 \end{itemize}
 
 \chapter{Sicherheitslücken}
