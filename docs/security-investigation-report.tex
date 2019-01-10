@@ -44,6 +44,9 @@
   \item Speicherplatz-Limit Default Wert ist in byte angegeben (1073741824). Das würden ca einem GB entsprechen. Gerechnet wird allerdings überall in Megabyte. Damit ist das Standard-Limit effektiv 1 PB. Da man das Limit nicht ändern kann ist es somit so gut wie nutzlos.
   \item 1 Byte-Datei zaehlt so viel wie 1-Megabyte File
   \item Beim Überschreiben einer Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim originale Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden. Dadurch kann ein Benutzer sein Speicherplatz-Limit erhöhen: Er muss nur Dateien von anderen Benutzer auf die er schreibberechtigung hat mit kleineren Dateien überschreiben.
+  \item Beim Passwort Reset ist in der URL ein Slash zu viel. Dieser muss zuerst manuell entfernt werden bevor ein Passwort Reset durchgeführt werden kann.
+  
+  \enquote{http://localhost:9000//password/forgot/U69O...ZNcUBcK2}
   \end{itemize}
 
 
@@ -126,6 +129,11 @@ Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. A
 % \listoftables       % Tabellenverzeichnis
 
 \begin{appendices}
+
+\chapter{Quota Race Condition Exploit Script}
+\label{quotarace}
+\includepdf{./resources/enemyQuotaRaceCondition_1.pdf}
+\includepdf{./resources/enemyQuotaRaceCondition_2.pdf}
 
 \end{appendices}
 
