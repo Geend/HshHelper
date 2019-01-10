@@ -61,9 +61,8 @@ Die hier gefundenen Fehler beziehen sich daher auf den seperat mitgelieferten Qu
   \item Speicherplatz-Limit Default Wert ist in byte angegeben (1073741824). Das würden ca einem GB entsprechen. Gerechnet wird allerdings überall in Megabyte. Damit ist das Standard-Limit effektiv 1 PB. Da man das Limit nicht ändern kann ist es somit so gut wie nutzlos.
   \item 1 Byte-Datei zaehlt so viel wie 1-Megabyte File
   \item Beim Überschreiben einer Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim originale Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden. Dadurch kann ein Benutzer sein Speicherplatz-Limit erhöhen: Er muss nur Dateien von anderen Benutzer auf die er schreibberechtigung hat mit kleineren Dateien überschreiben.
-  \item Beim Passwort Reset ist in der URL ein Slash zu viel. Dieser muss zuerst manuell entfernt werden bevor ein Passwort Reset durchgeführt werden kann.
-  
-  \enquote{http://localhost:9000//password/forgot/U69O...ZNcUBcK2}
+  \item Beim Passwort Reset ist in der URL ein Slash zu viel. Dieser muss zuerst manuell entfernt werden bevor ein Passwort Reset durchgeführt werden kann. \enquote{http://localhost:9000//password/forgot/U69O...ZNcUBcK2}
+  \item Da die Laengenbegrenzung eines Dateinamens die Dateiendung ignoriert, kann ein Dateiname beliebig lang gestaltet werden.
   \end{itemize}
 
 
@@ -90,15 +89,12 @@ Die hier gefundenen Fehler beziehen sich daher auf den seperat mitgelieferten Qu
 \section{Sonstiges}
 
 \begin{itemize} 
-  
-  \item Admin scheint nicht in der Lage zu sein, einen Nutzer zu löschen.
-
-  
+  \item Admin scheint nicht in der Lage zu sein, einen Nutzer zu löschen.  
   \item Benutzer, die Dateien hochgeladen haben können nicht gelöscht werden. Es wird versucht die Dateien des zu löschenden Benutzer mit dem Benutzername des löschenden Benutzer zu löschen. Der hat dazu aber nicht die Berechtigung, da er nicht Owner der Datei ist. (siehe AdminService.java Zeile 143. Hier wird \texttt{actor} übergeben. Korrekt wäre \texttt{credentials})
   \item Eventuell möglich via Parallelisierung / Bulk-Requests eine Datei mit dem selben Namen hochzuladen
   \item Nutzer Admin hat PW admin1 - entspricht nicht der Anforderung 4.4.
   \item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
-  \item Wenn man einen Benutzter löschen will, der in der Admin Gruppe ist (was nicht gehen soll), wird er aus der Alle Gruppe entfernt.
+  \item Es ist unmöglich, einen Nutzer, der in der Administratorgruppe ist, zu löschen, wenn man als "admin" eingeloggt ist. Diese Operation führt zu einem Fehler laut Web-GUI, der zur folge hat, dass dieser Nutzer nicht mehr in der "Alle"-Gruppe ist, aber in allen anderen Gruppen bestehen bleibt.
 \end{itemize}
 
 \chapter{Sicherheitslücken}
@@ -126,6 +122,7 @@ Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. A
 \item Es ist möglich einen CSRF-Angriff durchzuführen, der beliebige Nutzer auslogged, die Chrome verwenden. Hierzu muss einfach von einer anderen Domain aus ein Request auf die Startseite getriggert werden (Bsp: https://jsfiddle.net/4j3k9ngt/). Das Cookie vom Nutzer wird so zurückgesetzt, bzw. das "username" Feld gelöscht.
 \item Dadurch, dass es möglich ist, die Admin- bzw. Alle-Gruppe zu löschen kann ein anderer Admin die Anwendung übernehmen: Er kann die Gruppen Alle und Admin löschen und danach als eigene Gruppen anlegen. Er wird so zum alleinigen Admin der Anwendung. Der Nutzer \enquote{admin} ist danach nur noch ein normaler Nutzer ohne Privilegien. In diesem Zustand kann er auch vollständig über das Admin-Panel gelöscht werden.
 \item Es ist möglich die E-Mail Adressen aller Nutzer zu extrahieren: Man legt eine Gruppe an und fügt alle Nutzer dieser Gruppe hinzu (diese kann man aus der Gruppe \enquote{Alle} extrahieren). Im HTML-Code der Gruppenseite sieht man als Gruppenowner die entsprechenden E-Mail Adressen. Sie sind mit den entsprechenden \enquote{Aus der Gruppe entfernen} Buttons verknüpft bzw. werden in der korrospondierenden Form als ID verwendet.
+\item Beim Löschen eines Nutzers, der Besitzer einer Gruppe ist, wird eine Löschoperation unter seinen Berechtigungen gestartet. Dadurch wird im Log persistiert, dass der gelöschte Nutzer die Gruppe gelöscht hat, bevor dieser von einem Administrator gelöscht wird. Das ist ein Mangel im Bezug auf die Accountability, da nun das Log Ausgaben enthält, welche nicht stattgefunden haben.
 \end{itemize}
 
 \chapter{Ungewöhnliche Handhabung}
