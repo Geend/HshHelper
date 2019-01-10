@@ -134,6 +134,7 @@ Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. A
 \item Beim Überschreiben einer Datei tritt eine Race-Condition auf: Wird eine einzelne Datei massiv parallel überschrieben, steigt die Quota des Besitzers kontinuiertlich an.
 \item Beim Login ist ersichtlich, ob ein Benutzeraccount existiert oder nicht: Loggt man sich N mal falsch für einen existierenden Benutzer ein, wird der entsprechende Account gesperrt und es erscheint eine Fehlermeldung \enquote{Du bist für 4,8 Minuten gesperrt.}. Die gleiche Aktion führt bei einem nicht existierenden Account niemals zu einer derartigen Fehlermeldung, es erscheint ausschließlich die Meldung \enquote{Falscher Benutzername oder Passwort}.
 \item Es ist möglich einen CSRF-Angriff durchzuführen, der beliebige Nutzer auslogged, die Chrome verwenden. Hierzu muss einfach von einer anderen Domain aus ein Request auf die Startseite getriggert werden (Bsp: https://jsfiddle.net/4j3k9ngt/). Das Cookie vom Nutzer wird so zurückgesetzt, bzw. das "username" Feld gelöscht.
+\item Dadurch, dass es möglich ist, die Admin- bzw. Alle-Gruppe zu löschen kann ein anderer Admin die Anwendung übernehmen: Er kann die Gruppen Alle und Admin löschen und danach als eigene Gruppen anlegen. Er wird so zum alleinigen Admin der Anwendung. Der Nutzer \enquote{admin} ist danach nur noch ein normaler Nutzer ohne Privilegien.
 \end{itemize}
 
 \chapter{Ungewöhnliche Handhabung}
