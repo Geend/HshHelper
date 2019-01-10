@@ -50,8 +50,8 @@
 
 \section{Gruppen}
 \begin{itemize}
-\item Admin-Gruppe ist löschbar, wodurch die Applikation effektiv unbenutzbar ist
-  \item All-Gruppe ist löschbar.
+\item Admin-Gruppe ist löschbar, wodurch die Applikation effektiv unbenutzbar ist. Es gibt zwar eigentlich eine Prüfung, ob versucht wird die Admin-Gruppe zu löschen, diese kann aber einfach umgangen werden. Trägt man im Gruppe-Löschen Formular eine Variation des Gruppennamens ein, die nicht exakt \enqoute{admin} entspricht (wie zum Beipiel \enqoute{aDmin}, wird die Gruppe gelöscht. Siehe die Funktion \texttt{isDeletableGroup} in \texttt{GroupManagerService}. Da bei Aufruf jeder Seite die Gruppe geladen wird, funktioniert nach dem Löschen der Gruppe keine Seite mehr. Es gibt eine NullPointerException in der \texttt{isAdmin} Methode in \texttt{Authorization}}.
+\item All-Gruppe ist, analog zur Admin-Gruppe, löschbar. Die Anwendung ist danach aber nicht ganz so kaputt.
 
 \end{itemize}
 \section{Sonstiges}
