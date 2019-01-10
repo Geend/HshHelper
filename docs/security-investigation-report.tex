@@ -89,6 +89,12 @@
 \begin{itemize}
  \item Single Sign On ist Hardcoded für die zwei in den Anforderungen gestellten Testfälle. Trotzdem kann man in der Oberfläche den Namen für den Benutzer- und Passwort Parameter festlegen ohne tatsächliche Auswirkungen.
   \item Sollten in der URL ein Fehler vorliegen wird eine Exception geworfen. Da es sich bei der uns hier vorliegenden Anwendung um eine Debug Version wird die Exception mit teilen des Quellcodes angezeigt. Nutzer, eingeschlossen Administratoren, sollten niemals Java Exceptions einsehen können.
+  \item Beim Hinzufügen eines Webservices wird, auch wenn alle Eingaben korrekt sind und ein Webservice hinzugefügt wird, eine Fehlermeldung zurückgegeben.
+ \end{itemize}
+ 
+ \section{Passwort Reset}
+\begin{itemize}
+ \item Das Passwort eines Nutzers kann zurückgesetzt werden noch bevor ein Passwort Reset durchgeführt wurde. Dies kann dazu führen das Benutzer Zugriff auf ihren Account bekommen noch bevor ein Administrator ihnen das initiale Passwort mitteilt. Das initiale Passwort verliert somit jegliche Bedeutung.
  \end{itemize}
 
 \section{Sonstiges}
@@ -96,7 +102,7 @@
 \begin{itemize} 
   
   \item Admin scheint nicht in der Lage zu sein, einen Nutzer zu löschen.
-  \item Beim Hinzufügen eines Webservices wird, auch wenn alle Eingaben korrekt sind und ein Webservice hinzugefügt wird, eine Fehlermeldung zurückgegeben.
+
   
   \item Benutzer, die Dateien hochgeladen haben können nicht gelöscht werden. Es wird versucht die Dateien des zu löschenden Benutzer mit dem Benutzername des löschenden Benutzer zu löschen. Der hat dazu aber nicht die Berechtigung, da er nicht Owner der Datei ist. (siehe AdminService.java Zeile 143. Hier wird \texttt{actor} übergeben. Korrekt wäre \texttt{credentials})
   \item Eventuell möglich via Parallelisierung / Bulk-Requests eine Datei mit dem selben Namen hochzuladen
