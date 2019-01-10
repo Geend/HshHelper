@@ -83,6 +83,7 @@
   \item Ein Nutzer kann bei \texttt{Dateiberechtigung} alle Gruppen sehen auch wenn er nicht Mitglied ist. Es ist auch möglich Berechtigungen zu vergeben, sodass Dateien in dieser Gruppe geteilt werden können.
 \item Ein Benutzer kann Zugriff auf sein Konto erhalten, bevor ihm das initale Passwort mitgeteilt wurde. Dazu muss er nur die Passwort vergessen Funktion nutzen um sich ein Passwort per Email zusenden zu lassen.
 \item Beim Überschreiben einer Datei tritt eine Race-Condition auf: Wird eine einzelne Datei massiv parallel überschrieben, steigt die Quota des Besitzers kontinuiertlich an.
+\item Beim Login ist ersichtlich, ob ein Benutzeraccount existiert oder nicht: Loggt man sich N mal falsch für einen existierenden Benutzer ein, wird der entsprechende Account gesperrt und es erscheint eine Fehlermeldung \enquote{Du bist für 4,8 Minuten gesperrt.}. Die gleiche Aktion führt bei einem nicht existierenden Account niemals zu einer derartigen Fehlermeldung, es erscheint ausschließlich die Meldung \enquote{Falscher Benutzername oder Passwort}.
 \end{itemize}
 
 \chapter{Ungewöhnliche Handhabung}
