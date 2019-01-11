@@ -84,12 +84,17 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
  \item Single Sign On ist Hardcoded für die zwei in den Anforderungen gestellten Testfälle. Trotzdem kann man in der Oberfläche den Namen für den Benutzer- und Passwort Parameter festlegen ohne tatsächliche Auswirkungen.
   \item Sollten in der URL ein Fehler vorliegen wird eine Exception geworfen. Da es sich bei der uns hier vorliegenden Anwendung um eine Debug Version wird die Exception mit teilen des Quellcodes angezeigt. Nutzer, eingeschlossen Administratoren, sollten niemals Java Exceptions einsehen können.
   \item Beim Hinzufügen eines Webservices wird, auch wenn alle Eingaben korrekt sind und ein Webservice hinzugefügt wird, eine Fehlermeldung zurückgegeben.
+     \item Werden invalide Login-Daten für Webservices eingetragen, gibt es beim Versuch sich mit dem Single-Signon anzumelden eine Exception.
+\item Es können pro Webservice nur ein mal Zugangsdaten hinterlegt werden. Beim Versuch ein zweites Mal Zugangsdaten für einen Webservice zu speichern, wird nur der Statuscode 400 (badRequest) und eine leere Seite zurück gegeben.
  \end{itemize}
  
  \section{Passwort Reset}
 \begin{itemize}
  \item Das Passwort eines Nutzers kann zurückgesetzt werden noch bevor ein Passwort Reset durchgeführt wurde. Dies kann dazu führen das Benutzer Zugriff auf ihren Account bekommen noch bevor ein Administrator ihnen das initiale Passwort mitteilt. Das initiale Passwort verliert somit jegliche Bedeutung.
  \end{itemize}
+ 
+
+
 
 \section{Sonstiges}
 
@@ -101,6 +106,9 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
   \item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
   \item Es ist unmöglich, einen Nutzer, der in der Administratorgruppe ist, zu löschen, wenn man als "admin" eingeloggt ist. Diese Operation führt zu einem Fehler laut Web-GUI, der zur folge hat, dass dieser Nutzer nicht mehr in der "Alle"-Gruppe ist, aber in allen anderen Gruppen bestehen bleibt.
   \item Es wurde eine Debug-Version ausgeliefert, der Aufruf eines nicht existierenden Pfads führt essentiell dazu, dass die Inhalte der Routes-Datei ausgegeben werden.
+  
+  
+
 \end{itemize}
 
 \chapter{Sicherheitslücken}
@@ -141,6 +149,7 @@ Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. A
   \item Die Anwendung extrahiert die Dateiendung von der ausgewählten Datei und speichert diese ungeprüft und unverändert in dem korrospondierenden Datenbankeintrag. Wird die entsprechende Datei heruntergeladen, erstellt die Anwendung einen Dateinamen bestehend aus dem vom Nutzer angebenen Namen und der extrahierten Endung. Dieser Name wird im Content-Disposition Header der Anwendung ungefiltert zurückgegeben. Hypotetisch wäre hier ein HTTP-Response-Splitting-Angriff möglich, faktisch jedoch leider nicht - Play wirft eine Exception bei Newlines im Header-Value.
   \item Die Anwendung versucht zu verhindern, dass man bei Dateien Permissions verändert, die auf einen selbst bezogen sind. Der Check wurde jedoch gänzlich fehlerhaft implementiert. Ausgehend von einer String-Liste mit Benutzer-Ids prüft die Anwendung ob jede String-Id \enquote{equals} einem User-Objekt (dem Owner der File) ist (z.B. FileService.java, Zeile 309). Dieser Check schlägt immer fehl. Folglich ist es problemlos möglich, die auf den Datei-Owner bezogenen Permissions zu löschen. Dies hat allerdings keine Auswirkungen: Die Methoden hasReadAccess und hasWriteAccess (Authorization.java) gewähren dem Owner einer Datei immer die Authorisierung - unabhängig von den gesetzten Permissions.
   \item Versucht der Anwender eine Gruppenberechtigung zu entfernen, lädt die Anwendung das entsprechende Datei-Objekt aus der Datenbank. Dieses Dateiobjekt verfügt über eine Liste von Gruppen, die Lese- bzw. Schreib-Rechte haben. In einem zweiten Schritt wird das entsprechende Gruppenobjekt anhand des Gruppennamens aus der Datenbank geladen. Die Anwendung ruft die remove Methode der Liste in Verbindung mit dem Gruppenobjekt auf um die Berechtigung zu entfernen. Die remove Methode selbst verwendet hierzu die equals Methoden ihrer Items und die entsprechenden indentifizieren zu können. In der Anwendung selbst wurde die equals Methode für die Gruppen-Klasse nicht überschrieben, d.h. es wird die Standard equals Methode der Java Basisklasse Object verwendet. Diese Methode prüft lediglich, ob die Speicheraddressen der beiden Objekte identisch sind. Hypotetisch müsste die so implementierte Funktionalität fehlschlagen, da die entsprechenden Gruppenobjekte individuell erzeugt wurden. Faktisch verhindert dies leider der L2-Cache\footnote{https://ebean.io/docs/features/l2cache/} von Ebean; dieser bewirkt im Ergebnis, dass bei zwei Queries auf den selben Datensatz nur ein Java-Objekt erzeugt wird.
+  	\item Die HTTP Statuscodes werden inkonsistente verwendet. An einigen Stellen wird 200 (ok) an den Client gesendet, obwohl eigentlich ein Fehler passiert ist. Beipiele dafür sind die \texttt{login} und \texttt{changePassword} Methoden in \texttt{UserController}.
   
 \end{itemize}
 
