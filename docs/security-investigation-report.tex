@@ -56,7 +56,7 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
 \chapter{Funktionale Fehler}
 
 
-\section{Quota}
+\section{Dateien}
 
 \begin{itemize}
  \item Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Userobjekt nicht persistiert werden (fehlender \texttt{save()}-Call)
@@ -65,6 +65,9 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
   \item Beim Überschreiben einer Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim originale Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden. Dadurch kann ein Benutzer sein Speicherplatz-Limit erhöhen: Er muss nur Dateien von anderen Benutzer auf die er schreibberechtigung hat mit kleineren Dateien überschreiben.
   \item Beim Passwort Reset ist in der URL ein Slash zu viel. Dieser muss zuerst manuell entfernt werden bevor ein Passwort Reset durchgeführt werden kann. \enquote{http://localhost:9000//password/forgot/U69O...ZNcUBcK2}
   \item Da die Laengenbegrenzung eines Dateinamens die Dateiendung ignoriert, kann ein Dateiname beliebig lang gestaltet werden.
+  \item Es ist Benutzern problemlos möglich, mehrere Dateien mit dem gleichen Namen hinzuzufügen. Der für den Upload zuständige Controller-Code erhält vom Anwender einen expliziten Dateinamen (A) und den Namen der ausgewählten Datei (B). Die Anwendung prüft nun, ob der Nutzer bereits eine Datei besitzt, dessen Name A entspricht. Ist dies nicht der Fall, wird die Dateiendung aus B extrahiert und eine Datei erzeugt, die einen zusammengesetzten Namen besitzt: A + \enquote{.} + extension(B).
+  Wiederholt man den Upload, prüft die Anwendung erneut, ob der Benutzer eine Datei mit dem Namen A hat - was natürlich nicht der Fall ist, denn der endgültige Name der Datei entspricht nicht A.
+  Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jedem Namen existieren. Dies ist der Verwendung einer TreeMap geschuldet: Die Anwendung lädt alle Dateien, die zum Benutzer gehören und speichert diese als Key in der TreeMap. Die TreeMap stellt die Eindeutigkeit der Keys über die compareTo Methode der entsprechenden Keys bzw. Files sicher. Diese wurde von der anderen Gruppe überschrieben und beinhaltet für den Vergleich lediglich den Dateinamen und den Owner. D.h. wenn man 10 Dateien mit dem gleichen Namen erzeugt, befindet sich in der Treemap nur eine Datei und nur diese wird so angezeigt. Wird die Datei gelöscht, wird die vorherige angezeigt.
   \end{itemize}
 
 
