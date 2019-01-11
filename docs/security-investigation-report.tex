@@ -43,7 +43,7 @@ Komischerweise hat ein \texttt{diff} bewiesen, dass kein Unterschied zwischen de
 
 Aus Interesse haben wir daher versucht, die Ursache des Fehlers herauszufinden, konnten den Ursprung allerdings nicht finden.
 Ein Symptom ist zumindest, dass bestimmte Felder nicht korrekt aus dem HTML-Formular gelesen werden konnten.
-Beim Anlegen eines neuen Nutzers ist während des Debuggings zumindest das Feld "username" in dem \texttt{AddUserForm}-Objekt leer, obwohl es im \texttt{Form<AddUserForm>}-Objekt noch vorhanden ist.
+Beim Anlegen eines neuen Nutzers ist während des Debuggings zumindest das Feld \enquote{username} in dem \texttt{AddUserForm}-Objekt leer, obwohl es im \texttt{Form<AddUserForm>}-Objekt noch vorhanden ist.
 Wir schätzen, dass das Problem auf nicht vorhandene Getter/Setter der selbst geschriebenen Form-Klassen zurückzuführen ist, da diese nicht ausgeführt werden konnten, als wir diese durch die Funktion \enquote{Execute Code} während des Debuggings ausführen wollten.
 Ein weiteres Indiz für diese Annahme ist, dass genau die Getter/Setter des jeweils fehlendem Feld nicht vorhanden sind.
 Desweiteren sind die SBT Versionen gleich, Quellcode-Unterschiede bestehen wie bereits beschrieben nicht und der Fehler tritt innerhalb und ausserhalb der VM auf, sofern man den Quellcode aus der VM nimmt.
