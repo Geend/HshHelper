@@ -57,6 +57,13 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
 
 
 \chapter{Eingesetzte Methoden und Werkzeuge}
+Ein Großteil der Fehler und Sicherheitslücken konnten nur durch die Verwendung eines Browsers und die darin enthaltenen Entwicklerfunktionalitäten gefunden werden. Als Browser wurde Google Chrome und Firefox von Mozilla verwendet. Um fehlende Anwendungsfunktionalität, wie Beispielsweise das Ändern der Quota eines Benutzers dennoch verwenden zu können, wurden Datenbankeinträge direkt mit dem H2-Browser manipuliert.
+
+Um etwas weniger offensichtliche Sicherheitslücken wie z.B. Raceconditions aufzudecken wurden Bashskripte verwendet, die das Kommandozeilen Werkzeug Curl bedienen um Webrequests abzusetzen. Für eine weitere Raceconditions wurde das Pythonprogramm race-condition-exploit \footnote{\url{https://github.com/andresriancho/race-condition-exploit}} verwendet. Durch ein Plugin Mechanismus wurde der Code, der einen HTTP Request in Textform aufbereitet, bereitgestellt. Um HTTP Requests zu erstellen und abzusenden wurde die Pythonlibrary Requests \footnote{\url{https://github.com/requests/requests}} verwendet.
+
+Der Webproxy ZAP \footnote{\url{https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project}} kam mehrfach zum Einsatz. Um die Funktionsweise und die verwendeten Daten der Anwendung genauer zu verstehen, wurden die HTTP Requests in ZAP betrachtet und analysiert. Bei der Suche nach Sicherheitslücken wurden POST Requests mithilfe des Webproxies manipuliert.
+
+Zur Quelltext Inspektion und Debugging kam, wie auch schon in der Enwicklungsphase, IntelliJ zum Einsatz.
 
 
 \chapter{Funktionale Fehler}
