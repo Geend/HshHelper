@@ -196,7 +196,9 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   
 \end{enumerate}
 
-\chapter{Sicherheitslücken}
+\chapter{Sicherheitsspezifische Mängel}
+
+\section{Sicherheitslücken}
 
 \begin{itemize}
 
@@ -383,6 +385,14 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \end{itemize}
 \end{itemize}
 
+\section{Mängel, die kryptografischen Eigenschaften einschränken}
+
+\begin{itemize}
+  \item Verstoß gegen das \enquote{Key Separation}-Prinzip: Die Daten in der Datenbank sowie das JWT-Cookie werden mithilfe des selben privaten Schlüssels verschlüsselt. 
+  \item Beim Hashing des Passworts wird nur eine Runde des SHA256 Hashs ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
+  \item Bei der Generation des Salts wird zwar \enquote{SecureRandom} verwendet, allerdings wir maximal eine zufällige Zahl zwischen 0 und Länge des Array \enquote{PASSWORD\_CHARS} generiert. Diese Zahl wird dann als Index für eben genanntes Array verwendet, um daraus Zeichen für die Salt-Generation zu extrahieren. Dadurch ist zumindest der Keyspace des Salts eingeschränkt.
+\end{itemize}
+
 \chapter{Ungewöhnliche Handhabung}
 
 \begin{enumerate}[resume]
@@ -395,9 +405,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Versucht der Anwender eine Gruppenberechtigung zu entfernen, lädt die Anwendung das entsprechende Datei-Objekt aus der Datenbank. Dieses Dateiobjekt verfügt über eine Liste von Gruppen, die Lese- bzw. Schreib-Rechte haben. In einem zweiten Schritt wird das entsprechende Gruppenobjekt anhand des Gruppennamens aus der Datenbank geladen. Die Anwendung ruft die remove Methode der Liste in Verbindung mit dem Gruppenobjekt auf um die Berechtigung zu entfernen. Die remove Methode selbst verwendet hierzu die equals Methoden ihrer Items und die entsprechenden indentifizieren zu können. In der Anwendung selbst wurde die equals Methode für die Gruppen-Klasse nicht überschrieben, d.h. es wird die Standard equals Methode der Java Basisklasse Object verwendet. Diese Methode prüft lediglich, ob die Speicheraddressen der beiden Objekte identisch sind. Hypotetisch müsste die so implementierte Funktionalität fehlschlagen, da die entsprechenden Gruppenobjekte individuell erzeugt wurden. Faktisch verhindert dies leider der L2-Cache\footnote{https://ebean.io/docs/features/l2cache/} von Ebean; dieser bewirkt im Ergebnis, dass bei zwei Queries auf den selben Datensatz nur ein Java-Objekt erzeugt wird.
   	\item Die HTTP Statuscodes werden inkonsistente verwendet. An einigen Stellen wird 200 (ok) an den Client gesendet, obwohl eigentlich ein Fehler passiert ist. Beipiele dafür sind die \texttt{login} und \texttt{changePassword} Methoden in \texttt{UserController}.
   	\item Der Erstbenutzer admin wird mit der E-Mail Addresse \enquote{admin@admin.com} initialisiert. Diese E-Mail Addresse ist nicht änderbar. Die gewählte Domain ist privater Hand: Der Betreiber hätte faktisch Zugriff auf die Anwendung, würde er einen entsprechenden Email Server einrichten. Zum jetzigen Zeitpunkt hat er als MX-Record localhost gewählt. Es besteht die Gefahr, dass der SMTP-Server die Email nicht zustellen kann bzw. sie bounced und so mit dem Passwort-Reset-Link in einer Log-Datei auftaucht.
-    \item Verschlüsseln sie die Passwörter mit dem selben Key, mit dem auch das JWT Cookie verschlüsselt wird? Bissl \enquote{gefährlich}.
-    \item Beim Hashing des Passworts für die Datenbank wir nur eine Runde des SHA256 Hashs ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
-    \item Um das salt fürs Hashing zu generieren wird zwar SecureRandom verwendet aber der Wert aus SecureRandom wird nur als Index ins PASSWORD\_CHARS Array verwendet. Somit ist der Keyspace des salts eingeschränkt und einfacher zu erraten.
+
 \end{enumerate}
 
 \chapter{Untersuchte Sicherheitslücken}
