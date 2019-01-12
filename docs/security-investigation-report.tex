@@ -65,11 +65,13 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
 \section{Dateien}
 
 \begin{enumerate}
- \item Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Userobjekt nicht persistiert werden (fehlender \texttt{save()}-Call)
+ \item Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Java-Userobjekt nicht in die Datenbank persistiert werden (fehlender \texttt{save()}-Call)
   \item Speicherplatz-Limit Default Wert ist in byte angegeben (1073741824). Das würden ca einem GB entsprechen. Gerechnet wird allerdings überall in Megabyte. Damit ist das Standard-Limit effektiv 1 PB. Da man das Limit nicht ändern kann ist es somit so gut wie nutzlos.
   \item Für Dateien die kleiner als 1 Megabyte sind wird immer ein Megabyte von der Quota abgezogen.
-  \item Beim Überschreiben einer Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim originale Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden. Dadurch kann ein Benutzer sein Speicherplatz-Limit erhöhen: Er muss nur Dateien von anderen Benutzer auf die er schreibberechtigung hat mit kleineren Dateien überschreiben. Dadurch \enquote {klaut} er dem Besitzer der Datei etwas von seinem Quota-Limit, da dieser die ursprünglich abgezogene Dateigröße nicht mehr gut geschrieben bekommen kann.
-
+  \item Beim Überschreiben einer Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim originale Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden. Dadurch kann ein Benutzer sein Speicherplatz-Limit erhöhen: Er muss nur Dateien von anderen Benutzer auf die er schreibberechtigung hat mit kleineren Dateien überschreiben.
+  \item Beim Passwort Reset ist in der URL ein Slash zu viel. Dieser muss zuerst manuell entfernt werden bevor ein Passwort Reset durchgeführt werden kann.
+  
+  \enquote{http://localhost:9000//password/forgot/U69O...ZNcUBcK2}
   \item Da die Laengenbegrenzung eines Dateinamens die Dateiendung ignoriert, kann ein Dateiname beliebig lang gestaltet werden.
   \item Es ist Benutzern problemlos möglich, mehrere Dateien mit dem gleichen Namen hinzuzufügen. Der für den Upload zuständige Controller-Code erhält vom Anwender einen expliziten Dateinamen (A) und den Namen der ausgewählten Datei (B). Die Anwendung prüft nun, ob der Nutzer bereits eine Datei besitzt, dessen Name A entspricht. Ist dies nicht der Fall, wird die Dateiendung aus B extrahiert und eine Datei erzeugt, die einen zusammengesetzten Namen besitzt: A + \enquote{.} + extension(B).
   Wiederholt man den Upload, prüft die Anwendung erneut, ob der Benutzer eine Datei mit dem Namen A hat - was natürlich nicht der Fall ist, denn der endgültige Name der Datei entspricht nicht A.
@@ -93,14 +95,12 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
   \item Beim Hinzufügen eines Webservices wird, auch wenn alle Eingaben korrekt sind und ein Webservice hinzugefügt wird, eine Fehlermeldung zurückgegeben.
      \item Werden invalide Login-Daten für Webservices eingetragen, gibt es beim Versuch sich mit dem Single-Signon anzumelden eine Exception.
 \item Es können pro Webservice nur ein mal Zugangsdaten hinterlegt werden. Beim Versuch ein zweites Mal Zugangsdaten für einen Webservice zu speichern, wird nur der Statuscode 400 (badRequest) und eine leere Seite zurück gegeben.
+\item Es existiert keine Funktionalität, um einen Webservice nebst Credentials zu löschen. Dies war eine ausdrückliche Anforderung (Punkt 6.6).
  \end{enumerate}
  
  \section{Passwort Reset}
 \begin{enumerate}[resume]
  \item Das Passwort eines Nutzers kann zurückgesetzt werden noch bevor ein Passwort Reset durchgeführt wurde. Dies kann dazu führen das Benutzer Zugriff auf ihren Account bekommen noch bevor ein Administrator ihnen das initiale Passwort mitteilt. Das initiale Passwort verliert somit jegliche Bedeutung.
-   \item Beim Passwort Reset ist in der URL ein Slash zu viel. Dieser muss zuerst manuell entfernt werden bevor ein Passwort Reset durchgeführt werden kann.
-  
-  \enquote{http://localhost:9000//password/forgot/U69O...ZNcUBcK2}
   \end{enumerate}
 
 
@@ -119,10 +119,8 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
   \item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
   \item Es ist unmöglich, einen Nutzer, der in der Administratorgruppe ist, zu löschen, wenn man als "admin" eingeloggt ist. Diese Operation führt zu einem Fehler laut Web-GUI, der zur folge hat, dass dieser Nutzer nicht mehr in der "Alle"-Gruppe ist, aber in allen anderen Gruppen bestehen bleibt.
   \item Es wurde eine Debug-Version ausgeliefert, der Aufruf eines nicht existierenden Pfads führt essentiell dazu, dass die Inhalte der Routes-Datei ausgegeben werden.
-
   \item Beim Anlegen eines Benutzers muss der Admin explizit ein Passwort vergeben. Laut den Anforderungen (Punkt 6.1) wird ein automatisch generiertes Passwort verlangt.
 \item Beim Anlegen eines Benutzers kann der Admin nicht das Speicherplatzlimit angeben, dies ist ein Verstoß gegen Punkt 6.1 der Anforderungen.
-
 \end{enumerate}
 
 \chapter{Sicherheitslücken}
@@ -164,6 +162,7 @@ Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. A
   \item Die Anwendung versucht zu verhindern, dass man bei Dateien Permissions verändert, die auf einen selbst bezogen sind. Der Check wurde jedoch gänzlich fehlerhaft implementiert. Ausgehend von einer String-Liste mit Benutzer-Ids prüft die Anwendung ob jede String-Id \enquote{equals} einem User-Objekt (dem Owner der File) ist (z.B. FileService.java, Zeile 309). Dieser Check schlägt immer fehl. Folglich ist es problemlos möglich, die auf den Datei-Owner bezogenen Permissions zu löschen. Dies hat allerdings keine Auswirkungen: Die Methoden hasReadAccess und hasWriteAccess (Authorization.java) gewähren dem Owner einer Datei immer die Authorisierung - unabhängig von den gesetzten Permissions.
   \item Versucht der Anwender eine Gruppenberechtigung zu entfernen, lädt die Anwendung das entsprechende Datei-Objekt aus der Datenbank. Dieses Dateiobjekt verfügt über eine Liste von Gruppen, die Lese- bzw. Schreib-Rechte haben. In einem zweiten Schritt wird das entsprechende Gruppenobjekt anhand des Gruppennamens aus der Datenbank geladen. Die Anwendung ruft die remove Methode der Liste in Verbindung mit dem Gruppenobjekt auf um die Berechtigung zu entfernen. Die remove Methode selbst verwendet hierzu die equals Methoden ihrer Items und die entsprechenden indentifizieren zu können. In der Anwendung selbst wurde die equals Methode für die Gruppen-Klasse nicht überschrieben, d.h. es wird die Standard equals Methode der Java Basisklasse Object verwendet. Diese Methode prüft lediglich, ob die Speicheraddressen der beiden Objekte identisch sind. Hypotetisch müsste die so implementierte Funktionalität fehlschlagen, da die entsprechenden Gruppenobjekte individuell erzeugt wurden. Faktisch verhindert dies leider der L2-Cache\footnote{https://ebean.io/docs/features/l2cache/} von Ebean; dieser bewirkt im Ergebnis, dass bei zwei Queries auf den selben Datensatz nur ein Java-Objekt erzeugt wird.
   	\item Die HTTP Statuscodes werden inkonsistente verwendet. An einigen Stellen wird 200 (ok) an den Client gesendet, obwohl eigentlich ein Fehler passiert ist. Beipiele dafür sind die \texttt{login} und \texttt{changePassword} Methoden in \texttt{UserController}.
+  	\item Der Erstbenutzer admin wird mit der E-Mail Addresse \enquote{admin@admin.com} initialisiert. Diese E-Mail Addresse ist nicht änderbar. Die gewählte Domain ist privater Hand: Der Betreiber hätte faktisch Zugriff auf die Anwendung, würde er einen entsprechenden Email Server einrichten. Zum jetzigen Zeitpunkt hat er als MX-Record localhost gewählt. Es besteht die Gefahr, dass der SMTP-Server die Email nicht zustellen kann bzw. sie bounced und so mit dem Passwort-Reset-Link in einer Log-Datei auftaucht.
   
 \end{enumerate}
 
