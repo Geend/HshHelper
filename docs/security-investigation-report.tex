@@ -215,145 +215,160 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \end{itemize}
 
   \hypertarget{vulnerability2}{}
-  \item \textbf{V2: }
+  \item \textbf{V2: Heap-Memory Exhaustion durch Passwort-Reset Tokens}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: Gegner speichern Passwort-Reset-Tokens in Hashmap. Als Key hierfür dient der Token selbst. Token werden allerdings nur dann gelöscht, wenn sie verwendet werden. Man kann theoretisch beliebig viele Tokens ohne Begrenzung erzeugen (Schutz matched beim ersten gefundenen Token) und so den Speicher des Servers von außen füllen und einen Absturz provozieren.
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+  \item Gefunden durch: Quellcodeanalyse
+  \item Klassifikation: Denial-of-Service (DOS)
+  \item Problematik: Anwendung speichert Passwort-Reset-Tokens in Hashmap. Als Key hierfür dient der Token selbst. Token werden allerdings nur dann gelöscht, wenn sie verwendet werden. Man kann theoretisch beliebig viele Tokens ohne Begrenzung erzeugen (Schutz matched beim ersten gefundenen Token) und so den Speicher des Servers von außen füllen und einen Absturz provozieren.
+  \item Ausnutzung: 
+  \item Risiko: Hoch
+  \item Auswirkungen: Die Anwendung stürzt ab und ist für andere Nutzer nicht erreichbar.
+  \item Mögliche Angriffe: 
   \end{itemize}
 
   \hypertarget{vulnerability3}{}
-  \item \textbf{V3: }
+  \item \textbf{V3: Cookie Reusing}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: Sollte ein Benutzer einmal ein Cookie mit einer Emailadresse haben ist dieses gültig unabhängig davon ob der Benutzer in der Zwischenzeit aus der Datenbank gelöscht und neu erstellt wird. 
-    Angriffsszenario 1: Max Mustermann studiert an der Hochschule Hannover und logged sich beim HsH-Helper mit seiner Email Adresse max.musterman@hsh-hannover.de ein. Zwei Jahre nachdem Max Mustermann sein Studium abgeschlossen hat beginnt ein weiterer Max Mustermann sein Studium und bekommt die selbe Email Adresse zugewiesen. Max Mustermann 1 hat vollen zugriff auf den Account von Max Mustermann 2. 
-
-    Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. Admin löscht Nutzer, legt ihn erneut an und händigt Daten an Benutzer aus.
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+  \item Gefunden durch: Exploratives Testen
+  \item Klassifikation: Broken Authentication
+  \item Problematik: Benutzer haben kein eindeutiges Identifikationsmerkmal. Als Benutzer-Id wird die Email Adresse verwendet. Einmal in Hinblick auf Benutzer verwendetete Email Adressen werden nicht dauerhaft für erneute Verwendung gesperrt sondern können beim erneuten Anlegen eines Nutzers verwendet werden. Das Authentifizierungscookie ist ausschließlich an diese Email Adresse gebunden und unterliegt keinem Timeout.
+  \item Ausnutzung: Ein einmal ausgestelltes Cookie dauerhaft aufbewahren.   
+  \item Risiko: Gering (Angriffsszenario 1), Hoch (Angriffsszenario 2) 
+  \item Auswirkungen: Kompletter Zugriff auf Benutzerkonto durch Angreifer inkl. Webservice Credentials und Dateien.
+  \item Mögliche Angriffe: 
+  	\begin{itemize}
+  		\item Angriffsszenario 1: Max Mustermann studiert an der Hochschule Hannover und meldet sich beim HsH-Helper mit seiner Email Adresse max.musterman@hsh-hannover.de an. Zwei Jahre nachdem Max Mustermann sein Studium abgeschlossen hat beginnt ein weiterer Max Mustermann sein Studium und bekommt die selbe Email Adresse zugewiesen. Max Mustermann 1 hat vollen zugriff auf den Account von Max Mustermann 2. 
+  		\item Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. Admin löscht Nutzer, legt ihn erneut an und händigt Daten an Benutzer aus. Dies tut er, damit der Nutzer die initiale Passwortänderung durchführen muss. Dies suggeriert dem Benutzer, dass niemand vor ihm auf den Account zugegriffen hat.
+  	\end{itemize}
+  
   \end{itemize}
 
   \hypertarget{vulnerability4}{}
-  \item \textbf{V4: }
+  \item \textbf{V4: Zombie Accounts}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: Das Cookie ist auch dann noch gültig, wenn der entsprechende Benutzer gelöscht wurde. Der Benutzer kann weiterhin die Startseite sowie den Datei-Hochladen-Dialog aufrufen. Er kann den Gruppe-Hinzufügen-Dialog eingeschränkt benutzen: Durch Angabe eines Gruppennamens kann er feststellen, ob dieser existiert. Er kann jedoch leider keine neuen Gruppen erstellen. Dies ist scheinbar dem Zufall geschuldet, eine explizite Prüfung die dies verhindert existiert nicht.
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+  \item Gefunden durch: Quellcodeanalyse
+  \item Klassifikation: Broken Authentication
+  \item Problematik: Das Cookie ist auch dann noch gültig, wenn der entsprechende Benutzer gelöscht wurde.
+  \item Ausnutzung: Das Cookie dauerhaft speichern.
+  \item Risiko: Gering
+  \item Auswirkungen: Der Benutzer kann weiterhin die Startseite sowie den Datei-Hochladen-Dialog aufrufen. Er kann den Gruppe-Hinzufügen-Dialog eingeschränkt benutzen: Durch Angabe eines Gruppennamens kann er feststellen, ob dieser existiert. Er kann jedoch leider keine neuen Gruppen erstellen. Dies ist scheinbar dem Zufall geschuldet, eine explizite Prüfung die dies verhindert existiert nicht.
+  \item Mögliche Angriffe: Vorhandene Gruppennamen durch Brute-Forcing erraten.
   \end{itemize}
 
   \hypertarget{vulnerability5}{}
-  \item \textbf{V5: }
+  \item \textbf{V5: Geschwätzige Login-Fehlermeldungen}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: Policy metrics wie die Timeoutzeit nach mehrfachen ungültigen Logins sollten nicht an den User weitergegeben werden. Dadurch wird es für ein Angreifer einfacher, Brute-Force Angriffe durchzuführen. \autocite[Loc. 5087]{book:wahh}
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+  \item Gefunden durch: Exploratives Testen
+  \item Klassifikation: Information Disclosure
+  \item Problematik: Policy metrics wie die Timeoutzeit nach mehrfachen ungültigen Logins sollten nicht an den User weitergegeben werden \autocite[Loc. 5087]{book:wahh}. 
+  \item Ausnutzung: Fehlermeldung parsen.
+  \item Risiko: Gering
+  \item Auswirkungen: Es wird es für ein Angreifer einfacher, Brute-Force Angriffe durchzuführen. 
+  \item Mögliche Angriffe: Brute Force Angriff auf Passwort mit optimierter Wartezeit.
   \end{itemize}
 
   \hypertarget{vulnerability6}{}
-  \item \textbf{V6: }
+  \item \textbf{V6: Quota Bypass}
   \begin{itemize}
-    \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: Der beim Upload einer Datei angegebene Dateiname wird um die Dateiendung (z.B. ".pdf") der hochgeladenen Datei ergänzt. Die Längenbegrenzung wird allerdings nur in Bezug auf den explizit angegebenen Namen enforced. D.h. man kann den Dateinamen beliebig lang machen, indem man hierzu die Endung der hochgeladenenen Datei entsprechend modifiziert. Außerdem können beliebige Zeichen in der Dateiendung verwendet werden.
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+    \item Gefunden durch: Exploratives Testen
+  \item Klassifikation: Limit Bypass
+  \item Problematik: Der beim Upload einer Datei angegebene Dateiname wird um die Dateiendung (z.B. ".pdf") der hochgeladenen Datei ergänzt. Die Längenbegrenzung wird allerdings nur in Bezug auf den explizit angegebenen Namen enforced (siehe funktionaler fehler TODO!!!). Außerdem können beliebige Zeichen in der Dateiendung verwendet werden.
+  \item Ausnutzung: Endung des Dateinamens von der ausgewählten Datei manipulieren.
+  \item Risiko: Mittel
+  \item Auswirkungen: Der Benutzer kann die Speicherplatzbeschränkungen umgehen.
+  \item Mögliche Angriffe: Informationen in der Endung der ausgewählten Datei codieren.
   \end{itemize}
 
   \hypertarget{vulnerability7}{}
-  \item \textbf{V7: }
+  \item \textbf{V7: Geschwätzige Passwort-Reset Meldungen}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: E-Mail Adressen von Benutzern können per Brute-Force des Passwort vergessen Dialogs herausgefunden werden. Es werden unterschiedliche Meldungen verwendet wenn man Mail-Adressen die verwendet werden eingbaut und E-Mail Adressen die nicht verewndet werden. Außerdem ist dauert ein Request mit einer validen E-Mail Adresse erheblich länger.
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+  \item Gefunden durch: Exploratives Testen
+  \item Klassifikation: Information Disclosure
+  \item Problematik: Beim Passwort-Reset werden unterschiedliche Meldungen ausgegeben, je nachdem ob eine gültige Adresse angegeben wird oder nicht. Außerdem dauert ein Request mit einer validen E-Mail Adresse erheblich länger.
+  \item Ausnutzung: E-Mail Adressen von Benutzern können per Brute-Force des Passwort vergessen Dialogs herausgefunden werden. 
+  \item Risiko: Mittel
+  \item Auswirkungen: Es ist möglich herauszufinden, welche Email Adressen verwendet werden.
+  \item Mögliche Angriffe: Ein Brute-Force Angriff auf die Benutzeraccounts optimieren.
   \end{itemize}
 
   \hypertarget{vulnerability8}{}
-  \item \textbf{V8: }
+  \item \textbf{V8: Frei einsehbare Gruppennamen}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: Ein Nutzer kann bei \texttt{Dateiberechtigung} alle Gruppen sehen auch wenn er nicht Mitglied ist. Es ist auch möglich Berechtigungen zu vergeben, sodass Dateien in dieser Gruppe geteilt werden können.
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+  \item Gefunden durch: Exploratives Testen
+  \item Klassifikation: Information Disclosure
+  \item Problematik: Im Dateiberechtigungen-Dialog fehlt die Überprüfung, ob der Nutzer berechtigt ist, die entsprechenden Gruppen zu sehen.
+  \item Ausnutzung: Ein Nutzer kann den Dateiberechtigung-Dialog einer eigenen Datei aufrufen und alle Gruppen sehen, auch wenn er nicht Mitglied ist.
+  \item Risiko: Mittel
+  \item Auswirkungen: Die Gruppennamen sind frei einsehbar.
+  \item Mögliche Angriffe: -
+  \end{itemize}
+  
+    \hypertarget{vulnerability8}{}
+  \item \textbf{V8: Group File Poisoning}
+  \begin{itemize}
+  \item Gefunden durch: Exploratives Testen
+  \item Klassifikation: Missing Authorization
+  \item Problematik: Es ist möglich Dateiberechtigungen für jede existierende Gruppe zu vergeben, ohne, dass sichergestellt ist, dass der Nutzer Mitglied dieser Gruppe ist.
+  \item Ausnutzung: Die Oberfläche verwenden.
+  \item Risiko: Hoch
+  \item Auswirkungen: Die mit einer Gruppe geteilten Dateien sind weniger vertrauenswürdig als anzunehmen ist.
+  \item Mögliche Angriffe: Bösartige Dateien mit einer fremden Gruppe teilen z.B. Trojaner mit der Administrator-Gruppe.
   \end{itemize}
 
   \hypertarget{vulnerability9}{}
-  \item \textbf{V9: }
+  \item \textbf{V9: Frühzeitiger Zugriff auf Account}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: Ein Benutzer kann Zugriff auf sein Konto erhalten, bevor ihm das initale Passwort mitgeteilt wurde. Dazu muss er nur die Passwort vergessen Funktion nutzen um sich ein Passwort per Email zusenden zu lassen.
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+  \item Gefunden durch: Exploratives Testen
+  \item Klassifikation: Broken Authorization
+  \item Problematik: Es ist möglich, einen Passwort-Reset durchzuführen, ohne das initiale Passwort zu kennen.
+  \item Ausnutzung: Ein Benutzer hat Zugriff auf die verwendete Email Adresse und führt ebendiesen Passwort-Reset durch und erlangt so Zugriff auf sein Konto.
+  \item Risiko: Gering
+  \item Auswirkungen: Der Administrator verliert vor Aushändigung des initialen Passworts die alleinige Kontrolle über den Account.
+  \item Mögliche Angriffe: Ein Benutzer kann so Zugriff erhalten und mit dem Account illegale Aktionen durchführen. Er kann diese im folgenden Abstreiten - ihm war zu dem Zeitpunkt der Aktionen das initale Passwort nicht bekannt. Er könnte so die Schuld auf den Administrator lenken - ausschließlich er hatte zum Zeitpunkt der Aktion die Kontrolle über den Account. 
   \end{itemize}
 
   \hypertarget{vulnerability10}{}
-  \item \textbf{V10: }
+  \item \textbf{V10: Illegales Erhöhen der Quota}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik: 
-  \item Ausnutzung: Beim Überschreiben einer Datei tritt eine Race-Condition auf: Wird eine einzelne Datei massiv parallel überschrieben, steigt die Quota des Besitzers kontinuiertlich an.
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+  \item Gefunden durch: Quellcodeanalyse und Penetration Testing
+  \item Klassifikation: Race Condition und Denial-of-Service (DOS)
+  \item Problematik: Beim Überschreiben einer Datei finden mehrere Datenbankzugriffe statt, die nicht über eine Transaktion verbunden werden. Es findet unter anderem eine Inkrementierung der Benutzer-Quota und eine Dekrementierung selbiger statt.
+  \item Ausnutzung: Parallel mit vielen Threads eine Datei überschreiben.
+  \item Risiko: Hoch
+  \item Auswirkungen: Die Quota kann beliebig erhöht werden.
+  \item Mögliche Angriffe: Die Quota maximal erhöhen und die Festplatte des Servers füllen. Andere Nutzer können so keine Dateien mehr hochladen.
   \end{itemize}
 
   \hypertarget{vulnerability11}{}
-  \item \textbf{V11: }
+  \item \textbf{V11: Geschwätzige Login-Fehlermeldungen}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: Beim Login ist ersichtlich, ob ein Benutzeraccount existiert oder nicht: Loggt man sich N mal falsch für einen existierenden Benutzer ein, wird der entsprechende Account gesperrt und es erscheint eine Fehlermeldung \enquote{Du bist für 4,8 Minuten gesperrt.}. Die gleiche Aktion führt bei einem nicht existierenden Account niemals zu einer derartigen Fehlermeldung, es erscheint ausschließlich die Meldung \enquote{Falscher Benutzername oder Passwort}.
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+  \item Gefunden durch: Exploratives Testen
+  \item Klassifikation: Information Disclosure
+  \item Problematik: Beim Login ist ersichtlich, ob ein Benutzeraccount existiert oder nicht: Loggt man sich N mal falsch für einen existierenden Benutzer ein, wird der entsprechende Account gesperrt und es erscheint eine Fehlermeldung \enquote{Du bist für 4,8 Minuten gesperrt.}. Die gleiche Aktion führt bei einem nicht existierenden Account niemals zu einer derartigen Fehlermeldung, es erscheint ausschließlich die Meldung \enquote{Falscher Benutzername oder Passwort}.
+  \item Ausnutzung: Sperrung des Accounts provozieren und Fehlermeldung analysieren. 
+  \item Risiko: Mittel
+  \item Auswirkungen: Es ist möglich herauszufinden, welche Email Adressen bzw. Benutzernamen verwendet werden.
+  \item Mögliche Angriffe: Ein Brute-Force Angriff auf die Benutzeraccounts optimieren.
   \end{itemize}
 
   \hypertarget{vulnerability12}{}
-  \item \textbf{V12: }
+  \item \textbf{V12: Erzwungender Logout}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: Es ist möglich einen CSRF-Angriff durchzuführen, der beliebige Nutzer auslogged, die Chrome verwenden. Hierzu muss einfach von einer anderen Domain aus ein Request auf die Startseite getriggert werden (Bsp: https://jsfiddle.net/4j3k9ngt/). Das Cookie vom Nutzer wird so zurückgesetzt, bzw. das "username" Feld gelöscht.
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+  \item Gefunden durch: Exploratives Testen
+  \item Klassifikation: Denial-of-Service (DOS)
+  \item Problematik: Der Chrome Browser und manche Versionen von Firefox reagieren auf Cross-Site-Requests mit einem Cookie-Reset. 
+  \item Ausnutzung: Es ist möglich einen CSRF-Angriff durchzuführen, der beliebige Nutzer auslogged, die Chrome verwenden. Hierzu muss einfach von einer anderen Domain aus ein Request auf die Startseite getriggert werden\footnote{Bsp: \url{https://jsfiddle.net/4j3k9ngt/}}. Das Cookie vom Nutzer wird so zurückgesetzt, bzw. das "username" Feld gelöscht.
+  \item Risiko: Mittel-Hoch
+  \item Auswirkungen: Benutzer kann abgemeldet werden.
+  \item Mögliche Angriffe: Benutzer dazu bringen, unbewusst einen Cross-Site-Request auszuführen.
   \end{itemize}
 
+% TODO entfernen
   \hypertarget{vulnerability13}{}
-  \item \textbf{V13: }
+  \item \textbf{V13: Fehlerhaftes Logging}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
+  \item Gefunden durch: Exploratives Testen
+  \item Klassifikation: Log Poisoning
   \item Problematik:
   \item Ausnutzung: Beim Löschen eines Nutzers, der Besitzer einer Gruppe ist, wird eine Löschoperation unter seinen Berechtigungen gestartet. Dadurch wird im Log persistiert, dass der gelöschte Nutzer die Gruppe gelöscht hat, bevor dieser von einem Administrator gelöscht wird. Das ist ein Mangel im Bezug auf die Accountability, da nun das Log Ausgaben enthält, welche nicht stattgefunden haben.
   \item Risiko: 
@@ -362,26 +377,26 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \end{itemize}
 
   \hypertarget{vulnerability14}{}
-  \item \textbf{V14: }
+  \item \textbf{V14: Ausspähen von Email Adressen und dazugehörige Benutzernamen}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: Es ist möglich die E-Mail Adressen aller Nutzer zu extrahieren: Man legt eine Gruppe an und fügt alle Nutzer dieser Gruppe hinzu (diese kann man aus der Gruppe \enquote{Alle} extrahieren). Im HTML-Code der Gruppenseite sieht man als Gruppenowner die entsprechenden E-Mail Adressen. Sie sind mit den entsprechenden \enquote{Aus der Gruppe entfernen} Buttons verknüpft bzw. werden in der korrospondierenden Form als ID verwendet.
-  \item Risiko: 
-  \item Auswirkungen: 
-  \item Mögliche Angriffe: Phishing Angriff. Benutzer können mit ihrem Benutzernamen in einer E-Mail angesprochen werden, die an die in der Anwendung hinterlegte E-Mail Adresse 
+  \item Gefunden durch: Exploratives Testen
+  \item Klassifikation: Information Disclosure
+  \item Problematik: Es gibt keine technischen Benutzer-Ids, hierzu dient die Email Adresse des Benutzers. Operationen die einen bestimmten Benutzer betreffen verwenden als Parameter selbige.
+  \item Ausnutzung: Man legt eine Gruppe an und fügt alle Nutzer dieser Gruppe hinzu (diese kann man aus der Gruppe \enquote{Alle} extrahieren). Im HTML-Code der Gruppenseite sieht man als Gruppenowner die entsprechenden E-Mail Adressen. Sie sind mit den entsprechenden \enquote{Aus der Gruppe entfernen} Buttons verknüpft bzw. werden in der korrospondierenden Form als ID verwendet.
+  \item Risiko: Hoch
+  \item Auswirkungen: Es ist möglich die E-Mail Adressen aller Nutzer zu extrahieren.
+  \item Mögliche Angriffe: Es kann ein personalisierter Phishing Angriff durchgeführt werden. Benutzer können mit ihrem Benutzernamen in einer Nachricht angesprochen werden, die an die hinterlegte Email Adresse versendet wird. Durch die Personalisierung in Hinblick auf den Benutzernamen schöpft das Opfer weniger Verdacht.
   \end{itemize}
 
   \hypertarget{vulnerability15}{}
-  \item \textbf{V15: }
+  \item \textbf{V15: Application Takeover}
   \begin{itemize}
-  \item Gefunden durch:
-  \item Klassifikation: 
-  \item Problematik:
-  \item Ausnutzung: Dadurch, dass es möglich ist, die Admin- bzw. Alle-Gruppe zu löschen kann ein anderer Admin die Anwendung übernehmen: Er kann die Gruppen Alle und Admin löschen und danach als eigene Gruppen anlegen. Er wird so zum alleinigen Admin der Anwendung. Der Nutzer \enquote{admin} ist danach nur noch ein normaler Nutzer ohne Privilegien. In diesem Zustand kann er auch vollständig über das Admin-Panel gelöscht werden.
-  \item Auswirkungen: 
-  \item Mögliche Angriffe:
+  \item Gefunden durch: Quellcodeanalyse und Exploratives Testen
+  \item Klassifikation: Privilege Escalation
+  \item Problematik: Die Anwendung verwendet case-insensitive Datenbank-Abfragen, berücksichtigt jedoch die Groß und Kleinschreibung bei Prüfungen im Java-Code durch Verwendung der equals-Methode in Bezug auf String-Vergleiche. 
+  \item Ausnutzung: Die Gruppen \enquote{ADMIN} und \enquote{ALLE} als Administrator löschen. Die Gruppen \enquote{admin} und \enquote{Alle} erneut anlegen. Man ist nun owner beider Gruppen und somit quasi Super-Admin. Der Benutzer \enquote{admin} hat nun keine Administrator-Privilegien mehr. Es ist nun möglich das bestehende \enquote{admin}-Konto zu löschen.
+  \item Auswirkungen: Vollständige Übernahme der Anwendung, ohne, dass der initial bestehende \enquote{admin}-Account als Fallback bestehen bleibt.
+  \item Mögliche Angriffe: siehe oben.
   \end{itemize}
 \end{itemize}
 
