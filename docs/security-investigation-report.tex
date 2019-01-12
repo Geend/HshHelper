@@ -10,6 +10,11 @@
 
 \usepackage{enumitem}
 
+\lstset
+{ %Formatting for code in appendix
+    numbers=left,
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}    % hier gehts los
   \thispagestyle{empty} % Titelseite
@@ -344,6 +349,15 @@ Um möglichst viele Sicherheitslücken (und funktionale Fehler) zu finden, haben
     \item Um das salt fürs Hashing zu generieren wird zwar SecureRandom verwendet aber der Wert aus SecureRandom wird nur als Index ins PASSWORD\_CHARS Array verwendet. Somit ist der Keyspace des salts eingeschränkt und einfacher zu erraten.
 \end{enumerate}
 
+\chapter{Untersuchte Sicherheitslücken}
+Da der Code keinerlei Rücksicht nimmt auf parallele Requests und die damit verbundenen Race-Conditions wurde untersucht, ob es möglich ist eine Datei mit demselben Dateinamen mehrfach hochzuladen. Der Code \ref{fileuploadcode} hierzu zeigt klar auf das zwischen der eigentlichen Abfrage, ob die Datei vorhanden ist und dem Anlegen der Datei weiterer Code steht. Zwischen Zeile 2, wo die Überprüfung stattfindet und Zeile 22 wo die neue Datei zur Datenbank hinzugefügt wird überprüft der Code ob der Nutzer noch ausreichen Speicherplatz zur verfügung hat.
+
+Der Exploit Code für diese Race Condition wurde in Python geschrieben und als Plug-in verwendet in dem Programm race-condition-exploit. Das Plug-in \ref{fileraceplugin} bereitet den Request in einem String auf und gibt ihn weiter an das Hauptprogramm. Der Host, Port und ob die Verbindung via HTTPS verschlüsselt ablaufen soll, kann ebenfalls vom Plugin spezifiziert werden.
+
+Das Programm bereitet mehrere Threads vor, deren Anzahl via eines Kommandozeilen Parameter angegeben werden kann. Jeder Thread baut eine vollständige Verbindung zum Webserver auf und sendet den Request ohne das letzte Byte zu übertragen. Sind alle Threads soweit, gibt der Hauptthread das Signal, das nun das letze Byte übertragen werden kann.
+
+Obwohl die Oberfläche nur jeweils einen Eintrag für einen Dateinamen zeigt, sind diese trotzdem mehrfach vorhanden. Ob dies nun aufgrund der möglichen Race Condition ist oder weil der Mechanismus, welcher sicherstellt das Dateinamen pro Nutzer eindeutig sein müssen, grundsätzlich nicht funktioniert, kann nicht ermittelt werden.
+
 \printbibliography
 
 % Can be used to add a list of acronyms with their description
@@ -402,6 +416,37 @@ Um möglichst viele Sicherheitslücken (und funktionale Fehler) zu finden, haben
     \label{upload_fail_1}
     \caption{Hochladen einer neuen Datei in der bereitgestellten VM: Daraus resultierender Fehler}
   \end{figure}
+
+\chapter{Fileupload Racecondition Code}
+ \label{fileuploadcode}
+\begin{lstlisting}
+// Check if user already uploaded a file with that name.
+if (alreadyUploadedThatFilename(owner, filename)) {
+    throw new DuplicateMemberException(
+        String.format(Configuration.MESSAGE_FIELD_ALREADY_EXISTS, "Datei"));
+}
+
+// Get java file object.
+java.io.File tempFile = fileMetadata.getFile();
+
+// Read file size in MB.
+final int fileSizeMb = bytesToMegaBytes(tempFile.length());
+
+// Check if owner has sufficient quota to upload the file.
+if (!owner.hasSufficientQuotaFor(fileSizeMb)) {
+    throw new IndexOutOfBoundsException(
+        Configuration.MESSAGE_EXCEED_QUOTA);
+}
+
+String fileExtension = FilenameUtils.getExtension(fileMetadata.getFilename());
+
+// Create file metadata object.
+model.File newFile = FileFactory.createFile(filename, fileExtension, comment,
+    LocalDateTime.now(), tempFile.length(), owner);
+\end{lstlisting}
+
+\label{fileraceplugin}
+\includepdf{./resources/race_python.pdf}
 
 \end{appendices}
 
