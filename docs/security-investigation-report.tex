@@ -8,6 +8,8 @@
 
 \usepackage{hshhelper_base}
 
+\usepackage{enumitem}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}    % hier gehts los
   \thispagestyle{empty} % Titelseite
@@ -80,14 +82,14 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
 
 
 \section{Gruppen}
-\begin{enumerate}
+\begin{enumerate}[resume]
 \item Admin-Gruppe ist löschbar, wodurch die Applikation effektiv unbenutzbar ist. Es gibt zwar eigentlich eine Prüfung, ob versucht wird die Admin-Gruppe zu löschen, diese kann aber einfach umgangen werden. Trägt man im Gruppe-Löschen Formular eine Variation des Gruppennamens ein, die nicht exakt \enquote{admin} entspricht (wie zum Beipiel \enquote{aDmin}, wird die Gruppe gelöscht. Siehe die Funktion \texttt{isDeletableGroup} in \texttt{GroupManagerService}. Da bei Aufruf jeder Seite die Gruppe geladen wird, funktioniert nach dem Löschen der Gruppe keine Seite mehr. Es gibt eine NullPointerException in der \texttt{isAdmin} Methode in \texttt{Authorization}.
 \item All-Gruppe ist, analog zur Admin-Gruppe, löschbar. Die Anwendung ist danach aber nicht ganz so kaputt.
 \item Gruppen, für die Dateiberechtigungen angelegt wurden können nicht vollständig gelöscht werden. Im Code werden manuell Owner der Gruppe und Mitglieder der Gruppe gelöscht. Zu diesem Zeitpunkt ist die Gruppe \enquote{halb} gelöscht. Der anschließende \texttt{delete} Aufruf schlägt aber fehl, da Integriätsbedingungen in der Datenbank durch das löschen verletzt werden würden. Es wird eine Exception geworfen, aber die Gruppe hat schon keinen Owner mehr. Sie wird dem Admin noch angezeigt, aber sie ist nichtmehr aufrufbar.
 \end{enumerate}
 
 \section{Single Sign On}
-\begin{enumerate}
+\begin{enumerate}[resume]
  \item Single Sign On ist Hardcoded für die zwei in den Anforderungen gestellten Testfälle. Trotzdem kann man in der Oberfläche den Namen für den Benutzer- und Passwort Parameter festlegen ohne tatsächliche Auswirkungen.
   \item Sollten in der URL ein Fehler vorliegen wird eine Exception geworfen. Da es sich bei der uns hier vorliegenden Anwendung um eine Debug Version wird die Exception mit teilen des Quellcodes angezeigt. Nutzer, eingeschlossen Administratoren, sollten niemals Java Exceptions einsehen können.
   \item Beim Hinzufügen eines Webservices wird, auch wenn alle Eingaben korrekt sind und ein Webservice hinzugefügt wird, eine Fehlermeldung zurückgegeben.
@@ -97,13 +99,13 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
  \end{enumerate}
  
  \section{Passwort Reset}
-\begin{enumerate}
+\begin{enumerate}[resume]
  \item Das Passwort eines Nutzers kann zurückgesetzt werden noch bevor ein Passwort Reset durchgeführt wurde. Dies kann dazu führen das Benutzer Zugriff auf ihren Account bekommen noch bevor ein Administrator ihnen das initiale Passwort mitteilt. Das initiale Passwort verliert somit jegliche Bedeutung.
   \end{enumerate}
 
 
 \section{Benutzer}
-\begin{enumerate}
+\begin{enumerate}[resume]
 
   \item Benutzer, die Dateien hochgeladen haben können nicht gelöscht werden. Es wird versucht die Dateien des zu löschenden Benutzer mit dem Benutzername des löschenden Benutzer zu löschen. Der hat dazu aber nicht die Berechtigung, da er nicht Owner der Datei ist. (siehe AdminService.java Zeile 143. Hier wird \texttt{actor} übergeben. Korrekt wäre \texttt{credentials})
  \end{enumerate}
@@ -111,7 +113,7 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
 
 \section{Sonstiges}
 
-\begin{enumerate} 
+\begin{enumerate}[resume]
 
   \item Nutzer Admin hat PW admin1 - entspricht nicht der Anforderung 4.4.
   \item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
@@ -123,7 +125,7 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
 
 \chapter{Sicherheitslücken}
 
-\begin{enumerate}
+\begin{enumerate}[resume]
   \item Verschlüsseln sie die Passwörter mit dem selben Key, mit dem auch das JWT Cookie verschlüsselt wird? Bissl \enquote{gefährlich}.
   \item DOS auf Benutzerkonten: Benutzer können dauerhaft von der Seite ausgesperrt werden durch mehrfache Eingabe eines falschen Passworts. Ein möglicher Angriff wäre den Administratoraccount davon abzuhalten, einen Benutzer zu löschen.
   \item Beim Hashing des Passworts für die Datenbank wir nur eine Runde des SHA256 Hashs ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
@@ -151,7 +153,7 @@ Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. A
 
 \chapter{Ungewöhnliche Handhabung}
 
-\begin{enumerate}
+\begin{enumerate}[resume]
   \item Werfen und Fangen von Exceptions wie NullPointerException sowie IndexOutOfBoundsException
   \item Single-Sign-On meldet erst Applikation beim Netzdienst mit den Nutzeranmeldedaten an und gibt diese dann an den Nutzer weiter
   \item Der Key mit welchem die Datenbankinhalte verschlüsselt werden liegt in der Konfigurationsdatei verschlüsselt vor. Um diesen zu entschüsseln wird ein Hardcoded Passwort verwendet. Im Code darüber befindet sich ein Kommentar noch ein TODO, das dass Passwort im Live Mode bei Anwendungsstart mit angegeben werden sollte. Abgesehen davon das die Verwendung von Hardcoded Credentials schlecht ist, wird dieser Key ebenfalls für die Play Session Cookies im Klartext verwendet. Somit macht diese Lösung hier keinerlei Sinn.
