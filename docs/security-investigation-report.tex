@@ -107,7 +107,7 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
   \item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
   \item Es ist unmöglich, einen Nutzer, der in der Administratorgruppe ist, zu löschen, wenn man als "admin" eingeloggt ist. Diese Operation führt zu einem Fehler laut Web-GUI, der zur folge hat, dass dieser Nutzer nicht mehr in der "Alle"-Gruppe ist, aber in allen anderen Gruppen bestehen bleibt.
   \item Es wurde eine Debug-Version ausgeliefert, der Aufruf eines nicht existierenden Pfads führt essentiell dazu, dass die Inhalte der Routes-Datei ausgegeben werden.
-  
+  \item Beim Anlegen eines Benutzers muss der Admin explizit ein Passwort vergeben. Laut den Anforderungen (Punkt 6.1) wird ein automatisch generiertes Passwort verlangt.
   
 
 \end{itemize}
