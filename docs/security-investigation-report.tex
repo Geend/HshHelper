@@ -91,6 +91,7 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
   \item Beim Hinzufügen eines Webservices wird, auch wenn alle Eingaben korrekt sind und ein Webservice hinzugefügt wird, eine Fehlermeldung zurückgegeben.
      \item Werden invalide Login-Daten für Webservices eingetragen, gibt es beim Versuch sich mit dem Single-Signon anzumelden eine Exception.
 \item Es können pro Webservice nur ein mal Zugangsdaten hinterlegt werden. Beim Versuch ein zweites Mal Zugangsdaten für einen Webservice zu speichern, wird nur der Statuscode 400 (badRequest) und eine leere Seite zurück gegeben.
+\item Es existiert keine Funktionalität, um einen Webservice nebst Credentials zu löschen. Dies war eine ausdrückliche Anforderung (Punkt 6.6).
  \end{enumerate}
  
  \section{Passwort Reset}
@@ -112,7 +113,6 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
   \item Es ist unmöglich, einen Nutzer, der in der Administratorgruppe ist, zu löschen, wenn man als "admin" eingeloggt ist. Diese Operation führt zu einem Fehler laut Web-GUI, der zur folge hat, dass dieser Nutzer nicht mehr in der "Alle"-Gruppe ist, aber in allen anderen Gruppen bestehen bleibt.
   \item Es wurde eine Debug-Version ausgeliefert, der Aufruf eines nicht existierenden Pfads führt essentiell dazu, dass die Inhalte der Routes-Datei ausgegeben werden.
   \item Beim Anlegen eines Benutzers muss der Admin explizit ein Passwort vergeben. Laut den Anforderungen (Punkt 6.1) wird ein automatisch generiertes Passwort verlangt.
-  
 
 \end{itemize}
 
