@@ -65,7 +65,7 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
 \begin{enumerate}
  \item Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Userobjekt nicht persistiert werden (fehlender \texttt{save()}-Call)
   \item Speicherplatz-Limit Default Wert ist in byte angegeben (1073741824). Das würden ca einem GB entsprechen. Gerechnet wird allerdings überall in Megabyte. Damit ist das Standard-Limit effektiv 1 PB. Da man das Limit nicht ändern kann ist es somit so gut wie nutzlos.
-  \item 1 Byte-Datei zaehlt so viel wie 1-Megabyte File
+  \item Für Dateien die kleiner als 1 Megabyte sind wird immer ein Megabyte von der Quota abgezogen.
   \item Beim Überschreiben einer Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim originale Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden. Dadurch kann ein Benutzer sein Speicherplatz-Limit erhöhen: Er muss nur Dateien von anderen Benutzer auf die er schreibberechtigung hat mit kleineren Dateien überschreiben.
   \item Beim Passwort Reset ist in der URL ein Slash zu viel. Dieser muss zuerst manuell entfernt werden bevor ein Passwort Reset durchgeführt werden kann.
   
@@ -98,17 +98,19 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
  \section{Passwort Reset}
 \begin{enumerate}
  \item Das Passwort eines Nutzers kann zurückgesetzt werden noch bevor ein Passwort Reset durchgeführt wurde. Dies kann dazu führen das Benutzer Zugriff auf ihren Account bekommen noch bevor ein Administrator ihnen das initiale Passwort mitteilt. Das initiale Passwort verliert somit jegliche Bedeutung.
- \end{enumerate}
  
 
+\section{Benutzer}
+\begin{enumerate}
+
+  \item Benutzer, die Dateien hochgeladen haben können nicht gelöscht werden. Es wird versucht die Dateien des zu löschenden Benutzer mit dem Benutzername des löschenden Benutzer zu löschen. Der hat dazu aber nicht die Berechtigung, da er nicht Owner der Datei ist. (siehe AdminService.java Zeile 143. Hier wird \texttt{actor} übergeben. Korrekt wäre \texttt{credentials})
+ \end{enumerate}
 
 
 \section{Sonstiges}
 
-\begin{itemize} 
-  \item Admin scheint nicht in der Lage zu sein, einen Nutzer zu löschen.  
-  \item Benutzer, die Dateien hochgeladen haben können nicht gelöscht werden. Es wird versucht die Dateien des zu löschenden Benutzer mit dem Benutzername des löschenden Benutzer zu löschen. Der hat dazu aber nicht die Berechtigung, da er nicht Owner der Datei ist. (siehe AdminService.java Zeile 143. Hier wird \texttt{actor} übergeben. Korrekt wäre \texttt{credentials})
-  \item Eventuell möglich via Parallelisierung / Bulk-Requests eine Datei mit dem selben Namen hochzuladen
+\begin{enumerate} 
+
   \item Nutzer Admin hat PW admin1 - entspricht nicht der Anforderung 4.4.
   \item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
   \item Es ist unmöglich, einen Nutzer, der in der Administratorgruppe ist, zu löschen, wenn man als "admin" eingeloggt ist. Diese Operation führt zu einem Fehler laut Web-GUI, der zur folge hat, dass dieser Nutzer nicht mehr in der "Alle"-Gruppe ist, aber in allen anderen Gruppen bestehen bleibt.
@@ -116,7 +118,7 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
   
   
 
-\end{itemize}
+\end{enumerate}
 
 \chapter{Sicherheitslücken}
 
