@@ -218,24 +218,24 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \begin{itemize}
   \item Gefunden durch: Quellcodeanalyse
   \item Klassifikation: Denial-of-Service (DOS)
-  \item Problematik: Diese Sicherheitslücke ergibt sich aus der Verknüpfung einer Vielzahl von Umständen: Die Anwendung erzeugt im Kontext der Passwort-Vergessen Funktion Tokens. Diese Tokens werden unmittelbar von der Anwendung mittels einer Hashmap verwaltet. Der Key der Hashmap ist kein Benutzer, sondern das zufällig generierte Token. Die verwendete Datenstruktur erlaubt es somit grundsätzlich, dass für jeden Nutzer beliebig viele Tokens erzeugt und in die Hashmap eingefügt werden können.
-  
-  Um dies zu verhindern wurde ein Schutzmechanismus implementiert. Dieser durchläuft die Einträge in der Hashmap und sucht so nach einem Token, das jenem Benutzer zugeordnet ist, dessen Passwort zurückgesetzt  bzw. für den ein neues Token erstellt werden soll. Sobald der Mechanismus ein Token für den entsprechenden Benutzer gefunden hat stoppt er die Suche und prüft, ob das Token noch gültig ist. Wenn dies der Fall ist, wird die Erstellung weiterer Tokens für den Benutzer unterbunden.
-  
-  Die Tokens selbst werden ausschließlich dann gelöscht, wenn sie verwendet werden. D.h. ein nicht verwendetes Token wird für die Laufzeit der Anwendung in der Hashmap verbleiben.
-  
+  \item Problematik: Diese Sicherheitslücke ergibt sich aus der Verknüpfung einer Vielzahl von Umständen: Die Anwendung erzeugt im Kontext der \enquote{Passwort-Vergessen}-Funktion Tokens. Diese Tokens werden unmittelbar von der Anwendung mittels einer Hashmap verwaltet. Der Key der Hashmap ist kein Benutzer, sondern das zufällig generierte Token. Die verwendete Datenstruktur erlaubt es somit grundsätzlich, dass für jeden Nutzer beliebig viele Tokens erzeugt und in die Hashmap eingefügt werden können.
+
+  Um dies zu verhindern wurde ein Schutzmechanismus implementiert. Dieser durchläuft die Einträge in der Hashmap und sucht so nach einem Token, das jenem Benutzer zugeordnet ist, dessen Passwort zurückgesetzt beziehungsweise für den ein neues Token erstellt werden soll. Sobald der Mechanismus ein Token für den entsprechenden Benutzer gefunden hat, stoppt er die Suche und prüft, ob das Token noch gültig ist. Wenn dies der Fall ist, wird die Erstellung weiterer Tokens für den Benutzer unterbunden.
+
+  Die Tokens selbst werden ausschließlich dann gelöscht, wenn sie verwendet werden. Das bedeutet, dass ein nicht verwendetes Token für die Laufzeit der Anwendung in der Hashmap verbleiben.
+
   Der Durchlauf des Schutzmechanismus basiert auf einem Set. Die Reihenfolge eines Sets ist nicht garantiert. D.h. es kann zu einem Zustand kommen, bei dem sich in der Hashmap mehrere Token für einen Nutzer befinden und nicht das Neuste vor allen anderen liegt. In diesem Fall würde der Schutzmechanismus nicht mehr greifen und die Erstellung weiterer Token erlauben, obwohl bereits ein gültiges Token für den entsprechenden Nutzer existiert.
-  
-  Ebenfalls ist die Implementierung anfällig für RaceConditions: Es werden keine Locks verwendet. Der Schutzmechanismus läuft am Anfang der Implementierung und gibt entweder den weiteren Programmlauf frei oder beendet ihn. Nach der Freigabe wird eine relativ zeitintensive Operation durchgeführt: Das Versenden der Email. Erst danach wird das neue Token in die Hashmap hinzugefügt. 
-  \item Ausnutzung: Ein Angreifer beschafft sich über die Sicherheitslücke V15 sämtliche Email Adressen. Er erstellt danach für jeden Nutzer ein Token und wartet ab, bis diese Token ungültig geworden sind. Nun beginnt er, massiv Token für einen Nutzer zu erzeugen. Irgendwann ist die Reihenfolge des Sets auf dem der Schutzmechanismus basiert so, dass ein gültiges Token vorne liegt. Es ist nun nicht mehr möglich, weitere Token für diesen Nutzer zu erstellen; er ist \enquote{gesperrt}. Dies wird so auch in der entsprechenden HTML-Antwort dargestellt. Der Angreifer kann diesen Zustand also eindeutig erkennen.
-  
-  Ihm verbleiben nun noch die anderen Nutzer, die weiterhin ungesperrt sind, da für sie lediglich das ungültige Token existiert. Er nutzt diese nun, um den gesperrten Nutzer zu \enquote{entsperren}: Mit jedem Token, das in die Hashmap eingefügt wird, ändert sich potentiell die Reihenfolge des Sets. Daher prüft der Angreifer nach jedem erfolgreich eingefügten Token, ob vormals gesperrte Nutzer nun wieder freigegeben wurden und führt seinen Angriff mit diesen fort. Nutzer die definitiv ungesperrt sind, weil alle Token ungültig sind, sind daher nur dann einzusetzen, wenn alle anderen gesperrt sind.
-  
+
+  Ebenfalls ist die Implementierung anfällig für Race Conditions: Es werden keine Locks verwendet. Der Schutzmechanismus läuft am Anfang der Implementierung und gibt entweder den weiteren Programmlauf frei oder beendet ihn. Nach der Freigabe wird eine relativ zeitintensive Operation durchgeführt: Das Versenden der E-Mail. Erst danach wird das neue Token in die Hashmap hinzugefügt.
+  \item Ausnutzung: Ein Angreifer beschafft sich über die Sicherheitslücke V15 sämt\-liche Email Adressen. Er erstellt danach für jeden Nutzer ein Token und wartet ab, bis diese Token ungültig geworden sind. Nun beginnt er, massiv Token für einen Nutzer zu erzeugen. Irgendwann ist die Reihenfolge des Sets auf dem der Schutzmechanismus basiert so, dass ein gültiges Token vorne liegt. Es ist nun nicht mehr möglich, weitere Token für diesen Nutzer zu erstellen; er ist \enquote{gesperrt}. Dies wird so auch in der entsprechenden HTML-Antwort dargestellt. Der Angreifer kann diesen Zustand also eindeutig erkennen.
+
+  Ihm verbleiben nun noch die anderen Nutzer, die weiterhin ungesperrt sind, da für sie lediglich das ungültige Token existiert. Er nutzt diese nun, um den gesperrten Nutzer zu \enquote{entsperren}: Mit jedem Token, das in die Hashmap eingefügt wird, ändert sich potentiell die Reihenfolge des Sets. Daher prüft der Angreifer nach jedem erfolgreich eingefügten Token, ob vormals gesperrte Nutzer nun wieder freigegeben wurden und führt seinen Angriff mit diesen fort. Nutzer, die definitiv ungesperrt sind, weil alle Token ungültig sind, sind daher nur dann einzusetzen, wenn alle anderen gesperrt sind.
+
   Die für den Angriff benötigte Zeit hängt daher maßgeblich von der Anzahl der mit dem System registrierten Nutzer zusammen. Die Existenz von potentiell 10.000 Studenten\footnote{Quelle: https://de.wikipedia.org/wiki/Hochschule\_Hannover} dürfte den Angriff maßgeblich beschleunigen.
-  
-  Ebenfalls Relevant ist die Anzahl ungültiger Token. Je mehr existieren, des so höher ist die Wahrscheinlichkeit, dass ein ungültiges Token im Set vorne liegt. Die Erfolgswahrescheinlichkeit steigt somit maßgeblich an, nachdem die initialen Token erzeugt wurden und die Tokens des zweiten Durchlaufs ebenfalls ungültig wurden.
-  
-  Der Angreifer sollte sich ebenfalls die RaceConditions zu nutzen machen. Er kann so anstatt einem Token direkt mehrere Token in jedem Schritt erzeugen und so die für den Angriff benötigte Zeit weiter optimieren.
+
+  Ebenfalls relevant ist die Anzahl ungültiger Token. Je mehr existieren, desto höher ist die Wahrscheinlichkeit, dass ein ungültiges Token im Set vorne liegt. Die Erfolgswahrscheinlichkeit steigt somit maßgeblich an, nachdem die initialen Token erzeugt wurden und die Tokens des zweiten Durchlaufs ebenfalls ungültig wurden.
+
+  Der Angreifer sollte sich ebenfalls die Race Conditions zu nutzen machen. Er kann so anstatt einem Token direkt mehrere Token in jedem Schritt erzeugen und so die für den Angriff benötigte Zeit weiter optimieren.
   \item Risiko: Hoch
   \item Auswirkungen: Die Anwendung stürzt ab und ist für andere Nutzer nicht erreichbar.
   \item Mögliche Angriffe: So viele Tokens erzeugen, dass die Anwendung aufgrund mangelndem Speicher abstürzt.
@@ -252,7 +252,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Auswirkungen: Kompletter Zugriff auf Benutzerkonto durch Angreifer inkl. Webservice Credentials und Dateien.
   \item Mögliche Angriffe:
   	\begin{itemize}
-  		\item Angriffsszenario 1: Max Mustermann studiert an der Hochschule Hannover und meldet sich beim HsH-Helper mit seiner Email Adresse max.musterman@hsh-hannover.de an. Zwei Jahre nachdem Max Mustermann sein Studium abgeschlossen hat beginnt ein weiterer Max Mustermann sein Studium und bekommt die selbe Email Adresse zugewiesen. Max Mustermann 1 hat vollen zugriff auf den Account von Max Mustermann 2.
+  		\item Angriffsszenario 1: Max Mustermann studiert an der Hochschule Hannover und meldet sich beim HsH-Helper mit seiner Email Adresse \url{max.mustermann@hsh-hannover.de} an. Zwei Jahre nachdem Max Mustermann sein Studium abgeschlossen hat beginnt ein weiterer Max Mustermann sein Studium und bekommt die selbe Email Adresse zugewiesen. Max Mustermann 1 hat vollen zugriff auf den Account von Max Mustermann 2.
   		\item Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. Admin löscht Nutzer, legt ihn erneut an und händigt Daten an Benutzer aus. Dies tut er, damit der Nutzer die initiale Passwortänderung durchführen muss. Dies suggeriert dem Benutzer, dass niemand vor ihm auf den Account zugegriffen hat.
   	\end{itemize}
 
@@ -411,7 +411,7 @@ Wir schätzen die Wahrscheinlichkeit für so einen Angriff aber als sehr gering 
 \begin{itemize}
   \item Verstoß gegen das \enquote{Key Separation}-Prinzip: Die Daten in der Datenbank sowie das JWT-Cookie werden mithilfe des selben privaten Schlüssels verschlüsselt.
   \item Beim Hashing des Passworts wird nur eine Runde des SHA256 Hashs (siehe \ref{hashing-salt-gen-fail}) ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
-  \item Bei der Generation des Salts wird zwar \enquote{SecureRandom} verwendet, allerdings wird maximal eine zufällige Zahl zwischen 0 und Länge des Array \enquote{PASSWORD\_CHARS} generiert (siehe \ref{hashing-salt-gen-fail}) . Diese Zahl wird dann als Index für eben genanntes Array verwendet, um daraus Zeichen für die Salt-Generation zu extrahieren. Dadurch ist zumindest der Keyspace des Salts eingeschränkt.
+  \item Bei der Generation des Salts wird zwar \enquote{SecureRandom} verwendet, allerdings wird maximal eine zufällige Zahl zwischen 0 und Länge des Array \enquote{PASSWORD\-\_CHARS} generiert (siehe \ref{hashing-salt-gen-fail}) . Diese Zahl wird dann als Index für eben genanntes Array verwendet, um daraus Zeichen für die Salt-Generation zu extrahieren. Dadurch ist zumindest der Keyspace des Salts eingeschränkt.
   \item Beim Löschen eines Nutzers, der Besitzer einer Gruppe ist, wird eine Löschoperation unter seinen Berechtigungen gestartet. Dadurch wird im Log persistiert, dass der gelöschte Nutzer die Gruppe gelöscht hat, bevor dieser von einem Administrator gelöscht wird. Das ist ein Mangel im Bezug auf die Accountability, da nun das Log Ausgaben enthält, welche nicht stattgefunden haben.
 \end{itemize}
 
