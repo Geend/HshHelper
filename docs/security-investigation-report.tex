@@ -125,7 +125,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 \item Die Alle-Gruppe ist analog zur Admin-Gruppe löschbar. Nach dem Löschen dieser Gruppe funktioniert allerdings weiterhin vereinzelt Funktionalität.\newline
 \textit{+ Betroffene Anforderungen: 5.8}
 
-\item Gruppen, für die Dateiberechtigungen angelegt wurden, können nicht vollständig gelöscht werden. Im Code werden manuell Owner der Gruppe und Mitglieder der Gruppe gelöscht. Zu diesem Zeitpunkt ist die Gruppe \enquote{halb} gelöscht. Der anschließende \texttt{delete} Aufruf schlägt aber fehl, da Integriätsbedingungen in der Datenbank durch das löschen verletzt werden würden. Es wird eine Exception geworfen. In der Folge befindet sich die Datenbank in einem inkonsistenten Zustand. Die Gruppe wird dem Admin noch angezeigt, aber sie ist nichtmehr aufrufbar.\newline
+\item Gruppen, für die Dateiberechtigungen angelegt wurden, können nicht vollständig gelöscht werden. Im Code werden manuell Owner der Gruppe und Mitglieder der Gruppe gelöscht. Zu diesem Zeitpunkt ist die Gruppe \enquote{halb} gelöscht. Der anschließende \texttt{delete} Aufruf schlägt aber fehl, da Integriätsbedingungen in der Datenbank durch das Löschen verletzt werden würden. Es wird eine Exception geworfen. In der Folge befindet sich die Datenbank in einem inkonsistenten Zustand. Die Gruppe wird dem Admin noch angezeigt, aber sie ist nichtmehr aufrufbar.\newline
 \textit{+ Betroffene Anforderungen: 5.4}
 
 \end{enumerate}
