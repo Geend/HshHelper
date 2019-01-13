@@ -65,11 +65,11 @@ Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeli
 
 Ein Großteil der Fehler und Sicherheitslücken konnten nur durch die Verwendung eines Browsers und die darin enthaltenen Entwicklerfunktionalitäten gefunden werden. Als Browser wurde Google Chrome und Mozilla Firefox verwendet. Um fehlende Funktionen, wie beispielsweise das Ändern der Quota eines Benutzers, dennoch verwenden zu können, wurden Datenbankeinträge direkt mit dem H2-Browser manipuliert.
 
-Um etwas weniger offensichtliche Sicherheitslücken wie beispielsweise Raceconditions aufzudecken wurden Bashskripte verwendet, die das Kommandozeilenwerkzeug \textit{cURL} bedienen, um Webrequests abzusetzen. Für eine weitere Raceconditions wurde das Pythonprogramm \textit{race-condition-exploit} \footnote{\url{https://github.com/andresriancho/race-condition-exploit}} verwendet. Um HTTP-Requests zu erstellen und abzusenden wurde die Pythonbibliothek \textit{Requests} \footnote{\url{https://github.com/requests/requests}} verwendet.
+Um etwas weniger offensichtliche Sicherheitslücken wie beispielsweise Race Conditions aufzudecken wurden Bash-Skripte verwendet, die das Kommandozeilenwerkzeug \textit{cURL} bedienen, um HTTP-Requests an den Server zu senden. Für eine weitere Race Conditions wurde das Python Programm \textit{race-condition-exploit} \footnote{\url{https://github.com/andresriancho/race-condition-exploit}} verwendet. Um HTTP-Requests zu erstellen und abzusenden wurde die Python-Bibliothek \textit{Requests} \footnote{\url{https://github.com/requests/requests}} verwendet.
 
 Der Webproxy \textit{ZAP} \footnote{\url{https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project}} kam zum Einsatz, um die HTTP-Requests zu betrachten und zu analysieren. Bei der Suche nach Sicherheitslücken wurden POST-Requests mithilfe des Webproxies manipuliert.
 
-Zur Quelltextinspektion und Debugging kam, wie auch schon in der Enwicklungsphase, IntelliJ zum Einsatz.
+Zur Quelltextinspektion und Debugging kam, wie auch schon in der Enwicklungsphase, IntelliJ IDEA zum Einsatz.
 
 Um möglichst viele Sicherheitslücken (und funktionale Fehler) zu finden, haben wir mehrere Methoden verwendet:
 
@@ -90,7 +90,7 @@ Um möglichst viele Sicherheitslücken (und funktionale Fehler) zu finden, haben
 \item Beim Anlegen eines Benutzers kann der Administrator nicht wie gefordert das Speicherplatzlimit angeben.\newline
 \textit{+ Betroffene Anforderungen: 6.1}
 
-\item Das Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Java-Userobjekt nicht in die Datenbank übertragen werden. Man hat vergessen, die \texttt{save()} Methode auf dem entsprechenden Userobjekt aufzurufen.\newline
+\item Das Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Java-Userobjekt nicht in die Datenbank übertragen werden. Man hat vergessen, die \texttt{save()} Methode auf dem entsprechenden Userobjekt aufzurufen.
 \textit{+ Betroffene Anforderungen: 6.3}
 
 \item Beim Anlegen eines Benutzers wird ein fest definiertes Speicherplatzlimit von \enquote{1073741824} verwendet. Dieser Wert wurde offensichtlich in der Annahme getroffen, dass in der Anwendung in Bytes gerechnet wird und würde so ca. einem Gigabyte entsprechen. Tatsächlich rechnet die Anwendung die Bytes einer hochgeladenen Datei in Megabyte um und verwendet die Megabyte-Darstellung in Verbindung mit dem nicht konvertierten Speicherplatzlimit. So entspricht das fest definierte Speicherplatzlimit einem faktischen Limit von einem PB. Im Ergebnis führt die Umsetzung in Verbindung mit dem gewählten Standardlimit dazu, dass es realistisch nie erreicht werden wird. Es ist so gänzlich wirkungslos.\newline
