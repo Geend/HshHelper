@@ -549,29 +549,14 @@ if ("read".equals(userPermission)) {
 \\ Innerhalb der AdminService.java
 protected boolean setQuota(final String actor, final String credentials, final int newQuota) {
  \\ Unwichtigen Rest herausgelassen ...
-    //check if user exists
-    User user = User.find.byNameOrEmail(credentials);
-    if (user == null) {
-        log.warning(String
-            .format(
-                new Date()
-                    + ": %s hat versucht das Speicherplatzlimit von Benutzer %s auf %d zu "
-                    + "ändern. Der Benutzer wurde nicht gefunden.", actor, credentials,
-                newQuota));
-        return false;
-    }
+
     int oldQuota = user.getQuota();
     user.setQuota(newQuota);
     log.warning(String
-        .format(
-            new Date()
-                + ": %s hat das Speicherplatzlimit von Benutzer %s von &d auf %d geändert ",
-            actor, credentials, oldQuota, newQuota));
+        .format(...);
     return true;
   }
-  log.warning(
-    new Date() + ": Unautorisierter Aufruf der Operation "
-        + "\"Speicherplatzlimit ändern\" durch " + actor);
+  log.warning(...);
   return false;
 }
 
