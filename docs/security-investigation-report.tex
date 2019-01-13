@@ -422,11 +422,12 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 \end{enumerate}
 
 \chapter{Untersuchte Sicherheitslücken}
-Da der Code keinerlei Rücksicht nimmt auf parallele Requests und die damit verbundenen Race-Conditions wurde untersucht, ob es möglich ist eine Datei mit demselben Dateinamen mehrfach hochzuladen. Der Code \ref{fileuploadcode} hierzu zeigt klar auf das zwischen der eigentlichen Abfrage, ob die Datei vorhanden ist und dem Anlegen der Datei weiterer Code steht. Zwischen Zeile 2, wo die Überprüfung stattfindet und Zeile 22 wo die neue Datei zur Datenbank hinzugefügt wird überprüft der Code ob der Nutzer noch ausreichen Speicherplatz zur verfügung hat.
 
-Der Exploit Code für diese Race Condition wurde in Python geschrieben und als Plug-in verwendet in dem Programm race-condition-exploit. Das Plug-in \ref{fileraceplugin} bereitet den Request in einem String auf und gibt ihn weiter an das Hauptprogramm. Der Host, Port und ob die Verbindung via HTTPS verschlüsselt ablaufen soll, kann ebenfalls vom Plugin spezifiziert werden.
+Da der Code keinerlei Rücksicht auf parallele Requests und die damit verbundenen Race-Conditions nimmt, wurde untersucht, ob es möglich ist eine Datei mit demselben Dateinamen mehrfach hochzuladen. Der Code \ref{fileuploadcode} hierzu zeigt klar auf das zwischen der eigentlichen Abfrage, ob die Datei vorhanden ist und dem Anlegen der Datei weiterer Code steht, der nicht durch eine Transaktion oder einem ähnlichen Mechanismus geschützt ist. Zwischen Zeile 2, in welcher die Überprüfung stattfindet und Zeile 22, in welcher die neue Datei zur Datenbank hinzugefügt wird, überprüft der Code ob der Nutzer noch ausreichend Speicherplatz zur Verfügung hat.
 
-Das Programm bereitet mehrere Threads vor, deren Anzahl via eines Kommandozeilen Parameter angegeben werden kann. Jeder Thread baut eine vollständige Verbindung zum Webserver auf und sendet den Request ohne das letzte Byte zu übertragen. Sind alle Threads soweit, gibt der Hauptthread das Signal, das nun das letze Byte übertragen werden kann.
+Der Exploit Code für diese Race Condition wurde in Python geschrieben und wird als Plug-in in dem Programm \textit{race-condition-exploit} verwendet. Das Plug-in \ref{fileraceplugin} bereitet den Request in einem String auf und gibt ihn weiter an das Hauptprogramm. Der Host, Port und ob die Verbindung via HTTPS verschlüsselt ablaufen soll, kann ebenfalls vom Plugin spezifiziert werden.
+
+Das Programm bereitet mehrere Threads vor, deren Anzahl via eines Kommandozeilenparameter kontrolliert werden kann. Jeder Thread baut eine vollständige Verbindung zum Webserver auf und sendet den Request ohne das letzte Byte zu übertragen. Sind alle Threads soweit, gibt der Hauptthread das Signal, woraufhin das letzte Byte übertragen wird.
 
 Obwohl die Oberfläche nur jeweils einen Eintrag für einen Dateinamen zeigt, sind diese trotzdem mehrfach vorhanden. Ob dies nun aufgrund der möglichen Race Condition ist oder weil der Mechanismus, welcher sicherstellt das Dateinamen pro Nutzer eindeutig sein müssen, grundsätzlich nicht funktioniert, kann nicht ermittelt werden.
 
@@ -517,11 +518,11 @@ model.File newFile = FileFactory.createFile(filename, fileExtension, comment,
     LocalDateTime.now(), tempFile.length(), owner);
 \end{lstlisting}
 
-\label{fileraceplugin}
 \includepdf{./resources/race_python.pdf}
+\label{fileraceplugin}
 
 \chapter{Code Beispiele}
-\label{filepermissions}
+
 \begin{lstlisting}
 if ("read".equals(userPermission)) {
 	for (String username : userList) {
@@ -535,7 +536,7 @@ if ("read".equals(userPermission)) {
 	}
 }
 \end{lstlisting}
-
+\label{filepermissions}
 
 \end{appendices}
 
