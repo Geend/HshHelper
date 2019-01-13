@@ -225,6 +225,8 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   Die Tokens selbst werden ausschließlich dann gelöscht, wenn sie verwendet werden. D.h. ein nicht verwendetes Token wird für die Laufzeit der Anwendung in der Hashmap verbleiben.
   
   Der Durchlauf des Schutzmechanismus basiert auf einem Set. Die Reihenfolge eines Sets ist nicht garantiert. D.h. es kann zu einem Zustand kommen, bei dem sich in der Hashmap mehrere Token für einen Nutzer befinden und nicht das Neuste vor allen anderen liegt. In diesem Fall würde der Schutzmechanismus nicht mehr greifen und die Erstellung weiterer Token erlauben, obwohl bereits ein gültiges Token für den entsprechenden Nutzer existiert.
+  
+  Ebenfalls ist die Implementierung anfällig für RaceConditions: Es werden keine Locks verwendet. Der Schutzmechanismus läuft am Anfang der Implementierung und gibt entweder den weiteren Programmlauf frei oder beendet ihn. Nach der Freigabe wird eine relativ zeitintensive Operation durchgeführt: Das Versenden der Email. Erst danach wird das neue Token in die Hashmap hinzugefügt. 
   \item Ausnutzung: Ein Angreifer beschafft sich über die Sicherheitslücke V15 sämtliche Email Adressen. Er erstellt danach für jeden Nutzer ein Token und wartet ab, bis diese Token ungültig geworden sind. Nun beginnt er, massiv Token für einen Nutzer zu erzeugen. Irgendwann ist die Reihenfolge des Sets auf dem der Schutzmechanismus basiert so, dass ein gültiges Token vorne liegt. Es ist nun nicht mehr möglich, weitere Token für diesen Nutzer zu erstellen; er ist \enquote{gesperrt}. Dies wird so auch in der entsprechenden HTML-Antwort dargestellt. Der Angreifer kann diesen Zustand also eindeutig erkennen.
   
   Ihm verbleiben nun noch die anderen Nutzer, die weiterhin ungesperrt sind, da für sie lediglich das ungültige Token existiert. Er nutzt diese nun, um den gesperrten Nutzer zu \enquote{entsperren}: Mit jedem Token, das in die Hashmap eingefügt wird, ändert sich potentiell die Reihenfolge des Sets. Daher prüft der Angreifer nach jedem erfolgreich eingefügten Token, ob vormals gesperrte Nutzer nun wieder freigegeben wurden und führt seinen Angriff mit diesen fort. Nutzer die definitiv ungesperrt sind, weil alle Token ungültig sind, sind daher nur dann einzusetzen, wenn alle anderen gesperrt sind.
@@ -232,6 +234,8 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   Die für den Angriff benötigte Zeit hängt daher maßgeblich von der Anzahl der mit dem System registrierten Nutzer zusammen. Die Existenz von potentiell 10.000 Studenten\footnote{Quelle: https://de.wikipedia.org/wiki/Hochschule\_Hannover} dürfte den Angriff maßgeblich beschleunigen.
   
   Ebenfalls Relevant ist die Anzahl ungültiger Token. Je mehr existieren, des so höher ist die Wahrscheinlichkeit, dass ein ungültiges Token im Set vorne liegt. Die Erfolgswahrescheinlichkeit steigt somit maßgeblich an, nachdem die initialen Token erzeugt wurden und die Tokens des zweiten Durchlaufs ebenfalls ungültig wurden.
+  
+  Der Angreifer sollte sich ebenfalls die RaceConditions zu nutzen machen. Er kann so anstatt einem Token direkt mehrere Token in jedem Schritt erzeugen und so die für den Angriff benötigte Zeit weiter optimieren.
   \item Risiko: Hoch
   \item Auswirkungen: Die Anwendung stürzt ab und ist für andere Nutzer nicht erreichbar.
   \item Mögliche Angriffe: So viele Tokens erzeugen, dass die Anwendung aufgrund mangelndem Speicher abstürzt.
