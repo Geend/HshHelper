@@ -45,8 +45,8 @@
 
 Innerhalb der VM können die Aktionen \enquote{Nutzer anlegen} sowie \enquote{Datei hochladen} nicht verwendet werden, da beide bei normaler, erwarteter Nutzung zu einem Fehler führen, wie in Anhang \ref{createuser_fail_1} sowie \ref{upload_fail_1} zu sehen ist.
 Da wir bereits wussten, dass der seperat ausgelieferte Quellcode funktioniert, waren wir dementsprechend schockiert. 
-Diese Fehler bestehen auch, wenn man den Quellcode aus der VM extrahiert und auf seinem Hostrechner via SBT oder IntelliJ startet.
-Komischerweise hat ein \texttt{diff} bewiesen, dass kein Unterschied zwischen den beiden vorliegenden Quellen besteht.
+Diese Fehler bestehen auch, wenn man den Quellcode aus der VM extrahiert und auf seinem Hostrechner via \texttt{sbt run} oder IntelliJ startet.
+Komischerweise hat ein \texttt{git diff} bewiesen, dass kein Unterschied zwischen den beiden vorliegenden Quellen besteht.
 
 Aus Interesse haben wir daher versucht, die Ursache des Fehlers herauszufinden, konnten den Ursprung allerdings nicht finden.
 Ein Symptom ist zumindest, dass bestimmte Felder nicht korrekt aus dem HTML-Formular gelesen werden konnten.
@@ -58,7 +58,7 @@ Desweiteren sind die SBT Versionen gleich, Quellcode-Unterschiede bestehen wie b
 Es ist möglich, dass weitere Aktionen innerhalb der VM nicht funktionieren. Wir hatten nach diesen 2 Aktionen aufgehört, da sie essentiell wichtige Funktionen für den HsH-Helper sind.
 Die hier gefundenen Fehler beziehen sich daher auf den seperat mitgelieferten Quellcode, da dieser nicht unter dieser Problematik leidet.
 
-Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeliefertem \texttt{target} Ordners im Hauptverzeichnis des Projekts behoben werden können.
+Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeliefertem \texttt{target} Ordners im Hauptverzeichnis des Projekts behoben werden können. Beim vergleichen der VM Version mit der Sourcecode Version mittels \texttt{git diff} sind die Unterscheide im \texttt{target} Ordner nicht aufgefallen, da dieser in der \texttt{.gitignore} Datei eingetragen war.
 
 
 \chapter{Eingesetzte Methoden und Werkzeuge}
