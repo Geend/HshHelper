@@ -13,6 +13,7 @@
 \lstset
 { %Formatting for code in appendix
     numbers=left,
+    language=Java
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -56,7 +57,7 @@ Ein weiteres Indiz für diese Annahme ist, dass genau die Getter/Setter des jewe
 Desweiteren sind die SBT Versionen gleich, Quellcode-Unterschiede bestehen wie bereits beschrieben nicht und der Fehler tritt innerhalb und ausserhalb der VM auf, sofern man den Quellcode aus der VM nimmt.
 
 Es ist möglich, dass weitere Aktionen innerhalb der VM nicht funktionieren. Wir hatten nach diesen 2 Aktionen aufgehört, da sie essentiell wichtige Funktionen für den HsH-Helper sind.
-Die hier gefundenen Fehler beziehen sich daher auf den seperat mitgelieferten Quellcode, da dieser nicht unter dieser Problematik leidet.
+Die hier gefundenen Fehler beziehen sich daher auf den separat mitgelieferten Quellcode, da dieser nicht unter dieser Problematik leidet.
 
 Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeliefertem \texttt{target} Ordners im Hauptverzeichnis des Projekts behoben werden können.
 Dies ist nicht aufgefallen, da in der vorhandenen \texttt{.gitignore}-Datei der \texttt{target}-Ordner eingetragen war, und somit \texttt{git diff} diesen ignorierte.
@@ -69,7 +70,7 @@ Um etwas weniger offensichtliche Sicherheitslücken wie beispielsweise Race Cond
 
 Der Webproxy \textit{ZAP} \footnote{\url{https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project}} kam zum Einsatz, um die HTTP-Requests zu betrachten und zu analysieren. Bei der Suche nach Sicherheitslücken wurden POST-Requests mithilfe des Webproxies manipuliert.
 
-Zur Quelltextinspektion und Debugging kam, wie auch schon in der Enwicklungsphase, IntelliJ IDEA zum Einsatz.
+Zur Quelltextinspektion und Debugging kam, wie auch schon in der Entwicklungsphase, IntelliJ IDEA zum Einsatz.
 
 Um möglichst viele Sicherheitslücken (und funktionale Fehler) zu finden, haben wir mehrere Methoden verwendet:
 
@@ -90,7 +91,7 @@ Um möglichst viele Sicherheitslücken (und funktionale Fehler) zu finden, haben
 \item Beim Anlegen eines Benutzers kann der Administrator nicht wie gefordert das Speicherplatzlimit angeben.\newline
 \textit{+ Betroffene Anforderungen: 6.1}
 
-\item Das Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Java-Userobjekt nicht in die Datenbank übertragen werden. Man hat vergessen, die \texttt{save()} Methode auf dem entsprechenden Userobjekt aufzurufen. Außerdem kann das Speicherplatzlimit eines Benutzer nicht durch den Administrator abgefragt werden.\newline
+\item Das Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Java-Userobjekt nicht in die Datenbank übertragen werden. Man hat vergessen, die \texttt{save()} Methode auf dem entsprechenden Userobjekt aufzurufen (siehe \ref{quota-change-fail}). Außerdem kann das Speicherplatzlimit eines Benutzer nicht durch den Administrator abgefragt werden.\newline
 \textit{+ Betroffene Anforderungen: 6.3}
 
 \item Beim Anlegen eines Benutzers wird ein fest definiertes Speicherplatzlimit von \enquote{1073741824} verwendet. Dieser Wert wurde offensichtlich in der Annahme getroffen, dass in der Anwendung in Bytes gerechnet wird und würde so ca. einem Gigabyte entsprechen. Tatsächlich rechnet die Anwendung die Anzahl der Bytes einer hochgeladenen Datei in Megabyte um und verwendet die Megabyte-Darstellung in Verbindung mit dem nicht konvertierten Speicherplatzlimit. So entspricht das fest definierte Speicherplatzlimit einem faktischen Limit von einem PB. Im Ergebnis führt die Umsetzung in Verbindung mit dem gewählten Standardlimit dazu, dass es realistisch nie erreicht werden wird. Es ist so gänzlich wirkungslos.\newline
@@ -99,16 +100,16 @@ Um möglichst viele Sicherheitslücken (und funktionale Fehler) zu finden, haben
 \item Die Umrechnung von Byte in Megabyte rundet auf. Dies führt dazu, dass eine Datei die kleiner als ein Megabyte ist trotzdem ein Megabyte von der Quota beansprucht.\newline
 \textit{+ Betroffene Anforderungen: Keine}
 
-\item Beim Überschreiben einer freigegebenen Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden. Dadurch kann ein Benutzer sein Speicherplatz-Limit erhöhen: Er muss nur Dateien von anderen Benutzer auf die er schreibberechtigung hat mit kleineren Dateien überschreiben. Wäre die Quota eines Dateibesitzers theoretisch überschritten, könnte die Datei so dennoch überschrieben werden.\newline
+\item Beim Überschreiben einer freigegebenen Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden. Dadurch kann ein Benutzer sein Speicherplatz-Limit erhöhen: Er muss nur Dateien von anderen Benutzer auf die er Schreibberechtigung hat mit kleineren Dateien überschreiben. Wäre die Quota eines Dateibesitzers theoretisch überschritten, könnte die Datei so dennoch überschrieben werden.\newline
 \textit{+ Betroffene Anforderungen: 6.3}
 
-\item Die Anwendung extrahiert aus dem Dateinamen der ausgewählten Datei die Endung. Diese wird dem vom Nutzer angegebenen Dateinamen hinzugefügt und unterliegt keiner expliziten  Längenbeschränkung. Diese wird nur in Bezug auf den vom Nutzer explizit angegebenen Namen erzwungen. Praktisch ausnutzten lässt sich diese Implementierung jedoch nicht, da die Felder in der Datenbank in die der Dateiname und die Endung geschrieben wird auf 255 Zeichen beschränkt sind. Das ist der Standard-Wert von Eban für Felder vom Typ String. \newline
+\item Die Anwendung extrahiert aus dem Dateinamen der ausgewählten Datei die Endung. Diese wird dem vom Nutzer angegebenen Dateinamen hinzugefügt und unterliegt keiner expliziten Längenbeschränkung. Diese wird nur in Bezug auf den vom Nutzer explizit angegebenen Namen erzwungen. Praktisch ausnutzten lässt sich diese Implementierung jedoch nicht, da die Felder in der Datenbank in die der Dateiname und die Endung geschrieben wird auf 255 Zeichen beschränkt sind. Das ist der Standard-Wert von EBean für Felder vom Typ String. \newline
 \textit{+ Betroffene Anforderungen: Keine}
 
 
 \item Es ist Benutzern problemlos möglich, mehrere Dateien mit dem gleichen Namen hinzuzufügen. Der für den Upload zuständige Controller-Code erhält vom Anwender einen expliziten Dateinamen (A) und den Namen der ausgewählten Datei (B). Die Anwendung prüft nun, ob der Nutzer bereits eine Datei besitzt, dessen Name A entspricht. Ist dies nicht der Fall, wird die Dateiendung aus B extrahiert und eine Datei erzeugt, die einen zusammengesetzten Namen besitzt: A + \enquote{.} + extension(B).
 Wiederholt man den Upload, prüft die Anwendung erneut, ob der Benutzer eine Datei mit dem Namen A hat - was natürlich nicht der Fall ist, denn der endgültige Name der Datei entspricht nicht A.
-Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jedem Namen existieren. Dies ist der Verwendung einer TreeMap geschuldet: Die Anwendung lädt alle Dateien, die zum Benutzer gehören und speichert diese als Key in der TreeMap. Die TreeMap stellt die Eindeutigkeit der Keys über die compareTo Methode der entsprechenden Keys bzw. Files sicher. Diese wurde überschrieben und beinhaltet für den Vergleich lediglich den Dateinamen und den Owner. D.h. wenn man 10 Dateien mit dem gleichen Namen erzeugt, befindet sich in der Treemap nur eine Datei und nur diese wird so angezeigt. Wird die Datei gelöscht, wird die vorherige angezeigt.\newline
+Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jedem Namen existieren. Dies ist der Verwendung einer TreeMap geschuldet: Die Anwendung lädt alle Dateien, die zum Benutzer gehören und speichert diese als Key in der TreeMap. Die TreeMap stellt die Eindeutigkeit der Keys über die compareTo Methode der entsprechenden Keys bzw. Files sicher. Diese wurde überschrieben und beinhaltet für den Vergleich lediglich den Dateinamen und den Owner. Das heißt, wenn man 10 Dateien mit dem gleichen Namen erzeugt, befindet sich in der Treemap nur eine Datei und nur diese wird so angezeigt. Wird die Datei gelöscht, wird die vorherige angezeigt.\newline
 \textit{+ Betroffene Anforderungen: 3.3.1}
 
 \item Beim Hochladen von Dateien können die Berechtigungen nicht unmittelbar vergeben werden, dies sollte in einem Request erfolgen.\newline
@@ -125,7 +126,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 \item Die Alle-Gruppe ist analog zur Admin-Gruppe löschbar. Nach dem Löschen dieser Gruppe funktioniert allerdings weiterhin vereinzelt Funktionalität.\newline
 \textit{+ Betroffene Anforderungen: 5.8}
 
-\item Gruppen, für die Dateiberechtigungen angelegt wurden, können nicht vollständig gelöscht werden. Im Code werden manuell Owner der Gruppe und Mitglieder der Gruppe gelöscht. Zu diesem Zeitpunkt ist die Gruppe \enquote{halb} gelöscht. Der anschließende \texttt{delete} Aufruf schlägt aber fehl, da Integriätsbedingungen in der Datenbank durch das Löschen verletzt werden würden. Es wird eine Exception geworfen. In der Folge befindet sich die Datenbank in einem inkonsistenten Zustand. Die Gruppe wird dem Admin noch angezeigt, aber sie ist nichtmehr aufrufbar.\newline
+\item Gruppen, für die Dateiberechtigungen angelegt wurden, können nicht vollständig gelöscht werden. Im Code werden manuell Owner der Gruppe und Mitglieder der Gruppe gelöscht. Zu diesem Zeitpunkt ist die Gruppe \enquote{halb} gelöscht. Der anschließende \texttt{delete} Aufruf schlägt aber fehl, da Integriätsbedingungen in der Datenbank durch das Löschen verletzt werden würden. Es wird eine Exception geworfen. In der Folge befindet sich die Datenbank in einem inkonsistenten Zustand. Die Gruppe wird dem Admin noch angezeigt, aber sie ist nicht mehr aufrufbar.\newline
 \textit{+ Betroffene Anforderungen: 5.4}
 
 \end{enumerate}
@@ -151,7 +152,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 \textit{+ Betroffene Anforderungen: 6.6}
  \end{enumerate}
 
- \section{Passwort Reset}
+\section{Passwort Reset}
 \begin{enumerate}[resume]
 \item Beim Passwort Reset ist im versendeten Link zum Zurücksetzen des Passworts ein Slash zu viel. Dieser muss manuell entfernt werden bevor ein Passwort Reset durchgeführt werden kann.\newline
 \enquote{http://localhost:9000//password/forgot/U69O...ZNcUBcK2}\newline
@@ -164,7 +165,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 
 \section{Benutzer}
 \begin{enumerate}[resume]
-\item Benutzer, die Dateien hochgeladen haben können nicht gelöscht werden. Es wird versucht die Dateien des zu löschenden Benutzers mit der Identität des angemeldeten Benutzers zu löschen. Der hat dazu aber nicht die Berechtigung, da er nicht der Owner der Datei ist\footnote{siehe AdminService.java, Zeile 143. Hier wird \texttt{actor} übergeben. Korrekt wäre \texttt{credentials}.}.\newline
+\item Benutzer, die Dateien hochgeladen haben, können nicht gelöscht werden. Es wird versuch, die Dateien des zu löschenden Benutzers mit der Identität des angemeldeten Benutzers zu löschen. Der hat dazu aber nicht die Berechtigung, da er nicht der Owner der Datei ist\footnote{siehe Anhang \ref{delete-user-fail}. Hier wird \texttt{actor} übergeben. Korrekt wäre \texttt{credentials}.}.\newline
 \textit{+ Betroffene Anforderungen: 6.2}
 
 \item Es ist unmöglich, einen Nutzer, der in der Administratorgruppe ist, zu löschen. In Folge der Operation wird eine Fehlermeldung (\enquote{Es ist ein Fehler aufgetreten.}) angezeigt. Der Nutzer wurde allerdings aus der Alle-Gruppe gelöscht.\newline
@@ -188,7 +189,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 
   %\item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
 
-  \item Es wurde eine Debug-Version ausgeliefert. Der Aufruf eines nicht existierenden Pfads führt faktisch dazu, dass die Inhalte der Routes-Datei ausgegeben werden. Außerdem sind an vielen Stellen Java Excpetions mit Ausschnitten aus dem Quellcode für Benutzer sichtbar. Nutzer, eingeschlossen Administratoren, sollten niemals Java Exceptions einsehen können.\newline
+  \item Es wurde eine Debug-Version ausgeliefert. Der Aufruf eines nicht existierenden Pfads führt faktisch dazu, dass die Inhalte der Routes-Datei ausgegeben werden. Außerdem sind an vielen Stellen Java Exceptions mit Ausschnitten aus dem Quellcode für Benutzer sichtbar. Nutzer, eingeschlossen Administratoren, sollten niemals Java Exceptions einsehen können.\newline
   \textit{+ Betroffene Anforderungen: Keine}
 
 
@@ -235,7 +236,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \begin{itemize}
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Broken Authentication
-  \item Problematik: Benutzer haben kein eindeutiges Identifikationsmerkmal. Als Benutzer-Id wird die Email Adresse verwendet. Einmal in Hinblick auf Benutzer verwendetete Email Adressen werden nicht dauerhaft für erneute Verwendung gesperrt sondern können beim erneuten Anlegen eines Nutzers verwendet werden. Das Authentifizierungscookie ist ausschließlich an diese Email Adresse gebunden und unterliegt keinem Timeout.
+  \item Problematik: Benutzer haben kein eindeutiges Identifikationsmerkmal. Als Benutzer-Id wird die Email Adresse verwendet. Einmal in Hinblick auf Benutzer verwendete Email Adressen werden nicht dauerhaft für erneute Verwendung gesperrt sondern können beim erneuten Anlegen eines Nutzers verwendet werden. Das Authentifizierungscookie ist ausschließlich an diese Email Adresse gebunden und unterliegt keinem Timeout.
   \item Ausnutzung: Ein einmal ausgestelltes Cookie dauerhaft aufbewahren.
   \item Risiko: Gering (Angriffsszenario 1), Hoch (Angriffsszenario 2)
   \item Auswirkungen: Kompletter Zugriff auf Benutzerkonto durch Angreifer inkl. Webservice Credentials und Dateien.
@@ -356,60 +357,52 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \end{itemize}
 
   \hypertarget{vulnerability13}{}
-  \item \textbf{V13: Erzwungender Logout}
+  \item \textbf{V13: Erzwungener Logout}
   \begin{itemize}
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Denial-of-Service (DOS)
   \item Problematik: Der Chrome Browser und manche Versionen von Firefox reagieren auf Cross-Site-Requests mit einem Cookie-Reset.
-  \item Ausnutzung: Es ist möglich einen CSRF-Angriff durchzuführen, der beliebige Nutzer auslogged, die Chrome verwenden. Hierzu muss einfach von einer anderen Domain aus ein Request auf die Startseite getriggert werden\footnote{Bsp: \url{https://jsfiddle.net/4j3k9ngt/}}. Das Cookie vom Nutzer wird so zurückgesetzt, bzw. das "username" Feld gelöscht.
+  \item Ausnutzung: Es ist möglich einen CSRF-Angriff durchzuführen, der beliebige Nutzer ausloggt, die Chrome verwenden. Hierzu muss einfach von einer anderen Domain aus ein Request auf die Startseite getriggert werden\footnote{Bsp: \url{https://jsfiddle.net/4j3k9ngt/}}. Das Cookie vom Nutzer wird so zurückgesetzt, bzw. das "username" Feld gelöscht.
   \item Risiko: Mittel-Hoch
   \item Auswirkungen: Benutzer kann abgemeldet werden.
   \item Mögliche Angriffe: Benutzer dazu bringen, unbewusst einen Cross-Site-Request auszuführen.
   \end{itemize}
 
-% TODO entfernen
   \hypertarget{vulnerability14}{}
-  \item \textbf{V14: Fehlerhaftes Logging}
-  \begin{itemize}
-  \item Gefunden durch: Exploratives Testen
-  \item Klassifikation: Log Poisoning
-  \item Problematik:
-  \item Ausnutzung: Beim Löschen eines Nutzers, der Besitzer einer Gruppe ist, wird eine Löschoperation unter seinen Berechtigungen gestartet. Dadurch wird im Log persistiert, dass der gelöschte Nutzer die Gruppe gelöscht hat, bevor dieser von einem Administrator gelöscht wird. Das ist ein Mangel im Bezug auf die Accountability, da nun das Log Ausgaben enthält, welche nicht stattgefunden haben.
-  \item Risiko:
-  \item Auswirkungen:
-  \item Mögliche Angriffe:
-  \end{itemize}
-
-  \hypertarget{vulnerability15}{}
-  \item \textbf{V15: Ausspähen von Email Adressen und dazugehörige Benutzernamen}
+  \item \textbf{V14: Ausspähen von Email Adressen und dazugehörige Benutzernamen}
   \begin{itemize}
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Information Disclosure
   \item Problematik: Es gibt keine technischen Benutzer-Ids, hierzu dient die Email Adresse des Benutzers. Operationen die einen bestimmten Benutzer betreffen verwenden als Parameter selbige.
-  \item Ausnutzung: Man legt eine Gruppe an und fügt alle Nutzer dieser Gruppe hinzu (diese kann man aus der Gruppe \enquote{Alle} extrahieren). Im HTML-Code der Gruppenseite sieht man als Gruppenowner die entsprechenden E-Mail Adressen. Sie sind mit den entsprechenden \enquote{Aus der Gruppe entfernen} Buttons verknüpft bzw. werden in der korrospondierenden Form als ID verwendet.
+  \item Ausnutzung: Man legt eine Gruppe an und fügt alle Nutzer dieser Gruppe hinzu (diese kann man aus der Gruppe \enquote{Alle} extrahieren). Im HTML-Code der Gruppenseite sieht man als Gruppenowner die entsprechenden E-Mail Adressen. Sie sind mit den entsprechenden \enquote{Aus der Gruppe entfernen} Buttons verknüpft bzw. werden in der korrespondierenden Form als ID verwendet.
   \item Risiko: Hoch
   \item Auswirkungen: Es ist möglich die E-Mail Adressen aller Nutzer zu extrahieren.
   \item Mögliche Angriffe: Es kann ein personalisierter Phishing Angriff durchgeführt werden. Benutzer können mit ihrem Benutzernamen in einer Nachricht angesprochen werden, die an die hinterlegte Email Adresse versendet wird. Durch die Personalisierung in Hinblick auf den Benutzernamen schöpft das Opfer weniger Verdacht.
   \end{itemize}
 
-  \hypertarget{vulnerability16}{}
-  \item \textbf{V16: Application Takeover}
+  \hypertarget{vulnerability15}{}
+  \item \textbf{V15: Application Takeover}
   \begin{itemize}
   \item Gefunden durch: Quellcodeanalyse und Exploratives Testen
   \item Klassifikation: Privilege Escalation
-  \item Problematik: Die Anwendung verwendet case-insensitive Datenbank-Abfragen, berücksichtigt jedoch die Groß und Kleinschreibung bei Prüfungen im Java-Code durch Verwendung der equals-Methode in Bezug auf String-Vergleiche.
+  \item Problematik: Die Anwendung verwendet case-insensitive Datenbank-Abfragen, berücksichtigt jedoch die Groß- und Kleinschreibung bei Prüfungen im Java-Code durch Verwendung der equals-Methode in Bezug auf String-Vergleiche.
   \item Ausnutzung: Die Gruppen \enquote{ADMIN} und \enquote{ALLE} als Administrator löschen. Die Gruppen \enquote{admin} und \enquote{Alle} erneut anlegen. Man ist nun owner beider Gruppen und somit quasi Super-Admin. Der Benutzer \enquote{admin} hat nun keine Administrator-Privilegien mehr. Es ist nun möglich das bestehende \enquote{admin}-Konto zu löschen.
   \item Auswirkungen: Vollständige Übernahme der Anwendung, ohne, dass der initial bestehende \enquote{admin}-Account als Fallback bestehen bleibt.
   \item Mögliche Angriffe: siehe oben.
   \end{itemize}
 \end{itemize}
 
+Ein weiterer, möglicher Angriff ist, dass aufgrund des vorhandenen Sessionkonzepts es einem Angreifer einfacher ist, ein Cookie zu fälschen, mit welchem er sich Zugang zu der Applikation verschaffen könnte.
+Er müsste lediglich das \enquote{username}-Feld auf eine vorhandene E-Mail-Adresse setzen, beispielsweise \enquote{admin@admin.com}, um Zugang zur Applikation als Administrator zu erhalten.
+Wir schätzen die Wahrscheinlichkeit für so einen Angriff aber als sehr gering ein, da dieser einen erheblichen Aufwand benötigt, um die richtige HMACSHA256-Signatur zu fälschen/zu berechnen.
+
 \section{Mängel, die kryptografischen Eigenschaften einschränken}
 
 \begin{itemize}
   \item Verstoß gegen das \enquote{Key Separation}-Prinzip: Die Daten in der Datenbank sowie das JWT-Cookie werden mithilfe des selben privaten Schlüssels verschlüsselt.
-  \item Beim Hashing des Passworts wird nur eine Runde des SHA256 Hashs ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
-  \item Bei der Generation des Salts wird zwar \enquote{SecureRandom} verwendet, allerdings wird maximal eine zufällige Zahl zwischen 0 und Länge des Array \enquote{PASSWORD\_CHARS} generiert. Diese Zahl wird dann als Index für eben genanntes Array verwendet, um daraus Zeichen für die Salt-Generation zu extrahieren. Dadurch ist zumindest der Keyspace des Salts eingeschränkt.
+  \item Beim Hashing des Passworts wird nur eine Runde des SHA256 Hashs (siehe \ref{hashing-salt-gen-fail}) ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
+  \item Bei der Generation des Salts wird zwar \enquote{SecureRandom} verwendet, allerdings wird maximal eine zufällige Zahl zwischen 0 und Länge des Array \enquote{PASSWORD\_CHARS} generiert (siehe \ref{hashing-salt-gen-fail}) . Diese Zahl wird dann als Index für eben genanntes Array verwendet, um daraus Zeichen für die Salt-Generation zu extrahieren. Dadurch ist zumindest der Keyspace des Salts eingeschränkt.
+  \item Beim Löschen eines Nutzers, der Besitzer einer Gruppe ist, wird eine Löschoperation unter seinen Berechtigungen gestartet. Dadurch wird im Log persistiert, dass der gelöschte Nutzer die Gruppe gelöscht hat, bevor dieser von einem Administrator gelöscht wird. Das ist ein Mangel im Bezug auf die Accountability, da nun das Log Ausgaben enthält, welche nicht stattgefunden haben.
 \end{itemize}
 
 \chapter{Ungewöhnliche Handhabung}
@@ -417,13 +410,13 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 \begin{enumerate}
   \item Der Anwendungscode wirft und fängt \texttt{NullPointerException} sowie  \newline \texttt{IndexOutOfBoundsException}.
   \item Der Anwendungsserver meldet sich beim Single-Sign-On selbständig beim Netzdienst an und gibt dem Client lediglich die SessionID weiter.
-  \item Der Key mit welchem die Datenbankinhalte verschlüsselt werden liegt in der Konfigurationsdatei verschlüsselt vor. Um diesen zu entschüsseln wird ein Hardcoded Passwort verwendet. Im Code darüber befindet sich ein Kommentar noch ein TODO, dass das Passwort im Live Mode bei Anwendungsstart mit angegeben werden sollte. Abgesehen davon das die Verwendung von Hardcoded Credentials schlecht ist, wird dieser Key ebenfalls für die Play Session Cookies im Klartext verwendet. Somit macht diese Lösung hier keinerlei Sinn.
+  \item Der Key mit welchem die Datenbankinhalte verschlüsselt werden liegt in der Konfigurationsdatei verschlüsselt vor. Um diesen zu entschüsseln wird ein hardcoded Passwort verwendet. Im Code darüber befindet sich ein Kommentar noch ein TODO, dass das Passwort im Live Mode bei Anwendungsstart mit angegeben werden sollte. Abgesehen davon das die Verwendung von Hardcoded Credentials schlecht ist, wird dieser Key ebenfalls für die Play Session Cookies im Klartext verwendet. Somit macht diese Lösung hier keinerlei Sinn.
   \item Die Anwendung findet Dateien auf die der aktuelle Benutzer Zugriff hat, indem \textbf{alle} Dateien aus der Datenbank geladen werden, die nicht dem Benutzer gehören. Die Dateien werden folgend lokal gefiltert. Dies ist maximal ineffizient.
-  \item Die Anwendung extrahiert die Dateiendung von der ausgewählten Datei und speichert diese ungeprüft und unverändert in dem korrospondierenden Datenbankeintrag. Wird die entsprechende Datei heruntergeladen, erstellt die Anwendung einen Dateinamen bestehend aus dem vom Nutzer angebenen Namen und der extrahierten Endung. Dieser Name wird im Content-Disposition Header der Anwendung ungefiltert zurückgegeben. Hypotetisch wäre hier ein HTTP-Response-Splitting-Angriff möglich, faktisch jedoch leider nicht - Play wirft eine Exception bei Newlines im Header-Value.
-  \item Die Anwendung versucht zu verhindern, dass man bei Dateien Permissions verändert, die auf einen selbst bezogen sind. Der Check wurde jedoch gänzlich fehlerhaft implementiert. Ausgehend von einer String-Liste mit Benutzer-Ids prüft die Anwendung ob jede String-Id \enquote{equals} einem User-Objekt (dem Owner der File) ist (z.B. FileService.java, Zeile 309 siehe \ref{filepermissions}). Dieser Check schlägt immer fehl. Folglich ist es problemlos möglich, die auf den Datei-Owner bezogenen Permissions zu löschen. Dies hat allerdings keine Auswirkungen: Die Methoden \texttt{hasReadAccess} und \texttt{hasWriteAccess} (Authorization.java) gewähren dem Owner einer Datei immer die Authorisierung - unabhängig von den gesetzten Permissions.
-  \item Versucht der Anwender eine Gruppenberechtigung zu entfernen, lädt die Anwendung das entsprechende Datei-Objekt aus der Datenbank. Dieses Dateiobjekt verfügt über eine Liste von Gruppen, die Lese- bzw. Schreib-Rechte haben. In einem zweiten Schritt wird das entsprechende Gruppenobjekt anhand des Gruppennamens aus der Datenbank geladen. Die Anwendung ruft die remove Methode der Liste in Verbindung mit dem Gruppenobjekt auf um die Berechtigung zu entfernen. Die remove Methode selbst verwendet hierzu die equals Methoden ihrer Items und die entsprechenden indentifizieren zu können. In der Anwendung selbst wurde die equals Methode für die Gruppen-Klasse nicht überschrieben, d.h. es wird die Standard equals Methode der Java Basisklasse Object verwendet. Diese Methode prüft lediglich, ob die Speicheraddressen der beiden Objekte identisch sind. Hypotetisch müsste die so implementierte Funktionalität fehlschlagen, da die entsprechenden Gruppenobjekte individuell erzeugt wurden. Faktisch verhindert dies leider der L2-Cache\footnote{https://ebean.io/docs/features/l2cache/} von Ebean; dieser bewirkt im Ergebnis, dass bei zwei Queries auf den selben Datensatz nur ein Java-Objekt erzeugt wird.
-  	\item Die HTTP Statuscodes werden inkonsistente verwendet. An einigen Stellen wird 200 (ok) an den Client gesendet, obwohl eigentlich ein Fehler aufgetreten ist. Beipiele dafür sind die \texttt{login} und \texttt{changePassword} Methoden in \texttt{UserController}.
-  	\item Der Erstbenutzer admin wird mit der E-Mail Addresse \enquote{admin@admin.com} initialisiert. Diese E-Mail Addresse ist nicht änderbar. Die gewählte Domain ist in privater Hand: Der Betreiber hätte faktisch Zugriff auf die Anwendung, würde er einen entsprechenden Email Server einrichten. Zum jetzigen Zeitpunkt hat er als MX-Record localhost gewählt. Es besteht die Gefahr, dass der SMTP-Server die Email nicht zustellen kann bzw. sie bounced und so mit dem Passwort-Reset-Link in einer Log-Datei auftaucht.
+  \item Die Anwendung extrahiert die Dateiendung von der ausgewählten Datei und speichert diese ungeprüft und unverändert in dem korrespondierenden Datenbankeintrag. Wird die entsprechende Datei heruntergeladen, erstellt die Anwendung einen Dateinamen bestehend aus dem vom Nutzer angebenen Namen und der extrahierten Endung. Dieser Name wird im Content-Disposition Header der Anwendung ungefiltert zurückgegeben. Hypothetisch wäre hier ein HTTP-Response-Splitting-Angriff möglich, faktisch jedoch leider nicht - Play wirft eine Exception bei Newlines im Header-Value.
+  \item Die Anwendung versucht zu verhindern, dass man bei Dateien Permissions verändert, die auf einen selbst bezogen sind. Der Check wurde jedoch gänzlich fehlerhaft implementiert. Ausgehend von einer String-Liste mit Benutzer-Ids prüft die Anwendung ob jede String-Id \enquote{equals} einem User-Objekt (dem Owner der File) ist (z.B. FileService.java, Zeile 309 siehe \ref{filepermissions}). Dieser Check schlägt immer fehl. Folglich ist es problemlos möglich, die auf den Datei-Owner bezogenen Permissions zu löschen. Dies hat allerdings keine Auswirkungen: Die Methoden \texttt{hasReadAccess} und \texttt{hasWriteAccess} (Authorization.java) gewähren dem Owner einer Datei immer die Autorisierung - unabhängig von den gesetzten Permissions.
+  \item Versucht der Anwender eine Gruppenberechtigung zu entfernen, lädt die Anwendung das entsprechende Datei-Objekt aus der Datenbank. Dieses Dateiobjekt verfügt über eine Liste von Gruppen, die Lese- bzw. Schreib-Rechte haben. In einem zweiten Schritt wird das entsprechende Gruppenobjekt anhand des Gruppennamens aus der Datenbank geladen. Die Anwendung ruft die \texttt{remove}-Methode der Liste in Verbindung mit dem Gruppenobjekt auf um die Berechtigung zu entfernen. Die \texttt{remove}-Methode selbst verwendet hierzu die \texttt{equals}-Methoden ihrer Items und die entsprechenden identifizieren zu können. In der Anwendung selbst wurde die equals Methode für die Gruppen-Klasse nicht überschrieben, d.h. es wird die Standard \texttt{equals}-Methode der Java Basisklasse Object verwendet. Diese Methode prüft lediglich, ob die Speicheraddressen der beiden Objekte identisch sind. Hypothetisch müsste die so implementierte Funktionalität fehlschlagen, da die entsprechenden Gruppenobjekte individuell erzeugt wurden. Faktisch verhindert dies leider der L2-Cache\footnote{https://ebean.io/docs/features/l2cache/} von EBean; dieser bewirkt im Ergebnis, dass bei zwei Queries auf den selben Datensatz nur ein Java-Objekt erzeugt wird.
+  	\item Die HTTP Statuscodes werden inkonsistente verwendet. An einigen Stellen wird 200 (ok) an den Client gesendet, obwohl eigentlich ein Fehler aufgetreten ist. Beispiele dafür sind die \texttt{login} und \texttt{changePassword} Methoden in \texttt{UserController}.
+  	\item Der Erstbenutzer admin wird mit der E-Mail-Adresse \enquote{admin@admin.com} initialisiert. Diese E-Mail-Adresse ist nicht änderbar. Die gewählte Domain ist in privater Hand: Der Betreiber hätte faktisch Zugriff auf die Anwendung, würde er einen entsprechenden Email Server einrichten. Zum jetzigen Zeitpunkt hat er als MX-Record \texttt{localhost} gewählt. Es besteht die Gefahr, dass der SMTP-Server die E-Mail nicht zustellen kann bzw. sie bounced und so mit dem Passwort-Reset-Link in einer Log-Datei auftaucht.
 
 \end{enumerate}
 
@@ -497,7 +490,9 @@ Obwohl die Oberfläche nur jeweils einen Eintrag für einen Dateinamen zeigt, si
   \end{figure}
 
 \chapter{Fileupload Racecondition Code}
- \label{fileuploadcode}
+
+\section{Anwendungscode, der für das Hochladen einer Datei zuständig ist}
+\label{fileuploadcode}
 \begin{lstlisting}
 // Check if user already uploaded a file with that name.
 if (alreadyUploadedThatFilename(owner, filename)) {
@@ -524,11 +519,16 @@ model.File newFile = FileFactory.createFile(filename, fileExtension, comment,
     LocalDateTime.now(), tempFile.length(), owner);
 \end{lstlisting}
 
-\includepdf{./resources/race_python.pdf}
+\section{Python-Plugin-Code, um die Race Condition auszunutzen}
 \label{fileraceplugin}
+
+\includepdf{./resources/race_python.pdf}
+
 
 \chapter{Code Beispiele}
 
+\section{\texttt{FileService.java}: Auszug des Codes, der für die Dateiberechtigungen zuständig ist}
+\label{filepermissions}
 \begin{lstlisting}
 if ("read".equals(userPermission)) {
 	for (String username : userList) {
@@ -542,7 +542,155 @@ if ("read".equals(userPermission)) {
 	}
 }
 \end{lstlisting}
-\label{filepermissions}
+
+\section{Auszug des Codes, der für die Änderung des Speicherplatzlimits zuständig ist}
+\label{quota-change-fail}
+\begin{lstlisting}
+\\ Innerhalb der AdminService.java
+protected boolean setQuota(final String actor, final String credentials, final int newQuota) {
+ \\ Unwichtigen Rest herausgelassen ...
+    //check if user exists
+    User user = User.find.byNameOrEmail(credentials);
+    if (user == null) {
+        log.warning(String
+            .format(
+                new Date()
+                    + ": %s hat versucht das Speicherplatzlimit von Benutzer %s auf %d zu "
+                    + "ändern. Der Benutzer wurde nicht gefunden.", actor, credentials,
+                newQuota));
+        return false;
+    }
+    int oldQuota = user.getQuota();
+    user.setQuota(newQuota);
+    log.warning(String
+        .format(
+            new Date()
+                + ": %s hat das Speicherplatzlimit von Benutzer %s von &d auf %d geändert ",
+            actor, credentials, oldQuota, newQuota));
+    return true;
+  }
+  log.warning(
+    new Date() + ": Unautorisierter Aufruf der Operation "
+        + "\"Speicherplatzlimit ändern\" durch " + actor);
+  return false;
+}
+
+\\ Innerhalb der User.java
+public void setQuota(int quota) {
+  this.quota = quota;
+}
+
+/**
+* Reduces the users qouta by the given value. Throws an exception if value is too big.
+*
+* @param reduceValue The value the qouta has to be reduced by.
+*/
+public void reduceQouta(int reduceValue) {
+  if (!hasSufficientQuotaFor(reduceValue)) {
+      throw new IndexOutOfBoundsException(
+          Configuration.EXCEPTION_MESSAGE_NOT_SUFFICIENT_QUOTA);
+  }
+  setQuota(getQuota() - reduceValue);
+  this.save();
+}
+
+/**
+* Increases the users qouta by the given value.
+*
+* @param increaseValue The value the qouta has to be reduced by.
+*/
+public void increaseQouta(int increaseValue) {
+  setQuota(getQuota() + increaseValue);
+  this.save();
+}
+\end{lstlisting}
+
+\section{\texttt{PasswordUtil.java}: Auszug des Codes, der für das Hashing sowie die Generation des Salts zuständig ist}
+
+\label{hashing-salt-gen-fail}
+\begin{lstlisting}
+public class PasswordUtil {
+
+  public static final String HASH_ALGORITHM = "SHA-256";
+  \\ ...
+  private static final char[] PASSWORD_CHARS = new char[]{
+    '!', '@', '#', '$', '%', '&', '*', '(', ')',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+
+  \\ ...
+  /**
+  * Generates a random String with a defined length.
+  *
+  * @param length length of requested String
+  * @return secure random generated String
+  */
+  public static String getRandomString(final int length) {
+      SecureRandom secureRandom = new SecureRandom();
+      StringBuilder sb = new StringBuilder(length);
+
+      for (int i = 0; i < length; i++) {
+          int position = secureRandom.nextInt(PASSWORD_CHARS.length);
+          sb.append(PASSWORD_CHARS[position]);
+      }
+      return sb.toString();
+  }
+
+  \\ ...
+  /**
+  * Creates a Hash from a given password and salt String.
+  *
+  * @return returns the created Hash
+  */
+ public static String createPasswordHash(final String password, final String salt)
+     throws NoSuchAlgorithmException {
+     String result = null;
+     MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
+     digest.update(salt.getBytes(DEFAULT_CHARSET));
+     digest.update(password.getBytes(DEFAULT_CHARSET));
+     result = DatatypeConverter.printBase64Binary(digest.digest());
+
+     return result;
+ }
+
+ \\ ...
+}
+\end{lstlisting}
+
+\section{\texttt{AdminService.java}: Auszug des Codes, der für das Löschen eines Nutzers zuständig ist.}
+
+\label{delete-user-fail}
+\begin{lstlisting}
+public class AdminService {
+
+  \\ ...
+
+  /**
+  * Deletes a user from the database if found and authorized.
+  *
+  * @param actor Actor that wants to delete a user.
+  * @param credentials User to be deleted.
+  * @return True if the user has been deleted, false otherwise.
+  */
+  public boolean deleteUser(final String actor, final String credentials)
+    throws SecurityException {
+
+    \\ ...
+
+    // Delete all files belonging to the user.
+    for (model.File file : fileService.getFiles(user)) {
+        fileService.deleteFile(actor,file.getId().toString());
+    }
+
+    \\ ...
+  }
+
+  \\ ...
+}
+\end{lstlisting}
 
 \end{appendices}
 
