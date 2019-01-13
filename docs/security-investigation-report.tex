@@ -132,13 +132,13 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 
 \section{Single Sign On}
 \begin{enumerate}[resume]
- \item Der Single Sign On ist hart codiert für die zwei in den Anforderungen gestellten Testfälle. Andere Webdienste können so nicht hinzugefügt werden. Die Oberfläche bietet die Möglichkeit Namen für Benutzer- und Passwort-Parameter zu hinterlegen, diese werden allerdings nicht verwendet.\newline
+ \item Der Single Sign On ist hart codiert für die zwei gestellten Testfälle (\enquote{ICMS} und \enquote{Bibliothek}). Andere Webdienste können so nicht hinzugefügt werden. Die Oberfläche bietet die Möglichkeit Namen für Benutzer- und Passwort-Parameter zu hinterlegen, diese werden allerdings nicht verwendet.\newline
 \textit{+ Betroffene Anforderungen: 2.1, 2.2}
   
 \item Die Anwendung prüft, ob in der angegebenen URL für den Webservice die entsprechenden Hostnames von ICMS und Bibliothek enthalten sind. Ist dies nicht der Fall kann der Webservice zwar angelegt werden und Nutzer können Zugangsdaten hinterlegen, der tatsächliche Single Sign On führt dann jedoch zu einer Exception. Bei der vorliegenden Anwendung handelt es sich um eine Debug Version, die zu der Exception noch Code-Ausschnitte anzeigt. Nutzer, eingeschlossen Administratoren, sollten niemals Java Exceptions einsehen können.\newline
 \textit{+ Betroffene Anforderungen: 2.1, 2.2}
   
-\item Beim Hinzufügen eines Webservices wird, auch wenn alle Eingaben korrekt sind und der Webservice tatsächlich erfolgreich hinzugefügt wurde, eine Fehlermeldung zurückgegeben.\newline
+\item Beim Hinzufügen eines Webservices wird, auch wenn alle Eingaben korrekt sind und der Webservice tatsächlich erfolgreich hinzugefügt wurde, eine Fehlermeldung angezeigt.\newline
 \textit{+ Betroffene Anforderungen: Keine}
   
 \item Werden ungültige Login-Daten für einen Webservice eingetragen, wird beim Versuch sich anzumelden eine Exception geworfen.\newline
