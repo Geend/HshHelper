@@ -44,7 +44,7 @@
 \chapter{Ausgelieferte virtuelle Maschine ist nicht benutzbar}
 
 Innerhalb der VM können die Aktionen \enquote{Nutzer anlegen} sowie \enquote{Datei hochladen} nicht verwendet werden, da beide bei normaler, erwarteter Nutzung zu einem Fehler führen, wie in Anhang \ref{createuser_fail_1} sowie \ref{upload_fail_1} zu sehen ist.
-Da wir bereits wussten, dass der seperat ausgelieferte Quellcode funktioniert, waren wir dementsprechend schockiert. 
+Da wir bereits wussten, dass der seperat ausgelieferte Quellcode funktioniert, waren wir dementsprechend schockiert.
 Diese Fehler bestehen auch, wenn man den Quellcode aus der VM extrahiert und auf seinem Hostrechner via \texttt{sbt run} oder IntelliJ startet.
 Komischerweise hat ein \texttt{git diff} bewiesen, dass kein Unterschied zwischen den beiden vorliegenden Quellen besteht.
 
@@ -58,8 +58,8 @@ Desweiteren sind die SBT Versionen gleich, Quellcode-Unterschiede bestehen wie b
 Es ist möglich, dass weitere Aktionen innerhalb der VM nicht funktionieren. Wir hatten nach diesen 2 Aktionen aufgehört, da sie essentiell wichtige Funktionen für den HsH-Helper sind.
 Die hier gefundenen Fehler beziehen sich daher auf den seperat mitgelieferten Quellcode, da dieser nicht unter dieser Problematik leidet.
 
-Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeliefertem \texttt{target} Ordners im Hauptverzeichnis des Projekts behoben werden können. Beim vergleichen der VM Version mit der Sourcecode Version mittels \texttt{git diff} sind die Unterscheide im \texttt{target} Ordner nicht aufgefallen, da dieser in der \texttt{.gitignore} Datei eingetragen war.
-
+Es stellte sich später heraus, dass die Probleme durch Löschen des mit ausgeliefertem \texttt{target} Ordners im Hauptverzeichnis des Projekts behoben werden können.
+Dies ist nicht aufgefallen, da in der vorhandenen \texttt{.gitignore}-Datei der \texttt{target}-Ordner eingetragen war, und somit \texttt{git diff} diesen ignorierte.
 
 \chapter{Eingesetzte Methoden und Werkzeuge}
 
@@ -134,23 +134,23 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 \begin{enumerate}[resume]
  \item Der Single Sign On ist hart codiert für die zwei gestellten Testfälle (\enquote{ICMS} und \enquote{Bibliothek}). Andere Webdienste können so nicht hinzugefügt werden. Die Oberfläche bietet die Möglichkeit Namen für Benutzer- und Passwort-Parameter zu hinterlegen, diese werden allerdings nicht verwendet.\newline
 \textit{+ Betroffene Anforderungen: 2.1, 2.2}
-  
+
 \item Die Anwendung prüft, ob in der angegebenen URL für den Webservice die entsprechenden Hostnames von ICMS und Bibliothek enthalten sind. Ist dies nicht der Fall kann der Webservice zwar angelegt werden und Nutzer können Zugangsdaten hinterlegen, der tatsächliche Single Sign On führt dann jedoch zu einer Exception.\newline
 \textit{+ Betroffene Anforderungen: 2.1, 2.2}
-  
+
 \item Beim Hinzufügen eines Webservices wird, auch wenn alle Eingaben korrekt sind und der Webservice tatsächlich erfolgreich hinzugefügt wurde, eine Fehlermeldung angezeigt.\newline
 \textit{+ Betroffene Anforderungen: Keine}
-  
+
 \item Werden ungültige Login-Daten für einen Webservice eingetragen, wird beim Versuch sich anzumelden eine Exception geworfen.\newline
-\textit{+ Betroffene Anforderungen: Keine} 
+\textit{+ Betroffene Anforderungen: Keine}
 
 \item Es kann pro Webservice nur ein Credential hinterlegt werden. Beim Versuch weitere Credentials für einen Webservice zu speichern, wird nur der Statuscode 400 (badRequest) und eine leere Seite zurück gegeben.\newline
-\textit{+ Betroffene Anforderungen: Keine} 
+\textit{+ Betroffene Anforderungen: Keine}
 
 \item Es existiert keine Funktionalität, um einen Webservice nebst Credentials zu löschen. Dies war eine ausdrückliche Anforderung.\newline
 \textit{+ Betroffene Anforderungen: 6.6}
  \end{enumerate}
- 
+
  \section{Passwort Reset}
 \begin{enumerate}[resume]
 \item Beim Passwort Reset ist im versendeten Link zum Zurücksetzen des Passworts ein Slash zu viel. Dieser muss manuell entfernt werden bevor ein Passwort Reset durchgeführt werden kann.\newline
@@ -165,18 +165,18 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 \section{Benutzer}
 \begin{enumerate}[resume]
 \item Benutzer, die Dateien hochgeladen haben können nicht gelöscht werden. Es wird versucht die Dateien des zu löschenden Benutzers mit der Identität des angemeldeten Benutzers zu löschen. Der hat dazu aber nicht die Berechtigung, da er nicht der Owner der Datei ist\footnote{siehe AdminService.java, Zeile 143. Hier wird \texttt{actor} übergeben. Korrekt wäre \texttt{credentials}.}.\newline
-\textit{+ Betroffene Anforderungen: 6.2} 
+\textit{+ Betroffene Anforderungen: 6.2}
 
 \item Es ist unmöglich, einen Nutzer, der in der Administratorgruppe ist, zu löschen, wenn man als Administrator eingeloggt ist. In Folge der Operation wird eine Fehlermeldung (\enquote{Es ist ein Fehler aufgetreten.}) angezeigt. Der Nutzer wurde allerdings aus der Alle-Gruppe gelöscht.\newline
-\textit{+ Betroffene Anforderungen: 6.2} 
+\textit{+ Betroffene Anforderungen: 6.2}
 
 
 \item Der initiale Benutzer \enquote{admin} hat das Passwort \enquote{admin1} und nicht \enquote{admin} wie laut Aufgabenstellung gefordert.\newline
-\textit{+ Betroffene Anforderungen: 4.3} 
+\textit{+ Betroffene Anforderungen: 4.3}
 
 
 \item Beim Anlegen eines Benutzers muss der Admin explizit ein Passwort vergeben. Laut den Anforderungen soll automatisch ein Passwort generiert werden.\newline
-\textit{+ Betroffene Anforderungen: 6.1} 
+\textit{+ Betroffene Anforderungen: 6.1}
  \end{enumerate}
 
 
@@ -185,13 +185,13 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 \begin{enumerate}[resume]
 
 
- 
+
   %\item CSRF-Token funktionieren teilweise nicht - abhängig vom Browser?
 
   \item Es wurde eine Debug-Version ausgeliefert. Der Aufruf eines nicht existierenden Pfads führt faktisch dazu, dass die Inhalte der Routes-Datei ausgegeben werden. Außerdem sind an vielen Stellen Java Excpetions mit Ausschnitten aus dem Quellcode für Benutzer sichtbar. Nutzer, eingeschlossen Administratoren, sollten niemals Java Exceptions einsehen können.\newline
-  \textit{+ Betroffene Anforderungen: Keine} 
- 
-  
+  \textit{+ Betroffene Anforderungen: Keine}
+
+
 \end{enumerate}
 
 \chapter{Sicherheitsspezifische Mängel}
@@ -208,7 +208,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Problematik: Mehrfache, fehlerhafte Passworteingaben führen zu einer Sperre des jeweiligen Benutzerkontos.
   \item Ausnutzung: Absichtlich ein fehlerhaftes Passwort für ein fremdes Benutzerkonto angeben.
   \item Risiko: Hoch
-  \item Auswirkungen: Nutzer ist bei extremer Ausnutzung permanent von der Applikation ausgesperrt. 
+  \item Auswirkungen: Nutzer ist bei extremer Ausnutzung permanent von der Applikation ausgesperrt.
   \item Mögliche Angriffe: Administratoraccount aussperren, um ihn davon abzuhalten, einen Benutzer zu löschen.
   \end{itemize}
 
@@ -218,10 +218,10 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Gefunden durch: Quellcodeanalyse
   \item Klassifikation: Denial-of-Service (DOS)
   \item Problematik: Anwendung speichert Passwort-Reset-Tokens in Hashmap. Als Key hierfür dient der Token selbst. Token werden allerdings nur dann gelöscht, wenn sie verwendet werden. Man kann theoretisch beliebig viele Tokens ohne Begrenzung erzeugen (Schutz matched beim ersten gefundenen Token) und so den Speicher des Servers von außen füllen und einen Absturz provozieren.
-  \item Ausnutzung: 
+  \item Ausnutzung:
   \item Risiko: Hoch
   \item Auswirkungen: Die Anwendung stürzt ab und ist für andere Nutzer nicht erreichbar.
-  \item Mögliche Angriffe: 
+  \item Mögliche Angriffe:
   \end{itemize}
 
   \hypertarget{vulnerability3}{}
@@ -230,15 +230,15 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Broken Authentication
   \item Problematik: Benutzer haben kein eindeutiges Identifikationsmerkmal. Als Benutzer-Id wird die Email Adresse verwendet. Einmal in Hinblick auf Benutzer verwendetete Email Adressen werden nicht dauerhaft für erneute Verwendung gesperrt sondern können beim erneuten Anlegen eines Nutzers verwendet werden. Das Authentifizierungscookie ist ausschließlich an diese Email Adresse gebunden und unterliegt keinem Timeout.
-  \item Ausnutzung: Ein einmal ausgestelltes Cookie dauerhaft aufbewahren.   
-  \item Risiko: Gering (Angriffsszenario 1), Hoch (Angriffsszenario 2) 
+  \item Ausnutzung: Ein einmal ausgestelltes Cookie dauerhaft aufbewahren.
+  \item Risiko: Gering (Angriffsszenario 1), Hoch (Angriffsszenario 2)
   \item Auswirkungen: Kompletter Zugriff auf Benutzerkonto durch Angreifer inkl. Webservice Credentials und Dateien.
-  \item Mögliche Angriffe: 
+  \item Mögliche Angriffe:
   	\begin{itemize}
-  		\item Angriffsszenario 1: Max Mustermann studiert an der Hochschule Hannover und meldet sich beim HsH-Helper mit seiner Email Adresse max.musterman@hsh-hannover.de an. Zwei Jahre nachdem Max Mustermann sein Studium abgeschlossen hat beginnt ein weiterer Max Mustermann sein Studium und bekommt die selbe Email Adresse zugewiesen. Max Mustermann 1 hat vollen zugriff auf den Account von Max Mustermann 2. 
+  		\item Angriffsszenario 1: Max Mustermann studiert an der Hochschule Hannover und meldet sich beim HsH-Helper mit seiner Email Adresse max.musterman@hsh-hannover.de an. Zwei Jahre nachdem Max Mustermann sein Studium abgeschlossen hat beginnt ein weiterer Max Mustermann sein Studium und bekommt die selbe Email Adresse zugewiesen. Max Mustermann 1 hat vollen zugriff auf den Account von Max Mustermann 2.
   		\item Angriffsszenario 2: Admin legt Nutzer an, meldet sich an und speichert Cookie. Admin löscht Nutzer, legt ihn erneut an und händigt Daten an Benutzer aus. Dies tut er, damit der Nutzer die initiale Passwortänderung durchführen muss. Dies suggeriert dem Benutzer, dass niemand vor ihm auf den Account zugegriffen hat.
   	\end{itemize}
-  
+
   \end{itemize}
 
   \hypertarget{vulnerability4}{}
@@ -258,10 +258,10 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \begin{itemize}
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Information Disclosure
-  \item Problematik: Policy metrics wie die Timeoutzeit nach mehrfachen ungültigen Logins sollten nicht an den User weitergegeben werden \autocite[Loc. 5087]{book:wahh}. 
+  \item Problematik: Policy metrics wie die Timeoutzeit nach mehrfachen ungültigen Logins sollten nicht an den User weitergegeben werden \autocite[Loc. 5087]{book:wahh}.
   \item Ausnutzung: Fehlermeldung parsen.
   \item Risiko: Gering
-  \item Auswirkungen: Es wird es für ein Angreifer einfacher, Brute-Force Angriffe durchzuführen. 
+  \item Auswirkungen: Es wird es für ein Angreifer einfacher, Brute-Force Angriffe durchzuführen.
   \item Mögliche Angriffe: Brute Force Angriff auf Passwort mit optimierter Wartezeit.
   \end{itemize}
 
@@ -283,7 +283,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Information Disclosure
   \item Problematik: Beim Passwort-Reset werden unterschiedliche Meldungen ausgegeben, je nachdem ob eine gültige Adresse angegeben wird oder nicht. Außerdem dauert ein Request mit einer validen E-Mail Adresse erheblich länger.
-  \item Ausnutzung: E-Mail Adressen von Benutzern können per Brute-Force des Passwort vergessen Dialogs herausgefunden werden. 
+  \item Ausnutzung: E-Mail Adressen von Benutzern können per Brute-Force des Passwort vergessen Dialogs herausgefunden werden.
   \item Risiko: Mittel
   \item Auswirkungen: Es ist möglich herauszufinden, welche Email Adressen verwendet werden.
   \item Mögliche Angriffe: Ein Brute-Force Angriff auf die Benutzeraccounts optimieren.
@@ -300,9 +300,9 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Auswirkungen: Die Gruppennamen sind frei einsehbar.
   \item Mögliche Angriffe: -
   \end{itemize}
-  
-    \hypertarget{vulnerability8}{}
-  \item \textbf{V8: Group File Poisoning}
+
+    \hypertarget{vulnerability9}{}
+  \item \textbf{V9: Group File Poisoning}
   \begin{itemize}
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Missing Authorization
@@ -313,8 +313,8 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Mögliche Angriffe: Bösartige Dateien mit einer fremden Gruppe teilen z.B. Trojaner mit der Administrator-Gruppe.
   \end{itemize}
 
-  \hypertarget{vulnerability9}{}
-  \item \textbf{V9: Frühzeitiger Zugriff auf Account}
+  \hypertarget{vulnerability10}{}
+  \item \textbf{V10: Frühzeitiger Zugriff auf Account}
   \begin{itemize}
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Broken Authorization
@@ -322,11 +322,11 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Ausnutzung: Ein Benutzer hat Zugriff auf die verwendete Email Adresse und führt ebendiesen Passwort-Reset durch und erlangt so Zugriff auf sein Konto.
   \item Risiko: Gering
   \item Auswirkungen: Der Administrator verliert vor Aushändigung des initialen Passworts die alleinige Kontrolle über den Account.
-  \item Mögliche Angriffe: Ein Benutzer kann so Zugriff erhalten und mit dem Account illegale Aktionen durchführen. Er kann diese im folgenden Abstreiten - ihm war zu dem Zeitpunkt der Aktionen das initale Passwort nicht bekannt. Er könnte so die Schuld auf den Administrator lenken - ausschließlich er hatte zum Zeitpunkt der Aktion die Kontrolle über den Account. 
+  \item Mögliche Angriffe: Ein Benutzer kann so Zugriff erhalten und mit dem Account illegale Aktionen durchführen. Er kann diese im folgenden Abstreiten - ihm war zu dem Zeitpunkt der Aktionen das initale Passwort nicht bekannt. Er könnte so die Schuld auf den Administrator lenken - ausschließlich er hatte zum Zeitpunkt der Aktion die Kontrolle über den Account.
   \end{itemize}
 
-  \hypertarget{vulnerability10}{}
-  \item \textbf{V10: Illegales Erhöhen der Quota}
+  \hypertarget{vulnerability11}{}
+  \item \textbf{V11: Illegales Erhöhen der Quota}
   \begin{itemize}
   \item Gefunden durch: Quellcodeanalyse und Penetration Testing
   \item Klassifikation: Race Condition und Denial-of-Service (DOS)
@@ -337,24 +337,24 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Mögliche Angriffe: Die Quota maximal erhöhen und die Festplatte des Servers füllen. Andere Nutzer können so keine Dateien mehr hochladen.
   \end{itemize}
 
-  \hypertarget{vulnerability11}{}
-  \item \textbf{V11: Geschwätzige Login-Fehlermeldungen}
+  \hypertarget{vulnerability12}{}
+  \item \textbf{V12: Geschwätzige Login-Fehlermeldungen}
   \begin{itemize}
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Information Disclosure
   \item Problematik: Beim Login ist ersichtlich, ob ein Benutzeraccount existiert oder nicht: Loggt man sich N mal falsch für einen existierenden Benutzer ein, wird der entsprechende Account gesperrt und es erscheint eine Fehlermeldung \enquote{Du bist für 4,8 Minuten gesperrt.}. Die gleiche Aktion führt bei einem nicht existierenden Account niemals zu einer derartigen Fehlermeldung, es erscheint ausschließlich die Meldung \enquote{Falscher Benutzername oder Passwort}.
-  \item Ausnutzung: Sperrung des Accounts provozieren und Fehlermeldung analysieren. 
+  \item Ausnutzung: Sperrung des Accounts provozieren und Fehlermeldung analysieren.
   \item Risiko: Mittel
   \item Auswirkungen: Es ist möglich herauszufinden, welche Email Adressen bzw. Benutzernamen verwendet werden.
   \item Mögliche Angriffe: Ein Brute-Force Angriff auf die Benutzeraccounts optimieren.
   \end{itemize}
 
-  \hypertarget{vulnerability12}{}
-  \item \textbf{V12: Erzwungender Logout}
+  \hypertarget{vulnerability13}{}
+  \item \textbf{V13: Erzwungender Logout}
   \begin{itemize}
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Denial-of-Service (DOS)
-  \item Problematik: Der Chrome Browser und manche Versionen von Firefox reagieren auf Cross-Site-Requests mit einem Cookie-Reset. 
+  \item Problematik: Der Chrome Browser und manche Versionen von Firefox reagieren auf Cross-Site-Requests mit einem Cookie-Reset.
   \item Ausnutzung: Es ist möglich einen CSRF-Angriff durchzuführen, der beliebige Nutzer auslogged, die Chrome verwenden. Hierzu muss einfach von einer anderen Domain aus ein Request auf die Startseite getriggert werden\footnote{Bsp: \url{https://jsfiddle.net/4j3k9ngt/}}. Das Cookie vom Nutzer wird so zurückgesetzt, bzw. das "username" Feld gelöscht.
   \item Risiko: Mittel-Hoch
   \item Auswirkungen: Benutzer kann abgemeldet werden.
@@ -362,20 +362,20 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \end{itemize}
 
 % TODO entfernen
-  \hypertarget{vulnerability13}{}
-  \item \textbf{V13: Fehlerhaftes Logging}
+  \hypertarget{vulnerability14}{}
+  \item \textbf{V14: Fehlerhaftes Logging}
   \begin{itemize}
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Log Poisoning
   \item Problematik:
   \item Ausnutzung: Beim Löschen eines Nutzers, der Besitzer einer Gruppe ist, wird eine Löschoperation unter seinen Berechtigungen gestartet. Dadurch wird im Log persistiert, dass der gelöschte Nutzer die Gruppe gelöscht hat, bevor dieser von einem Administrator gelöscht wird. Das ist ein Mangel im Bezug auf die Accountability, da nun das Log Ausgaben enthält, welche nicht stattgefunden haben.
-  \item Risiko: 
-  \item Auswirkungen: 
+  \item Risiko:
+  \item Auswirkungen:
   \item Mögliche Angriffe:
   \end{itemize}
 
-  \hypertarget{vulnerability14}{}
-  \item \textbf{V14: Ausspähen von Email Adressen und dazugehörige Benutzernamen}
+  \hypertarget{vulnerability15}{}
+  \item \textbf{V15: Ausspähen von Email Adressen und dazugehörige Benutzernamen}
   \begin{itemize}
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Information Disclosure
@@ -386,12 +386,12 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Mögliche Angriffe: Es kann ein personalisierter Phishing Angriff durchgeführt werden. Benutzer können mit ihrem Benutzernamen in einer Nachricht angesprochen werden, die an die hinterlegte Email Adresse versendet wird. Durch die Personalisierung in Hinblick auf den Benutzernamen schöpft das Opfer weniger Verdacht.
   \end{itemize}
 
-  \hypertarget{vulnerability15}{}
-  \item \textbf{V15: Application Takeover}
+  \hypertarget{vulnerability16}{}
+  \item \textbf{V16: Application Takeover}
   \begin{itemize}
   \item Gefunden durch: Quellcodeanalyse und Exploratives Testen
   \item Klassifikation: Privilege Escalation
-  \item Problematik: Die Anwendung verwendet case-insensitive Datenbank-Abfragen, berücksichtigt jedoch die Groß und Kleinschreibung bei Prüfungen im Java-Code durch Verwendung der equals-Methode in Bezug auf String-Vergleiche. 
+  \item Problematik: Die Anwendung verwendet case-insensitive Datenbank-Abfragen, berücksichtigt jedoch die Groß und Kleinschreibung bei Prüfungen im Java-Code durch Verwendung der equals-Methode in Bezug auf String-Vergleiche.
   \item Ausnutzung: Die Gruppen \enquote{ADMIN} und \enquote{ALLE} als Administrator löschen. Die Gruppen \enquote{admin} und \enquote{Alle} erneut anlegen. Man ist nun owner beider Gruppen und somit quasi Super-Admin. Der Benutzer \enquote{admin} hat nun keine Administrator-Privilegien mehr. Es ist nun möglich das bestehende \enquote{admin}-Konto zu löschen.
   \item Auswirkungen: Vollständige Übernahme der Anwendung, ohne, dass der initial bestehende \enquote{admin}-Account als Fallback bestehen bleibt.
   \item Mögliche Angriffe: siehe oben.
@@ -401,7 +401,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 \section{Mängel, die kryptografischen Eigenschaften einschränken}
 
 \begin{itemize}
-  \item Verstoß gegen das \enquote{Key Separation}-Prinzip: Die Daten in der Datenbank sowie das JWT-Cookie werden mithilfe des selben privaten Schlüssels verschlüsselt. 
+  \item Verstoß gegen das \enquote{Key Separation}-Prinzip: Die Daten in der Datenbank sowie das JWT-Cookie werden mithilfe des selben privaten Schlüssels verschlüsselt.
   \item Beim Hashing des Passworts wird nur eine Runde des SHA256 Hashs ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
   \item Bei der Generation des Salts wird zwar \enquote{SecureRandom} verwendet, allerdings wird maximal eine zufällige Zahl zwischen 0 und Länge des Array \enquote{PASSWORD\_CHARS} generiert. Diese Zahl wird dann als Index für eben genanntes Array verwendet, um daraus Zeichen für die Salt-Generation zu extrahieren. Dadurch ist zumindest der Keyspace des Salts eingeschränkt.
 \end{itemize}
