@@ -90,7 +90,7 @@ Um möglichst viele Sicherheitslücken (und funktionale Fehler) zu finden, haben
 \item Beim Anlegen eines Benutzers kann der Administrator nicht wie gefordert das Speicherplatzlimit angeben.\newline
 \textit{+ Betroffene Anforderungen: 6.1}
 
-\item Das Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Java-Userobjekt nicht in die Datenbank übertragen werden. Man hat vergessen, die \texttt{save()} Methode auf dem entsprechenden Userobjekt aufzurufen.
+\item Das Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Java-Userobjekt nicht in die Datenbank übertragen werden. Man hat vergessen, die \texttt{save()} Methode auf dem entsprechenden Userobjekt aufzurufen. Außerdem kann das Speicherplatzlimit eines Benutzer nicht durch den Administrator abgefragt werden.\newline
 \textit{+ Betroffene Anforderungen: 6.3}
 
 \item Beim Anlegen eines Benutzers wird ein fest definiertes Speicherplatzlimit von \enquote{1073741824} verwendet. Dieser Wert wurde offensichtlich in der Annahme getroffen, dass in der Anwendung in Bytes gerechnet wird und würde so ca. einem Gigabyte entsprechen. Tatsächlich rechnet die Anwendung die Bytes einer hochgeladenen Datei in Megabyte um und verwendet die Megabyte-Darstellung in Verbindung mit dem nicht konvertierten Speicherplatzlimit. So entspricht das fest definierte Speicherplatzlimit einem faktischen Limit von einem PB. Im Ergebnis führt die Umsetzung in Verbindung mit dem gewählten Standardlimit dazu, dass es realistisch nie erreicht werden wird. Es ist so gänzlich wirkungslos.\newline
