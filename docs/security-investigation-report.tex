@@ -13,6 +13,7 @@
 \lstset
 { %Formatting for code in appendix
     numbers=left,
+    language=Java
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -90,7 +91,7 @@ Um möglichst viele Sicherheitslücken (und funktionale Fehler) zu finden, haben
 \item Beim Anlegen eines Benutzers kann der Administrator nicht wie gefordert das Speicherplatzlimit angeben.\newline
 \textit{+ Betroffene Anforderungen: 6.1}
 
-\item Das Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Java-Userobjekt nicht in die Datenbank übertragen werden. Man hat vergessen, die \texttt{save()} Methode auf dem entsprechenden Userobjekt aufzurufen. Außerdem kann das Speicherplatzlimit eines Benutzer nicht durch den Administrator abgefragt werden.\newline
+\item Das Speicherplatzlimit kann niemals angepasst werden, da Änderungen an dem Java-Userobjekt nicht in die Datenbank übertragen werden. Man hat vergessen, die \texttt{save()} Methode auf dem entsprechenden Userobjekt aufzurufen (siehe \ref{quota-change-fail}). Außerdem kann das Speicherplatzlimit eines Benutzer nicht durch den Administrator abgefragt werden.\newline
 \textit{+ Betroffene Anforderungen: 6.3}
 
 \item Beim Anlegen eines Benutzers wird ein fest definiertes Speicherplatzlimit von \enquote{1073741824} verwendet. Dieser Wert wurde offensichtlich in der Annahme getroffen, dass in der Anwendung in Bytes gerechnet wird und würde so ca. einem Gigabyte entsprechen. Tatsächlich rechnet die Anwendung die Anzahl der Bytes einer hochgeladenen Datei in Megabyte um und verwendet die Megabyte-Darstellung in Verbindung mit dem nicht konvertierten Speicherplatzlimit. So entspricht das fest definierte Speicherplatzlimit einem faktischen Limit von einem PB. Im Ergebnis führt die Umsetzung in Verbindung mit dem gewählten Standardlimit dazu, dass es realistisch nie erreicht werden wird. Es ist so gänzlich wirkungslos.\newline
@@ -102,13 +103,13 @@ Um möglichst viele Sicherheitslücken (und funktionale Fehler) zu finden, haben
 \item Beim Überschreiben einer freigegebenen Datei durch einen anderen Nutzer wird der Speicherplatzverbrauch falsch kalkuliert. Der Nutzer, der die Datei überschrieben hat, bekommmt die Differenz gutgeschrieben, während beim Besitzer der Datei keine Änderungen am Speicherplatzverbrauch vorgenommen werden. Dadurch kann ein Benutzer sein Speicherplatz-Limit erhöhen: Er muss nur Dateien von anderen Benutzer auf die er schreibberechtigung hat mit kleineren Dateien überschreiben. Wäre die Quota eines Dateibesitzers theoretisch überschritten, könnte die Datei so dennoch überschrieben werden.\newline
 \textit{+ Betroffene Anforderungen: 6.3}
 
-\item Die Anwendung extrahiert aus dem Dateinamen der ausgewählten Datei die Endung. Diese wird dem vom Nutzer angegebenen Dateinamen hinzugefügt und unterliegt keiner expliziten  Längenbeschränkung. Diese wird nur in Bezug auf den vom Nutzer explizit angegebenen Namen erzwungen. Praktisch ausnutzten lässt sich diese Implementierung jedoch nicht, da die Felder in der Datenbank in die der Dateiname und die Endung geschrieben wird auf 255 Zeichen beschränkt sind. Das ist der Standard-Wert von Eban für Felder vom Typ String. \newline
+\item Die Anwendung extrahiert aus dem Dateinamen der ausgewählten Datei die Endung. Diese wird dem vom Nutzer angegebenen Dateinamen hinzugefügt und unterliegt keiner expliziten Längenbeschränkung. Diese wird nur in Bezug auf den vom Nutzer explizit angegebenen Namen erzwungen. Praktisch ausnutzten lässt sich diese Implementierung jedoch nicht, da die Felder in der Datenbank in die der Dateiname und die Endung geschrieben wird auf 255 Zeichen beschränkt sind. Das ist der Standard-Wert von EBean für Felder vom Typ String. \newline
 \textit{+ Betroffene Anforderungen: Keine}
 
 
 \item Es ist Benutzern problemlos möglich, mehrere Dateien mit dem gleichen Namen hinzuzufügen. Der für den Upload zuständige Controller-Code erhält vom Anwender einen expliziten Dateinamen (A) und den Namen der ausgewählten Datei (B). Die Anwendung prüft nun, ob der Nutzer bereits eine Datei besitzt, dessen Name A entspricht. Ist dies nicht der Fall, wird die Dateiendung aus B extrahiert und eine Datei erzeugt, die einen zusammengesetzten Namen besitzt: A + \enquote{.} + extension(B).
 Wiederholt man den Upload, prüft die Anwendung erneut, ob der Benutzer eine Datei mit dem Namen A hat - was natürlich nicht der Fall ist, denn der endgültige Name der Datei entspricht nicht A.
-Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jedem Namen existieren. Dies ist der Verwendung einer TreeMap geschuldet: Die Anwendung lädt alle Dateien, die zum Benutzer gehören und speichert diese als Key in der TreeMap. Die TreeMap stellt die Eindeutigkeit der Keys über die compareTo Methode der entsprechenden Keys bzw. Files sicher. Diese wurde überschrieben und beinhaltet für den Vergleich lediglich den Dateinamen und den Owner. D.h. wenn man 10 Dateien mit dem gleichen Namen erzeugt, befindet sich in der Treemap nur eine Datei und nur diese wird so angezeigt. Wird die Datei gelöscht, wird die vorherige angezeigt.\newline
+Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jedem Namen existieren. Dies ist der Verwendung einer TreeMap geschuldet: Die Anwendung lädt alle Dateien, die zum Benutzer gehören und speichert diese als Key in der TreeMap. Die TreeMap stellt die Eindeutigkeit der Keys über die compareTo Methode der entsprechenden Keys bzw. Files sicher. Diese wurde überschrieben und beinhaltet für den Vergleich lediglich den Dateinamen und den Owner. Das heißt, wenn man 10 Dateien mit dem gleichen Namen erzeugt, befindet sich in der Treemap nur eine Datei und nur diese wird so angezeigt. Wird die Datei gelöscht, wird die vorherige angezeigt.\newline
 \textit{+ Betroffene Anforderungen: 3.3.1}
 
 \item Beim Hochladen von Dateien können die Berechtigungen nicht unmittelbar vergeben werden, dies sollte in einem Request erfolgen.\newline
@@ -151,7 +152,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 \textit{+ Betroffene Anforderungen: 6.6}
  \end{enumerate}
 
- \section{Passwort Reset}
+\section{Passwort Reset}
 \begin{enumerate}[resume]
 \item Beim Passwort Reset ist im versendeten Link zum Zurücksetzen des Passworts ein Slash zu viel. Dieser muss manuell entfernt werden bevor ein Passwort Reset durchgeführt werden kann.\newline
 \enquote{http://localhost:9000//password/forgot/U69O...ZNcUBcK2}\newline
@@ -361,21 +362,8 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Mögliche Angriffe: Benutzer dazu bringen, unbewusst einen Cross-Site-Request auszuführen.
   \end{itemize}
 
-% TODO entfernen
   \hypertarget{vulnerability14}{}
-  \item \textbf{V14: Fehlerhaftes Logging}
-  \begin{itemize}
-  \item Gefunden durch: Exploratives Testen
-  \item Klassifikation: Log Poisoning
-  \item Problematik:
-  \item Ausnutzung: Beim Löschen eines Nutzers, der Besitzer einer Gruppe ist, wird eine Löschoperation unter seinen Berechtigungen gestartet. Dadurch wird im Log persistiert, dass der gelöschte Nutzer die Gruppe gelöscht hat, bevor dieser von einem Administrator gelöscht wird. Das ist ein Mangel im Bezug auf die Accountability, da nun das Log Ausgaben enthält, welche nicht stattgefunden haben.
-  \item Risiko:
-  \item Auswirkungen:
-  \item Mögliche Angriffe:
-  \end{itemize}
-
-  \hypertarget{vulnerability15}{}
-  \item \textbf{V15: Ausspähen von Email Adressen und dazugehörige Benutzernamen}
+  \item \textbf{V14: Ausspähen von Email Adressen und dazugehörige Benutzernamen}
   \begin{itemize}
   \item Gefunden durch: Exploratives Testen
   \item Klassifikation: Information Disclosure
@@ -386,8 +374,8 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item Mögliche Angriffe: Es kann ein personalisierter Phishing Angriff durchgeführt werden. Benutzer können mit ihrem Benutzernamen in einer Nachricht angesprochen werden, die an die hinterlegte Email Adresse versendet wird. Durch die Personalisierung in Hinblick auf den Benutzernamen schöpft das Opfer weniger Verdacht.
   \end{itemize}
 
-  \hypertarget{vulnerability16}{}
-  \item \textbf{V16: Application Takeover}
+  \hypertarget{vulnerability15}{}
+  \item \textbf{V15: Application Takeover}
   \begin{itemize}
   \item Gefunden durch: Quellcodeanalyse und Exploratives Testen
   \item Klassifikation: Privilege Escalation
@@ -398,12 +386,17 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \end{itemize}
 \end{itemize}
 
+Ein weiterer, möglicher Angriff ist, dass aufgrund des vorhandenen Sessionkonzepts es einem Angreifer einfacher ist, ein Cookie zu fälschen, mit welchem er sich Zugang zu der Applikation verschaffen könnte.
+Er müsste lediglich das \enquote{username}-Feld auf eine vorhandene E-Mail-Adresse setzen, beispielsweise \enquote{admin@admin.com}, um Zugang zur Applikation als Administrator zu erhalten.
+Wir schätzen die Wahrscheinlichkeit für so einen Angriff aber als sehr gering ein, da dieser einen erheblichen Aufwand benötigt, um die richtige HMACSHA256-Signatur zu fälschen/zu berechnen.
+
 \section{Mängel, die kryptografischen Eigenschaften einschränken}
 
 \begin{itemize}
   \item Verstoß gegen das \enquote{Key Separation}-Prinzip: Die Daten in der Datenbank sowie das JWT-Cookie werden mithilfe des selben privaten Schlüssels verschlüsselt.
-  \item Beim Hashing des Passworts wird nur eine Runde des SHA256 Hashs ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
-  \item Bei der Generation des Salts wird zwar \enquote{SecureRandom} verwendet, allerdings wird maximal eine zufällige Zahl zwischen 0 und Länge des Array \enquote{PASSWORD\_CHARS} generiert. Diese Zahl wird dann als Index für eben genanntes Array verwendet, um daraus Zeichen für die Salt-Generation zu extrahieren. Dadurch ist zumindest der Keyspace des Salts eingeschränkt.
+  \item Beim Hashing des Passworts wird nur eine Runde des SHA256 Hashs (siehe \ref{hashing-salt-gen-fail}) ausgeführt. Dies macht einen Brute-Force-Angriff im Falle einer kompromittierten Datenbank einfacher für den Angreifer.
+  \item Bei der Generation des Salts wird zwar \enquote{SecureRandom} verwendet, allerdings wird maximal eine zufällige Zahl zwischen 0 und Länge des Array \enquote{PASSWORD\_CHARS} generiert (siehe \ref{hashing-salt-gen-fail}) . Diese Zahl wird dann als Index für eben genanntes Array verwendet, um daraus Zeichen für die Salt-Generation zu extrahieren. Dadurch ist zumindest der Keyspace des Salts eingeschränkt.
+  \item Beim Löschen eines Nutzers, der Besitzer einer Gruppe ist, wird eine Löschoperation unter seinen Berechtigungen gestartet. Dadurch wird im Log persistiert, dass der gelöschte Nutzer die Gruppe gelöscht hat, bevor dieser von einem Administrator gelöscht wird. Das ist ein Mangel im Bezug auf die Accountability, da nun das Log Ausgaben enthält, welche nicht stattgefunden haben.
 \end{itemize}
 
 \chapter{Ungewöhnliche Handhabung}
@@ -491,7 +484,9 @@ Obwohl die Oberfläche nur jeweils einen Eintrag für einen Dateinamen zeigt, si
   \end{figure}
 
 \chapter{Fileupload Racecondition Code}
- \label{fileuploadcode}
+
+\section{Anwendungscode, der für das Hochladen einer Datei zuständig ist}
+\label{fileuploadcode}
 \begin{lstlisting}
 // Check if user already uploaded a file with that name.
 if (alreadyUploadedThatFilename(owner, filename)) {
@@ -518,11 +513,16 @@ model.File newFile = FileFactory.createFile(filename, fileExtension, comment,
     LocalDateTime.now(), tempFile.length(), owner);
 \end{lstlisting}
 
-\includepdf{./resources/race_python.pdf}
+\section{Python-Plugin-Code, um die Race Condition auszunutzen}
 \label{fileraceplugin}
+
+\includepdf{./resources/race_python.pdf}
+
 
 \chapter{Code Beispiele}
 
+\section{\texttt{FileService.java}: Auszug des Codes, der für die Dateiberechtigungen zuständig ist}
+\label{filepermissions}
 \begin{lstlisting}
 if ("read".equals(userPermission)) {
 	for (String username : userList) {
@@ -536,7 +536,123 @@ if ("read".equals(userPermission)) {
 	}
 }
 \end{lstlisting}
-\label{filepermissions}
+
+\section{Auszug des Codes, der für die Änderung des Speicherplatzlimits zuständig ist}
+\label{quota-change-fail}
+\begin{lstlisting}
+\\ Innerhalb der AdminService.java
+protected boolean setQuota(final String actor, final String credentials, final int newQuota) {
+ \\ Unwichtigen Rest herausgelassen ...
+    //check if user exists
+    User user = User.find.byNameOrEmail(credentials);
+    if (user == null) {
+        log.warning(String
+            .format(
+                new Date()
+                    + ": %s hat versucht das Speicherplatzlimit von Benutzer %s auf %d zu "
+                    + "ändern. Der Benutzer wurde nicht gefunden.", actor, credentials,
+                newQuota));
+        return false;
+    }
+    int oldQuota = user.getQuota();
+    user.setQuota(newQuota);
+    log.warning(String
+        .format(
+            new Date()
+                + ": %s hat das Speicherplatzlimit von Benutzer %s von &d auf %d geändert ",
+            actor, credentials, oldQuota, newQuota));
+    return true;
+  }
+  log.warning(
+    new Date() + ": Unautorisierter Aufruf der Operation "
+        + "\"Speicherplatzlimit ändern\" durch " + actor);
+  return false;
+}
+
+\\ Innerhalb der User.java
+public void setQuota(int quota) {
+  this.quota = quota;
+}
+
+/**
+* Reduces the users qouta by the given value. Throws an exception if value is too big.
+*
+* @param reduceValue The value the qouta has to be reduced by.
+*/
+public void reduceQouta(int reduceValue) {
+  if (!hasSufficientQuotaFor(reduceValue)) {
+      throw new IndexOutOfBoundsException(
+          Configuration.EXCEPTION_MESSAGE_NOT_SUFFICIENT_QUOTA);
+  }
+  setQuota(getQuota() - reduceValue);
+  this.save();
+}
+
+/**
+* Increases the users qouta by the given value.
+*
+* @param increaseValue The value the qouta has to be reduced by.
+*/
+public void increaseQouta(int increaseValue) {
+  setQuota(getQuota() + increaseValue);
+  this.save();
+}
+\end{lstlisting}
+
+\section{\texttt{PasswordUtil.java}: Auszug des Codes, der für das Hashing sowie die Generation des Salts zuständig ist}
+
+\label{hashing-salt-gen-fail}
+\begin{lstlisting}
+public class PasswordUtil {
+
+  public static final String HASH_ALGORITHM = "SHA-256";
+  \\ ...
+  private static final char[] PASSWORD_CHARS = new char[]{
+    '!', '@', '#', '$', '%', '&', '*', '(', ')',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+
+  \\ ...
+  /**
+  * Generates a random String with a defined length.
+  *
+  * @param length length of requested String
+  * @return secure random generated String
+  */
+  public static String getRandomString(final int length) {
+      SecureRandom secureRandom = new SecureRandom();
+      StringBuilder sb = new StringBuilder(length);
+
+      for (int i = 0; i < length; i++) {
+          int position = secureRandom.nextInt(PASSWORD_CHARS.length);
+          sb.append(PASSWORD_CHARS[position]);
+      }
+      return sb.toString();
+  }
+
+  \\ ...
+  /**
+  * Creates a Hash from a given password and salt String.
+  *
+  * @return returns the created Hash
+  */
+ public static String createPasswordHash(final String password, final String salt)
+     throws NoSuchAlgorithmException {
+     String result = null;
+     MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
+     digest.update(salt.getBytes(DEFAULT_CHARSET));
+     digest.update(password.getBytes(DEFAULT_CHARSET));
+     result = DatatypeConverter.printBase64Binary(digest.digest());
+
+     return result;
+ }
+
+ \\ ...
+}
+\end{lstlisting}
 
 \end{appendices}
 
