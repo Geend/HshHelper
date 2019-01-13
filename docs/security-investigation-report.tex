@@ -167,7 +167,7 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
 \item Benutzer, die Dateien hochgeladen haben können nicht gelöscht werden. Es wird versucht die Dateien des zu löschenden Benutzers mit der Identität des angemeldeten Benutzers zu löschen. Der hat dazu aber nicht die Berechtigung, da er nicht der Owner der Datei ist\footnote{siehe AdminService.java, Zeile 143. Hier wird \texttt{actor} übergeben. Korrekt wäre \texttt{credentials}.}.\newline
 \textit{+ Betroffene Anforderungen: 6.2}
 
-\item Es ist unmöglich, einen Nutzer, der in der Administratorgruppe ist, zu löschen, wenn man als Administrator eingeloggt ist. In Folge der Operation wird eine Fehlermeldung (\enquote{Es ist ein Fehler aufgetreten.}) angezeigt. Der Nutzer wurde allerdings aus der Alle-Gruppe gelöscht.\newline
+\item Es ist unmöglich, einen Nutzer, der in der Administratorgruppe ist, zu löschen. In Folge der Operation wird eine Fehlermeldung (\enquote{Es ist ein Fehler aufgetreten.}) angezeigt. Der Nutzer wurde allerdings aus der Alle-Gruppe gelöscht.\newline
 \textit{+ Betroffene Anforderungen: 6.2}
 
 
