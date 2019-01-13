@@ -269,12 +269,12 @@ Die Dateianzeige lässt den Eindruck entstehen, es würde nur eine Datei zu jede
   \item \textbf{V6: Quota Bypass}
   \begin{itemize}
     \item Gefunden durch: Exploratives Testen
-  \item Klassifikation: Limit Bypass
-  \item Problematik: Der beim Upload einer Datei angegebene Dateiname wird um die Dateiendung (z.B. ".pdf") der hochgeladenen Datei ergänzt. Die Längenbegrenzung wird allerdings nur in Bezug auf den explizit angegebenen Namen enforced (siehe funktionaler fehler TODO!!!). Außerdem können beliebige Zeichen in der Dateiendung verwendet werden.
-  \item Ausnutzung: Endung des Dateinamens von der ausgewählten Datei manipulieren.
-  \item Risiko: Mittel
-  \item Auswirkungen: Der Benutzer kann die Speicherplatzbeschränkungen umgehen.
-  \item Mögliche Angriffe: Informationen in der Endung der ausgewählten Datei codieren.
+    \item Klassifikation: Limit Bypass
+    \item Problematik: Der Dateiname sowie der Kommentar unterliegen einer Begrenzung von 255 Zeichen durch das HTML-Formular sowie durch die Datenbank, allerdings gibt es keine Einschränkung im Bezug auf das vorhandene Speicherplatzlimit eines Nutzers.
+    \item Ausnutzung: Dateiname beziehungsweise Kommentar manipulieren, um dadrinne Informationen zu verstecken.
+    \item Risiko: Mittel
+    \item Auswirkungen: Der Benutzer kann die Speicherplatzbeschränkungen umgehen.
+    \item Mögliche Angriffe: Den Dateiinhalt einer hochzuladenen Datei im Dateinamen/Kommentar einer 0-Byte-Datei speichern.
   \end{itemize}
 
   \hypertarget{vulnerability7}{}
