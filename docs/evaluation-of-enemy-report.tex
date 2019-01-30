@@ -34,6 +34,78 @@
 
 \tableofcontents  % Inhaltsverzeichnis
 
+\chapter{Stellungnahme zum Untersuchungsbericht von Gruppe B}
+
+\section{HTML \texttt{blank}}
+
+Wir denken, das Risiko, dass von dieser Luecke ausgeht, ist geringer als man einschaetzt.
+Entgegen der Darstellung von Gruppe B (\enquote{Dies gibt der aufrufenden, externen Webseite Zugriff auf die eigene Seite.}) kann die Zielseite keine voellige Kontrolle ueber die Ursprungsseite erlangen.
+Sie kann lediglich umleiten, jedoch nicht auf die Inhalte der Ursprungsseite zugreifen.
+Dazu kommt, dass man dafuer JavaScript auf der jeweiligen Zielseite injizieren muesste.
+Die Zielseiten \enquote{Bibliothek} und \enquote{ICMS} werden von uns allerdings als hinreichend sicher eingestuft.
+
+Nichts desto trotz haben wir uns dazu entschieden, die Sicherheitluecke zu beheben.
+Anstatt die Zielseite unmittelbar in einem neuen Tab zu oeffnen, steuern wir auf eine von uns kontrollierte Zwischenseite an, diese kappt die Verbindung zur initialen HsH-Helfer-Seite, in dem das \texttt{opener}-Objekt auf \texttt{null} gesetzt wurde.
+Somit ist es der Zielseite nicht mehr moeglich, den urspruenglichen Tab umzuleiten.
+
+\section{Quotaaenderungen werden nicht mehr geloggt}
+
+Auch wenn dies, wie von Herrn Prof. Dr. Peine bestaetigt wurde, keine Anforderung war, haben wir dies dennoch behoben.
+Der Einwand der anderen Gruppe ist dennoch berechtigt: Ein halbes Logging ist kein gutes Logging.
+
+\section{Einsicht der Dateimetadaten durch Administrator}
+
+Praktisch betrachtet ist es einem Administrator jederzeit moeglich, sich einer Gruppe hinzuzufuegen, um somit auf die Dateien Zugriff zu erhalten.
+Dennoch sehen wir das auch als Fehler der Anwendung, da ein Administrator keinen Zugriff auf diese Dateien hat, obwohl er die Metainformationen einsehen kann.
+Daher haben wir auch dies behoben.
+
+\section{Herausfinden des Quotalimits eines Nutzers durch Hochladen einer zu grossen Datei}
+
+Da wuerden wir genau so argumentieren wie Herr Prof. Dr. Peine in seiner E-Mail vom 22.01.2019 und sehen daher keinen Bedarf, hier Aenderungen vorzunehmen.
+
+\section{Google reCAPTCHA}
+
+Die Aussage bezueglich des Captchas ist inhaltlich falsch, beim Login findet lediglich dann ein Zugriff auf die Google-Server statt, wenn ein Benutzerkonto und/oder eine Benutzer-IP \enquote{gesperrt} wurde.
+Wir haben die Annahme getroffen, dass wir die Server von Google als vertrauenswuerdig betrachten.
+Diese Annahme sollte eventuell hinsichtlich ihrer Verfuegbarkeit konkretisiert werden.
+
+\section{Hochladen einer grossen Datei zum DOS eines Nutzers}
+
+Hier stimmen wir dem Inhalt der E-Mail vom 22.01.2019 geschrieben von Herrn Prof. Dr. Peine zu und sehen ebenfalls keinen Handlungsbedarf.
+
+\chapter{Stellungnahme zu den Kommentaren von Herrn Prof. Dr. Peine}
+
+\section{Fehler 3.3.16}
+
+Hierbei meinen wir ausschliesslich den Umstand, dass eine leere Seite angezeigt wird und keinerlei Fehlermeldung an den Nutzer weitergegeben wird.
+Das Verhalten der Applikation ist hier dennoch vollkommen korrekt.
+
+\section{V1: Sperre eines Benutzerkontos}
+
+Fuer uns stellt die Implementierung der Gegenseite eine eindeutige Sicherheitluecke dar: Nur weil ein Benutzer temporaer gesperrt wird, hindert dies einen Angreifer nicht daran, dauerhafte, fehlerhafte Requests abzuschicken, um somit den Benutzer permanent auszusperren.
+
+TODO: Referenz auf Projektablauf Seite 2 - (Wir fuehlen uns bestaetigt durch ihre Aussage).
+
+\section{V3: Cookie Reusing}
+
+Es ist korrekt, dass ein Timeout alleine nicht ausreicht, dieses Problem zu beheben.
+Daher haben wir in unserem Untersuchungsbericht ausgedruecklich daraufhin gewiesen, dass E-Mail-Adressen ausdruecklich nur einmal verwendet werden duerften.
+
+\section{V10: Fruehzeitiger Zugriff auf Account}
+
+Wir sind davon ausgegangen, dass ein Benutzer sich ausschliesslich mit seinem initialen Passwort erstmalig anmelden kann.
+Da hier offensichtlich ein Missverstaendnis vorliegt, akzeptieren wir ihre Anmerkung.
+
+\section{V13: Erzwungener Logout}
+
+\section{5.9: \texttt{admin@admin.com} vs \texttt{admin@example.com}}
+
+Taetsachlich ist die Domain \texttt{example.com} auch registriert, allerdings befindet sich diese im Besitz der IANA und ist explizit fuer Testzwecke vorgesehen.
+Siehe RFC 2606 und 6761.
+
+Wir argumentieren, dass die IANA vertrauenswuerdiger ist als der momentane unbekannte Besitzer der Domain \texttt{admin.com}.
+TODO snarky response.
+
 \printbibliography
 
 % Can be used to add a list of acronyms with their description
@@ -51,9 +123,5 @@
 
 %s\addcontentsline{toc}{chapter}{\listtablename}
 % \listoftables       % Tabellenverzeichnis
-
-\begin{appendices}
-
-\end{appendices}
 
 \end{document}
