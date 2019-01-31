@@ -400,6 +400,30 @@ public class PolicyTests {
         assertThat(actual).isFalse();
     }
 
+    @Test
+    public void groupMemberCanViewFiles() {
+        boolean actual = Policy.ForUser(klaus).canViewGroupFiles(petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void groupOwnerCanViewFiles() {
+        boolean actual = Policy.ForUser(peter).canViewGroupFiles(petersGroup);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void nonGroupMemberCanViewFiles() {
+        boolean actual = Policy.ForUser(horst).canViewGroupFiles(petersGroup);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void adminCannotViewGroupFilesHeIsntMemberOf() {
+        boolean actual = Policy.ForUser(admin).canViewGroupFiles(petersGroup);
+        assertThat(actual).isFalse();
+    }
+
     /*
         View a list of *all* Groups
      */

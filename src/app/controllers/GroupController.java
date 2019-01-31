@@ -104,6 +104,9 @@ public class GroupController extends Controller {
     }
 
     public Result showGroup(Long groupId) throws UnauthorizedException, InvalidArgumentException {
+        if(!sessionManager.currentPolicy().canViewGroupFiles(groupManager.getGroup(groupId)))
+            return redirect(routes.GroupController.showGroupMembers(groupId));
+
         return redirect(routes.GroupController.showGroupFiles(groupId));
     }
 

@@ -61,7 +61,12 @@ public class GroupManager {
         }
     }
 
-    public List<FileMeta> getGroupFiles(Group group) {
+    public List<FileMeta> getGroupFiles(Group group) throws UnauthorizedException {
+        if(!sessionManager.currentPolicy().canViewGroupFiles(group)) {
+            logger.error(sessionManager.currentUser() + " tried to see the Files of group " + group + " for which he is not authorized");
+            throw new UnauthorizedException("Du bist nicht authorisiert, diese Dateien zu sehen!");
+        }
+
         return fileMetaFactory.fromFiles(
             fileFinder.query()
             .where()

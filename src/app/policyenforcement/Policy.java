@@ -36,6 +36,18 @@ public class Policy {
         return false;
     }
 
+    public boolean canViewGroupFiles(Group toBeWatched) {
+        if (toBeWatched == null) {
+            return false;
+        }
+
+        if (toBeWatched.getMembers().contains(associatedUser)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean canViewAllUsers() {
         if (associatedUser.isAdmin()) {
             return true;

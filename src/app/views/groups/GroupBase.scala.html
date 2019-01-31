@@ -5,7 +5,11 @@
     <div class="inline-menu lr">
         <div class="left">
             <span class="title">Ansicht:</span>
-            @helper.MenuLink("Dateien", routes.GroupController.showGroupFiles(group.getGroupId))
+            @if(TemplateEnvironment.policy.canViewGroupFiles(group)) {
+                @helper.MenuLink("Dateien", routes.GroupController.showGroupFiles(group.getGroupId))
+            } else {
+                <button type="submit" class="linkBtn" disabled>Dateien</button>
+            }
             -
             @helper.MenuLink("Mitglieder", routes.GroupController.showGroupMembers(group.getGroupId))
         </div>
