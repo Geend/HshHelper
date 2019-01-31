@@ -38,30 +38,29 @@
 
 \section{HTML \texttt{blank}}
 
-Wir denken, das Risiko, dass von dieser Lücke ausgeht, ist geringer als man einschätzt.
-Entgegen der Darstellung von Gruppe B (\enquote{Dies gibt der aufrufenden, externen Webseite Zugriff auf die eigene Seite.}) kann die Zielseite keine völlige Kontrolle über die Ursprungsseite erlangen.
-Sie kann lediglich umleiten, jedoch nicht auf die Inhalte der Ursprungsseite zugreifen.
-Dazu kommt, dass man dafür JavaScript auf der jeweiligen Zielseite injizieren müsste.
-Die Zielseiten \enquote{Bibliothek} und \enquote{ICMS} werden von uns allerdings als hinreichend sicher eingestuft.
+Entgegen der Darstellung von Gruppe B (\enquote{Dies gibt der aufrufenden, externen Webseite Zugriff auf die eigene Seite.}) kann die Zielseite keine völlige Kontrolle über das ursprüngliche Tab erlangen.
+Sie kann in diesem lediglich eine Umleitung initiieren, jedoch nicht auf die Inhalte der Ursprungsseite zugreifen. Es wäre für diesen Angriff grundsätzlich erforderlich, dass der Angreifer Zugriff auf den Server der Zielseite erlangt, um diesen mit Schadcode zu infizieren. Die Zielseiten werden ausschließlich vom Administrator bestimmt und umfassen zum jetzigen Zeitpunkt ausschließlich die von der Hochschule betreuten Dienste \enquote{Bibliothek} und \enquote{ICMS}. Auch wenn die Aufgabenstellung diese Dienste nicht ausdrücklich als vertrauenswürdig bezeichnet, ergibt sich aus der Anforderungsbeschreibung zumindest ein gewisses Vertrauensverhältnis: Die Anforderungen verlangen ausdrücklich, dass der Hsh-Helfer die Zugangsdaten der Benutzer im Klartext übertragen soll. Ausgehend von dieser Anforderung, werden die Zielseiten von uns als hinreichend vertrauenswürdig eingestuft.
 
-Nichts desto trotz haben wir uns dazu entschieden, die Sicherheitlücke zu beheben.
-Anstatt die Zielseite unmittelbar in einem neuen Tab zu öffnen, steuern wir auf eine von uns kontrollierte Zwischenseite an, diese kappt die Verbindung zur initialen HsH-Helfer-Seite, in dem das \texttt{opener}-Objekt auf \texttt{null} gesetzt wird.
+Dennoch haben wir die Sicherheitslücke behoben: Anstatt die Zielseite unmittelbar in einem neuen Tab zu öffnen, steuern wir eine von uns kontrollierte Zwischenseite an. Diese kappt die Verbindung zur initialen HsH-Helfer-Seite, indem das \texttt{opener}-Objekt auf \texttt{null} gesetzt wird.
 Somit ist es der Zielseite nicht mehr möglich, den ursprünglichen Tab umzuleiten.
 
 \section{Quotaänderungen werden nicht mehr geloggt}
 
-Auch wenn dies, wie von Herrn Prof. Dr. Peine bestätigt wurde, keine Anforderung war, haben wir dies dennoch behoben.
-Der Einwand der anderen Gruppe ist nämlich berechtigt: Ein halbes Logging ist kein gutes Logging.
+Wir teilen die Auffassung von Herrn Prof. Dr. Peine aus der E-Mail vom 22.01.2019, dass diese Funktionalität nicht Teil der Anforderungen ist.
+
+Die Lücke wurde dennoch durch uns behoben. Der Einwand der anderen Gruppe ist berechtigt: Ein halbes Logging ist kein gutes Logging.
 
 \section{Einsicht der Dateimetadaten durch Administrator}
 
-Praktisch betrachtet ist es einem Administrator jederzeit möglich, sich einer Gruppe hinzuzufügen, um somit auf die Dateien Zugriff zu erhalten.
-Dennoch sehen wir das auch als Fehler der Anwendung, da ein Administrator keinen Zugriff auf diese Dateien hat, obwohl er die Metainformationen einsehen kann.
-Daher haben wir auch dies behoben.
+Ausweislich der Anforderungen ist es einem Administrator jederzeit möglich, auf die mit einer Gruppe geteilten Dateien zuzugreifen - er kann sich schließlich selbst jeder Gruppe hinzufügen.
+
+Dennoch sehen wir dies auch als Fehler unserer Anwendung: Der Administrator hat keinen unmittelbaren Zugriff auf diese Dateien, also sollte er auch nicht ihre Meta-Informationen einsehen können.
+
+Dieser Fehler wurde von uns behoben. Wir haben ebenfalls Testfälle erstellt, die diesen Umstand abdecken und sicherstellen, dass er nicht erneut auftreten wird.
 
 \section{Herausfinden des Quotalimits eines Nutzers durch Hochladen einer zu großen Datei}
 
-Da würden wir genau so argumentieren wie Herr Prof. Dr. Peine in seiner E-Mail vom 22.01.2019 und sehen daher keinen Bedarf, hier Änderungen vorzunehmen.
+Wir teilen die Auffassung von Herrn Prof. Dr. Peine aus seiner E-Mail vom 22.01.2019 und sehen daher keinen Bedarf, hier Änderungen vorzunehmen.
 
 Relevanter Auszug aus der E-Mail:
 
@@ -109,13 +108,11 @@ Benutzer gar nicht realisieren.
 \section{Fehler 3.3.16}
 
 Hierbei meinen wir ausschließlich den Umstand, dass eine leere Seite angezeigt wird und keinerlei Fehlermeldung an den Nutzer weitergegeben wird.
-Das Verhalten der Applikation ist hier dennoch vollkommen korrekt.
+Das Verhalten der Applikation von Gruppe B entspricht der Anforderungsbeschreibung.
 
 \section{V1: Sperre eines Benutzerkontos}
 
-Für uns stellt die Implementierung der Gegenseite eine eindeutige Sicherheitlücke dar: Nur weil ein Benutzer temporär gesperrt wird, hindert dies einen Angreifer nicht daran, dauerhafte, fehlerhafte Requests abzuschicken, um somit den Benutzer permanent auszusperren.
-
-Dem stimmen Sie in dem von Ihnen formulierten \enquote{Projektablauf}-Dokument sogar zu, wodurch wir uns in unserer Behauptung bestätigt fühlen.
+Für uns stellt die Implementierung der Gegenseite eine eindeutige Sicherheitlücke dar: Nur weil ein Benutzer lediglich \enquote{temporär} gesperrt wird, hindert dies einen Angreifer nicht daran, fortlaufend fehlerhafte Requests abzuschicken. Er kann die temporäre Sperre so für die Dauer seines Angriffs aufrecht erhalten. Wir haben Ihre Formulierung im \enquote{Projektablauf}-Dokument auch in diesem Sinne verstanden:
 
 Auszug aus Kapitel 1 \enquote{Projektinhalt}, Seite 2 des \enquote{Projektablauf}-Dokumentes:
 
@@ -125,8 +122,8 @@ Es gibt keine Vorgaben für die Performance der Anwendung. DoS-Angriffe auf Netz
 
 \section{V3: Cookie Reusing}
 
-Es ist korrekt, dass ein Timeout alleine nicht ausreicht, dieses Problem zu beheben.
-Daher haben wir in unserem Untersuchungsbericht daraufhin gewiesen, dass bei dem Sessionkonzept der gegnerischen Gruppe E-Mail-Adressen ausdrücklich nur einmal verwendet werden dürften.
+Es ist korrekt, dass ein Timeout alleine nicht ausreicht, um dieses Problem zu beheben.
+Aus diesem Grund haben wir in unserem Untersuchungsbericht erwähnt, dass bei dem Sessionkonzept der gegnerischen Gruppe E-Mail-Adressen nur einmal verwendet werden dürfen.
 
 \section{V10: Frühzeitiger Zugriff auf Account}
 
@@ -137,11 +134,10 @@ Da hier offensichtlich ein Missverständnis vorliegt, akzeptieren wir ihre Anmer
 
 \section{5.9: \texttt{admin@admin.com} versus \texttt{admin@example.com}}
 
-Tätsachlich ist die Domain \texttt{example.com} auch registriert, allerdings befindet sich diese im Besitz der IANA und ist explizit für Testzwecke vorgesehen.
-Siehe RFC 2606 und 6761.
+Wir haben die Anforderungen in dem Sinne verstanden, dass Ihre Wahl der Domain \texttt{example.com} mit ihrer Besonderen Bedeutung nach RFC 2606 bzw. 6761 zusammenhängt: Sie ist ausdrücklick für Testzwecke eingerichtet und freigeben. Außerdem befindet sie sich im Besitz der IANA - eine Organisation der wir größeres Vertrauen entgegenbringen als dem unbekannten Besitzer der Domain \texttt{admin.com}.
+Da hier offensichtlich ein Missverständnis vorliegt, akzeptieren wir selbstverständlich Ihre Anmerkung.
 
-Wir argumentieren, dass die IANA vertrauenswürdiger ist als der momentane unbekannte Besitzer der Domain \texttt{admin.com}.
-TODO snarky response.
+
 
 \printbibliography
 
