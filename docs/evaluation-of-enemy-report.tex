@@ -108,12 +108,12 @@ Benutzer gar nicht realisieren.
 
 \chapter{Stellungnahme zu den Kommentaren von Herrn Prof. Dr. Peine}
 
-\section{Fehler 3.3.16}
+\section{Netzdienst-Zugangsdaten (Fehler 3.3.16)}
 
 Hierbei meinen wir ausschließlich den Umstand, dass eine leere Seite angezeigt wird und keinerlei Fehlermeldung an den Nutzer weitergegeben wird.
 Das Verhalten der Applikation von Gruppe B entspricht der Anforderungsbeschreibung.
 
-\section{V1: Sperre eines Benutzerkontos}
+\section{Sperre eines Benutzerkontos (V1)}
 
 Für uns stellt die Implementierung der Gegenseite eine eindeutige Sicherheitlücke dar: Nur weil ein Benutzer lediglich \enquote{temporär} gesperrt wird, hindert dies einen Angreifer nicht daran, fortlaufend fehlerhafte Requests abzuschicken. Er kann die temporäre Sperre so für die Dauer seines Angriffs aufrecht erhalten. Wir haben Ihre Formulierung im \enquote{Projektablauf}-Dokument auch in diesem Sinne verstanden:
 
@@ -123,17 +123,17 @@ Auszug aus Kapitel 1 \enquote{Projektinhalt}, Seite 2 des \enquote{Projektablauf
 Es gibt keine Vorgaben für die Performance der Anwendung. DoS-Angriffe auf Netzwerk- oder HTTP-Ebene (Requests in schneller Folge) müssen nicht abgewehrt werden, wohl aber DoS-Angriffe auf anwendungsinterne Ressourcen (z.B. \textbf{einen Benutzeraccount unbenutzbar machen durch wiederholte absichtlich falsche Passworteingabe, falls die Anwendung eine solche Reaktion implementiert).}
 }
 
-\section{V3: Cookie Reusing}
+\section{Cookie Reusing (V3)}
 
 Es ist korrekt, dass ein Timeout alleine nicht ausreicht, um dieses Problem zu beheben.
 Aus diesem Grund haben wir in unserem Untersuchungsbericht erwähnt, dass bei dem Sessionkonzept der gegnerischen Gruppe E-Mail-Adressen nur einmal verwendet werden dürfen.
 
-\section{V10: Frühzeitiger Zugriff auf Account}
+\section{Frühzeitiger Zugriff auf Account (V10)}
 
 Wir sind davon ausgegangen, dass ein Benutzer sich ausschließlich mit seinem initialen Passwort erstmalig anmelden kann.
 Da hier offensichtlich ein Missverständnis vorliegt, akzeptieren wir ihre Anmerkung.
 
-\section{V13: Erzwungener Logout}
+\section{Erzwungener Logout (V13)}
 
 Es existiert ein IEEE Draft, der zu einer Änderung am HTTP-Protokoll führen soll. Mittels dieser Änderung soll eine neue Option für Cookies eingeführt werden, die CSRF-Angriffe wirkungsvoll verhindern soll. Diese Option heißt \enquote{SameSite}\footnote{Siehe \url{https://tools.ietf.org/html/draft-west-first-party-cookies-07}}. Sie dient dazu, die Verwendung von Cookies einzugrenzen: Bindet beispielsweise Webseite B ein Bild von Webseite A ein, so erfolgt ein sogenannter Cross-Domain Request. Ohne Verwendung dieser Option würde der Browser sämtliche Cookies, die er für Webseite A gespeichert hat, in den Request zum Laden des Bildes einbauen. Die SameSite-Option verhindert dies. Mit dieser Option gekennzeichnete Cookies werden nun ausschließlich dann mitgesendet, wenn der Request von jener Domain stammt, die auch das Cookie ausgestellt hat.\newline\newline
 Leider versäumt der Draft, die entgegengesetzte Richtung zu spezifizieren: Wenn der Browser die Cookies aus dem Request entfernt, wie muss er dann mit der Antwort umgehen? Chrome, sowie einige Versionen von Firefox  (vgl. \enquote{Bericht: Maßnahmen zur Qualitätssicherung} vom 9. Dezember 2018, S. 8) haben hier die Entscheidung getroffen, die Antwort wie jede andere auch zu interpretieren. D.h. Cookies, die vom Zielserver gesetzt werden, werden vom Browser akzeptiert.\newline\newline
@@ -146,7 +146,7 @@ Der Entwickler dieses Codes hat offensichtlich die Intention gehabt, jedem Nutze
 Tatsächlich ist es möglich, Play auf das gegebene Beispiel zu reduzieren: Play macht standardmäßig Gebrauch von der SameSite-Option. Erfolgt ein Request, der das das \enquote{PLAY\_SESSION}-Cookie nicht beinhaltet, erzeugt Play über die Antwort ein neues Cookie. Erfolgt der Request Cross-Domain wird so ein vorhandenes Cookie überschrieben. Bei diesem Cookie handelt es sich um das zentrale JWT-Cookie, in dem sämtliche Session-Daten gespeichert werden, d.h. wenn das vorhandene Cookie mit einem neuen bzw. leeren JWT-Cookie überschrieben wird, ist die praktische Folge davon ein Logout des Benutzers.\newline\newline
 Auf die \enquote{Schuldfrage} möchten wir hier nicht eingehen: Es ist äußerst schwer zu bestimmen, ob der Fehler nun bei Chrome oder bei Play liegt. Sicher ist hingegen, dass die Schuld nicht bei der anderen Gruppe liegt - sie durfte darauf vertrauen, dass Play sicher ist. Wir möchten dennoch darauf hinweisen, dass wir diese Lücke im Rahmen unserer Qualitätssicherung entdeckt und proaktiv behoben haben - unsere finale Version ist diesbezüglich nicht anfällig.
 
-\section{5.9: \texttt{admin@admin.com} versus \texttt{admin@example.com}}
+\section{Verwendung der Domain admin.com (Punkt 5.9)}
 
 Wir haben die Anforderungen in dem Sinne verstanden, dass Ihre Wahl der Domain \texttt{example.com} mit ihrer Besonderen Bedeutung nach RFC 2606 bzw. 6761 zusammenhängt: Sie ist ausdrücklick für Testzwecke eingerichtet und freigeben. Außerdem befindet sie sich im Besitz der IANA - eine Organisation der wir größeres Vertrauen entgegenbringen als dem unbekannten Besitzer der Domain \texttt{admin.com}.
 Da hier offensichtlich ein Missverständnis vorliegt, akzeptieren wir selbstverständlich Ihre Anmerkung.
