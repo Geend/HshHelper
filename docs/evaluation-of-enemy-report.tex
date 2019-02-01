@@ -36,6 +36,9 @@
 
 \chapter{Stellungnahme zum Untersuchungsbericht von Gruppe B}
 
+\section{Passwortänderung vom Admin}
+Wir gehen davon aus, dass hier ein Missverständnis vorliegen muss. Im Rahmen unserer Abgabe haben wir eine ausführbare Produktivversion bereitgestellt\footnote{\url{https://storage.googleapis.com/sse-project/hshhelper-final.zip}}. Diese ist hinsichtlich ihres Codes zwar deckungsgleich mit dem bereitgestellten Code, jedoch wird Play in Produktivmodus ausgeführt. Unser Code ist \enquote{dynamisch}. In der DatabaseInitialization-Datei prüfen wir, in welchem Modus die Anwendung derzeit läuft: Wenn es der Entwicklungsmodus ist, werden zahlreiche Testdaten und ein Administrator angelegt, der sein Passwort nicht ändern muss. Dies sollte uns die Arbeit erleichtern. Wird die Anwendung im Produktivmodus ausgeführt, muss der Administrator zwingend sein Passwort beim initialen Login ändern.
+
 \section{HTML \texttt{blank}}
 
 Entgegen der Darstellung von Gruppe B (\enquote{Dies gibt der aufrufenden, externen Webseite Zugriff auf die eigene Seite.}) kann die Zielseite keine völlige Kontrolle über das ursprüngliche Tab erlangen.
