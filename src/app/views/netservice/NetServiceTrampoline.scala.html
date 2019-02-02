@@ -1,0 +1,27 @@
+@import models.NetServiceCredential
+@import models.NetServiceParameter.NetServiceParameterType
+@import managers.netservicemanager.PlaintextCredential
+
+@(netServiceCredential: NetServiceCredential, plainTextCreds: PlaintextCredential)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Trampoline - HsHelper</title>
+        <script src="@routes.Assets.at("js/single-sign-on.js")" type="text/javascript"></script>
+    </head>
+    <body>
+        <form method="POST" action="@netServiceCredential.getNetService().getUrl" id="tform">
+            @for(serviceParameter <- netServiceCredential.getNetService.getParameters) {
+                @if(serviceParameter.getParameterType.equals(NetServiceParameterType.USERNAME)) {
+                    <input value="@plainTextCreds.getUsername" name="@serviceParameter.getName" type="hidden"/>
+                } else if (serviceParameter.getParameterType.equals(NetServiceParameterType.PASSWORD)) {
+                    <input value="@plainTextCreds.getPassword" name="@serviceParameter.getName" type="hidden"/>
+                } else {
+                    <input value="@serviceParameter.getDefaultValue" name="@serviceParameter.getName" type="hidden"/>
+                }
+            }
+        </form>
+    </body>
+</html>

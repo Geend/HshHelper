@@ -276,6 +276,7 @@ public class UserManager {
     }
 
     public void changeUserQuotaLimit(Long userId, Long newQuotaLimit) throws UnauthorizedException, InvalidArgumentException {
+        User currentUser = sessionManager.currentUser();
         if(!sessionManager.currentPolicy().canReadWriteQuotaLimit()){
             throw new UnauthorizedException();
         }
@@ -284,7 +285,9 @@ public class UserManager {
         if(!user.isPresent()){
             throw new InvalidArgumentException();
         }
+        Long previousQuota = user.get().getQuotaLimit();
         user.get().setQuotaLimit(newQuotaLimit);
+        logger.info(currentUser + " changed userquota for user: " + user.get() + " from: " + previousQuota + " to: " + newQuotaLimit);
         ebeanServer.save(user.get());
     }
 }
