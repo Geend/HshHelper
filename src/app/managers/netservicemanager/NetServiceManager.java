@@ -221,8 +221,7 @@ public class NetServiceManager {
         ebeanServer.delete(credentialOpt.get());
     }
 
-
-    public PlaintextCredential decryptCredential(Long netServiceCredentialId) throws UnauthorizedException, InvalidArgumentException {
+    public NetServiceCredential getEncryptedCredential(Long netServiceCredentialId) throws UnauthorizedException, InvalidArgumentException {
         Optional<NetServiceCredential> optCredential = netServiceCredentialFinder.byIdOptional(netServiceCredentialId);
         if (!optCredential.isPresent()) {
             throw new InvalidArgumentException("credentialId does not exist");
@@ -233,6 +232,10 @@ public class NetServiceManager {
             throw new UnauthorizedException();
         }
 
+        return optCredential.get();
+    }
+
+    public PlaintextCredential decryptCredential(NetServiceCredential credential) {
         CryptoKey ck = keyGenerator.generate(sessionManager.getCredentialKey());
 
         byte[] usernamePlaintext = cipher.decrypt(ck, credential.getInitializationVectorUsername(), credential.getUsernameCipherText());

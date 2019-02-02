@@ -189,17 +189,10 @@ public class NetServiceController {
 
         DecryptNetServiceCredentialsDto dto = boundForm.get();
 
-        List<NetServiceCredential> userNetServiceCredentials = netServiceManager.getUserNetServiceCredentials();
-        Optional<NetServiceCredential> credential = userNetServiceCredentials
-                .stream()
-                .filter(x -> x.getNetServiceCredentialId() == dto.getCredentialId())
-                .findFirst();
+        NetServiceCredential encryptedCredential = netServiceManager.getEncryptedCredential(dto.getCredentialId());
+        PlaintextCredential plainCredential = netServiceManager.decryptCredential(encryptedCredential);
 
-        if(!credential.isPresent()) {
-            throw new InvalidArgumentException();
-        }
-        PlaintextCredential plainCredential = netServiceManager.decryptCredential(credential.get().getNetServiceCredentialId());
-        return ok(views.html.netservice.NetServiceTrampoline.render(credential.get(), plainCredential));
+        return ok(views.html.netservice.NetServiceTrampoline.render(encryptedCredential, plainCredential));
     }
 
     public Result showDeleteNetServiceConfirmation() throws InvalidArgumentException, UnauthorizedException {
