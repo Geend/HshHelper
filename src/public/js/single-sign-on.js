@@ -1,4 +1,3 @@
-$(document).ready(function() {
-    window.opener = null;
-    $('#loginButton').trigger('click');
-});
+window.onload = function () {
+    document.getElementById('tform').submit();
+};

@@ -9,11 +9,10 @@
     <head>
         <meta charset="UTF-8">
         <title>Trampoline - HsHelper</title>
-        <script src="@routes.Assets.at("js/jquery-3.3.1.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("js/single-sign-on.js")" type="text/javascript"></script>
     </head>
     <body>
-        <form method="POST" action="@netServiceCredential.getNetService().getUrl">
+        <form method="POST" action="@netServiceCredential.getNetService().getUrl" id="tform">
             @for(serviceParameter <- netServiceCredential.getNetService.getParameters) {
                 @if(serviceParameter.getParameterType.equals(NetServiceParameterType.USERNAME)) {
                     <input value="@plainTextCreds.getUsername" name="@serviceParameter.getName" type="hidden"/>
@@ -23,7 +22,6 @@
                     <input value="@serviceParameter.getDefaultValue" name="@serviceParameter.getName" type="hidden"/>
                 }
             }
-            <input type="submit" value="Login" id="loginButton" />
         </form>
     </body>
 </html>
