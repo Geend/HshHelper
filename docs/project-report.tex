@@ -36,15 +36,72 @@
 
 \chapter{Projektorganisation}
 
-Welche Methoden haben gut oder schlecht funktioniert, und warum?
-Wie hoch war der Aufwand für die jeweiligen Aktivitäten?
-Welche Fehler wurden gemacht und woran erkannt?
 Wie beurteilen Sie Ihre Projektorganisation bzw. den von Ihnen gewählten Entwicklungsprozess?
+
+\begin{itemize}
+  \item GitHub fürs Projektmanagement (Evtl Beschreibung von Issues, Project/Kanbanboard, Milestones)
+  \begin{itemize}
+    \item Zentrales Handling in GitHub war sehr angenehm, anderes Tool wie Redmine waere wahrscheinlich abgestorben.
+  \end{itemize}
+  \item Diskussionen in der Gruppe oftmals nicht in die Issues persistiert wurden
+  \item Absprachen mit Herrn Peine und andere Erkenntnisse ebenfalls schwer gewesen diese zu persistieren
+  \item Agiler Entwicklungsprozess - nicht genau spezifiziert vorm Projekt, eher XP.
+  \item Sehr liberal: Anfangs getroffen als Team um neue Funktionalitaet zu besprechen, dann in kleinere Teams aufgeteilt/Aufgaben formuliert und frei verteilt (eher ausgewaehlt von Projektmitgliedern)
+  \item Team hat sich insgesamt gut ergaenzt: Jeder brachte unterschiedliche Qualitaeten ins Team und jeder konnte voneinander profitieren.
+  \item Sehr feine Granularitaet: viele kleine Commits, damit keine Abhaengigkeiten zwischen den Arbeitspaketen existiert.
+\end{itemize}
+
+Welche Methoden haben gut oder schlecht funktioniert, und warum?
+
+\begin{itemize}
+  \item Code Reviews haette man besser enforcen koennen
+  \item CI haette verwendet werden koennen, damit Tests erfolgreicher und regelmaessiger durchgefuehrt werden. (Ggf. mit Enforcement auf Branches/Pushes)
+  \item Prototyping zum Rumspielen mit Play/Austesten von Ideen, folgend iterative Verbesserung vom Code/Ideen
+  \item Pair Programming als sehr hilfreich eingestuft
+  \item Pentesting bei unserer Anwendung auch positiv: Die Anwendung als Blackbox zu betrachten und Fehler zu forcieren hat unsere Kreativitaet sehr angeregt.
+  \item Static Analysis von IntelliJ aus eher hilfreich: Schnelle Analyse vom Code, ohne viel Setup (Vergessene Nullpointer-Checks).
+  \item Unit Tests positiv betrachtet: Use Cases konnten durch ihre Policy Checks schnell ueberprueft werden
+  \item Intensive Diskussionen ueber Architektur, Sicherheit, Patterns, generell Ideen: eher gut funktioniert, auch wenn viel Zeit gekostet.
+\end{itemize}
+
+Wie hoch war der Aufwand für die jeweiligen Aktivitäten?
+
+\begin{itemize}
+  \item Entwicklungsaufwand betrachten eher als hoch: hauptsaechlich unserer Perfektion geschuldet.
+  \begin{itemize}
+    \item 30\% Programmierung an sich
+    \item 20\% Organisatorisches: Diskussionen, Ideen
+  \end{itemize}
+  \item Testing ungefaehr 30\% Zeit gekostet
+  \item Dokumente:
+  \begin{itemize}
+    \item Insgesamt wahrscheinlich 20\% der Zeit gekostet
+    \item Bedrohungsanalyse hat am meisten Zeit gekostet, was aber nicht als negativ betrachtet wird - Formulierung des Dokuments zeitgleich mit Ueberlegungen zu Bedrohungen/Sicherheitsluecken in unserer Applikation
+  \end{itemize}
+\end{itemize}
+
+Welche Fehler wurden gemacht und woran erkannt?
+
+\begin{itemize}
+  \item Integration von Bootstrap haette die Templategeneration stark beeintraechtigt. Starke Zeitverschwendung gewesen, sind dann zu Plain-CSS gewechselt, um das ganze besser zu managen
+\end{itemize}
+
 Wie haben Sie die Projektstruktur erlebt, die Anwendung durch zwei Gruppen mit Rollentausch entwickeln zu lassen?
+
+\begin{itemize}
+  \item Wir betrachten den Wettkampfaspekt eher positiv: Keine Informationen zu teilen hat das Projekt spannender gemacht, da man daraufhin keine Bewertung machen konnte, wie gut man selbst ist, oder die andere Gruppe ist, bzw. welche Ideen sie implementieren.
+  \item Paranoia hat's eigentlich interessant gemacht: Wir dachten oftmals, dass die andere Gruppe bessere Ideen hatte, bspw. Benutzerkonzept in der Datenbank
+\end{itemize}
 
 \chapter{Verbesserungsvorschläge für zukünftige Projekte}
 
 Welche Verbesserungsvorschläge für zukünftige Projekte haben Sie?
+
+\begin{itemize}
+  \item Raeumlichkeiten (TODO Raumnummer unten) eher kritisch gewesen. Vorlesungskulisse war eher unangenehm, da sie stark hoerbar war. Securitylabor auch eher unangenehm wegen Hitze/Geraeuschekulisse wegen der Hardware.
+  \item Evtl Aufteilung durch SSE-Note doch nicht sinnvoll - eher Aufteilung nach Erfahrung?
+  \item Ein paar schon im Gespraech genannt: Anderes Framework, evtl kein Single Sign-On, evtl Ende-zu-Ende verschuesselter Chat
+\end{itemize}
 
 \printbibliography
 
