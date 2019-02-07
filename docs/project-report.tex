@@ -36,7 +36,7 @@
 
 \chapter{Projektorganisation}
 
-Wie beurteilen Sie Ihre Projektorganisation bzw. den von Ihnen gewählten Entwicklungsprozess?
+\section{Wie beurteilen Sie Ihre Projektorganisation bzw. den von Ihnen gewählten Entwicklungsprozess?}
 
 \begin{itemize}
   \item GitHub fürs Projektmanagement (Evtl Beschreibung von Issues, Project/Kanbanboard, Milestones)
@@ -51,20 +51,40 @@ Wie beurteilen Sie Ihre Projektorganisation bzw. den von Ihnen gewählten Entwic
   \item Sehr feine Granularitaet: viele kleine Commits, damit keine Abhaengigkeiten zwischen den Arbeitspaketen existiert.
 \end{itemize}
 
-Welche Methoden haben gut oder schlecht funktioniert, und warum?
 
+
+\section{Welche Methoden haben gut oder schlecht funktioniert, und warum?}
+
+\paragraph{Reviews}
+Code Reviews haette man besser enforcen koennen
+
+\paragraph{Continuous Integration}
+Wir haben uns bemüht die Quellcodeänderungen der einzelnen Projektteilnehmer möglichst häufig zusammenzuführen. Ein Werkzeug (in Form eines CI-Servers) wurde dabei allerdings nicht verwendet. Es wurde leider öfter vergessen die zahlreichen Unit-Test vor dem einchecken von Codeänderung auszuführen, was dazu führte dass Fehler erst später auffielen.
+
+ 
+CI haette verwendet werden koennen, damit Tests erfolgreicher und regelmaessiger durchgefuehrt werden. (Ggf. mit Enforcement auf Branches/Pushes)
+
+\paragraph{Prototyping}
+Um ein Gefühl für Play und die Anforderungen an die Anwendung zu bekommen, haben wir für viele Funktionen zunächst einen möglichst einfachen Prototypen geschrieben. Die Prototypen wurden daraufhin meist iterative verbessert, bis sie die Anforderungen vollständig erfüllt haben. Gelegentlich wurden Protoypen aber auch komplett verworfen und die Funktionalität erneut implementiert. So war es möglich auf 
+
+
+\paragraph{Pair Programming}
+ Pair Programming als sehr hilfreich eingestuft
+
+
+\paragraph{Pentesting}
+Pentesting bei unserer Anwendung auch positiv: Die Anwendung als Blackbox zu betrachten und Fehler zu forcieren hat unsere Kreativitaet sehr angeregt.
+
+\paragraph{Static Analysis}
+Static Analysis von IntelliJ aus eher hilfreich: Schnelle Analyse vom Code, ohne viel Setup (Vergessene Nullpointer-Checks).
+
+\paragraph{Sonstiges}
 \begin{itemize}
-  \item Code Reviews haette man besser enforcen koennen
-  \item CI haette verwendet werden koennen, damit Tests erfolgreicher und regelmaessiger durchgefuehrt werden. (Ggf. mit Enforcement auf Branches/Pushes)
-  \item Prototyping zum Rumspielen mit Play/Austesten von Ideen, folgend iterative Verbesserung vom Code/Ideen
-  \item Pair Programming als sehr hilfreich eingestuft
-  \item Pentesting bei unserer Anwendung auch positiv: Die Anwendung als Blackbox zu betrachten und Fehler zu forcieren hat unsere Kreativitaet sehr angeregt.
-  \item Static Analysis von IntelliJ aus eher hilfreich: Schnelle Analyse vom Code, ohne viel Setup (Vergessene Nullpointer-Checks).
   \item Unit Tests positiv betrachtet: Use Cases konnten durch ihre Policy Checks schnell ueberprueft werden
   \item Intensive Diskussionen ueber Architektur, Sicherheit, Patterns, generell Ideen: eher gut funktioniert, auch wenn viel Zeit gekostet.
 \end{itemize}
 
-Wie hoch war der Aufwand für die jeweiligen Aktivitäten?
+\section{Wie hoch war der Aufwand für die jeweiligen Aktivitäten?}
 
 \begin{itemize}
   \item Entwicklungsaufwand betrachten eher als hoch: hauptsaechlich unserer Perfektion geschuldet.
@@ -80,7 +100,7 @@ Wie hoch war der Aufwand für die jeweiligen Aktivitäten?
   \end{itemize}
 \end{itemize}
 
-Welche Fehler wurden gemacht und woran erkannt?
+\section{Welche Fehler wurden gemacht und woran erkannt?}
 
 \begin{itemize}
   \item Integration von Bootstrap haette die Templategeneration stark beeintraechtigt. Starke Zeitverschwendung gewesen, sind dann zu Plain-CSS gewechselt, um das ganze besser zu managen
