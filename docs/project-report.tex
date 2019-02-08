@@ -87,21 +87,30 @@ Gerade in Kombination mit den anzufertigen Dokumenten bildet sich hier ein groß
 
 \section{Wie beurteilen Sie Ihre Projektorganisation bzw. den von Ihnen gewählten Entwicklungsprozess?}
 
-\begin{itemize}
-  \item GitHub fürs Projektmanagement (Evtl Beschreibung von Issues, Project/Kanbanboard, Milestones)
-  \begin{itemize}
-    \item Zentrales Handling in GitHub war sehr angenehm, anderes Tool wie Redmine waere wahrscheinlich abgestorben.
-  \end{itemize}
-  \item Diskussionen in der Gruppe oftmals nicht in die Issues persistiert wurden
-  \item Absprachen mit Herrn Peine und andere Erkenntnisse ebenfalls schwer gewesen diese zu persistieren
-  \item Agiler Entwicklungsprozess - nicht genau spezifiziert vorm Projekt, eher XP.
-  \item Sehr liberal: Anfangs getroffen als Team um neue Funktionalitaet zu besprechen, dann in kleinere Teams aufgeteilt/Aufgaben formuliert und frei verteilt (eher ausgewaehlt von Projektmitgliedern)
-  \item Team hat sich insgesamt gut ergaenzt: Jeder brachte unterschiedliche Qualitaeten ins Team und jeder konnte voneinander profitieren.
-  \item Sehr feine Granularitaet: viele kleine Commits, damit keine Abhaengigkeiten zwischen den Arbeitspaketen existiert.
-\end{itemize}
+Bei unserem Projekt-Kickoff-Meeting hatten wir beschlossen, nach einem agilen jedoch nicht genauer beschriebenen oder existierenden Entwicklungsprozess vorzugehen. Wir haben diesen an Scrum angelegt, machten uns aber zusätzlich einige Ideen von Extreme Programming wie das \enquote{Test-Driven-Development} oder \enquote{Pair-Programming} zu eigen.
+Zu Beginn jeder Iteration hatten wir bei einer Art \enquote{Sprint Planning} gemeinsam besprochen, welche Aufgaben zu erledigen sind und welchen Hürden wir dabei begegnen könnten. Zusätzlich wurden bei diesen Treffen grundlegende Arbeiten als Team bewältigt, die gegebenfalls alle weiteren Arbeiten beeinflussen könnten, wie zum Beispiel das Datenmodell.
+Bei diesen Treffen war es jedem Teammitglied möglich, seine eigenen Ideen und Einwände zur Diskussion freizugeben, wodurch kein bisher nicht besprochener oder bedachter Aspekt ausser Sicht gelassen wurde. So konnte das Team von unterschiedlichen Qualitäten, die von den einzelnen Teammitglieder eingebracht wurden, profitieren.
 
+Da wir als zentralen Git-Server GitHub nutzten, hatten wir auch eine gute Plattform, um unser agiles Projektmanagement abzubilden.
+Mithilfe von sogenannten \enquote{Issues} ist es dort möglich, Arbeitspakete abzubilden.
+Jedes Issue hat einen Titel, eine Beschreibung, Labels, die zur Kategorisierung dienen, und konnte ferner zu einer Iteration und einem Teammitglied zugeordnet werden.
+Ebenfalls ist es möglich, einem Issue weitere Kommentare anzuhängen, so dass auch Diskussionen zu einem spezifischen Arbeitspaket/Problem geführt werden konnten.
+Darüber hinaus bietet GitHub ein Kanbanboard, welches wir intensiv genutzt haben.
+Auf diesem können Issues oder kleinere Notizen zu vorgefertigten oder selbst erstellten Kategorien zugewiesen werden, um dem Team Überblick darüber zu verschaffen, welche Issues bereits in Bearbeitung sind, welche noch nicht bearbeitet werden und noch keinen zugeordneten Entwickler haben sowie welche bereits abgearbeitet wurden, aber eventuell noch einem Review unterzogen werden sollten.
+Zusätzlich ist es möglich, den Status eines Issues (Open/Closed) aber auch seine Zuweisung zu einer Kategorie auf dem Kanbanboard via Commit-Nachrichten zu steuern, wodurch der eigentliche organisatorische Aufwand immens sinkt.
 
+Insgesamt war uns dadurch ein sehr agiler und liberaler Entwicklungsprozess möglich.
+Teammitglieder konnten sich eigenständig neue Arbeit aus den Issues oder dem Kanbanboard zuweisen und direkt mit der Bearbeitung des jeweiligen Arbeitspakets beginnen. Das ähnelt bewusst dem \enquote{Pull}-Konzept aus Kanban: So war es uns möglich, die Menge an zeitgleich geöffneten \enquote{Baustellen} gering zu halten und zu garantieren, dass wir keine einzelnen Teammitglieder überlasten, da jeder frei entscheiden konnte, wie viel Zeit er gerade investieren möchte/kann.
+Arbeitspakete wurden dementsprechend fein granular definiert, so dass nicht wenige bis keine Abhängigkeiten zueinander bestanden, damit die \enquote{Suche nach neuer Arbeit} ohne größeren Aufwand geschehen konnte.
+Durch die Verknüpfung des GitHub-Kontos mit einer E-Mail-Adresse wurden auch die anderen Teammitglieder automatisch von diesen Statusänderungen an den Issues benachrichtigt.
+Insgesamt konnte so garantiert werden, dass keine Arbeit doppelt gemacht wird.
 
+Zusammenfassend sind wir sehr zufrieden mit unserer gewählten Projektorganisation und würden ein anderes Projekt wahrscheinlich ähnlich umsetzen.
+
+Kritisch zu betrachten ist jedoch die Menge an Selbstdisziplin, die jedes Teammitglied bei so einem Entwicklungsprozess mit sich bringen muss.
+Es ist erfahrungsgemäß schwer, Überblick und Klarheit hier zu behalten, wenn nicht jedes Teammitglied auf eine sorgfältige Pflege der Issues und des Kanbanboards achten.
+Dies ist uns beispielsweise daran aufgefallen, dass wir es schwer fanden, die Ergebnisse aller gruppeninternen Diskussionen, Absprachen mit Herrn Prof. Dr. Peine oder andere Erkenntnisse in den jeweiligen Issues zu persistieren.
+Positiv zu betrachten ist jedoch das zentrale Handling in GitHub. Hätten wir beispielsweise ein anderes Werkzeug zur Projektorganisation verwendet, welches nicht so eng mit dem Git-Repository verzahnt ist, hätten wir hiermit wohl sogar größere Probleme gehabt; möglicherweise wäre das Organisatorische an dieser Stelle komplett zusammengebrochen.
 
 \section{Wie haben Sie die Projektstruktur erlebt, die Anwendung durch zwei Gruppen mit Rollentausch entwickeln zu lassen?}
 
