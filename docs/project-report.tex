@@ -56,7 +56,7 @@
 \section{Welche Methoden haben gut oder schlecht funktioniert, und warum?}
 
 \paragraph{Reviews}
-Code Reviews haette man besser enforcen koennen
+Git hat einen sehr mächtigen Branching Mechanismus durch welchen es in Kombination mit Github sehr einfach möglich ist Pull Requests zu erstellen. Hätte man im Team festgelegt das nur über Pull Requests auf den Master gemerged wird, hätte man Code Reviews für jedes Changeset erzwingen können. Da solch ein Vorgehen allerdings auch einiges an Zeit in Anspruch nimmt kann nicht mit Sicherheit gesagt werden, ob dies zu einem besseren Endergebnis geführt hätte.
 
 \paragraph{Continuous Integration}
 Wir haben uns bemüht die Quellcodeänderungen der einzelnen Projektteilnehmer möglichst häufig zusammenzuführen. Ein Werkzeug (in Form eines CI-Servers) wurde dabei allerdings nicht verwendet. Es wurde leider öfter vergessen die zahlreichen Unit-Test vor dem einchecken von Codeänderung auszuführen, was dazu führte dass Fehler erst später auffielen.
