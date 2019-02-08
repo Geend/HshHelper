@@ -43,10 +43,8 @@
 Git hat einen sehr mächtigen Branching Mechanismus durch welchen es in Kombination mit Github sehr einfach möglich ist Pull Requests zu erstellen. Hätte man im Team festgelegt das nur über Pull Requests auf den Master gemerged wird, hätte man Code Reviews für jedes Changeset erzwingen können. Da solch ein Vorgehen allerdings auch einiges an Zeit in Anspruch nimmt kann nicht mit Sicherheit gesagt werden, ob dies zu einem besseren Endergebnis geführt hätte.
 
 \paragraph{Continuous Integration}
-Wir haben uns bemüht die Quellcodeänderungen der einzelnen Projektteilnehmer möglichst häufig zusammenzuführen. Ein Werkzeug (in Form eines CI-Servers) wurde dabei allerdings nicht verwendet. Es wurde leider öfter vergessen die zahlreichen Unit-Test vor dem einchecken von Codeänderung auszuführen, was dazu führte dass Fehler erst später auffielen.
-
-
-TODO: CI haette verwendet werden koennen, damit Tests erfolgreicher und regelmaessiger durchgefuehrt werden. (Ggf. mit Enforcement auf Branches/Pushes)
+Wir haben uns bemüht die Quellcodeänderungen der einzelnen Projektteilnehmer möglichst häufig zusammenzuführen. Ein Werkzeug (in Form eines CI-Servers) wurde dabei allerdings nicht verwendet. Es wurde leider öfter vergessen die zahlreichen Unit-Test vor dem Einchecken von Codeänderung auszuführen, was dazu führte dass Fehler erst später auffielen.
+In Verbindung mit dem vorher erwähnten, aber aus Zeitgründen nicht immer durchgeführten Branching-Mechanismus und einem CI-Server wie Jenkins oder CircleCI hätte man ferner erzwingen können, dass Branches nur gemergt werden können, wenn der Branch/der Pull Request nicht nur erfolgreich baut, sondern auch alle Tests erfolgreich durchlaufen.
 
 \paragraph{Prototyping}
 Um ein Gefühl für Play und die Anforderungen an die Anwendung zu bekommen, haben wir für viele Funktionen zunächst einen möglichst einfachen Prototypen geschrieben. Die Prototypen wurden daraufhin meist iterative verbessert, bis sie die Anforderungen vollständig erfüllt haben. Gelegentlich wurden Protoypen aber auch komplett verworfen und die Funktionalität erneut implementiert. So war es möglich auf
