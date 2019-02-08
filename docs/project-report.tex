@@ -36,22 +36,6 @@
 
 \chapter{Projektorganisation}
 
-\section{Wie beurteilen Sie Ihre Projektorganisation bzw. den von Ihnen gewählten Entwicklungsprozess?}
-
-\begin{itemize}
-  \item GitHub fürs Projektmanagement (Evtl Beschreibung von Issues, Project/Kanbanboard, Milestones)
-  \begin{itemize}
-    \item Zentrales Handling in GitHub war sehr angenehm, anderes Tool wie Redmine waere wahrscheinlich abgestorben.
-  \end{itemize}
-  \item Diskussionen in der Gruppe oftmals nicht in die Issues persistiert wurden
-  \item Absprachen mit Herrn Peine und andere Erkenntnisse ebenfalls schwer gewesen diese zu persistieren
-  \item Agiler Entwicklungsprozess - nicht genau spezifiziert vorm Projekt, eher XP.
-  \item Sehr liberal: Anfangs getroffen als Team um neue Funktionalitaet zu besprechen, dann in kleinere Teams aufgeteilt/Aufgaben formuliert und frei verteilt (eher ausgewaehlt von Projektmitgliedern)
-  \item Team hat sich insgesamt gut ergaenzt: Jeder brachte unterschiedliche Qualitaeten ins Team und jeder konnte voneinander profitieren.
-  \item Sehr feine Granularitaet: viele kleine Commits, damit keine Abhaengigkeiten zwischen den Arbeitspaketen existiert.
-\end{itemize}
-
-
 
 \section{Welche Methoden haben gut oder schlecht funktioniert, und warum?}
 
@@ -62,7 +46,7 @@ Git hat einen sehr mächtigen Branching Mechanismus durch welchen es in Kombinat
 Wir haben uns bemüht die Quellcodeänderungen der einzelnen Projektteilnehmer möglichst häufig zusammenzuführen. Ein Werkzeug (in Form eines CI-Servers) wurde dabei allerdings nicht verwendet. Es wurde leider öfter vergessen die zahlreichen Unit-Test vor dem einchecken von Codeänderung auszuführen, was dazu führte dass Fehler erst später auffielen.
 
  
-CI haette verwendet werden koennen, damit Tests erfolgreicher und regelmaessiger durchgefuehrt werden. (Ggf. mit Enforcement auf Branches/Pushes)
+TODO: CI haette verwendet werden koennen, damit Tests erfolgreicher und regelmaessiger durchgefuehrt werden. (Ggf. mit Enforcement auf Branches/Pushes)
 
 \paragraph{Prototyping}
 Um ein Gefühl für Play und die Anforderungen an die Anwendung zu bekommen, haben wir für viele Funktionen zunächst einen möglichst einfachen Prototypen geschrieben. Die Prototypen wurden daraufhin meist iterative verbessert, bis sie die Anforderungen vollständig erfüllt haben. Gelegentlich wurden Protoypen aber auch komplett verworfen und die Funktionalität erneut implementiert. So war es möglich auf 
@@ -97,9 +81,29 @@ Abschließend ist zu sagen das der Zeitaufwand für dieses Projekt als sehr hoch
 
 \begin{itemize}
   \item Integration von Bootstrap haette die Templategeneration stark beeintraechtigt. Starke Zeitverschwendung gewesen, sind dann zu Plain-CSS gewechselt, um das ganze besser zu managen
+  \item Verwendung statischer Attribute statt Dependency Injection hat das schreiben von Test erschwert.
+  \item Anfänglich war die Geschäftslogik nicht von der View Verarbeitung getrennt (die gesammte Logik lag in den Controllern), was das schreiben von Test auch schwer gemacht hat, da immer gegen die HTTP Schnitstelle getestet werden musste. Lösung: Einführung der Manager. View Verarbeitung bzw HTML/HTTP Kram komplett im Controller.
 \end{itemize}
 
-Wie haben Sie die Projektstruktur erlebt, die Anwendung durch zwei Gruppen mit Rollentausch entwickeln zu lassen?
+\section{Wie beurteilen Sie Ihre Projektorganisation bzw. den von Ihnen gewählten Entwicklungsprozess?}
+
+\begin{itemize}
+  \item GitHub fürs Projektmanagement (Evtl Beschreibung von Issues, Project/Kanbanboard, Milestones)
+  \begin{itemize}
+    \item Zentrales Handling in GitHub war sehr angenehm, anderes Tool wie Redmine waere wahrscheinlich abgestorben.
+  \end{itemize}
+  \item Diskussionen in der Gruppe oftmals nicht in die Issues persistiert wurden
+  \item Absprachen mit Herrn Peine und andere Erkenntnisse ebenfalls schwer gewesen diese zu persistieren
+  \item Agiler Entwicklungsprozess - nicht genau spezifiziert vorm Projekt, eher XP.
+  \item Sehr liberal: Anfangs getroffen als Team um neue Funktionalitaet zu besprechen, dann in kleinere Teams aufgeteilt/Aufgaben formuliert und frei verteilt (eher ausgewaehlt von Projektmitgliedern)
+  \item Team hat sich insgesamt gut ergaenzt: Jeder brachte unterschiedliche Qualitaeten ins Team und jeder konnte voneinander profitieren.
+  \item Sehr feine Granularitaet: viele kleine Commits, damit keine Abhaengigkeiten zwischen den Arbeitspaketen existiert.
+\end{itemize}
+
+
+
+
+\section{Wie haben Sie die Projektstruktur erlebt, die Anwendung durch zwei Gruppen mit Rollentausch entwickeln zu lassen?}
 
 \begin{itemize}
   \item Wir betrachten den Wettkampfaspekt eher positiv: Keine Informationen zu teilen hat das Projekt spannender gemacht, da man daraufhin keine Bewertung machen konnte, wie gut man selbst ist, oder die andere Gruppe ist, bzw. welche Ideen sie implementieren.
