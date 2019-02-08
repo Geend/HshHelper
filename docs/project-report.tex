@@ -55,14 +55,14 @@ Um ein Gefühl für Play und die Anforderungen an die Anwendung zu bekommen, hab
 
 \paragraph{Pentesting} Das Penetration Testing unserer Anwendung hat einen Großteil zur Stabilität und Sicherheit der Anwendung beigetragen. Abgesehen von den gefundenen Sicherheitsschwachstellen und funktionalen Fehlern der Anwendung wurde man so schon bevor man die Anwendung des Gegnerteams untersucht mit Werkzeugen wie dem ZAP-Webproxy oder einfacheren Kommandozeilen Werkzeugen wie Curl vertraut.
 
-\paragraph{Static Analysis} Die Static Code Analysis der Entwicklungsumgebung IntelliJ wurde auf das Projekt angewendet da dies mit nur sehr geringem Aufwand möglich ist. Mit ihr wurde eine ein Anwendungsfehler entdeckt bei dem eine Überprüfung auf \texttt{NULL} fehlte. Das finden dieses einen Fehlers langt schon völlig aus um den geringen Aufwand zu rechtfertigen. Static Analysis würde das Team somit bei einem weiteren Projekt wieder durchführen.
+\paragraph{Static Analysis} Die Static Code Analysis der Entwicklungsumgebung IntelliJ wurde auf das Projekt angewendet, da dies mit nur sehr geringem Aufwand möglich ist. Mit ihr wurde eine ein Anwendungsfehler entdeckt bei dem eine Überprüfung auf \texttt{NULL} fehlte. Das Finden dieses Fehlers langt schon völlig aus um den geringen Aufwand zu rechtfertigen. Static Analysis würde das Team somit bei einem weiteren Projekt wieder durchführen.
 
-\paragraph{Unit Tests} Unit Tests verbesserten in unserem Fall nicht nur die Wartbarkeit der Software sondern waren in diesem Projekt auch maßgeblich an der verbesserung der Software-Architektur beteiligt. Viele statische Methoden wurde so sinnvoll in Objekten zusammengefasst und via Dependency Injection in der Anwendung verteilt. Sicherheitsaspekte wurde natürlich auch durch Unittests überprüft und somit sind diese unverzichtbar für eine gute Software.
+\paragraph{Unit Tests} Unit Tests verbesserten in unserem Fall nicht nur die Wartbarkeit der Software sondern waren in diesem Projekt auch maßgeblich an der Verbesserung der Software-Architektur beteiligt. Viele statische Methoden wurde so sinnvoll in Objekten zusammengefasst und via Dependency Injection in der Anwendung verteilt. Sicherheitsaspekte wurde natürlich auch durch Unittests überprüft und somit sind diese unverzichtbar für eine gute Software. Insgesamt wurde hierdurch unser Vertrauen zu unserer Applikation stark angehoben.
 
 \paragraph{Intensive Diskussionen} Von Beginn bis hin zum Abschluss des Projekts wurden durchwegs intensive Diskussionen geführt. Diese waren stets sehr produktiv, da jedes Teammitglied unterschiedliche Erfahrungen mit einbrachte und in den meisten Fällen gab es immer jemanden der die Rolle des Diskussionsleiters übernommen hat und dafür sorgte, dass keine unsachlichen Bemerkungen einfließen oder zu weit vom Thema abschweift wird. Diskutiert wurde selbstverständlich über alle Themengebiete wie beispielsweise: Architektur, Sicherheit, Patterns und viele mehr.
 
 \section{Wie hoch war der Aufwand für die jeweiligen Aktivitäten?}
-Bei der Nachbesprechung wurde erwähnt das dieses Team aufgrund der großen Anzahl an Zusatzfeatures keinerlei Aussagen über den Zeitaufwand treffen sollte. Tatsächlich ist es aber so das Zusatzfeatures wie die Zwei-Faktor Authentifizierung oder Informationsübersichtseiten nur einen eher kleinen Teil der Entwicklungszeit in Anspruch genommen haben. Das Design der Oberfläche ist das einzige Zusatzfeature was tatsächlich einen hohen Zeitaufwand hatte welcher möglicherweise nicht gerechtfertigt ist. Alle anderen Zusatzfeatures waren entweder schnell zu Implementieren oder dienen direkt der Sicherheit unserer Anwendung was ja das allgemeine Ziel dieses Projekts ist. Folgendes Listing zeigt Schätzwerte für den Zeitaufwand:
+Bei der Nachbesprechung wurde erwähnt das dieses Team aufgrund der großen Anzahl an Zusatzfeatures keinerlei Aussagen über den Zeitaufwand treffen sollte. Tatsächlich ist es aber so das Zusatzfeatures wie die Zwei-Faktor Authentifizierung oder Informationsübersichtseiten nur einen eher kleinen Teil der Entwicklungszeit in Anspruch genommen haben. Das Design der Oberfläche ist das einzige Zusatzfeature was tatsächlich einen hohen Zeitaufwand hatte welcher möglicherweise nicht gerechtfertigt ist. Alle anderen Zusatzfeatures waren entweder schnell zu implementieren oder dienen direkt der Sicherheit unserer Anwendung was ja das allgemeine Ziel dieses Projekts ist. Folgende Auflistung zeigt prozentuale Schätzwerte für den Zeitaufwand:
 
 \begin{itemize}
   \item 30\% Programmierung
@@ -71,9 +71,11 @@ Bei der Nachbesprechung wurde erwähnt das dieses Team aufgrund der großen Anza
   \item 20\% Anfertigen der geforderten Dokumente
 \end{itemize}
 
-Von den Dokumenten hat die Bedrohungsanalyse am meisten Zeit in Anspruch genommen. Das Formulieren der Bedrohungen und das ausformulieren dieser war aufwändig. Dies wird vom Team aber als sehr hilfreich und positiv bewertet dieses Dokument sehr viel zur Sicherheit der Anwendung beigetragen hat.
+Von den Dokumenten hat die Bedrohungsanalyse am meisten Zeit in Anspruch genommen. Das Entdecken der Bedrohungen und speziell das Ausformulieren dieser empfanden wir als besonders aufwändig. Dies wird vom Team aber als sehr hilfreich und positiv bewertet, da dieses Dokument immens zur Sicherheit der Anwendung beigetragen hat.
 
-Abschließend ist zu sagen das der Zeitaufwand für dieses Projekt als sehr hoch eingestuft wird. Entwickeln eines eigenen Produkts ist für das kurze Wintersemester schon anspruchsvoll und hinzukommt noch eine vollständige Analyse der Anwendung des gegnerischen Teams. In Kombination mit den anzufertigen Dokumenten ist dies sehr aufwändig.
+Abschließend ist zu sagen, dass der Zeitaufwand für dieses Projekt als sehr hoch eingestuft wird.
+Das Entwickeln eines eigenen Produkts ist für das kurze Wintersemester schon anspruchsvoll und dann kommt hinzu noch eine vollständige Analyse der Anwendung des gegnerischen Teams.
+Gerade in Kombination mit den anzufertigen Dokumenten bildet sich hier ein großes Arbeitsaufwand.
 
 \section{Welche Fehler wurden gemacht und woran erkannt?}
 
