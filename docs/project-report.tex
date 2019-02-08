@@ -45,11 +45,11 @@ Git hat einen sehr mächtigen Branching Mechanismus durch welchen es in Kombinat
 \paragraph{Continuous Integration}
 Wir haben uns bemüht die Quellcodeänderungen der einzelnen Projektteilnehmer möglichst häufig zusammenzuführen. Ein Werkzeug (in Form eines CI-Servers) wurde dabei allerdings nicht verwendet. Es wurde leider öfter vergessen die zahlreichen Unit-Test vor dem einchecken von Codeänderung auszuführen, was dazu führte dass Fehler erst später auffielen.
 
- 
+
 TODO: CI haette verwendet werden koennen, damit Tests erfolgreicher und regelmaessiger durchgefuehrt werden. (Ggf. mit Enforcement auf Branches/Pushes)
 
 \paragraph{Prototyping}
-Um ein Gefühl für Play und die Anforderungen an die Anwendung zu bekommen, haben wir für viele Funktionen zunächst einen möglichst einfachen Prototypen geschrieben. Die Prototypen wurden daraufhin meist iterative verbessert, bis sie die Anforderungen vollständig erfüllt haben. Gelegentlich wurden Protoypen aber auch komplett verworfen und die Funktionalität erneut implementiert. So war es möglich auf 
+Um ein Gefühl für Play und die Anforderungen an die Anwendung zu bekommen, haben wir für viele Funktionen zunächst einen möglichst einfachen Prototypen geschrieben. Die Prototypen wurden daraufhin meist iterative verbessert, bis sie die Anforderungen vollständig erfüllt haben. Gelegentlich wurden Protoypen aber auch komplett verworfen und die Funktionalität erneut implementiert. So war es möglich auf
 
 
 \paragraph{Pair Programming} Im Team wurden mehrmals zweier Gruppen gebildet um Aufgaben zu bewältigen. In diesen Zweierteams wurden dann häufig Pairprogramming praktiziert. Dies hat sich speziell in diesem Projekt hervorragend anwenden lassen, da durch die Vorträge, die am Projekt Anfang gehalten wurden, jeder einen unterschiedlichen Einblick in das Play Framework erhalten hat und somit sein Fachwissen beim Pairprogramming einbringen konnte.
@@ -80,9 +80,9 @@ Abschließend ist zu sagen das der Zeitaufwand für dieses Projekt als sehr hoch
 \section{Welche Fehler wurden gemacht und woran erkannt?}
 
 \begin{itemize}
-  \item Integration von Bootstrap haette die Templategeneration stark beeintraechtigt. Starke Zeitverschwendung gewesen, sind dann zu Plain-CSS gewechselt, um das ganze besser zu managen
-  \item Verwendung statischer Attribute statt Dependency Injection hat das schreiben von Test erschwert.
-  \item Anfänglich war die Geschäftslogik nicht von der View Verarbeitung getrennt (die gesammte Logik lag in den Controllern), was das schreiben von Test auch schwer gemacht hat, da immer gegen die HTTP Schnitstelle getestet werden musste. Lösung: Einführung der Manager. View Verarbeitung bzw HTML/HTTP Kram komplett im Controller.
+  \item Insgesamt betrachten wir die Integration und den darauffolgenden Ausbau von Bootstrap als starke Zeitverschwendung. Wir hatten uns zu wenig Gedanken darüber gemacht, in welcher Form wir unsere Applikation präsentieren wollen und hatten im Zuge dessen versucht, eine Art \enquote{Minibibliothek} zu schreiben, mit der wir relativ schnell Elemente zur Seite hinzufügen können, die den Bootstrap-Stil einheitlich appliziert, ohne stetig die Bootstrap-CSS-Klassen wieder angeben zu müssen. Dort hätten wir früher einen Schlussstrich ziehen müssen, um weitere Zeitverschwendung zu unterbinden.
+  \item Wir hatten zunächst manche Variablen statisch unseren Klassen hinzugefügt, weil es konzeptionell sinnig erschien. Jedoch ist uns beim Implementieren unserer Unittests aufgefallen, dass die Klassen einfacher zu testen sind, wenn man Dependency Injection konsistent verwendet.
+  \item Anfänglich war unsere Geschäftslogik nicht von der View-Verarbeitung getrennt. Die gesamte Logik lag innerhalb den Controllern, wodurch das Schreiben der Tests ebenfalls erschwert wurde da nun jeder Test über die HTTP-Schnittstelle erfolgen musste. Daraufhin haben wir die Manager eingeführt, die die Geschäftslogik übernommen haben, wodurch es wieder möglich war, Unittests für diese zu schrieben. Die View, die Dialogkontrolle sowie alles spezifische zur HTTP/HTML-Domäne verblieb in den Controllern.
 \end{itemize}
 
 \section{Wie beurteilen Sie Ihre Projektorganisation bzw. den von Ihnen gewählten Entwicklungsprozess?}
