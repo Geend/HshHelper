@@ -40,75 +40,74 @@
 \section{Welche Methoden haben gut oder schlecht funktioniert, und warum?}
 
 \paragraph{Reviews}
-Git hat einen sehr mächtigen Branching Mechanismus durch welchen es in Kombination mit Github sehr einfach möglich ist Pull Requests zu erstellen. Hätte man im Team festgelegt das nur über Pull Requests auf den Master gemerged wird, hätte man Code Reviews für jedes Changeset erzwingen können. Da solch ein Vorgehen allerdings auch einiges an Zeit in Anspruch nimmt kann nicht mit Sicherheit gesagt werden, ob dies zu einem besseren Endergebnis geführt hätte.
+Git hat einen sehr mächtigen Branching Mechanismus durch welchen es in Kombination mit Github sehr einfach möglich ist Pull Requests zu erstellen. Hätte man im Team festgelegt, dass nur über Pull Requests auf den Master gemerged werden, hätte man Code Reviews für jedes Changeset erzwingen können. Da solch ein Vorgehen allerdings auch einiges an Zeit in Anspruch nimmt, kann nicht mit Sicherheit gesagt werden, ob dies zu einem besseren Endergebnis geführt hätte.
 
 \paragraph{Continuous Integration}
-Wir haben uns bemüht die Quellcodeänderungen der einzelnen Projektteilnehmer möglichst häufig zusammenzuführen. Ein Werkzeug (in Form eines CI-Servers) wurde dabei allerdings nicht verwendet. Es wurde leider öfter vergessen die zahlreichen Unit-Test vor dem Einchecken von Codeänderung auszuführen, was dazu führte dass Fehler erst später auffielen.
-In Verbindung mit dem vorher erwähnten, aber aus Zeitgründen nicht immer durchgeführten Branching-Mechanismus und einem CI-Server wie Jenkins oder CircleCI hätte man ferner erzwingen können, dass Branches nur gemergt werden können, wenn der Branch/der Pull Request nicht nur erfolgreich baut, sondern auch alle Tests erfolgreich durchlaufen.
+Wir haben uns bemüht, die Quellcodeänderungen der einzelnen Projektteilnehmer möglichst häufig zusammenzuführen. Ein Werkzeug (in Form eines CI-Servers) wurde dabei allerdings nicht verwendet. Es wurde leider öfter vergessen, die zahlreichen Unit-Test vor dem Einchecken von Codeänderung auszuführen, was dazu führte, dass Fehler erst später auffielen.
+In Verbindung mit dem vorher erwähnten, aber aus Zeitgründen nicht immer durchgeführten Branching-Mechanismus und einem CI-Server wie Jenkins oder CircleCI hätte man erzwingen können, dass Branches nur gemergt werden können, wenn der Branch/der Pull Request nicht nur erfolgreich baut, sondern auch alle Tests erfolgreich durchlaufen.
 
 \paragraph{Prototyping}
-Um ein Gefühl für Play und die Anforderungen an die Anwendung zu bekommen, haben wir für viele Funktionen zunächst einen möglichst einfachen Prototypen geschrieben. Die Prototypen wurden daraufhin meist iterative verbessert, bis sie die Anforderungen vollständig erfüllt haben. Gelegentlich wurden Protoypen aber auch komplett verworfen und die Funktionalität erneut implementiert. So war es möglich auf
+Um ein Gefühl für Play und die Anforderungen an die Anwendung zu bekommen, haben wir für viele Funktionen zunächst einen möglichst einfachen Prototypen geschrieben. Die Prototypen wurden daraufhin meist iterativ verbessert, bis sie die Anforderungen vollständig erfüllt haben. Gelegentlich wurden Protoypen aber auch komplett verworfen und die Funktionalität erneut implementiert. So war es möglich auf TODO: hier fehlt doch was!
 
 
-\paragraph{Pair Programming} Im Team wurden mehrmals zweier Gruppen gebildet um Aufgaben zu bewältigen. In diesen Zweierteams wurden dann häufig Pairprogramming praktiziert. Dies hat sich speziell in diesem Projekt hervorragend anwenden lassen, da durch die Vorträge, die am Projekt Anfang gehalten wurden, jeder einen unterschiedlichen Einblick in das Play Framework erhalten hat und somit sein Fachwissen beim Pairprogramming einbringen konnte.
+\paragraph{Pair Programming} Im Team wurden mehrmals Zweiergruppen gebildet, um Aufgaben zu bewältigen. In diesen Zweierteams wurde dann häufig Pairprogramming praktiziert. Dies hat in unserem Projekt hervorragend funktioniert, da durch die Vorträge, die am Projektanfang gehalten wurden, jeder einen unterschiedlichen Einblick in das Play Framework erhalten hat und somit sein Fachwissen beim Pairprogramming einbringen konnte.
 
 
-\paragraph{Pentesting} Das Penetration Testing unserer Anwendung hat einen Großteil zur Stabilität und Sicherheit der Anwendung beigetragen. Abgesehen von den gefundenen Sicherheitsschwachstellen und funktionalen Fehlern der Anwendung wurde man so schon bevor man die Anwendung des Gegnerteams untersucht mit Werkzeugen wie dem ZAP-Webproxy oder einfacheren Kommandozeilen Werkzeugen wie Curl vertraut.
+\paragraph{Pentesting} Das frühzeitige Penetration Testing unserer Anwendung hat einen Großteil zur Stabilität und Sicherheit der Anwendung beigetragen. Abgesehen von den gefundenen Sicherheitsschwachstellen und funktionalen Fehlern der Anwendung, konnte man sich mit Werkzeugen wie dem ZAP-Webproxy oder  einfacheren Kommandozeilenwerkzeugen wie Curl vertraut machen. Dies hat sich als sinnvolle Vorbereitung für die Untersuchung der gegnerischen Anwendung erwiesen.
 
-\paragraph{Static Analysis} Die Static Code Analysis der Entwicklungsumgebung IntelliJ wurde auf das Projekt angewendet, da dies mit nur sehr geringem Aufwand möglich ist. Mit ihr wurde eine ein Anwendungsfehler entdeckt bei dem eine Überprüfung auf \texttt{NULL} fehlte. Das Finden dieses Fehlers langt schon völlig aus um den geringen Aufwand zu rechtfertigen. Static Analysis würde das Team somit bei einem weiteren Projekt wieder durchführen.
+\paragraph{Static Analysis} Die Static Code Analysis der Entwicklungsumgebung IntelliJ wurde auf das Projekt angewendet, da dies mit nur sehr geringem Aufwand möglich ist. Mit ihr wurde eine ein Anwendungsfehler entdeckt, bei dem eine Überprüfung auf \texttt{NULL-Werte} fehlte. Der so entdeckte Fehler rechtfertigt den überschaubaren Aufwand. Static Analysis würde das Team somit bei einem weiteren Projekt erneut durchführen.
 
-\paragraph{Unit Tests} Unit Tests verbesserten in unserem Fall nicht nur die Wartbarkeit der Software sondern waren in diesem Projekt auch maßgeblich an der Verbesserung der Software-Architektur beteiligt. Viele statische Methoden wurde so sinnvoll in Objekten zusammengefasst und via Dependency Injection in der Anwendung verteilt. Sicherheitsaspekte wurde natürlich auch durch Unittests überprüft und somit sind diese unverzichtbar für eine gute Software. Insgesamt wurde hierdurch unser Vertrauen zu unserer Applikation stark angehoben.
+\paragraph{Unit Tests} Unit Tests verbesserten in unserem Fall nicht nur die Wartbarkeit der Software, sondern waren in diesem Projekt auch maßgeblich an der Verbesserung der Software-Architektur beteiligt. Wir mussten unsere Architektur zwangsläufig auf gute Testbarkeit der einzelnen Komponenten ausrichten. Viele statische Methoden wurden so sinnvoll in Objekten zusammengefasst und via Dependency Injection in der Anwendung verteilt. Wir haben auf Basis unserer Anforderungsanalyse Tests entworfen, um Sicherheitsaspekte wie z.B. das Berechtigungssystem abdecken zu können und bewerten derartige Tests im Ergebnis als unverzichtbar für eine gute Software. Insgesamt wurde hierdurch unser Vertrauen zu unserer Applikation stark angehoben.
 
-\paragraph{Intensive Diskussionen} Von Beginn bis hin zum Abschluss des Projekts wurden durchwegs intensive Diskussionen geführt. Diese waren stets sehr produktiv, da jedes Teammitglied unterschiedliche Erfahrungen mit einbrachte und in den meisten Fällen gab es immer jemanden der die Rolle des Diskussionsleiters übernommen hat und dafür sorgte, dass keine unsachlichen Bemerkungen einfließen oder zu weit vom Thema abschweift wird. Diskutiert wurde selbstverständlich über alle Themengebiete wie beispielsweise: Architektur, Sicherheit, Patterns und viele mehr.
+\paragraph{Intensive Diskussionen} Von Beginn bis zum Abschluss des Projekts wurden durchwegs intensive Diskussionen geführt. Diese waren stets sehr produktiv, da jedes Teammitglied unterschiedliche Erfahrungen mit einbrachte und in den meisten Fällen gab es immer jemanden der die Rolle des Diskussionsleiters übernommen hat und dafür sorgte, dass keine unsachlichen Bemerkungen einfließen oder man sich zu weit vom eigentlichen Thema entfernt. Gegenstand der Diskussionen waren alle Themengebiete wie beispielsweise: Architektur, Sicherheit, Patterns und vieles mehr.
 
 \section{Wie hoch war der Aufwand für die jeweiligen Aktivitäten?}
-Bei der Nachbesprechung wurde erwähnt das dieses Team aufgrund der großen Anzahl an Zusatzfeatures keinerlei Aussagen über den Zeitaufwand treffen sollte. Tatsächlich ist es aber so das Zusatzfeatures wie die Zwei-Faktor Authentifizierung oder Informationsübersichtseiten nur einen eher kleinen Teil der Entwicklungszeit in Anspruch genommen haben. Das Design der Oberfläche ist das einzige Zusatzfeature was tatsächlich einen hohen Zeitaufwand hatte welcher möglicherweise nicht gerechtfertigt ist. Alle anderen Zusatzfeatures waren entweder schnell zu implementieren oder dienen direkt der Sicherheit unserer Anwendung was ja das allgemeine Ziel dieses Projekts ist. Folgende Auflistung zeigt prozentuale Schätzwerte für den Zeitaufwand:
+Bei der Nachbesprechung wurde erwähnt, dass unser Team aufgrund der großen Anzahl an Zusatzfeatures keinerlei Aussagen über den Zeitaufwand treffen sollte. Tatsächlich ist es aber so das Zusatzfeatures wie die Zwei-Faktor Authentifizierung oder Informationsübersichtseiten nur einen eher kleinen Teil der Entwicklungszeit in Anspruch genommen haben. Das Design der Oberfläche ist das einzige Zusatzfeature was tatsächlich einen hohen Zeitaufwand hatte welcher möglicherweise nicht gerechtfertigt ist. Alle anderen Zusatzfeatures waren entweder schnell zu implementieren oder dienen direkt der Sicherheit unserer Anwendung, was ja das allgemeine Ziel dieses Projekts ist. Folgende Auflistung zeigt prozentuale Schätzwerte für den Zeitaufwand:
 
 \begin{itemize}
   \item 30\% Programmierung
   \item 30\% Testen der Anwendung
-  \item 20\% Organisatorisches (Diskussionen, Ideen)
+  \item 20\% Organisatorisches (Diskussionen, Ideen, Architekturentwurf)
   \item 20\% Anfertigen der geforderten Dokumente
 \end{itemize}
 
 Von den Dokumenten hat die Bedrohungsanalyse am meisten Zeit in Anspruch genommen. Das Entdecken der Bedrohungen und speziell das Ausformulieren dieser empfanden wir als besonders aufwändig. Dies wird vom Team aber als sehr hilfreich und positiv bewertet, da dieses Dokument immens zur Sicherheit der Anwendung beigetragen hat.
 
-Abschließend ist zu sagen, dass der Zeitaufwand für dieses Projekt als sehr hoch eingestuft wird.
-Das Entwickeln eines eigenen Produkts ist für das kurze Wintersemester schon anspruchsvoll und dann kommt hinzu noch eine vollständige Analyse der Anwendung des gegnerischen Teams.
-Gerade in Kombination mit den anzufertigen Dokumenten bildet sich hier ein großes Arbeitsaufwand.
+Abschließend ist zu sagen, dass der Zeitaufwand für dieses Projekt als sehr hoch eingeschätzt wird.
+Das Entwickeln eines eigenständigen Produkts ist für das kurze Wintersemester bereits sehr anspruchsvoll. In Kombination mit einer vollständigen Analyse der gegnerischen Anwendung und den umfangreichen Dokumenten entsteht ein nicht zu unterschätzender Arbeitsaufwand.
 
 \section{Welche Fehler wurden gemacht und woran erkannt?}
 
 \begin{itemize}
-  \item Insgesamt betrachten wir die Integration und den darauffolgenden Ausbau von Bootstrap als starke Zeitverschwendung. Wir hatten uns zu wenig Gedanken darüber gemacht, in welcher Form wir unsere Applikation präsentieren wollen und hatten im Zuge dessen versucht, eine Art \enquote{Minibibliothek} zu schreiben, mit der wir relativ schnell Elemente zur Seite hinzufügen können, die den Bootstrap-Stil einheitlich appliziert, ohne stetig die Bootstrap-CSS-Klassen wieder angeben zu müssen. Dort hätten wir früher einen Schlussstrich ziehen müssen, um weitere Zeitverschwendung zu unterbinden.
+  \item Insgesamt betrachten wir die Integration und den darauffolgenden Ausbau von Bootstrap als große Zeitverschwendung. Wir hatten uns zu wenig Gedanken darüber gemacht, in welcher Form wir unsere Applikation präsentieren wollen. Im Zuge dessen haben wir versucht, eine Art \enquote{Minibibliothek} zu schreiben, mit der wir relativ schnell Elemente zur Seite hinzufügen können, die den Bootstrap-Stil einheitlich appliziert, ohne immer die Bootstrap-CSS-Klassen angeben zu müssen. Dort hätten wir früher einen Schlussstrich ziehen müssen, um weitere Zeitverschwendung zu unterbinden.
   \item Wir hatten zunächst manche Variablen statisch unseren Klassen hinzugefügt, weil es konzeptionell sinnig erschien. Jedoch ist uns beim Implementieren unserer Unittests aufgefallen, dass die Klassen einfacher zu testen sind, wenn man Dependency Injection konsistent verwendet.
-  \item Anfänglich war unsere Geschäftslogik nicht von der View-Verarbeitung getrennt. Die gesamte Logik lag innerhalb den Controllern, wodurch das Schreiben der Tests ebenfalls erschwert wurde da nun jeder Test über die HTTP-Schnittstelle erfolgen musste. Daraufhin haben wir die Manager eingeführt, die die Geschäftslogik übernommen haben, wodurch es wieder möglich war, Unittests für diese zu schrieben. Die View, die Dialogkontrolle sowie alles spezifische zur HTTP/HTML-Domäne verblieb in den Controllern.
+  \item Anfänglich war unsere Geschäftslogik nicht von der View-Verarbeitung getrennt. Die gesamte Logik lag innerhalb den Controllern, wodurch das Schreiben der Tests ebenfalls erschwert wurde, da so jeder Test über die HTTP-Schnittstelle erfolgen musste. Daraufhin haben wir die Manager eingeführt, die die Geschäftslogik übernommen haben, wodurch es wieder möglich war, Unittests für diese zu schrieben. Die View, die Dialogkontrolle, sowie alles spezifische zur HTTP/HTML-Domäne verblieb in den Controllern.
 \end{itemize}
 
 \section{Wie beurteilen Sie Ihre Projektorganisation bzw. den von Ihnen gewählten Entwicklungsprozess?}
 
 Bei unserem Projekt-Kickoff-Meeting hatten wir beschlossen, nach einem agilen jedoch nicht genauer beschriebenen oder existierenden Entwicklungsprozess vorzugehen. Wir haben diesen an Scrum angelegt, machten uns aber zusätzlich einige Ideen von Extreme Programming wie das \enquote{Test-Driven-Development} oder \enquote{Pair-Programming} zu eigen.
 Zu Beginn jeder Iteration hatten wir bei einer Art \enquote{Sprint Planning} gemeinsam besprochen, welche Aufgaben zu erledigen sind und welchen Hürden wir dabei begegnen könnten. Zusätzlich wurden bei diesen Treffen grundlegende Arbeiten als Team bewältigt, die gegebenfalls alle weiteren Arbeiten beeinflussen könnten, wie zum Beispiel das Datenmodell.
-Bei diesen Treffen war es jedem Teammitglied möglich, seine eigenen Ideen und Einwände zur Diskussion freizugeben, wodurch kein bisher nicht besprochener oder bedachter Aspekt ausser Sicht gelassen wurde. So konnte das Team von unterschiedlichen Qualitäten, die von den einzelnen Teammitglieder eingebracht wurden, profitieren.
+Bei diesen Treffen war es jedem Teammitglied möglich, seine eigenen Ideen und Einwände zur Diskussion freizugeben, wodurch kein bisher nicht besprochener oder bedachter Aspekt ausser Acht gelassen wurde. So konnte das Team von unterschiedlichen Qualitäten, die von den einzelnen Teammitglieder eingebracht wurden, profitieren.
 
 Da wir als zentralen Git-Server GitHub nutzten, hatten wir auch eine gute Plattform, um unser agiles Projektmanagement abzubilden.
 Mithilfe von sogenannten \enquote{Issues} ist es dort möglich, Arbeitspakete abzubilden.
 Jedes Issue hat einen Titel, eine Beschreibung, Labels, die zur Kategorisierung dienen, und konnte ferner zu einer Iteration und einem Teammitglied zugeordnet werden.
 Ebenfalls ist es möglich, einem Issue weitere Kommentare anzuhängen, so dass auch Diskussionen zu einem spezifischen Arbeitspaket/Problem geführt werden konnten.
 Darüber hinaus bietet GitHub ein Kanbanboard, welches wir intensiv genutzt haben.
-Auf diesem können Issues oder kleinere Notizen zu vorgefertigten oder selbst erstellten Kategorien zugewiesen werden, um dem Team Überblick darüber zu verschaffen, welche Issues bereits in Bearbeitung sind, welche noch nicht bearbeitet werden und noch keinen zugeordneten Entwickler haben sowie welche bereits abgearbeitet wurden, aber eventuell noch einem Review unterzogen werden sollten.
+Auf diesem können Issues oder kleinere Notizen zu vorgefertigten oder selbst erstellten Kategorien zugewiesen werden, um dem Team Überblick darüber zu verschaffen, welche Issues bereits in Bearbeitung sind, welche noch nicht bearbeitet werden und noch keinen zugeordneten Entwickler haben, sowie welche bereits abgearbeitet wurden, aber eventuell noch einem Review unterzogen werden sollten.
 Zusätzlich ist es möglich, den Status eines Issues (Open/Closed) aber auch seine Zuweisung zu einer Kategorie auf dem Kanbanboard via Commit-Nachrichten zu steuern, wodurch der eigentliche organisatorische Aufwand immens sinkt.
 
 Insgesamt war uns dadurch ein sehr agiler und liberaler Entwicklungsprozess möglich.
 Teammitglieder konnten sich eigenständig neue Arbeit aus den Issues oder dem Kanbanboard zuweisen und direkt mit der Bearbeitung des jeweiligen Arbeitspakets beginnen. Das ähnelt bewusst dem \enquote{Pull}-Konzept aus Kanban: So war es uns möglich, die Menge an zeitgleich geöffneten \enquote{Baustellen} gering zu halten und zu garantieren, dass wir keine einzelnen Teammitglieder überlasten, da jeder frei entscheiden konnte, wie viel Zeit er gerade investieren möchte/kann.
-Arbeitspakete wurden dementsprechend fein granular definiert, so dass nicht wenige bis keine Abhängigkeiten zueinander bestanden, damit die \enquote{Suche nach neuer Arbeit} ohne größeren Aufwand geschehen konnte.
+Arbeitspakete wurden dementsprechend fein granular definiert, so dass wenige bis keine Abhängigkeiten zueinander bestanden, damit die \enquote{Suche nach neuer Arbeit} ohne größeren Aufwand geschehen konnte.
 Durch die Verknüpfung des GitHub-Kontos mit einer E-Mail-Adresse wurden auch die anderen Teammitglieder automatisch von diesen Statusänderungen an den Issues benachrichtigt.
 Insgesamt konnte so garantiert werden, dass keine Arbeit doppelt gemacht wird.
 
 Zusammenfassend sind wir sehr zufrieden mit unserer gewählten Projektorganisation und würden ein anderes Projekt wahrscheinlich ähnlich umsetzen.
 
-Kritisch zu betrachten ist jedoch die Menge an Selbstdisziplin, die jedes Teammitglied bei so einem Entwicklungsprozess mit sich bringen muss.
-Es ist erfahrungsgemäß schwer, Überblick und Klarheit hier zu behalten, wenn nicht jedes Teammitglied auf eine sorgfältige Pflege der Issues und des Kanbanboards achten.
+Kritisch zu betrachten ist jedoch die Menge an Selbstdisziplin, die jedes Teammitglied bei so einem Entwicklungsprozess einbringen muss.
+Es ist erfahrungsgemäß schwer, Überblick und Klarheit zu behalten, wenn nicht jedes Teammitglied auf eine sorgfältige Pflege der Issues und des Kanbanboards achtet.
 Dies ist uns beispielsweise daran aufgefallen, dass wir es schwer fanden, die Ergebnisse aller gruppeninternen Diskussionen, Absprachen mit Herrn Prof. Dr. Peine oder andere Erkenntnisse in den jeweiligen Issues zu persistieren.
 Positiv zu betrachten ist jedoch das zentrale Handling in GitHub. Hätten wir beispielsweise ein anderes Werkzeug zur Projektorganisation verwendet, welches nicht so eng mit dem Git-Repository verzahnt ist, hätten wir hiermit wohl sogar größere Probleme gehabt; möglicherweise wäre das Organisatorische an dieser Stelle komplett zusammengebrochen.
 
@@ -116,7 +115,7 @@ Positiv zu betrachten ist jedoch das zentrale Handling in GitHub. Hätten wir be
 
 \begin{itemize}
   \item Wir betrachten den Wettkampfaspekt eher positiv: Keine Informationen zu teilen hat das Projekt spannender gemacht, da man daraufhin keine Bewertung machen konnte, wie gut man selbst ist, oder die andere Gruppe ist, bzw. welche Ideen sie implementieren.
-  \item Paranoia hat's eigentlich interessant gemacht: Wir dachten oftmals, dass die andere Gruppe bessere Ideen hatte, bspw. Benutzerkonzept in der Datenbank
+  \item So entstand eine interessante \enquote{Paranoia}: Wir dachten oftmals, dass die andere Gruppe bessere Ideen hat oder gar Gebrauch von Datenbankbenutzern mit dazugehöriger Rechteverteilung macht.
 \end{itemize}
 
 \chapter{Verbesserungsvorschläge für zukünftige Projekte}
@@ -124,7 +123,7 @@ Positiv zu betrachten ist jedoch das zentrale Handling in GitHub. Hätten wir be
 Welche Verbesserungsvorschläge für zukünftige Projekte haben Sie?
 
 \begin{itemize}
-  \item Raeumlichkeiten (TODO Raumnummer unten) eher kritisch gewesen. Vorlesungskulisse war eher unangenehm, da sie stark hoerbar war. Securitylabor auch eher unangenehm wegen Hitze/Geraeuschekulisse wegen der Hardware.
+  \item Die zur Verfügung stehenden Räumlichkeiten sind eher kritisch gewesen. Die im unten gelegenen Raum herrschende Vorlesungskulisse war unangenehm, da sie stark hörbar war. Das Securitylabor war aufgrund der vom Serverschrank ausgehenden Hitze und Geräuschekulisse ebenfalls nicht optimal.
   \item Evtl Aufteilung durch SSE-Note doch nicht sinnvoll - eher Aufteilung nach Erfahrung?
   \item Es ist grundsätzlich unbefriedigend, ein Projekt \enquote{für die Mülltonne} zu produzieren. Die Hochschule hatte offensichtlich Bedarf an einer Anwendung zum Dateiaustausch\footnote{vgl. \url{https://www.gwdg.de/web/guest/about-us/press-releases/2018/press-release-2-2018}}. Man hätte die Anforderungen eventuell an tatsächlichen Bedürfnissen ausrichten können, um langfristig ein eigenes \enquote{hausinternes} Produkt hierfür bereitstellen zu können. Auch wenn eventuell im Rahmen eines Masterprojekts dieses Produkt nicht vollumfänglich fertiggestellt werden könnte, wäre dies über mehrere inkrementelle Projekte möglich ein solches Produkt zu erstellen.
   \item Ein paar schon im Gespraech genannt: Anderes Framework, evtl kein Single Sign-On, evtl Ende-zu-Ende verschuesselter Chat
