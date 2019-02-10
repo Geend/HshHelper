@@ -47,10 +47,10 @@ Wir haben uns bemüht, die Quellcodeänderungen der einzelnen Projektteilnehmer 
 In Verbindung mit dem vorher erwähnten, aber aus Zeitgründen nicht immer durchgeführten Branching-Mechanismus und einem CI-Server wie Jenkins oder CircleCI hätte man erzwingen können, dass Branches nur gemergt werden können, wenn der Branch/der Pull Request nicht nur erfolgreich baut, sondern auch alle Tests erfolgreich durchlaufen.
 
 \paragraph{Prototyping}
-Um ein Gefühl für Play und die Anforderungen an die Anwendung zu bekommen, haben wir für viele Funktionen zunächst einen möglichst einfachen Prototypen entwickelt. Die Prototypen wurden daraufhin meist iterativ verbessert, bis sie die Anforderungen vollständig erfüllt haben. Gelegentlich wurden Protoypen aber auch komplett verworfen und die Funktionalität erneut implementiert. So war es möglich, schnell auf Veränderungen der Anforderungen, beziehungsweise unserem neuen Verständnis von diesen zu reagieren. Diese Vorgehensweise würden wir grundsätzlich bei Technologien empfehlen, über die bisher nur geringe Kenntnis vorhanden ist: Mit steigendem Kenntnisgewinn vom Play-Framework erschienen frühe Versionen der Prototypen zunehmend als fragwürdig.
+Um ein Gefühl für Play und die Anforderungen an die Anwendung zu bekommen, haben wir für viele Funktionen zunächst einen möglichst einfachen Prototypen entwickelt. Die Prototypen wurden daraufhin meist iterativ verbessert, bis sie die Anforderungen vollständig erfüllt haben. Gelegentlich wurden Prototypen aber auch komplett verworfen und die Funktionalität erneut implementiert. So war es möglich, schnell auf Veränderungen der Anforderungen, beziehungsweise unserem neuen Verständnis von diesen zu reagieren. Diese Vorgehensweise würden wir grundsätzlich bei Technologien empfehlen, über die bisher nur geringe Kenntnis vorhanden ist: Mit steigendem Kenntnisgewinn vom Play-Framework erschienen frühe Versionen der Prototypen zunehmend als fragwürdig.
 
 
-\paragraph{Pair Programming} Im Team wurden mehrmals Zweiergruppen gebildet, um Aufgaben zu bewältigen. In diesen Zweierteams wurde dann häufig Pairprogramming praktiziert. Dies hat in unserem Projekt hervorragend funktioniert, da durch die Vorträge, die am Projektanfang gehalten wurden, jeder einen unterschiedlichen Einblick in das Play Framework erhalten hat und somit sein Fachwissen beim Pairprogramming einbringen konnte.
+\paragraph{Pair Programming} Im Team wurden mehrmals Zweiergruppen gebildet, um Aufgaben zu bewältigen. In diesen Zweierteams wurde dann häufig Pair Programming praktiziert. Dies hat in unserem Projekt hervorragend funktioniert, da durch die Vorträge, die am Projektanfang gehalten wurden, jeder einen unterschiedlichen Einblick in das Play Framework erhalten hat und somit sein Fachwissen beim Pair Programming einbringen konnte.
 
 
 \paragraph{Pentesting} Das frühzeitige Penetration Testing unserer Anwendung hat einen Großteil zur Stabilität und Sicherheit der Anwendung beigetragen. Abgesehen von den gefundenen Sicherheitsschwachstellen und funktionalen Fehlern der Anwendung, konnte man sich mit Werkzeugen wie dem ZAP-Webproxy oder  einfacheren Kommandozeilenwerkzeugen wie Curl vertraut machen. Dies hat sich als sinnvolle Vorbereitung für die Untersuchung der gegnerischen Anwendung erwiesen.
@@ -75,11 +75,10 @@ Von den Dokumenten hat die Bedrohungsanalyse am meisten Zeit in Anspruch genomme
 
 Abschließend ist zu sagen, dass der Zeitaufwand für dieses Projekt als sehr hoch eingeschätzt wird.
 Das Entwickeln eines eigenständigen Produkts ist für das kurze Wintersemester bereits sehr anspruchsvoll. In Kombination mit einer vollständigen Analyse der gegnerischen Anwendung und den umfangreichen Dokumenten entsteht ein nicht zu unterschätzender Arbeitsaufwand.
-
 \section{Welche Fehler wurden gemacht und woran erkannt?}
 
 \begin{itemize}
-  \item Insgesamt betrachten wir die Integration und den darauffolgenden Ausbau von Bootstrap als große Zeitverschwendung. Wir hatten uns zu wenig Gedanken darüber gemacht, in welcher Form wir unsere Applikation präsentieren wollen. Im Zuge dessen haben wir versucht, eine Art \enquote{Minibibliothek} zu schreiben, mit der wir relativ schnell Elemente zur Seite hinzufügen können, die den Bootstrap-Stil einheitlich appliziert, ohne immer die Bootstrap-CSS-Klassen angeben zu müssen. Dort hätten wir früher einen Schlussstrich ziehen müssen, um weitere Zeitverschwendung zu unterbinden.
+  \item Insgesamt betrachten wir die Integration und den darauf folgenden Ausbau von Bootstrap als große Zeitverschwendung. Wir hatten uns zu wenig Gedanken darüber gemacht, in welcher Form wir unsere Applikation präsentieren wollen. Im Zuge dessen haben wir versucht, eine Art \enquote{Minibibliothek} zu schreiben, mit der wir relativ schnell Elemente zur Seite hinzufügen können, die den Bootstrap-Stil einheitlich appliziert, ohne immer die Bootstrap-CSS-Klassen angeben zu müssen. Dort hätten wir früher einen Schlussstrich ziehen müssen, um weitere Zeitverschwendung zu unterbinden.
   \item Wir hatten zunächst manche Variablen statisch unseren Klassen hinzugefügt, weil es konzeptionell sinnig erschien. Jedoch ist uns beim Implementieren unserer Unittests aufgefallen, dass die Klassen einfacher zu testen sind, wenn man Dependency Injection konsistent verwendet.
   \item Anfänglich war unsere Geschäftslogik nicht von der View-Verarbeitung getrennt. Die gesamte Logik lag innerhalb den Controllern, wodurch das Schreiben der Tests ebenfalls erschwert wurde, da so jeder Test über die HTTP-Schnittstelle erfolgen musste. Daraufhin haben wir die Manager eingeführt, die die Geschäftslogik übernommen haben, wodurch es wieder möglich war, Unittests für diese zu schrieben. Die View, die Dialogkontrolle, sowie alles spezifische zur HTTP/HTML-Domäne verblieb in den Controllern.
 \end{itemize}
@@ -94,8 +93,10 @@ Da wir als zentralen Git-Server GitHub nutzten, hatten wir auch eine gute Plattf
 Mithilfe von sogenannten \enquote{Issues} ist es dort möglich, Arbeitspakete abzubilden.
 Jedes Issue hat einen Titel, eine Beschreibung, Labels, die zur Kategorisierung dienen, und konnte ferner zu einer Iteration und einem Teammitglied zugeordnet werden.
 Ebenfalls ist es möglich, einem Issue weitere Kommentare anzuhängen, so dass auch Diskussionen zu einem spezifischen Arbeitspaket/Problem geführt werden konnten.
-Darüber hinaus bietet GitHub ein Kanbanboard, welches wir intensiv genutzt haben.
-Auf diesem können Issues oder kleinere Notizen zu vorgefertigten oder selbst erstellten Kategorien zugewiesen werden, um dem Team Überblick darüber zu verschaffen, welche Issues bereits in Bearbeitung sind, welche noch nicht bearbeitet werden und noch keinen zugeordneten Entwickler haben, sowie welche bereits abgearbeitet wurden, aber eventuell noch einem Review unterzogen werden sollten.
+Leider ist es auf GitHub nicht möglich, den Issues einen Status außer \enquote{Open} oder \enquote{Closed} zuzuweisen.
+Glücklicherweise bietet GitHub ein Kanbanboard, welches wir deswegen intensiv genutzt haben.
+Auf diesem können Issues oder kleinere Notizen zu vorgefertigten oder selbst erstellten Kategorien zugewiesen werden, um dem Team Überblick darüber zu verschaffen, in welchem Status sich diese befinden. Mögliche Kategorien wären beispielsweise \enquote{To-do}, \enquote{In progress}, \enquote{Needs review} oder \enquote{Done}.
+Somit ist es eindeutig, in welchem Status sich ein Issue befindet.
 Zusätzlich ist es möglich, den Status eines Issues (Open/Closed) aber auch seine Zuweisung zu einer Kategorie auf dem Kanbanboard via Commit-Nachrichten zu steuern, wodurch der eigentliche organisatorische Aufwand immens sinkt.
 
 Insgesamt war uns dadurch ein sehr agiler und liberaler Entwicklungsprozess möglich.
